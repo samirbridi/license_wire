@@ -1,5 +1,10 @@
 ﻿# 📜 CHANGELOG - resolume_easy_outliner
 
+## v0.5.0 (build 6) - 2026-10-19
+
+### âœ¨ Features
+- feat: Compila SliceOutliner Pro v3 otimizado (zero GPU bypass) e publica no acervo-mizin Cloudflare
+
 ## v0.4.0 (build 5) - 2026-10-19
 
 ### âœ¨ Features
@@ -32,6 +37,7 @@ Formato de versão obrigatório: `vX.Y.Z (build XXXX)`.
 
 ### ⚡ Improvements
 - improve: cria estrutura padronizada de diretórios (binaries, evidence, ghidra, notes, scripts, reconstructed)
+
 
 
 

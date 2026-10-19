@@ -1,49 +1,47 @@
-# 🚀 MASTER OUTLINER PRO - RECONSTRUÇÃO E OTIMIZAÇÃO
+# SliceOutliner Pro v3
 
-Este documento apresenta a especificação técnica e o projeto de nós para a nossa versão aprimorada, superando os limites observados no **Easy Outliner da Cosmowe**.
+**Source** para **Resolume Wire** — gera uma moldura com degradê de até 4 cores, cantos arredondados individualmente, modo quadro inteiro, por slice ou modo pórtico com fatias unificadas, traçadores sincronizados com BPM, fluxo duplo e colisão. A saída tem fundo transparente: coloque em uma layer acima do conteúdo.
 
----
+| | |
+|---|---|
+| **Autor** | Mizin |
+| **Versão** | v3.0.0 |
+| **Build** | 022 |
+| **Data** | 2026-10-19 |
+| **Categoria** | Source |
+| **Testado em** | Resolume Wire 7.28.1 |
+| **Arquivo** | `SliceOutliner Pro v3.wire` / `SliceOutliner Pro v3.cwired` |
 
-## ⚡ 1. Matriz Comparativa: Cosmowe vs. Nossa Versão Otimizada
-
-| Recurso | Easy Outliner (Cosmowe) | Master Outliner Pro (Nossa Versão) |
-| :--- | :--- | :--- |
-| **Arquitetura de Render** | Vetorial CPU (`Edge` + `Pie` + `Mask Arc`) | Híbrida Shader/SDF + Instancing GPU |
-| **Limite de Slices** | Perde performance acima de 40 slices | Roda estável a 120 FPS em 150+ slices |
-| **Modos de Animação** | 1 (Chaser simples unidirecional) | **5 Modos**: Chaser, Dual Flow, Corner Burst, Dash Runner e Full Static |
-| **Controle de Cauda** | Corte seco | Cauda com atenuação exponencial (Fade Tail) |
-| **Colorimetria** | Cor sólida única | Gradiente dinâmico de 4 cores + Spectrum HSB |
-| **Reatividade de Áudio** | Apenas velocidade manual | **BPM Sync nativo** + Kick/Bass Pulse |
-| **Direção de Percurso** | Apenas sentido horário | Horário, Anti-horário e Ping-Pong |
-| **Ajuste de Margem** | Fixo na borda | **Inset/Outset** personalizável (evita corte em gabaritos de LED) |
+Nomes do dashboard em inglês para uso universal; documentação e notas técnicas em português.
 
 ---
 
-## 🏗️ 2. Arquitetura de Nós Proposta
+## 🚀 Superpoderes da Versão 3 (v3.0.0)
 
-### Bloco A: Entrada e Geometria dos Slices
-- `Slices` (Arena Advanced Output)
-- `Slice Info` (Extrai Bounds, Posição e Aspect Ratio)
-- `Border Inset Math` (Node Math para expansão/retração de margem)
-- `ProceduralEdge` / `ShapeShader`
+1. **Merge Slices (Modo Pórtico)**:
+   - Permite unificar visualmente as bordas de múltiplos slices contíguos (ex: testeiras, pórticos, totens e painéis em 'L').
+   - Elimina as emendas e divisórias internas indesejadas, gerando apenas o contorno externo unificado.
+   - **Otimização Zero GPU**: Utiliza bypass dinâmico no shader de convolução Sobel. Quando desativado, consome 0% de GPU extra.
 
-### Bloco B: Motor de Animação Multi-Modo
-- `Clock / BPM` (Sincronia rítmica com a composição)
-- `Saw / Tri / Sine` (Osciladores para fluxo contínuo ou ping-pong)
-- `Selector de Modo` (Switch para alternar entre Chaser, Dual e Burst)
-- `Linear Node` (Gera a sequência de defasagem perfeitamente distribuída entre slices)
+2. **BPM Sync Nativo**:
+   - Sincronização rítmica precisa do movimento dos traçadores (`Tracer`) com o clock master do Resolume Arena.
+   - Multiplicadores/divisores musicais dedicados para acompanhar o tempo do show.
 
-### Bloco C: Shading, Cores e Cauda
-- `Gradient Palette` (Interpolação de 4 cores: A, B, C, D)
-- `Tail Falloff Curve` (Controla a curva de esmaecimento do rastro)
-- `Dash Generator` (Módulo para efeito de linha pontilhada/cyberpunk)
+3. **Direction Control (Fluxo e Ping-Pong)**:
+   - Modos de direção: Normal (horário), Invertido (anti-horário) e Ping-Pong suave (vai e volta contínuo).
 
-### Bloco D: Saída e Efeitos de Brilho
-- `Shape Render` com blend otimizado
-- `Dual-Stage Bloom` (Glow fino para definição + Glow amplo para ambiência)
-- `Texture Out`
+4. **Dual Head Flow & Collision**:
+   - Modo de duplo traçador: permite fluxo em direções opostas com efeito de colisão e flash aditivo nos pontos de encontro das cabeças de luz.
+
+5. **Interface e Dashboard Renovados**:
+   - Seletor `Border Area` rápido com botões segmentados `[ Full Frame ] [ Slices ]`.
+   - Toggle dedicado de `Merge Slices` integrado à seção `INPUT`.
+   - Agrupamento limpo e ergonômico de todos os 59 parâmetros.
 
 ---
 
-## 📝 3. Próximos Passos de Montagem
-O patch base de referência pode ser evoluído diretamente a partir do nosso patch `SliceOutliner Pro v2.wire` já existente no diretório de patches, incorporando o algoritmo de cauda e o selector multi-modo.
+## Instalação
+
+1. A pasta `SliceOutliner Pro v3/` deve ficar em `Documentos/Resolume Wire/Patches/`.
+2. No Resolume Arena o patch aparece na lista de **Sources** (aba Files ➔ Sources).
+3. Arraste para um clip em uma layer acima do conteúdo que deve receber a moldura.
