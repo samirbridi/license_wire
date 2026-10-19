@@ -1,4 +1,5 @@
 #include "channel.hpp"
+#include "playlist.hpp"
 #include "smoke.hpp"
 #include "version.hpp"
 #include <QtWidgets>
@@ -54,9 +55,17 @@ class MainWindow final : public QMainWindow {
     QLabel* secondaryTime_;
     QLabel* footer_;
     QLabel* showTitle_;
-    QStringList library_, playlist_, folders_;
+    QStringList library_, folders_;
+    QList<Cue> playlist_;
+    int editing_=-1;
+    QSlider* scrub_=nullptr;
+    QDoubleSpinBox *inBox_=nullptr,*outBox_=nullptr,*transitionTime_=nullptr,*enterBox_=nullptr,*exitBox_=nullptr;
+    QComboBox* transitionBox_=nullptr;
+    QCheckBox *sequentialBox_=nullptr,*repeatBox_=nullptr,*loopBox_=nullptr;
+    bool syncingEditor_=false;
     QString projectPath_;
     NativeChannel preview_{true, this}, programA_{false,this}, programB_{false,this};
+    PlaylistController controllerA_{&programA_,this},controllerB_{&programB_,this};
     std::unique_ptr<QSettings> settings_;
     QList<QPointer<QWidget>> outputWindows_;
     QList<QComboBox*> sourceBoxes_, screenBoxes_;
@@ -102,8 +111,9 @@ public:
         auto* take=new QShortcut(QKeySequence(Qt::CTRL|Qt::Key_Return),this);connect(take,&QShortcut::activated,this,[this]{takeSelected();});
         auto* saveKey=new QShortcut(QKeySequence::Save,this);connect(saveKey,&QShortcut::activated,this,[this]{saveProject(false);});
         auto* ticker=new QTimer(this);connect(ticker,&QTimer::timeout,this,[this]{refreshTransport();});ticker->start(200);
-        if(demo_) { for(const auto& s : {"01 - Doors open.mp4","02 - Opening film.mov","03 - Speaker intro.mkv","04 - Sponsor loop.avi","05 - Closing credits.mov"}) {library_<<s;playlist_<<s;} folders_<<"Show media"<<"Sponsor assets"; }
+        if(demo_) { for(const auto& s : {"01 - Doors open.mp4","02 - Opening film.mov","03 - Speaker intro.mkv","04 - Sponsor loop.avi","05 - Closing credits.mov"}) {library_<<s;playlist_<<Cue{QString(s),0,150000,Transition::Dissolve,600,400,600};} folders_<<"Show media"<<"Sponsor assets"; }
         retranslate();
+        if(demo_){playlistTable_->selectRow(2);syncEditor(2);}
     }
     void selectPage(int page){pages_->setCurrentIndex(page);if(navigation_->button(page))navigation_->button(page)->setChecked(true);}
     void setLanguage(const QString& lang){languageBox_->setCurrentIndex(lang=="pt-BR"?1:0);}
@@ -149,15 +159,23 @@ private:
         auto* bp=button("Play / pause");sl->addWidget(bp);connect(bp,&QPushButton::clicked,this,[this]{programB_.togglePause();});
         sl->addSpacing(8);sl->addWidget(label("TAKE DESTINATION","eyebrow"));targetBox_=new QComboBox;targetBox_->addItems({"Program A","Program B"});sl->addWidget(targetBox_);
         auto* take=button("TAKE  ·  Ctrl+Enter","take");take->setMinimumHeight(46);sl->addWidget(take);connect(take,&QPushButton::clicked,this,[this]{takeSelected();});
-        sl->addWidget(label("Cut after media is ready","muted"));auto* black=button("Black selected channel");sl->addWidget(black);connect(black,&QPushButton::clicked,this,[this]{targetChannel()->black();});
-        auto* loop=new QCheckBox(tx("Loop selected channel"));bindings_.append({loop,"Loop selected channel"});sl->addWidget(loop);connect(targetBox_,&QComboBox::currentIndexChanged,this,[this,loop]{const QSignalBlocker block(loop);loop->setChecked(targetChannel()->loop());});connect(loop,&QCheckBox::toggled,this,[this](bool value){targetChannel()->setLoop(value);});deckRow->addWidget(side);
+        sl->addWidget(label("Prepared Take · per-cue transition","muted"));auto* black=button("Black selected channel");sl->addWidget(black);connect(black,&QPushButton::clicked,this,[this]{targetController()->stop();});
+        auto* loop=new QCheckBox(tx("Loop selected channel"));loopBox_=loop;bindings_.append({loop,"Loop selected channel"});sl->addWidget(loop);connect(targetBox_,&QComboBox::currentIndexChanged,this,[this,loop]{const QSignalBlocker block(loop);loop->setChecked(targetChannel()->loop());});connect(loop,&QCheckBox::toggled,this,[this](bool value){targetChannel()->setLoop(value);});deckRow->addWidget(side);
         layout->addLayout(deckRow,3);
+        layout->addWidget(cueEditor());
         auto* tools=new QHBoxLayout;tools->addWidget(label("RUNNING ORDER","eyebrow"));tools->addStretch();
         for(auto key:{"Add files","Add folder","Open show"}){auto* b=button(key);tools->addWidget(b);connect(b,&QPushButton::clicked,this,[this,key]{if(QString(key)=="Add files")chooseFiles();else if(QString(key)=="Add folder")chooseFolder();else openProject();});}
-        layout->addLayout(tools);playlistTable_=makeTable();layout->addWidget(playlistTable_,2);connect(playlistTable_,&QTableWidget::cellDoubleClicked,this,[this](int row,int){cueRow(row);});
+        sequentialBox_=new QCheckBox;bindings_.append({sequentialBox_,"Sequential"});tools->addWidget(sequentialBox_);
+        repeatBox_=new QCheckBox;bindings_.append({repeatBox_,"Repeat order"});tools->addWidget(repeatBox_);
+        connect(sequentialBox_,&QCheckBox::toggled,this,[this](bool value){targetController()->setSequential(value);if(value)loopBox_->setChecked(false);loopBox_->setEnabled(!value);repeatBox_->setEnabled(value);});
+        connect(repeatBox_,&QCheckBox::toggled,this,[this](bool value){targetController()->setRepeat(value);});
+        connect(targetBox_,&QComboBox::currentIndexChanged,this,[this]{QSignalBlocker a(sequentialBox_),b(repeatBox_);sequentialBox_->setChecked(targetController()->sequential());repeatBox_->setChecked(targetController()->repeat());repeatBox_->setEnabled(targetController()->sequential());loopBox_->setEnabled(!targetController()->sequential());});
+        repeatBox_->setEnabled(false);
+        layout->addLayout(tools);playlistTable_=makeTable();layout->addWidget(playlistTable_,2);connect(playlistTable_,&QTableWidget::itemSelectionChanged,this,[this]{syncEditor(playlistTable_->currentRow());});connect(playlistTable_,&QTableWidget::cellDoubleClicked,this,[this](int row,int){cueRow(row);});
         auto* bottom=new QHBoxLayout;bottom->addWidget(label("Double-click to cue. Drop files or folders anywhere.","muted"));bottom->addStretch();auto* cue=button("Cue selected");bottom->addWidget(cue);connect(cue,&QPushButton::clicked,this,[this]{cueRow(playlistTable_->currentRow());});
         auto* up=button("Move up");bottom->addWidget(up);connect(up,&QPushButton::clicked,this,[this]{moveCue(-1);});auto* down=button("Move down");bottom->addWidget(down);connect(down,&QPushButton::clicked,this,[this]{moveCue(1);});
-        auto* remove=button("Remove cue");bottom->addWidget(remove);connect(remove,&QPushButton::clicked,this,[this]{int row=playlistTable_->currentRow();if(row>=0){playlist_.removeAt(row);dirty_=true;refreshTables();}});layout->addLayout(bottom);return page;
+        auto* duplicate=button("Duplicate cue");bottom->addWidget(duplicate);connect(duplicate,&QPushButton::clicked,this,[this]{int row=playlistTable_->currentRow();if(row>=0){playlist_.insert(row+1,playlist_[row]);dirty_=true;refreshTables();playlistTable_->selectRow(row+1);}});
+        auto* remove=button("Remove cue");bottom->addWidget(remove);connect(remove,&QPushButton::clicked,this,[this]{int row=playlistTable_->currentRow();if(row>=0){editing_=-1;playlist_.removeAt(row);dirty_=true;refreshTables();}});layout->addLayout(bottom);return page;
     }
     QTableWidget* makeTable(){auto* t=new QTableWidget(0,5);t->setSelectionBehavior(QAbstractItemView::SelectRows);t->setSelectionMode(QAbstractItemView::SingleSelection);t->setEditTriggers(QAbstractItemView::NoEditTriggers);t->setAlternatingRowColors(true);t->verticalHeader()->hide();t->setShowGrid(false);t->setAcceptDrops(false);t->horizontalHeader()->setStretchLastSection(true);t->horizontalHeader()->setSectionResizeMode(1,QHeaderView::Stretch);t->setColumnWidth(0,44);t->setColumnWidth(2,110);t->setColumnWidth(3,130);t->verticalHeader()->setDefaultSectionSize(42);return t;}
     QWidget* libraryPage(){auto* page=new QWidget;auto* l=new QVBoxLayout(page);l->setContentsMargins(0,0,0,0);auto* heading=label("Media library","heading");l->addWidget(heading);l->addWidget(label("Original files stay in place. No mandatory conversion.","muted"));
@@ -172,26 +190,63 @@ private:
         auto* p=new QFrame;p->setObjectName("panel");auto* pl=new QVBoxLayout(p);pl->setContentsMargins(24,24,24,24);pl->setSpacing(14);pl->addWidget(label("DECODING","eyebrow"));pl->addWidget(label("Native FFmpeg backend","mediaTitle"));auto* decode=new QComboBox;decodingBox_=decode;decode->addItem(tx("Automatic hardware selection"),"auto");decode->addItem(tx("CPU decoding"),"cpu");decode->setCurrentIndex(settings_->value("decode","auto").toString()=="cpu"?1:0);pl->addWidget(decode);connect(decode,&QComboBox::currentIndexChanged,this,[this,decode]{if(!demo_)settings_->setValue("decode",decode->currentData());footer_->setText(tx("Restart the application to apply decoding preferences."));});
         pl->addWidget(label("Hardware support depends on codec, profile, driver and GPU.","muted"));l->addWidget(p);
         auto* remote=new QFrame;remote->setObjectName("panel");auto* rl=new QVBoxLayout(remote);rl->setContentsMargins(24,24,24,24);rl->addWidget(label("REMOTE CONTROL","eyebrow"));rl->addWidget(label("Planned: authenticated operator and view-only monitor.","muted"));rl->addWidget(label("No network control service is started in this prototype.","muted"));l->addWidget(remote);
-        l->addWidget(label("Prototype: cut, preroll, independent Programs and mirrored frames.","muted"));l->addWidget(label("Dissolves, scheduling and remote access are development milestones.","muted"));l->addStretch();return page;}
+        l->addWidget(label("Prototype: trims, fades, sequential playback and independent Programs.","muted"));l->addWidget(label("Transitions currently use a shared CPU compositor. GPU composition, scheduling and remote access are future milestones.","muted"));l->addStretch();return page;}
     NativeChannel* targetChannel(){return targetBox_->currentIndex()==0?&programA_:&programB_;}
-    void takeSelected(){if(demo_){footer_->setText(tx("Layout preview — sample content"));return;}if(preview_.path().isEmpty()||preview_.pending()){footer_->setText(tx("Cue media before taking it to Program."));return;}targetChannel()->load(preview_.path());}
-    void cueRow(int row){if(row<0||demo_)return;preview_.load(playlist_.value(row),false);}
+    PlaylistController* targetController(){return targetBox_->currentIndex()==0?&controllerA_:&controllerB_;}
+    void takeSelected(){
+        if(demo_){footer_->setText(tx("Layout preview — sample content"));return;}
+        if(editing_<0 || editing_>=playlist_.size() || preview_.pending() || preview_.path()!=playlist_[editing_].path){footer_->setText(tx("Cue media before taking it to Program."));return;}
+        if(!applyEditor())return;
+        targetController()->start(playlist_,editing_);
+    }
+    void cueRow(int row){if(row<0 || row>=playlist_.size() || demo_)return;syncEditor(row);preview_.load(playlist_[row].path,false);}
+    QDoubleSpinBox* secondsBox(double minimum,double maximum){auto* box=new QDoubleSpinBox;box->setDecimals(3);box->setRange(minimum,maximum);box->setSingleStep(.04);box->setSuffix(" s");box->setMinimumWidth(100);return box;}
+    QWidget* cueEditor(){
+        auto* panel=new QFrame;panel->setObjectName("panel");auto* layout=new QVBoxLayout(panel);layout->setContentsMargins(14,10,14,10);layout->setSpacing(8);
+        auto* seekRow=new QHBoxLayout;seekRow->addWidget(label("CUE / IN & OUT","eyebrow"));scrub_=new QSlider(Qt::Horizontal);scrub_->setRange(0,1000);seekRow->addWidget(scrub_,1);auto* markIn=button("Mark In");auto* markOut=button("Mark Out");seekRow->addWidget(markIn);seekRow->addWidget(markOut);layout->addLayout(seekRow);
+        connect(scrub_,&QSlider::sliderReleased,this,[this]{preview_.seek(qint64(double(scrub_->value())/1000*preview_.duration()));});
+        auto* row=new QHBoxLayout;inBox_=secondsBox(0,604800);outBox_=secondsBox(-1,604800);outBox_->setSpecialValueText(tx("End of media"));
+        row->addWidget(label("In"));row->addWidget(inBox_);row->addWidget(label("Out"));row->addWidget(outBox_);
+        transitionBox_=new QComboBox;transitionBox_->addItems({tx("Cut"),tx("Dissolve"),tx("Fade through black")});row->addWidget(transitionBox_,1);
+        transitionTime_=secondsBox(0,10);transitionTime_->setValue(.5);row->addWidget(transitionTime_);
+        enterBox_=secondsBox(0,10);exitBox_=secondsBox(0,10);row->addWidget(label("Fade in"));row->addWidget(enterBox_);row->addWidget(label("Fade out"));row->addWidget(exitBox_);
+        auto* apply=button("Apply cue");row->addWidget(apply);layout->addLayout(row);
+        connect(apply,&QPushButton::clicked,this,[this]{applyEditor();});
+        connect(markIn,&QPushButton::clicked,this,[this]{if(!matchingPreview())return;inBox_->setValue(double(preview_.position())/1000);applyEditor();});
+        connect(markOut,&QPushButton::clicked,this,[this]{if(!matchingPreview())return;outBox_->setValue(double(preview_.position())/1000);applyEditor();});
+        return panel;
+    }
+    bool matchingPreview(){if(editing_>=0 && editing_<playlist_.size() && preview_.path()==playlist_[editing_].path && !preview_.pending())return true;footer_->setText(tx("Cue media before marking In or Out."));return false;}
+    void syncEditor(int row){
+        if(syncingEditor_ || row<0 || row>=playlist_.size() || !inBox_)return;
+        editing_=row;const auto& c=playlist_[row];inBox_->setValue(double(c.in)/1000);outBox_->setValue(double(c.out)/1000);
+        if(c.out<0)outBox_->setValue(-1);transitionBox_->setCurrentIndex(int(c.transition));transitionTime_->setValue(double(c.transitionMs)/1000);enterBox_->setValue(double(c.enterMs)/1000);exitBox_->setValue(double(c.exitMs)/1000);
+    }
+    bool applyEditor(){
+        if(editing_<0 || editing_>=playlist_.size())return false;
+        Cue c=playlist_[editing_];c.in=qRound64(inBox_->value()*1000);c.out=outBox_->value()<0?-1:qRound64(outBox_->value()*1000);
+        c.transition=Transition(transitionBox_->currentIndex());c.transitionMs=qRound(transitionTime_->value()*1000);c.enterMs=qRound(enterBox_->value()*1000);c.exitMs=qRound(exitBox_->value()*1000);
+        auto error=c.error(preview_.path()==c.path?preview_.duration():0);
+        if(!error.isEmpty()){footer_->setText(tx("Invalid cue")+": "+tx(error));return false;}
+        playlist_[editing_]=c;dirty_=true;refreshTables();footer_->setText(tx("Cue saved. Changes apply on the next TAKE."));return true;
+    }
     void moveCue(int delta){int from=playlistTable_->currentRow(),to=from+delta;if(from<0||to<0||to>=playlist_.size())return;playlist_.move(from,to);dirty_=true;refreshTables();playlistTable_->selectRow(to);}
     void chooseFiles(){const auto paths=QFileDialog::getOpenFileNames(this,tx("Add media"),{},tx("Media files")+" (*.mp4 *.mkv *.mov *.avi *.webm *.mxf *.ts *.m4v *.mpg *.mpeg *.wmv *.wav *.mp3 *.flac *.aiff);;"+tx("All files")+" (*)");addPaths(paths);}
     void chooseFolder(){const auto path=QFileDialog::getExistingDirectory(this,tx("Add folder"));if(!path.isEmpty())scanFolder(path);}
     void scanFolder(const QString& path){if(demo_)return;if(scanner_.isRunning()){footer_->setText(tx("A folder scan is already running."));return;}if(!folders_.contains(path))folders_<<path;footer_->setText(tx("Scanning folder in background…"));scanner_.setFuture(QtConcurrent::run([path]{QStringList found;QDirIterator it(path,QDir::Files,QDirIterator::Subdirectories);const QStringList extensions{"mp4","mkv","mov","avi","webm","mxf","ts","m4v","mpg","mpeg","wmv","wav","mp3","flac","aiff","aac","ogg"};while(it.hasNext()){auto p=it.next();if(extensions.contains(QFileInfo(p).suffix().toLower()))found<<p;}found.sort(Qt::CaseInsensitive);return found;}));}
-    void addPaths(const QStringList& paths){if(demo_)return;for(const auto& path:paths){const auto canonical=QFileInfo(path).canonicalFilePath();if(canonical.isEmpty()||!QFileInfo(canonical).isFile()||library_.contains(canonical,Qt::CaseInsensitive))continue;library_<<canonical;playlist_<<canonical;dirty_=true;}refreshTables();}
+    void addPaths(const QStringList& paths){if(demo_)return;for(const auto& path:paths){const auto canonical=QFileInfo(path).canonicalFilePath();if(canonical.isEmpty()||!QFileInfo(canonical).isFile()||library_.contains(canonical,Qt::CaseInsensitive))continue;library_<<canonical;playlist_<<Cue{canonical};dirty_=true;}refreshTables();}
     void populate(QTableWidget* table,const QStringList& paths){int current=table->currentRow();table->setRowCount(paths.size());table->setHorizontalHeaderLabels({"#",tx("Media"),tx("Container"),tx("Availability"),tx("Location")});for(int i=0;i<paths.size();++i){const QFileInfo info(paths[i]);const QString state=demo_?tx("Sample"):info.exists()?tx("Available"):tx("Offline");const QStringList values{QString::number(i+1).rightJustified(2,'0'),info.fileName(),info.suffix().toUpper(),state,demo_?QString("Show media / ")+info.fileName():info.absolutePath()};for(int c=0;c<5;++c){auto* item=new QTableWidgetItem(values[c]);if(c==3)item->setForeground(demo_||info.exists()?QColor("#84c6a4"):QColor("#ff9478"));table->setItem(i,c,item);}}if(current>=0&&current<paths.size())table->selectRow(current);}
-    void refreshTables(){populate(playlistTable_,playlist_);populate(libraryTable_,library_);roots_->clear();for(const auto& folder:folders_){auto* item=new QListWidgetItem(QFileInfo(folder).fileName(),roots_);item->setToolTip(folder);}}
+    void refreshTables(){QStringList paths;for(const auto& c:playlist_)paths<<c.path;{QSignalBlocker block(playlistTable_);populate(playlistTable_,paths);playlistTable_->setHorizontalHeaderLabels({"#",tx("Media"),tx("In / Out"),tx("Transition"),tx("Location")});for(int i=0;i<playlist_.size();++i){const auto& c=playlist_[i];playlistTable_->item(i,2)->setText(clockText(c.in)+" / "+(c.out<0?tx("End"):clockText(c.out)));playlistTable_->item(i,2)->setToolTip(QString::number(c.in)+" / "+QString::number(c.out)+" ms");playlistTable_->item(i,3)->setText(tx(c.transition==Transition::Cut?"Cut":c.transition==Transition::Dissolve?"Dissolve":"Fade through black"));}}populate(libraryTable_,library_);roots_->clear();for(const auto& folder:folders_){auto* item=new QListWidgetItem(QFileInfo(folder).fileName(),roots_);item->setToolTip(folder);}}
     void refreshTransport(){
         if(demo_){previewName_->setText("03 - Speaker intro.mkv");programName_->setText("02 - Opening film.mov");secondaryName_->setText("04 - Sponsor loop.avi");previewTime_->setText("00:00:00");programTime_->setText("00:01:24");secondaryTime_->setText("00:00:18");return;}
         auto name=[this](NativeChannel& c){return c.pending()?tx("Preparing media…"):c.path().isEmpty()?tx("No media loaded"):QFileInfo(c.path()).fileName();};
-        previewName_->setText(name(preview_));programName_->setText(name(programA_));secondaryName_->setText(name(programB_));previewTime_->setText(clockText(preview_.position()));programTime_->setText(clockText(qMax<qint64>(0,programA_.duration()-programA_.position())));secondaryTime_->setText(clockText(qMax<qint64>(0,programB_.duration()-programB_.position())));
+        if(scrub_&&!scrub_->isSliderDown()&&preview_.duration()>0)scrub_->setValue(int(1000.0*preview_.position()/preview_.duration()));
+        previewName_->setText(name(preview_));programName_->setText(name(programA_));secondaryName_->setText(name(programB_));previewTime_->setText(clockText(preview_.position()));programTime_->setText(clockText(qMax<qint64>(0,programA_.rangeEnd()-programA_.position())));secondaryTime_->setText(clockText(qMax<qint64>(0,programB_.rangeEnd()-programB_.position())));
     }
-    void retranslate(){for(const auto& b:bindings_){if(!b.widget)continue;if(auto* l=qobject_cast<QLabel*>(b.widget.data()))l->setText(tx(b.key));else if(auto* p=qobject_cast<QPushButton*>(b.widget.data()))p->setText(tx(b.key));else if(auto* c=qobject_cast<QCheckBox*>(b.widget.data()))c->setText(tx(b.key));else if(auto* e=qobject_cast<QLineEdit*>(b.widget.data()))e->setPlaceholderText(tx(b.key));}if(decodingBox_){decodingBox_->setItemText(0,tx("Automatic hardware selection"));decodingBox_->setItemText(1,tx("CPU decoding"));}showTitle_->setText(demo_?"Opening Night / "+tx("Sample show"):projectPath_.isEmpty()?tx("Untitled show"):QFileInfo(projectPath_).completeBaseName());for(auto* screen:screenBoxes_)screen->setItemText(0,tx("Floating test window"));targetBox_->setItemText(0,tx("Program A"));targetBox_->setItemText(1,tx("Program B"));for(auto* source:sourceBoxes_){source->setItemText(0,tx("Program A"));source->setItemText(1,tx("Program B"));}footer_->setText(demo_?tx("Layout preview — sample content"):tx("Native playback · EN / PT-BR · No mandatory conversion"));refreshTables();refreshTransport();}
+    void retranslate(){for(const auto& b:bindings_){if(!b.widget)continue;if(auto* l=qobject_cast<QLabel*>(b.widget.data()))l->setText(tx(b.key));else if(auto* p=qobject_cast<QPushButton*>(b.widget.data()))p->setText(tx(b.key));else if(auto* c=qobject_cast<QCheckBox*>(b.widget.data()))c->setText(tx(b.key));else if(auto* e=qobject_cast<QLineEdit*>(b.widget.data()))e->setPlaceholderText(tx(b.key));}if(decodingBox_){decodingBox_->setItemText(0,tx("Automatic hardware selection"));decodingBox_->setItemText(1,tx("CPU decoding"));}if(transitionBox_){transitionBox_->setItemText(0,tx("Cut"));transitionBox_->setItemText(1,tx("Dissolve"));transitionBox_->setItemText(2,tx("Fade through black"));outBox_->setSpecialValueText(tx("End of media"));}showTitle_->setText(demo_?"Opening Night / "+tx("Sample show"):projectPath_.isEmpty()?tx("Untitled show"):QFileInfo(projectPath_).completeBaseName());for(auto* screen:screenBoxes_)screen->setItemText(0,tx("Floating test window"));targetBox_->setItemText(0,tx("Program A"));targetBox_->setItemText(1,tx("Program B"));for(auto* source:sourceBoxes_){source->setItemText(0,tx("Program A"));source->setItemText(1,tx("Program B"));}footer_->setText(demo_?tx("Layout preview — sample content"):tx("Native playback · EN / PT-BR · No mandatory conversion"));refreshTables();refreshTransport();}
     void openOutput(int index){if(demo_){footer_->setText(tx("Layout preview — sample content"));return;}auto* channel=sourceBoxes_[index]->currentIndex()==0?&programA_:&programB_;auto* window=new QWidget;window->setAttribute(Qt::WA_DeleteOnClose);window->setWindowTitle(QString("Mizin Playout — Output %1").arg(index+1));auto* layout=new QVBoxLayout(window);layout->setContentsMargins(0,0,0,0);auto* video=new QVideoWidget;video->setStyleSheet("background:black");layout->addWidget(video);connect(channel,&NativeChannel::frameReady,video,[video](const QVideoFrame& f){video->videoSink()->setVideoFrame(f);});if(channel->lastFrame().isValid())video->videoSink()->setVideoFrame(channel->lastFrame());auto* escape=new QShortcut(QKeySequence(Qt::Key_Escape),window);connect(escape,&QShortcut::activated,window,&QWidget::close);const int screen=screenBoxes_[index]->currentData().toInt();window->resize(720,405);if(screen>=0&&screen<QGuiApplication::screens().size()){window->setGeometry(QGuiApplication::screens()[screen]->geometry());window->showFullScreen();}else window->show();outputWindows_<<window;}
-    void saveProject(bool){if(demo_)return;QString path=projectPath_;if(path.isEmpty())path=QFileDialog::getSaveFileName(this,tx("Save show"),{},"Mizin show (*.mizinshow)");if(path.isEmpty())return;if(!path.endsWith(".mizinshow",Qt::CaseInsensitive))path+=".mizinshow";QJsonObject root{{"schema",1},{"library",QJsonArray::fromStringList(library_)},{"playlist",QJsonArray::fromStringList(playlist_)},{"folders",QJsonArray::fromStringList(folders_)}};QSaveFile f(path);if(!f.open(QIODevice::WriteOnly)||f.write(QJsonDocument(root).toJson())<0||!f.commit()){footer_->setText(tx("Could not save show"));return;}projectPath_=path;dirty_=false;showTitle_->setText(QFileInfo(path).completeBaseName());footer_->setText(tx("Show saved"));}
-    void openProject(){if(demo_)return;if(dirty_&&QMessageBox::question(this,tx("Unsaved show"),tx("Open another show without saving?"),QMessageBox::Yes|QMessageBox::No,QMessageBox::No)!=QMessageBox::Yes)return;const auto path=QFileDialog::getOpenFileName(this,tx("Open show"),{},"Mizin show (*.mizinshow)");if(path.isEmpty())return;QFile f(path);if(!f.open(QIODevice::ReadOnly)){footer_->setText(tx("Could not open show"));return;}QJsonParseError error;auto doc=QJsonDocument::fromJson(f.readAll(),&error);auto obj=doc.object();if(error.error!=QJsonParseError::NoError||obj.value("schema").toInt()!=1||!obj.value("playlist").isArray()||!obj.value("library").isArray()){footer_->setText(tx("Invalid show file"));return;}QStringList library,playlist,folders;auto read=[](const QJsonArray& a,QStringList& out){for(auto v:a){if(!v.isString())return false;out<<v.toString();}return true;};if(!read(obj["library"].toArray(),library)||!read(obj["playlist"].toArray(),playlist)||!read(obj["folders"].toArray(),folders)){footer_->setText(tx("Invalid show file"));return;}library_=library;playlist_=playlist;folders_=folders;projectPath_=path;dirty_=false;refreshTables();showTitle_->setText(QFileInfo(path).completeBaseName());}
+    void saveProject(bool){if(demo_)return;QString path=projectPath_;if(path.isEmpty())path=QFileDialog::getSaveFileName(this,tx("Save show"),{},"Mizin show (*.mizinshow)");if(path.isEmpty())return;if(!path.endsWith(".mizinshow",Qt::CaseInsensitive))path+=".mizinshow";QJsonObject root=Show{library_,folders_,playlist_}.json();QSaveFile f(path);if(!f.open(QIODevice::WriteOnly)||f.write(QJsonDocument(root).toJson())<0||!f.commit()){footer_->setText(tx("Could not save show"));return;}projectPath_=path;dirty_=false;showTitle_->setText(QFileInfo(path).completeBaseName());footer_->setText(tx("Show saved"));}
+    void openProject(){if(demo_)return;if(dirty_&&QMessageBox::question(this,tx("Unsaved show"),tx("Open another show without saving?"),QMessageBox::Yes|QMessageBox::No,QMessageBox::No)!=QMessageBox::Yes)return;const auto path=QFileDialog::getOpenFileName(this,tx("Open show"),{},"Mizin show (*.mizinshow)");if(path.isEmpty())return;QFile f(path);if(!f.open(QIODevice::ReadOnly)){footer_->setText(tx("Could not open show"));return;}QJsonParseError error;auto doc=QJsonDocument::fromJson(f.readAll(),&error);auto obj=doc.object();Show loaded;if(error.error!=QJsonParseError::NoError || !Show::read(obj,loaded)){footer_->setText(tx("Invalid show file"));return;}library_=loaded.library;playlist_=loaded.cues;folders_=loaded.folders;editing_=-1;projectPath_=path;dirty_=false;refreshTables();showTitle_->setText(QFileInfo(path).completeBaseName());}
     void helpDialog(){QDialog dialog(this);dialog.setWindowTitle(tx("Quick start"));dialog.resize(700,540);auto* l=new QVBoxLayout(&dialog);auto* browser=new QTextBrowser;browser->setOpenExternalLinks(false);browser->setMarkdown(tx("HELP_MARKDOWN"));l->addWidget(browser);auto* close=button("Close");l->addWidget(close);connect(close,&QPushButton::clicked,&dialog,&QDialog::accept);dialog.exec();}
 };
 
@@ -212,7 +267,7 @@ QPushButton:hover {background:#2c3b4d;border-color:#638498;} QPushButton:focus {
 QPushButton:disabled {color:#5d6b7c;} QPushButton#take {background:#98d6de;color:#10232c;font-weight:700;border:none;font-size:15px;}
 QPushButton#navigation {text-align:left;background:transparent;border:none;padding:12px;color:#9facc0;}
 QPushButton#navigation:checked {color:#ddf5fa;background:#21333e;border-left:3px solid #91d2e2;}
-QComboBox,QLineEdit {background:#101823;border:1px solid #344355;border-radius:4px;padding:8px;min-height:18px;selection-background-color:#385d71;}
+QComboBox,QLineEdit,QDoubleSpinBox {background:#101823;border:1px solid #344355;border-radius:4px;padding:8px;min-height:18px;selection-background-color:#385d71;}
 QComboBox QAbstractItemView {background:#182536;selection-background-color:#385d71;}
 QTableWidget {background:#131a24;alternate-background-color:#18212d;border:1px solid #283545;border-radius:5px;selection-background-color:#263f50;selection-color:#e4f3f8;}
 QTableWidget::item {padding:8px;border-bottom:1px solid #222e3c;} QHeaderView::section {background:#1c2735;color:#97a8bd;border:none;padding:11px;text-align:left;}
@@ -238,11 +293,13 @@ int main(int argc,char** argv){
     parser.addOption(QCommandLineOption(QStringLiteral("capture-page"),QStringLiteral("Layout page: 0 show, 1 library, 2 outputs"),QStringLiteral("page"),QStringLiteral("0")));
     parser.addOption(QCommandLineOption(QStringLiteral("state-dir"),QStringLiteral("Portable settings directory"),QStringLiteral("directory")));
     parser.addOption(QCommandLineOption(QStringLiteral("cpu"),QStringLiteral("Force software decoding")));
+    parser.addOption(QCommandLineOption(QStringLiteral("transport-test"),QStringLiteral("Test trims, transitions and playlist modes")));
     parser.addOption(QCommandLineOption(QStringLiteral("smoke-test"),QStringLiteral("Decode fixture suite and exit")));
     parser.addOption(QCommandLineOption(QStringLiteral("fixtures"),QStringLiteral("Fixture directory"),QStringLiteral("directory")));
     parser.addOption(QCommandLineOption(QStringLiteral("result"),QStringLiteral("Smoke result JSON"),QStringLiteral("path")));
     parser.addPositionalArgument("media","Local media paths","[media...]");
     parser.process(app);
+    if(parser.isSet("transport-test"))return runTransportTests(parser.value("fixtures"),parser.value("result"));
     if(parser.isSet("smoke-test"))return runSmoke(parser.value("fixtures"),parser.value("result"));
     const QString state=parser.isSet("state-dir")?parser.value("state-dir"):QCoreApplication::applicationDirPath()+"/state";
     QSettings decodeSettings(state+"/preferences.ini",QSettings::IniFormat);if(decodeSettings.value("decode","auto").toString()=="cpu"){qputenv("QT_FFMPEG_DECODING_HW_DEVICE_TYPES",",");qputenv("MIZIN_DECODE_MODE","cpu");}
