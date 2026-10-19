@@ -1,0 +1,68 @@
+{
+  "target": "Easy Outliner.cwired (Cosmowe / Juicebar)",
+  "bundle_format": "Resolume Wire Compiled Uneditable (wire::bundle)",
+  "header": {
+    "magic": "00 01 00 00 00 01 00 00",
+    "version": "1.1.0",
+    "checksum_type": "SHA-1 (20 bytes)",
+    "payload_offset": "0x80",
+    "encryption": "XOR stream cipher with SHA-512 derived key"
+  },
+  "core_nodes_identified": [
+    {
+      "node": "Slices",
+      "class_id": "77697265-e61f-42c0-812a-0dca04e74562",
+      "role": "Captures slice geometry from Arena Advanced Output"
+    },
+    {
+      "node": "Slice Info",
+      "class_id": "77697265-39D3-41B8-BECE-237802F83E9F",
+      "role": "Extracts vector shapes, bounding boxes and counts"
+    },
+    {
+      "node": "Edge",
+      "class_id": "77697265-ab950887-37ee-4fd2-9487-c856b6b75c83",
+      "role": "Converts slice polygon boundary into outline stroke"
+    },
+    {
+      "node": "Saw",
+      "class_id": "77697265-F95F-41D8-8FC4-DF0DC56E1051",
+      "role": "Ramp oscillator driving rotation and chase speed"
+    },
+    {
+      "node": "Slice Offsets",
+      "class_id": "77697265-A48B-4AF9-8975-E3063B037D4C",
+      "role": "Phase offset generator to stagger animation across slices"
+    },
+    {
+      "node": "Pie",
+      "class_id": "77697265-cd66-44d5-b414-74e8c11c805c",
+      "role": "Radial mask geometry determining the visible chaser length"
+    },
+    {
+      "node": "Spin",
+      "class_id": "77697265-9225-4009-9D2D-5F898E94CC33",
+      "role": "Rotates pie mask according to saw phase"
+    },
+    {
+      "node": "Mask Arc",
+      "class_id": "77697265-48f0-48c6-93df-afe8984d360b",
+      "role": "Boolean intersection between edge stroke and rotating pie"
+    },
+    {
+      "node": "Shape Render",
+      "class_id": "77697265-EA26-47D6-985A-B4D5DC314BF7",
+      "role": "Rasterizes vector geometry into GPU texture"
+    },
+    {
+      "node": "Bloom",
+      "class_id": "77697265-B994-4A9A-94E7-B4E0FA77D8AF",
+      "role": "High-intensity post-processing glow effect"
+    },
+    {
+      "node": "Texture Out",
+      "class_id": "77697265-BEEA-4D38-8EE5-0EBA4CBD0AEE",
+      "role": "Outputs finalized composite texture to Resolume Arena"
+    }
+  ]
+}
