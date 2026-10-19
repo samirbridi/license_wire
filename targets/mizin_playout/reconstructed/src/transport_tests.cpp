@@ -8,6 +8,7 @@
 #include <QFile>
 #include <QJsonDocument>
 #include <QThread>
+#include <QDebug>
 #include <functional>
 
 static bool until(const std::function<bool()>& predicate,int timeout=8000) {
@@ -19,7 +20,7 @@ static void pump(int milliseconds){QElapsedTimer t;t.start();until([&]{return t.
 
 int runTransportTests(const QString& directory,const QString& resultPath) {
     QJsonArray tests;bool pass=true;
-    auto record=[&](const QString& name,bool ok,QJsonObject detail=QJsonObject{}){detail["name"]=name;detail["pass"]=ok;tests.append(detail);pass&=ok;};
+    auto record=[&](const QString& name,bool ok,QJsonObject detail=QJsonObject{}){detail["name"]=name;detail["pass"]=ok;tests.append(detail);pass&=ok;qInfo().noquote()<<name<<ok;};
     const QString source=QDir(directory).absoluteFilePath("01-h264.mp4");
     const QString second=QDir(directory).absoluteFilePath("03-h264.mkv");
     Cue trimmed{source,500,1600,Transition::Cut,400,0,0};
@@ -37,7 +38,7 @@ int runTransportTests(const QString& directory,const QString& resultPath) {
     record("fade_black_midpoint",composeImages(red,blue,.5,Transition::FadeBlack).pixelColor(16,9)==QColor(Qt::black));
     record("single_clip_fade_pixel",composeImages({},red,.5,Transition::Dissolve).pixelColor(16,9).red()>=126 && composeImages({},red,.5,Transition::Dissolve).pixelColor(16,9).red()<=129);
     NativeChannel channel(false);PlaylistController order(&channel);
-    QStringList errors;QObject::connect(&channel,&NativeChannel::failed,&channel,[&](const QString& e){errors<<e;});
+    QStringList errors;QObject::connect(&channel,&NativeChannel::failed,&channel,[&](const QString& e){errors<<e;qWarning().noquote()<<e;});
     QList<qint64> timestamps;int starts=0;bool track=true;
     QObject::connect(&channel,&NativeChannel::started,&channel,[&]{++starts;});
     QObject::connect(&channel,&NativeChannel::frameReady,&channel,[&](const QVideoFrame& f){if(track && f.isValid())timestamps<<f.startTime()/1000;});

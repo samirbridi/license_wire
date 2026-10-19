@@ -39,6 +39,7 @@ NativeChannel::NativeChannel(bool preview, QObject* parent) : QObject(parent), p
             if (i==active_) { if (!decks_[i].player->hasVideo()) renderActive(); emit changed(); }
         });
         connect(d.player,&QMediaPlayer::durationChanged,this,[this,i]{setupSeek(i);emit changed();});
+        connect(d.player,&QMediaPlayer::seekableChanged,this,[this,i]{setupSeek(i);});
         connect(d.player,&QMediaPlayer::playbackStateChanged,this,[this]{emit changed();});
     }
 }
@@ -47,7 +48,9 @@ void NativeChannel::setupSeek(int i) {
     auto& d=decks_[i];
     if (d.player->duration()<=0) return;
     if (const auto error=d.cue.error(d.player->duration()); !error.isEmpty()) {reject(i,error);return;}
-    if (d.cue.in>0 && !d.player->isSeekable()) {reject(i,"Media is not seekable");return;}
+    // Duration can arrive before the backend announces seekability. Do not reject
+    // a valid local file during that transient metadata state.
+    if (d.cue.in>0 && !d.player->isSeekable()) return;
     d.seekSet=true; d.player->setPosition(d.cue.in);
 }
 void NativeChannel::beginPrepare(const Cue& cue, bool autoTake, bool play) {
