@@ -1,0 +1,45 @@
+# Git Ignore - REA & Engenharia Reversa Workspace
+
+# Binaries & Dumps (Keep hashes in SHA256SUMS.txt, do not commit heavy binaries)
+targets/*/binaries/*
+!targets/*/binaries/.gitkeep
+!targets/*/binaries/SHA256SUMS.txt
+*.exe
+*.dll
+*.sys
+*.so
+*.dylib
+*.bin
+*.dmp
+*.core
+*.pcap
+*.har
+
+# Ghidra Project Data (Ephemerals and lock files)
+*.rep/
+*.gpr
+*.lock
+*.lock~
+ghidra_*.log
+
+# REA & Temporary analysis artifacts
+.rea/
+.cache/
+*.tmp
+*.bak
+*.swp
+
+# Node / Dependencies
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# OS / Editor specifics
+.DS_Store
+Thumbs.db
+desktop.ini
+.vscode/
+.idea/
+*.suo
+*.user
