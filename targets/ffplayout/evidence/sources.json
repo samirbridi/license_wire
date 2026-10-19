@@ -1,0 +1,16 @@
+[
+  {
+    "target": "ffplayout",
+    "file": "targets\\ffplayout\\evidence\\public-README.md",
+    "url": "https://raw.githubusercontent.com/ffplayout/ffplayout/main/README.md",
+    "retrieved_utc": "2026-10-19T17:39:42.5448136Z",
+    "sha256": "e6689388645f6008827a84e4bf6d3403ac82da2fa1ecb28b8e30566895db4c8a"
+  },
+  {
+    "target": "ffplayout",
+    "file": "targets\\ffplayout\\evidence\\public-LICENSE",
+    "url": "https://raw.githubusercontent.com/ffplayout/ffplayout/main/LICENSE",
+    "retrieved_utc": "2026-10-19T17:39:42.9038395Z",
+    "sha256": "3972dc9744f6499f0f9b2dbf76696f2ae7ad8af9b23dde66d6af86c9dfb36986"
+  }
+]

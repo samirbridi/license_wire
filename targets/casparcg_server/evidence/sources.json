@@ -1,0 +1,23 @@
+[
+  {
+    "target": "casparcg_server",
+    "file": "targets\\casparcg_server\\evidence\\public-README.md",
+    "url": "https://raw.githubusercontent.com/CasparCG/server/master/README.md",
+    "retrieved_utc": "2026-10-19T17:39:43.1841168Z",
+    "sha256": "e3399ebe9a8c23bbcdad929beca9ed1a659b72890e8edcaf05f796cbde0d9feb"
+  },
+  {
+    "target": "casparcg_server",
+    "file": "targets\\casparcg_server\\evidence\\public-LICENSE",
+    "url": "https://raw.githubusercontent.com/CasparCG/server/master/LICENSE",
+    "retrieved_utc": "2026-10-19T17:39:43.4935655Z",
+    "sha256": "8ceb4b9ee5adedde47b31e975c1d90c73ad27b6b165a1dcd80c7c545eb65b903"
+  },
+  {
+    "target": "casparcg_server",
+    "file": "targets/casparcg_server/evidence/public-AMCP-Protocol.html",
+    "url": "https://github.com/CasparCG/help/wiki/AMCP-Protocol",
+    "retrieved_utc": "2026-10-19T17:40:27.4131985Z",
+    "sha256": "127dd30daab19a38cdb5e3aba2de0f0ada1b82aea73c9f25bf333d39b68f5ece"
+  }
+]
