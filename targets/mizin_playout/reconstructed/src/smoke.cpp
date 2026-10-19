@@ -9,6 +9,7 @@
 #include <QJsonObject>
 #include <QTimer>
 #include <QVideoSink>
+#include <QTemporaryFile>
 #include <memory>
 #include <functional>
 
@@ -19,6 +20,7 @@ int runSmoke(const QString& directory, const QString& resultPath) {
     QObject::connect(&channel, &NativeChannel::frameReady, &mirror1, [&](const QVideoFrame& f) { if (f.isValid()) { mirror1.setVideoFrame(f); ++mirrorFrames1; } });
     QObject::connect(&channel, &NativeChannel::frameReady, &mirror2, [&](const QVideoFrame& f) { if (f.isValid()) { mirror2.setVideoFrame(f); ++mirrorFrames2; } });
     QStringList files = QDir(directory).entryList({"*.mp4", "*.mkv", "*.avi", "*.mov"}, QDir::Files, QDir::Name);
+    QTemporaryFile invalid(QDir(directory).absoluteFilePath("invalid-XXXXXX.mov"));
     QJsonArray tests;
     QTimer timer;
     QElapsedTimer clock;
@@ -44,6 +46,16 @@ int runSmoke(const QString& directory, const QString& resultPath) {
             phaseIndependent = true;
             channel.load(QDir(directory).absoluteFilePath(files[0]));
             independent.load(QDir(directory).absoluteFilePath(files[1]));
+        } else if(phaseIndependent) {
+            timer.stop();
+            const QString previousPath=channel.path();
+            const bool created=invalid.open();
+            if(created){invalid.write("Deliberately invalid synthetic media");invalid.close();channel.load(invalid.fileName());}
+            QTimer::singleShot(900,&channel,[&,previousPath,created]{
+                const bool preserved=created&&!error.isEmpty()&&channel.path()==previousPath&&channel.playing()&&channel.position()>250;
+                tests.append(QJsonObject{{"name","invalid_incoming_preserves_program"},{"pass",preserved},{"error_reported",!error.isEmpty()},{"program_preserved",channel.path()==previousPath}});
+                hadFailure|=!preserved;finish();
+            });
         } else finish();
     };
     QObject::connect(&timer, &QTimer::timeout, &channel, [&] {

@@ -30,7 +30,7 @@ public:
         p.setPen(QColor("#f4f6fa"));
         QFont f("Segoe UI",qMax(12,height()/13),QFont::DemiBold);p.setFont(f);
         p.drawText(QRect(24,height()/3,width()-48,height()/3),Qt::AlignLeft|Qt::AlignVCenter,scene == 1 ? "OPENING\nNIGHT" : "MIZIN\nPLAYOUT");
-        p.setFont(QFont("Segoe UI",8));p.setPen(QColor("#c3cbd6"));p.drawText(24,height()-18,"GENERATED SAMPLE / LAYOUT PREVIEW");
+        p.setFont(QFont("Segoe UI",8));p.setPen(QColor("#c3cbd6"));p.drawText(24,height()-18,"LAYOUT SAMPLE");
     }
 };
 
@@ -107,7 +107,14 @@ public:
     }
     void selectPage(int page){pages_->setCurrentIndex(page);if(navigation_->button(page))navigation_->button(page)->setChecked(true);}
     void setLanguage(const QString& lang){languageBox_->setCurrentIndex(lang=="pt-BR"?1:0);}
-    void capture(const QString& path){grab().save(path);}
+    void capture(const QString& path){
+        retranslate();
+        for(auto* widget:findChildren<QWidget*>())widget->repaint();
+        repaint();
+        QPixmap image(size()*devicePixelRatioF());image.setDevicePixelRatio(devicePixelRatioF());image.fill(Qt::transparent);
+        render(&image,QPoint(),QRegion(),QWidget::DrawWindowBackground|QWidget::DrawChildren);
+        image.save(path);
+    }
     void importExternal(const QStringList& paths){for(const auto& p:paths){if(QFileInfo(p).isDir())scanFolder(p);else addPaths({p});}}
 protected:
     void dragEnterEvent(QDragEnterEvent* event) override {if(event->mimeData()->hasUrls())event->acceptProposedAction();}
@@ -214,6 +221,11 @@ QScrollBar:vertical {background:#141e29;width:10px;} QScrollBar::handle:vertical
 )";
 
 int main(int argc,char** argv){
+    if(qEnvironmentVariableIsSet("MIZIN_LOG_PATH"))qInstallMessageHandler([](QtMsgType,const QMessageLogContext& context,const QString& message){
+        static QMutex mutex;QMutexLocker lock(&mutex);QFile log(qEnvironmentVariable("MIZIN_LOG_PATH"));
+        if(log.open(QIODevice::Append|QIODevice::Text)){QTextStream out(&log);out<<context.category<<": "<<message<<Qt::endl;}
+    });
+    qputenv("QT_MEDIA_BACKEND","ffmpeg");
     // Version-pinned private Qt backend configuration, applied before Qt startup.
     const QStringList raw=[&]{QStringList r;for(int i=1;i<argc;++i)r<<QString::fromLocal8Bit(argv[i]);return r;}();
     if(raw.contains("--cpu")){qputenv("QT_FFMPEG_DECODING_HW_DEVICE_TYPES",",");qputenv("MIZIN_DECODE_MODE","cpu");}
