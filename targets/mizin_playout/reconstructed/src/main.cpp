@@ -1,0 +1,231 @@
+#include "channel.hpp"
+#include "smoke.hpp"
+#include "version.hpp"
+#include <QtWidgets>
+#include <QtConcurrent>
+#include <QVideoWidget>
+#include <functional>
+
+static QString clockText(qint64 ms) {
+    const qint64 seconds = qMax<qint64>(0, ms) / 1000;
+    return QString("%1:%2:%3").arg(seconds/3600, 2, 10, QChar('0')).arg((seconds/60)%60, 2, 10, QChar('0')).arg(seconds%60, 2, 10, QChar('0'));
+}
+
+class SamplePicture final : public QWidget {
+public:
+    int scene = 0;
+    explicit SamplePicture(int s, QWidget* parent=nullptr) : QWidget(parent), scene(s) { setMinimumHeight(120); }
+    void paintEvent(QPaintEvent*) override {
+        QPainter p(this); p.setRenderHint(QPainter::Antialiasing);
+        QLinearGradient g(0, 0, width(), height());
+        g.setColorAt(0, scene == 1 ? QColor("#182728") : QColor("#172335"));
+        g.setColorAt(1, scene == 1 ? QColor("#705a37") : QColor("#364c68")); p.fillRect(rect(), g);
+        p.setPen(QColor(255,255,255,22));
+        for (int x=0;x<width();x+=36) p.drawLine(x,0,x,height());
+        for (int y=0;y<height();y+=36) p.drawLine(0,y,width(),y);
+        p.setPen(QPen(scene == 1 ? QColor("#f1bd70") : QColor("#8ecadb"), 2));
+        const QPointF center(width()*.79,height()*.48); const qreal radius=height()*.32;
+        p.drawEllipse(center,radius,radius); p.drawEllipse(center,radius*.66,radius*.66);
+        p.drawLine(QPointF(center.x()-radius*1.2,center.y()),QPointF(center.x()+radius*1.2,center.y()));
+        p.setPen(QColor("#f4f6fa"));
+        QFont f("Segoe UI",qMax(12,height()/13),QFont::DemiBold);p.setFont(f);
+        p.drawText(QRect(24,height()/3,width()-48,height()/3),Qt::AlignLeft|Qt::AlignVCenter,scene == 1 ? "OPENING\nNIGHT" : "MIZIN\nPLAYOUT");
+        p.setFont(QFont("Segoe UI",8));p.setPen(QColor("#c3cbd6"));p.drawText(24,height()-18,"GENERATED SAMPLE / LAYOUT PREVIEW");
+    }
+};
+
+class MainWindow final : public QMainWindow {
+    bool demo_;
+    QString language_;
+    QJsonObject dictionary_;
+    struct Binding { QPointer<QWidget> widget; QString key; };
+    QList<Binding> bindings_;
+    QStackedWidget* pages_;
+    QTableWidget* playlistTable_;
+    QTableWidget* libraryTable_;
+    QListWidget* roots_;
+    QComboBox* languageBox_;
+    QComboBox* targetBox_;
+    QLabel* previewName_;
+    QLabel* programName_;
+    QLabel* secondaryName_;
+    QLabel* previewTime_;
+    QLabel* programTime_;
+    QLabel* secondaryTime_;
+    QLabel* footer_;
+    QLabel* showTitle_;
+    QStringList library_, playlist_, folders_;
+    QString projectPath_;
+    NativeChannel preview_{true, this}, programA_{false,this}, programB_{false,this};
+    std::unique_ptr<QSettings> settings_;
+    QList<QPointer<QWidget>> outputWindows_;
+    QList<QComboBox*> sourceBoxes_, screenBoxes_;
+    QFutureWatcher<QStringList> scanner_;
+    QButtonGroup* navigation_ = nullptr;
+    QComboBox* decodingBox_ = nullptr;
+    bool dirty_ = false;
+public:
+    MainWindow(bool demo, const QString& language, const QString& stateDir) : demo_(demo), language_(language) {
+        QDir().mkpath(stateDir);
+        settings_ = std::make_unique<QSettings>(stateDir+"/preferences.ini",QSettings::IniFormat);
+        if(language_.isEmpty()) language_=settings_->value("language","en").toString();
+        readDictionary();
+        setWindowTitle("Mizin Playout — " + QString(MizinVersion)); resize(1600,1000);setMinimumSize(1160,800);setAcceptDrops(true);
+        auto* shell = new QWidget; auto* outer = new QHBoxLayout(shell); outer->setContentsMargins(0,0,0,0);outer->setSpacing(0);
+        auto* rail = new QFrame; rail->setObjectName("rail");rail->setFixedWidth(178);auto* nav = new QVBoxLayout(rail);nav->setContentsMargins(16,28,16,18);nav->setSpacing(10);
+        auto* brand = new QLabel("MIZIN");brand->setObjectName("brand");nav->addWidget(brand);nav->addWidget(label("PLAYOUT", "eyebrow"));nav->addSpacing(30);
+        pages_ = new QStackedWidget;
+        const QStringList pageNames{"Show","Library","Outputs","Settings"};
+        const QStringList initials{"01","02","03","04"};
+        auto* group = new QButtonGroup(this);navigation_=group;group->setExclusive(true);
+        for(int i=0;i<pageNames.size();++i) {
+            auto* b=button(pageNames[i]);b->setObjectName("navigation");b->setCheckable(true);group->addButton(b,i);nav->addWidget(b);
+            connect(b,&QPushButton::clicked,this,[this,i]{pages_->setCurrentIndex(i);});if(i==0)b->setChecked(true);
+        }
+        nav->addStretch();auto* help=button("Quick start  ·  F1");nav->addWidget(help);connect(help,&QPushButton::clicked,this,[this]{helpDialog();});
+        nav->addWidget(label(demo_ ? "DESIGN PREVIEW" : "DEVELOPMENT", "eyebrow"));
+        auto* content = new QWidget;auto* contentLayout = new QVBoxLayout(content);contentLayout->setContentsMargins(24,20,24,12);contentLayout->setSpacing(16);
+        auto* top = new QHBoxLayout;showTitle_=new QLabel;showTitle_->setObjectName("heading");top->addWidget(showTitle_);top->addStretch();
+        languageBox_=new QComboBox;languageBox_->addItem("English","en");languageBox_->addItem("Português (Brasil)","pt-BR");languageBox_->setCurrentIndex(language_=="pt-BR"?1:0);top->addWidget(languageBox_);
+        auto* save=button("Save show");top->addWidget(save);connect(save,&QPushButton::clicked,this,[this]{saveProject(false);});
+        contentLayout->addLayout(top);contentLayout->addWidget(pages_,1);
+        footer_=new QLabel;footer_->setObjectName("footer");contentLayout->addWidget(footer_);
+        outer->addWidget(rail);outer->addWidget(content,1);setCentralWidget(shell);
+        pages_->addWidget(showPage());pages_->addWidget(libraryPage());pages_->addWidget(outputsPage());pages_->addWidget(settingsPage());
+        connect(languageBox_,&QComboBox::currentIndexChanged,this,[this]{language_=languageBox_->currentData().toString();readDictionary();retranslate();if(!demo_)settings_->setValue("language",language_);});
+        for(auto* channel : {&preview_,&programA_,&programB_}) {
+            connect(channel,&NativeChannel::changed,this,[this]{refreshTransport();});
+            connect(channel,&NativeChannel::failed,this,[this](const QString& error){footer_->setText(tx("Media error")+": "+error);});
+        }
+        connect(&scanner_,&QFutureWatcher<QStringList>::finished,this,[this]{addPaths(scanner_.result());footer_->setText(tx("Folder scan complete"));});
+        auto* f1=new QShortcut(QKeySequence(Qt::Key_F1),this);connect(f1,&QShortcut::activated,this,[this]{helpDialog();});
+        auto* take=new QShortcut(QKeySequence(Qt::CTRL|Qt::Key_Return),this);connect(take,&QShortcut::activated,this,[this]{takeSelected();});
+        auto* saveKey=new QShortcut(QKeySequence::Save,this);connect(saveKey,&QShortcut::activated,this,[this]{saveProject(false);});
+        auto* ticker=new QTimer(this);connect(ticker,&QTimer::timeout,this,[this]{refreshTransport();});ticker->start(200);
+        if(demo_) { for(const auto& s : {"01 - Doors open.mp4","02 - Opening film.mov","03 - Speaker intro.mkv","04 - Sponsor loop.avi","05 - Closing credits.mov"}) {library_<<s;playlist_<<s;} folders_<<"Show media"<<"Sponsor assets"; }
+        retranslate();
+    }
+    void selectPage(int page){pages_->setCurrentIndex(page);if(navigation_->button(page))navigation_->button(page)->setChecked(true);}
+    void setLanguage(const QString& lang){languageBox_->setCurrentIndex(lang=="pt-BR"?1:0);}
+    void capture(const QString& path){grab().save(path);}
+    void importExternal(const QStringList& paths){for(const auto& p:paths){if(QFileInfo(p).isDir())scanFolder(p);else addPaths({p});}}
+protected:
+    void dragEnterEvent(QDragEnterEvent* event) override {if(event->mimeData()->hasUrls())event->acceptProposedAction();}
+    void dropEvent(QDropEvent* event) override {QStringList paths;for(const auto& url:event->mimeData()->urls())if(url.isLocalFile())paths<<url.toLocalFile();importExternal(paths);event->acceptProposedAction();}
+    void closeEvent(QCloseEvent* event) override {
+        if(!demo_ && dirty_ && QMessageBox::question(this,tx("Unsaved show"),tx("Close without saving the show?"),QMessageBox::Yes|QMessageBox::No,QMessageBox::No)!=QMessageBox::Yes){event->ignore();return;}
+        for(auto& output:outputWindows_)if(output)output->close();event->accept();
+    }
+private:
+    QString tx(const QString& key)const{return dictionary_.value(key).toString(key);}
+    void readDictionary(){QFile f(":/i18n/"+(language_=="pt-BR"?QString("pt-BR"):QString("en"))+".json");if(f.open(QIODevice::ReadOnly))dictionary_=QJsonDocument::fromJson(f.readAll()).object();}
+    QLabel* label(const QString& key,const QString& style={}){auto* l=new QLabel(tx(key));if(!style.isEmpty())l->setObjectName(style);bindings_.append({l,key});return l;}
+    QPushButton* button(const QString& key,const QString& style={}){auto* b=new QPushButton(tx(key));b->setMinimumHeight(34);if(!style.isEmpty())b->setObjectName(style);bindings_.append({b,key});return b;}
+    QWidget* monitor(NativeChannel* channel,int sample){
+        if(demo_)return new SamplePicture(sample);
+        auto* video=new QVideoWidget;video->setMinimumHeight(150);video->setAspectRatioMode(Qt::KeepAspectRatio);connect(channel,&NativeChannel::frameReady,video,[video](const QVideoFrame& f){video->videoSink()->setVideoFrame(f);});return video;
+    }
+    QFrame* deckPanel(const QString& title,NativeChannel* channel,int sample,QLabel** name,QLabel** timing,const QString& style){
+        auto* panel=new QFrame;panel->setObjectName("panel");auto* l=new QVBoxLayout(panel);l->setContentsMargins(14,12,14,12);l->setSpacing(9);
+        auto* heading=label(title,"eyebrow");heading->setProperty("channel",style);l->addWidget(heading);l->addWidget(monitor(channel,sample),1);
+        *name=new QLabel;(*name)->setObjectName("mediaTitle");l->addWidget(*name);
+        auto* row=new QHBoxLayout;*timing=new QLabel("00:00:00");(*timing)->setObjectName("timecode");row->addWidget(*timing);row->addStretch();
+        auto* play=button("Play / pause");row->addWidget(play);connect(play,&QPushButton::clicked,this,[channel]{channel->togglePause();});l->addLayout(row);return panel;
+    }
+    QWidget* showPage(){
+        auto* page=new QWidget;auto* layout=new QVBoxLayout(page);layout->setContentsMargins(0,0,0,0);layout->setSpacing(14);
+        auto* deckRow=new QHBoxLayout;deckRow->setSpacing(14);
+        deckRow->addWidget(deckPanel("PREVIEW",&preview_,0,&previewName_,&previewTime_,"preview"),1);
+        deckRow->addWidget(deckPanel("PROGRAM A",&programA_,1,&programName_,&programTime_,"program"),1);
+        auto* side=new QFrame;side->setObjectName("panel");side->setFixedWidth(246);auto* sl=new QVBoxLayout(side);sl->setContentsMargins(14,12,14,12);sl->setSpacing(10);
+        sl->addWidget(label("PROGRAM B","eyebrow"));sl->addWidget(monitor(&programB_,0),1);secondaryName_=new QLabel;secondaryName_->setWordWrap(true);sl->addWidget(secondaryName_);secondaryTime_=new QLabel;secondaryTime_->setObjectName("timecode");sl->addWidget(secondaryTime_);
+        auto* bp=button("Play / pause");sl->addWidget(bp);connect(bp,&QPushButton::clicked,this,[this]{programB_.togglePause();});
+        sl->addSpacing(8);sl->addWidget(label("TAKE DESTINATION","eyebrow"));targetBox_=new QComboBox;targetBox_->addItems({"Program A","Program B"});sl->addWidget(targetBox_);
+        auto* take=button("TAKE  ·  Ctrl+Enter","take");take->setMinimumHeight(46);sl->addWidget(take);connect(take,&QPushButton::clicked,this,[this]{takeSelected();});
+        sl->addWidget(label("Cut after media is ready","muted"));auto* black=button("Black selected channel");sl->addWidget(black);connect(black,&QPushButton::clicked,this,[this]{targetChannel()->black();});
+        auto* loop=new QCheckBox(tx("Loop selected channel"));bindings_.append({loop,"Loop selected channel"});sl->addWidget(loop);connect(targetBox_,&QComboBox::currentIndexChanged,this,[this,loop]{const QSignalBlocker block(loop);loop->setChecked(targetChannel()->loop());});connect(loop,&QCheckBox::toggled,this,[this](bool value){targetChannel()->setLoop(value);});deckRow->addWidget(side);
+        layout->addLayout(deckRow,3);
+        auto* tools=new QHBoxLayout;tools->addWidget(label("RUNNING ORDER","eyebrow"));tools->addStretch();
+        for(auto key:{"Add files","Add folder","Open show"}){auto* b=button(key);tools->addWidget(b);connect(b,&QPushButton::clicked,this,[this,key]{if(QString(key)=="Add files")chooseFiles();else if(QString(key)=="Add folder")chooseFolder();else openProject();});}
+        layout->addLayout(tools);playlistTable_=makeTable();layout->addWidget(playlistTable_,2);connect(playlistTable_,&QTableWidget::cellDoubleClicked,this,[this](int row,int){cueRow(row);});
+        auto* bottom=new QHBoxLayout;bottom->addWidget(label("Double-click to cue. Drop files or folders anywhere.","muted"));bottom->addStretch();auto* cue=button("Cue selected");bottom->addWidget(cue);connect(cue,&QPushButton::clicked,this,[this]{cueRow(playlistTable_->currentRow());});
+        auto* up=button("Move up");bottom->addWidget(up);connect(up,&QPushButton::clicked,this,[this]{moveCue(-1);});auto* down=button("Move down");bottom->addWidget(down);connect(down,&QPushButton::clicked,this,[this]{moveCue(1);});
+        auto* remove=button("Remove cue");bottom->addWidget(remove);connect(remove,&QPushButton::clicked,this,[this]{int row=playlistTable_->currentRow();if(row>=0){playlist_.removeAt(row);dirty_=true;refreshTables();}});layout->addLayout(bottom);return page;
+    }
+    QTableWidget* makeTable(){auto* t=new QTableWidget(0,5);t->setSelectionBehavior(QAbstractItemView::SelectRows);t->setSelectionMode(QAbstractItemView::SingleSelection);t->setEditTriggers(QAbstractItemView::NoEditTriggers);t->setAlternatingRowColors(true);t->verticalHeader()->hide();t->setShowGrid(false);t->setAcceptDrops(false);t->horizontalHeader()->setStretchLastSection(true);t->horizontalHeader()->setSectionResizeMode(1,QHeaderView::Stretch);t->setColumnWidth(0,44);t->setColumnWidth(2,110);t->setColumnWidth(3,130);t->verticalHeader()->setDefaultSectionSize(42);return t;}
+    QWidget* libraryPage(){auto* page=new QWidget;auto* l=new QVBoxLayout(page);l->setContentsMargins(0,0,0,0);auto* heading=label("Media library","heading");l->addWidget(heading);l->addWidget(label("Original files stay in place. No mandatory conversion.","muted"));
+        auto* row=new QHBoxLayout;auto* search=new QLineEdit;search->setPlaceholderText(tx("Search media"));bindings_.append({search,"Search media"});row->addWidget(search,1);auto* add=button("Add files");row->addWidget(add);connect(add,&QPushButton::clicked,this,[this]{chooseFiles();});auto* folder=button("Add folder");row->addWidget(folder);connect(folder,&QPushButton::clicked,this,[this]{chooseFolder();});l->addLayout(row);
+        auto* main=new QHBoxLayout;auto* rootPanel=new QFrame;rootPanel->setObjectName("panel");rootPanel->setFixedWidth(230);auto* rootsLayout=new QVBoxLayout(rootPanel);rootsLayout->addWidget(label("FOLDERS","eyebrow"));roots_=new QListWidget;rootsLayout->addWidget(roots_);main->addWidget(rootPanel);libraryTable_=makeTable();main->addWidget(libraryTable_,1);l->addLayout(main,1);
+        connect(search,&QLineEdit::textChanged,this,[this](const QString& q){for(int i=0;i<libraryTable_->rowCount();++i)libraryTable_->setRowHidden(i,!libraryTable_->item(i,1)->text().contains(q,Qt::CaseInsensitive));});
+        connect(libraryTable_,&QTableWidget::cellDoubleClicked,this,[this](int row,int){if(row>=0&&!demo_)preview_.load(library_.value(row),false);});return page;}
+    QWidget* outputsPage(){auto* page=new QWidget;auto* l=new QVBoxLayout(page);l->setContentsMargins(0,0,0,0);l->setSpacing(18);l->addWidget(label("Output routing","heading"));l->addWidget(label("Share one Program across screens, or send independent content.","muted"));
+        for(int i=0;i<3;++i){auto* panel=new QFrame;panel->setObjectName("panel");auto* row=new QHBoxLayout(panel);row->setContentsMargins(20,24,20,24);auto* number=new QLabel(QString("0%1").arg(i+1));number->setObjectName("routeNumber");row->addWidget(number);row->addSpacing(20);auto* col=new QVBoxLayout;col->addWidget(label("SOURCE","eyebrow"));auto* source=new QComboBox;source->addItems({"Program A","Program B"});source->setCurrentIndex(i==2?1:0);sourceBoxes_<<source;col->addWidget(source);row->addLayout(col,1);row->addSpacing(20);row->addWidget(new QLabel("→"));row->addSpacing(20);auto* dest=new QVBoxLayout;dest->addWidget(label("DISPLAY","eyebrow"));auto* screen=new QComboBox;screen->addItem(tx("Floating test window"),-1);int n=0;for(auto* s:QGuiApplication::screens())screen->addItem(QString("%1 · %2 × %3").arg(s->name()).arg(s->geometry().width()).arg(s->geometry().height()),n++);screenBoxes_<<screen;dest->addWidget(screen);row->addLayout(dest,2);auto* open=button("Open output");row->addSpacing(20);row->addWidget(open);connect(open,&QPushButton::clicked,this,[this,i]{openOutput(i);});l->addWidget(panel);}
+        auto* hint=label("Outputs using the same Program share decoded frames. Audio plays once per Program.","muted");hint->setWordWrap(true);l->addWidget(hint);l->addWidget(label("Physical display count and refresh depend on this computer.","muted"));l->addStretch();return page;}
+    QWidget* settingsPage(){auto* page=new QWidget;auto* l=new QVBoxLayout(page);l->setContentsMargins(0,0,0,0);l->setSpacing(18);l->addWidget(label("Playback preferences","heading"));
+        auto* p=new QFrame;p->setObjectName("panel");auto* pl=new QVBoxLayout(p);pl->setContentsMargins(24,24,24,24);pl->setSpacing(14);pl->addWidget(label("DECODING","eyebrow"));pl->addWidget(label("Native FFmpeg backend","mediaTitle"));auto* decode=new QComboBox;decodingBox_=decode;decode->addItem(tx("Automatic hardware selection"),"auto");decode->addItem(tx("CPU decoding"),"cpu");decode->setCurrentIndex(settings_->value("decode","auto").toString()=="cpu"?1:0);pl->addWidget(decode);connect(decode,&QComboBox::currentIndexChanged,this,[this,decode]{if(!demo_)settings_->setValue("decode",decode->currentData());footer_->setText(tx("Restart the application to apply decoding preferences."));});
+        pl->addWidget(label("Hardware support depends on codec, profile, driver and GPU.","muted"));l->addWidget(p);
+        auto* remote=new QFrame;remote->setObjectName("panel");auto* rl=new QVBoxLayout(remote);rl->setContentsMargins(24,24,24,24);rl->addWidget(label("REMOTE CONTROL","eyebrow"));rl->addWidget(label("Planned: authenticated operator and view-only monitor.","muted"));rl->addWidget(label("No network control service is started in this prototype.","muted"));l->addWidget(remote);
+        l->addWidget(label("Prototype: cut, preroll, independent Programs and mirrored frames.","muted"));l->addWidget(label("Dissolves, scheduling and remote access are development milestones.","muted"));l->addStretch();return page;}
+    NativeChannel* targetChannel(){return targetBox_->currentIndex()==0?&programA_:&programB_;}
+    void takeSelected(){if(demo_){footer_->setText(tx("Layout preview — sample content"));return;}if(preview_.path().isEmpty()||preview_.pending()){footer_->setText(tx("Cue media before taking it to Program."));return;}targetChannel()->load(preview_.path());}
+    void cueRow(int row){if(row<0||demo_)return;preview_.load(playlist_.value(row),false);}
+    void moveCue(int delta){int from=playlistTable_->currentRow(),to=from+delta;if(from<0||to<0||to>=playlist_.size())return;playlist_.move(from,to);dirty_=true;refreshTables();playlistTable_->selectRow(to);}
+    void chooseFiles(){const auto paths=QFileDialog::getOpenFileNames(this,tx("Add media"),{},tx("Media files")+" (*.mp4 *.mkv *.mov *.avi *.webm *.mxf *.ts *.m4v *.mpg *.mpeg *.wmv *.wav *.mp3 *.flac *.aiff);;"+tx("All files")+" (*)");addPaths(paths);}
+    void chooseFolder(){const auto path=QFileDialog::getExistingDirectory(this,tx("Add folder"));if(!path.isEmpty())scanFolder(path);}
+    void scanFolder(const QString& path){if(demo_)return;if(scanner_.isRunning()){footer_->setText(tx("A folder scan is already running."));return;}if(!folders_.contains(path))folders_<<path;footer_->setText(tx("Scanning folder in background…"));scanner_.setFuture(QtConcurrent::run([path]{QStringList found;QDirIterator it(path,QDir::Files,QDirIterator::Subdirectories);const QStringList extensions{"mp4","mkv","mov","avi","webm","mxf","ts","m4v","mpg","mpeg","wmv","wav","mp3","flac","aiff","aac","ogg"};while(it.hasNext()){auto p=it.next();if(extensions.contains(QFileInfo(p).suffix().toLower()))found<<p;}found.sort(Qt::CaseInsensitive);return found;}));}
+    void addPaths(const QStringList& paths){if(demo_)return;for(const auto& path:paths){const auto canonical=QFileInfo(path).canonicalFilePath();if(canonical.isEmpty()||!QFileInfo(canonical).isFile()||library_.contains(canonical,Qt::CaseInsensitive))continue;library_<<canonical;playlist_<<canonical;dirty_=true;}refreshTables();}
+    void populate(QTableWidget* table,const QStringList& paths){int current=table->currentRow();table->setRowCount(paths.size());table->setHorizontalHeaderLabels({"#",tx("Media"),tx("Container"),tx("Availability"),tx("Location")});for(int i=0;i<paths.size();++i){const QFileInfo info(paths[i]);const QString state=demo_?tx("Sample"):info.exists()?tx("Available"):tx("Offline");const QStringList values{QString::number(i+1).rightJustified(2,'0'),info.fileName(),info.suffix().toUpper(),state,demo_?QString("Show media / ")+info.fileName():info.absolutePath()};for(int c=0;c<5;++c){auto* item=new QTableWidgetItem(values[c]);if(c==3)item->setForeground(demo_||info.exists()?QColor("#84c6a4"):QColor("#ff9478"));table->setItem(i,c,item);}}if(current>=0&&current<paths.size())table->selectRow(current);}
+    void refreshTables(){populate(playlistTable_,playlist_);populate(libraryTable_,library_);roots_->clear();for(const auto& folder:folders_){auto* item=new QListWidgetItem(QFileInfo(folder).fileName(),roots_);item->setToolTip(folder);}}
+    void refreshTransport(){
+        if(demo_){previewName_->setText("03 - Speaker intro.mkv");programName_->setText("02 - Opening film.mov");secondaryName_->setText("04 - Sponsor loop.avi");previewTime_->setText("00:00:00");programTime_->setText("00:01:24");secondaryTime_->setText("00:00:18");return;}
+        auto name=[this](NativeChannel& c){return c.pending()?tx("Preparing media…"):c.path().isEmpty()?tx("No media loaded"):QFileInfo(c.path()).fileName();};
+        previewName_->setText(name(preview_));programName_->setText(name(programA_));secondaryName_->setText(name(programB_));previewTime_->setText(clockText(preview_.position()));programTime_->setText(clockText(qMax<qint64>(0,programA_.duration()-programA_.position())));secondaryTime_->setText(clockText(qMax<qint64>(0,programB_.duration()-programB_.position())));
+    }
+    void retranslate(){for(const auto& b:bindings_){if(!b.widget)continue;if(auto* l=qobject_cast<QLabel*>(b.widget.data()))l->setText(tx(b.key));else if(auto* p=qobject_cast<QPushButton*>(b.widget.data()))p->setText(tx(b.key));else if(auto* c=qobject_cast<QCheckBox*>(b.widget.data()))c->setText(tx(b.key));else if(auto* e=qobject_cast<QLineEdit*>(b.widget.data()))e->setPlaceholderText(tx(b.key));}if(decodingBox_){decodingBox_->setItemText(0,tx("Automatic hardware selection"));decodingBox_->setItemText(1,tx("CPU decoding"));}showTitle_->setText(demo_?"Opening Night / "+tx("Sample show"):projectPath_.isEmpty()?tx("Untitled show"):QFileInfo(projectPath_).completeBaseName());for(auto* screen:screenBoxes_)screen->setItemText(0,tx("Floating test window"));targetBox_->setItemText(0,tx("Program A"));targetBox_->setItemText(1,tx("Program B"));for(auto* source:sourceBoxes_){source->setItemText(0,tx("Program A"));source->setItemText(1,tx("Program B"));}footer_->setText(demo_?tx("Layout preview — sample content"):tx("Native playback · EN / PT-BR · No mandatory conversion"));refreshTables();refreshTransport();}
+    void openOutput(int index){if(demo_){footer_->setText(tx("Layout preview — sample content"));return;}auto* channel=sourceBoxes_[index]->currentIndex()==0?&programA_:&programB_;auto* window=new QWidget;window->setAttribute(Qt::WA_DeleteOnClose);window->setWindowTitle(QString("Mizin Playout — Output %1").arg(index+1));auto* layout=new QVBoxLayout(window);layout->setContentsMargins(0,0,0,0);auto* video=new QVideoWidget;video->setStyleSheet("background:black");layout->addWidget(video);connect(channel,&NativeChannel::frameReady,video,[video](const QVideoFrame& f){video->videoSink()->setVideoFrame(f);});if(channel->lastFrame().isValid())video->videoSink()->setVideoFrame(channel->lastFrame());auto* escape=new QShortcut(QKeySequence(Qt::Key_Escape),window);connect(escape,&QShortcut::activated,window,&QWidget::close);const int screen=screenBoxes_[index]->currentData().toInt();window->resize(720,405);if(screen>=0&&screen<QGuiApplication::screens().size()){window->setGeometry(QGuiApplication::screens()[screen]->geometry());window->showFullScreen();}else window->show();outputWindows_<<window;}
+    void saveProject(bool){if(demo_)return;QString path=projectPath_;if(path.isEmpty())path=QFileDialog::getSaveFileName(this,tx("Save show"),{},"Mizin show (*.mizinshow)");if(path.isEmpty())return;if(!path.endsWith(".mizinshow",Qt::CaseInsensitive))path+=".mizinshow";QJsonObject root{{"schema",1},{"library",QJsonArray::fromStringList(library_)},{"playlist",QJsonArray::fromStringList(playlist_)},{"folders",QJsonArray::fromStringList(folders_)}};QSaveFile f(path);if(!f.open(QIODevice::WriteOnly)||f.write(QJsonDocument(root).toJson())<0||!f.commit()){footer_->setText(tx("Could not save show"));return;}projectPath_=path;dirty_=false;showTitle_->setText(QFileInfo(path).completeBaseName());footer_->setText(tx("Show saved"));}
+    void openProject(){if(demo_)return;if(dirty_&&QMessageBox::question(this,tx("Unsaved show"),tx("Open another show without saving?"),QMessageBox::Yes|QMessageBox::No,QMessageBox::No)!=QMessageBox::Yes)return;const auto path=QFileDialog::getOpenFileName(this,tx("Open show"),{},"Mizin show (*.mizinshow)");if(path.isEmpty())return;QFile f(path);if(!f.open(QIODevice::ReadOnly)){footer_->setText(tx("Could not open show"));return;}QJsonParseError error;auto doc=QJsonDocument::fromJson(f.readAll(),&error);auto obj=doc.object();if(error.error!=QJsonParseError::NoError||obj.value("schema").toInt()!=1||!obj.value("playlist").isArray()||!obj.value("library").isArray()){footer_->setText(tx("Invalid show file"));return;}QStringList library,playlist,folders;auto read=[](const QJsonArray& a,QStringList& out){for(auto v:a){if(!v.isString())return false;out<<v.toString();}return true;};if(!read(obj["library"].toArray(),library)||!read(obj["playlist"].toArray(),playlist)||!read(obj["folders"].toArray(),folders)){footer_->setText(tx("Invalid show file"));return;}library_=library;playlist_=playlist;folders_=folders;projectPath_=path;dirty_=false;refreshTables();showTitle_->setText(QFileInfo(path).completeBaseName());}
+    void helpDialog(){QDialog dialog(this);dialog.setWindowTitle(tx("Quick start"));dialog.resize(700,540);auto* l=new QVBoxLayout(&dialog);auto* browser=new QTextBrowser;browser->setOpenExternalLinks(false);browser->setMarkdown(tx("HELP_MARKDOWN"));l->addWidget(browser);auto* close=button("Close");l->addWidget(close);connect(close,&QPushButton::clicked,&dialog,&QDialog::accept);dialog.exec();}
+};
+
+static const char* style=R"(
+QWidget { background:#11161e; color:#e4e9f1; font-family:'Segoe UI'; font-size:13px; }
+QFrame#rail {background:#0c1118;border-right:1px solid #242d39;}
+QLabel#brand {font-size:24px;font-weight:700;letter-spacing:5px;color:#e8f3f7;}
+QLabel#heading {font-size:23px;font-weight:600;}
+QLabel#eyebrow {font-size:10px;font-weight:600;letter-spacing:1.4px;color:#99a6b8;}
+QLabel[channel='preview'] {color:#83c7df;} QLabel[channel='program'] {color:#f0ad87;}
+QLabel#muted,QLabel#footer {color:#91a0b5;font-size:12px;} QLabel#footer {padding-top:7px;border-top:1px solid #25303c;}
+QLabel#mediaTitle {font-size:14px;font-weight:600;} QLabel#timecode {font-family:'Consolas';font-size:22px;color:#dbe5ef;}
+QLabel#routeNumber {font-family:'Consolas';font-size:34px;color:#77c7d8;}
+QFrame#panel {background:#171e28;border:1px solid #2a3544;border-radius:7px;}
+QFrame#panel QLabel,QFrame#panel QCheckBox {background:transparent;}
+QPushButton {background:#202b39;border:1px solid #344355;border-radius:4px;padding:5px 13px;}
+QPushButton:hover {background:#2c3b4d;border-color:#638498;} QPushButton:focus {border:1px solid #a4dce8;}
+QPushButton:disabled {color:#5d6b7c;} QPushButton#take {background:#98d6de;color:#10232c;font-weight:700;border:none;font-size:15px;}
+QPushButton#navigation {text-align:left;background:transparent;border:none;padding:12px;color:#9facc0;}
+QPushButton#navigation:checked {color:#ddf5fa;background:#21333e;border-left:3px solid #91d2e2;}
+QComboBox,QLineEdit {background:#101823;border:1px solid #344355;border-radius:4px;padding:8px;min-height:18px;selection-background-color:#385d71;}
+QComboBox QAbstractItemView {background:#182536;selection-background-color:#385d71;}
+QTableWidget {background:#131a24;alternate-background-color:#18212d;border:1px solid #283545;border-radius:5px;selection-background-color:#263f50;selection-color:#e4f3f8;}
+QTableWidget::item {padding:8px;border-bottom:1px solid #222e3c;} QHeaderView::section {background:#1c2735;color:#97a8bd;border:none;padding:11px;text-align:left;}
+QListWidget {background:transparent;border:none;} QListWidget::item {padding:12px 2px;} QTextBrowser {background:#151f2b;border:1px solid #334155;padding:20px;font-size:14px;}
+QScrollBar:vertical {background:#141e29;width:10px;} QScrollBar::handle:vertical {background:#3d4c60;min-height:20px;border-radius:4px;}
+)";
+
+int main(int argc,char** argv){
+    // Version-pinned private Qt backend configuration, applied before Qt startup.
+    const QStringList raw=[&]{QStringList r;for(int i=1;i<argc;++i)r<<QString::fromLocal8Bit(argv[i]);return r;}();
+    if(raw.contains("--cpu")){qputenv("QT_FFMPEG_DECODING_HW_DEVICE_TYPES",",");qputenv("MIZIN_DECODE_MODE","cpu");}
+    QApplication app(argc,argv);QCoreApplication::setApplicationName("Mizin Playout");QCoreApplication::setOrganizationName("Mizin");app.setStyle("Fusion");app.setStyleSheet(style);
+    QCommandLineParser parser;parser.addHelpOption();parser.addOptions({{{"board"},"Show sample content for layout review"},{{"lang"},"UI language","locale"},{{"capture-dir"},"Export native layout boards and exit","directory"},{{"state-dir"},"Portable settings directory","directory"},{{"cpu"},"Force software decoding"},{{"smoke-test"},"Decode fixture suite and exit"},{{"fixtures"},"Fixture directory","directory"},{{"result"},"Smoke result JSON","path"}});parser.addPositionalArgument("media","Local media paths","[media...]");parser.process(app);
+    if(parser.isSet("smoke-test"))return runSmoke(parser.value("fixtures"),parser.value("result"));
+    const QString state=parser.isSet("state-dir")?parser.value("state-dir"):QCoreApplication::applicationDirPath()+"/state";
+    QSettings decodeSettings(state+"/preferences.ini",QSettings::IniFormat);if(decodeSettings.value("decode","auto").toString()=="cpu"){qputenv("QT_FFMPEG_DECODING_HW_DEVICE_TYPES",",");qputenv("MIZIN_DECODE_MODE","cpu");}
+    MainWindow window(parser.isSet("board"),parser.value("lang"),state);window.show();window.importExternal(parser.positionalArguments());
+    if(parser.isSet("capture-dir")){
+        const QString dir=parser.value("capture-dir");QDir().mkpath(dir);
+        QTimer::singleShot(900,&window,[&window,dir]{window.selectPage(0);window.capture(dir+"/01-show-en.png");window.selectPage(2);QTimer::singleShot(180,&window,[&window,dir]{window.capture(dir+"/02-outputs-en.png");window.selectPage(1);QTimer::singleShot(180,&window,[&window,dir]{window.capture(dir+"/03-library-en.png");window.setLanguage("pt-BR");window.selectPage(0);QTimer::singleShot(180,&window,[&window,dir]{window.capture(dir+"/04-show-pt-BR.png");QCoreApplication::quit();});});});});
+    }
+    return app.exec();
+}

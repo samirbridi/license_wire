@@ -1,0 +1,3 @@
+#pragma once
+#include <QString>
+int runSmoke(const QString& directory, const QString& resultPath);
