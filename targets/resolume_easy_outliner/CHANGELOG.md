@@ -1,5 +1,10 @@
 ﻿# 📜 CHANGELOG - resolume_easy_outliner
 
+## v0.4.0 (build 5) - 2026-10-19
+
+### âœ¨ Features
+- feat: Adiciona Merge Slices (Modo Portico) e visualizacao em botoes para Border Area
+
 ## v0.3.1 (build 4) - 2026-10-19
 
 ### ðŸ› Fixes
@@ -27,6 +32,7 @@ Formato de versão obrigatório: `vX.Y.Z (build XXXX)`.
 
 ### ⚡ Improvements
 - improve: cria estrutura padronizada de diretórios (binaries, evidence, ghidra, notes, scripts, reconstructed)
+
 
 
 
