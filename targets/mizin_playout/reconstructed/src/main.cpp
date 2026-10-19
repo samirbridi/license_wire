@@ -218,7 +218,18 @@ int main(int argc,char** argv){
     const QStringList raw=[&]{QStringList r;for(int i=1;i<argc;++i)r<<QString::fromLocal8Bit(argv[i]);return r;}();
     if(raw.contains("--cpu")){qputenv("QT_FFMPEG_DECODING_HW_DEVICE_TYPES",",");qputenv("MIZIN_DECODE_MODE","cpu");}
     QApplication app(argc,argv);QCoreApplication::setApplicationName("Mizin Playout");QCoreApplication::setOrganizationName("Mizin");app.setStyle("Fusion");app.setStyleSheet(style);
-    QCommandLineParser parser;parser.addHelpOption();parser.addOptions({{{"board"},"Show sample content for layout review"},{{"lang"},"UI language","locale"},{{"capture-dir"},"Export native layout boards and exit","directory"},{{"state-dir"},"Portable settings directory","directory"},{{"cpu"},"Force software decoding"},{{"smoke-test"},"Decode fixture suite and exit"},{{"fixtures"},"Fixture directory","directory"},{{"result"},"Smoke result JSON","path"}});parser.addPositionalArgument("media","Local media paths","[media...]");parser.process(app);
+    QCommandLineParser parser;
+    parser.addHelpOption();
+    parser.addOption(QCommandLineOption(QStringLiteral("board"),QStringLiteral("Show sample content for layout review")));
+    parser.addOption(QCommandLineOption(QStringLiteral("lang"),QStringLiteral("UI language"),QStringLiteral("locale")));
+    parser.addOption(QCommandLineOption(QStringLiteral("capture-dir"),QStringLiteral("Export native layout boards and exit"),QStringLiteral("directory")));
+    parser.addOption(QCommandLineOption(QStringLiteral("state-dir"),QStringLiteral("Portable settings directory"),QStringLiteral("directory")));
+    parser.addOption(QCommandLineOption(QStringLiteral("cpu"),QStringLiteral("Force software decoding")));
+    parser.addOption(QCommandLineOption(QStringLiteral("smoke-test"),QStringLiteral("Decode fixture suite and exit")));
+    parser.addOption(QCommandLineOption(QStringLiteral("fixtures"),QStringLiteral("Fixture directory"),QStringLiteral("directory")));
+    parser.addOption(QCommandLineOption(QStringLiteral("result"),QStringLiteral("Smoke result JSON"),QStringLiteral("path")));
+    parser.addPositionalArgument("media","Local media paths","[media...]");
+    parser.process(app);
     if(parser.isSet("smoke-test"))return runSmoke(parser.value("fixtures"),parser.value("result"));
     const QString state=parser.isSet("state-dir")?parser.value("state-dir"):QCoreApplication::applicationDirPath()+"/state";
     QSettings decodeSettings(state+"/preferences.ini",QSettings::IniFormat);if(decodeSettings.value("decode","auto").toString()=="cpu"){qputenv("QT_FFMPEG_DECODING_HW_DEVICE_TYPES",",");qputenv("MIZIN_DECODE_MODE","cpu");}
