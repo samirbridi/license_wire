@@ -1,16 +1,44 @@
 {
-  "date": "2026-10-19",
-  "version": "v0.2.3 (build 0005)",
-  "source_commit": "832cc95c7343d6f5cf811e04d0bdd41bb189c46a",
-  "milestone_result": "PASS_NATIVE_FUNCTIONAL_PROTOTYPE",
-  "build": "PASS",
-  "native_functional_checks_passed": 14,
+  "result": "PASS_NATIVE_FUNCTIONAL_PROTOTYPE",
+  "version": "v0.3.3 (build 0009)",
+  "source_commit": "ee5c2882f78cf3d755de7886d943c98bb3b0daea",
+  "recorded_utc": "2026-10-19T17:52:02.611516+00:00",
+  "functional_checks_passed": 50,
+  "suites": [
+    {
+      "suite": "smoke",
+      "mode": "cpu",
+      "checks": 7,
+      "result": "PASS",
+      "file": "evidence/smoke-cpu-0009.json"
+    },
+    {
+      "suite": "transport",
+      "mode": "cpu",
+      "checks": 18,
+      "result": "PASS",
+      "file": "evidence/transport-cpu-0009.json"
+    },
+    {
+      "suite": "smoke",
+      "mode": "auto",
+      "checks": 7,
+      "result": "PASS",
+      "file": "evidence/smoke-auto-0009.json"
+    },
+    {
+      "suite": "transport",
+      "mode": "auto",
+      "checks": 18,
+      "result": "PASS",
+      "file": "evidence/transport-auto-0009.json"
+    }
+  ],
   "fixtures": {
-    "count": 5,
     "width": 640,
     "height": 360,
     "fps": 30,
-    "seconds": 3,
+    "synthetic": true,
     "codecs": [
       "H.264 MP4",
       "H.265 MP4",
@@ -19,78 +47,59 @@
       "ProRes MOV"
     ]
   },
-  "modes": {
-    "auto": {
-      "result": "PASS",
-      "checks": 7,
-      "continued_frames_on_invalid_incoming": 28
-    },
-    "cpu": {
-      "result": "PASS",
-      "checks": 7,
-      "continued_frames_on_invalid_incoming": 27
-    }
-  },
-  "catalog_keys": 84,
-  "catalog_parity": "PASS",
+  "catalog_keys": 112,
   "version_policy_tests": 4,
   "boards": [
     {
       "file": "design/boards/01-show-en.png",
-      "sha256": "3a4e86336c518dd5dfa4f964676f31cea5d42cccedb97947e4ae96e2c70c3dc2",
+      "sha256": "77a03a1a9a8f9f47793c53ad5e203d8d34e1dbc22166c549a5b523d20a880cfb",
       "width": 1600,
       "height": 1000,
-      "brand_glyph_pixels": 543
+      "brand_bright_pixels": 469,
+      "header_bright_pixels": 1258
     },
     {
       "file": "design/boards/02-outputs-en.png",
       "sha256": "7a01b99a3a4a10817e1ba583251ffd76f279ec36b6111d0201b2e1c0e5f11ad0",
       "width": 1600,
       "height": 1000,
-      "brand_glyph_pixels": 543
+      "brand_bright_pixels": 469,
+      "header_bright_pixels": 1258
     },
     {
       "file": "design/boards/03-library-en.png",
       "sha256": "900680fe74868ab95a5e1bb64a70139303a8a681d25837f692dcbe91d8b678ad",
       "width": 1600,
       "height": 1000,
-      "brand_glyph_pixels": 543
+      "brand_bright_pixels": 469,
+      "header_bright_pixels": 1258
     },
     {
       "file": "design/boards/04-show-pt-BR.png",
-      "sha256": "7109bb1a1c59d030f04141f1aa8e7593ec361a50278f31a4c58ace587f662ae6",
+      "sha256": "ccaba29b5386695c7e744d46dce2dc4b957689d1349a7e07372bf00f1adfc467",
       "width": 1600,
       "height": 1000,
-      "brand_glyph_pixels": 543
+      "brand_bright_pixels": 469,
+      "header_bright_pixels": 1439
     }
   ],
-  "executable": {
-    "path": "dist/MizinPlayout.exe",
-    "bytes": 227328,
-    "sha256": "e90b511bfab43a3daeb0f2cf4c9c6d2a394ee36b2a1a42e60fd0503b2d6aecc6"
-  },
-  "runtime_package": {
+  "package": {
+    "executable_sha256": "97fe9ea555da11e4665ed157cadde449499c3117988616b41ded967d71de5d6a",
     "files": 25,
-    "bytes": 56277712,
-    "browser_runtime_included": false
+    "bytes": 56359632
   },
-  "ui_inspection": {
-    "native_default_language": "English observed through Windows accessibility at build 0003",
-    "layout": "native PNGs exported and visually inspected",
-    "windows_capture_tool": "FrameArrived timed out",
-    "pointer_automation": "coordinate input geometry unavailable",
-    "manual_user_interaction": "not verified",
-    "human_visual_approval": "pending"
-  },
-  "not_qualified": [
-    "physical multi-display routing and synchronization",
-    "1080p/4K performance and A/V sync",
-    "AMD hardware",
-    "macOS and Linux builds",
-    "long-running playback",
-    "dissolve compositing",
-    "remote control",
-    "scheduling"
-  ],
-  "history_note": "Build 0004 verbose diagnostics allowed the finite 3-second fixture to reach EOS in the negative test; final continuity test uses loop and advancing frame count. Historical results retained."
+  "composition": "Shared CPU image compositor during transitions; normal cuts forward native frames. Hardware decode auto selection and forced CPU modes tested.",
+  "not_validated": [
+    "Physical displays/hotplug",
+    "1080p/4K throughput",
+    "AMD/NVIDIA vendor-specific qualification",
+    "GPU transition composition",
+    "Audio sample/frame synchronization and listening",
+    "HDR/alpha/color accuracy",
+    "Manual OS drag/drop and pointer interactions",
+    "macOS/Linux builds",
+    "Remote operation",
+    "24/72-hour endurance",
+    "Human visual approval"
+  ]
 }

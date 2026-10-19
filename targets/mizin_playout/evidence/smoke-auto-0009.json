@@ -1,0 +1,74 @@
+{
+  "mode": "auto",
+  "result": "PASS",
+  "scope": "Native decoding and timing; not physical output performance",
+  "tests": [
+    {
+      "duration_ms": 3000,
+      "elapsed_ms": 615,
+      "error": "",
+      "frames": 10,
+      "name": "01-h264.mp4",
+      "pass": true,
+      "position_ms": 266
+    },
+    {
+      "duration_ms": 3000,
+      "elapsed_ms": 313,
+      "error": "",
+      "frames": 9,
+      "name": "02-hevc.mp4",
+      "pass": true,
+      "position_ms": 298
+    },
+    {
+      "duration_ms": 3021,
+      "elapsed_ms": 313,
+      "error": "",
+      "frames": 8,
+      "name": "03-h264.mkv",
+      "pass": true,
+      "position_ms": 256
+    },
+    {
+      "duration_ms": 3000,
+      "elapsed_ms": 326,
+      "error": "",
+      "frames": 10,
+      "name": "04-mjpeg.avi",
+      "pass": true,
+      "position_ms": 256
+    },
+    {
+      "duration_ms": 3000,
+      "elapsed_ms": 314,
+      "error": "",
+      "frames": 9,
+      "name": "05-prores.mov",
+      "pass": true,
+      "position_ms": 277
+    },
+    {
+      "distinct_media": true,
+      "duration_ms": 3000,
+      "elapsed_ms": 499,
+      "error": "",
+      "frames": 9,
+      "independent_frames": 9,
+      "mirrored_frames_equal": true,
+      "name": "independent_channels_and_mirror",
+      "pass": true,
+      "position_ms": 298
+    },
+    {
+      "continued_frames": 28,
+      "error_reported": true,
+      "looped_source": true,
+      "name": "invalid_incoming_preserves_program",
+      "pass": true,
+      "program_preserved": true
+    }
+  ],
+  "version": "v0.3.3 (build 0009)",
+  "source_commit": "ee5c2882f78cf3d755de7886d943c98bb3b0daea"
+}

@@ -1,5 +1,7 @@
 # Local project and remote boundary
 
-Schema 1 .mizinshow: JSON with library, playlist and folders string arrays. Save uses QSaveFile for an atomic commit. Open validates JSON, schema and string-array types before replacing the current list. Media originals are referenced, never deleted.
+Schema 2 .mizinshow: JSON with library/folders string arrays and playlist cue objects. Each object has source, in_ms, out_ms (-1 = native end), transition (0 Cut / 1 Dissolve / 2 FadeBlack), transition_ms, enter_ms and exit_ms. The reader validates integer types, ranges and In < Out; the engine validates bounds against native duration. Duplicate source paths are allowed as separate cues. Older schema 1 string playlists migrate to default cue settings on read.
+
+Save uses QSaveFile for an atomic commit. Open parses into a temporary Show and replaces the model only after all entries validate. Originals are referenced, never modified or deleted. Playback modes are session controls; cue settings persist in the show. Each Program retains the snapshot taken at its latest TAKE.
 
 No HTTP/WebSocket/OSC listener is implemented or opened. Remote operator/observer authentication and a command/state protocol are future work; do not represent settings-page roadmap text as a working remote service.

@@ -1,21 +1,17 @@
 # Seu primeiro show
 
-Estado: protótipo de desenvolvimento. O padrão é inglês; Português (Brasil) fica disponível na barra superior.
+1. Adicione arquivos, uma pasta ou arraste mídias locais para a janela.
+2. Dê dois cliques em um item para carregar o Preview sem áudio. Use a barra e Marcar In / Marcar Out, ou digite segundos com milissegundos. Out = Fim da mídia usa o restante do arquivo.
+3. Escolha Corte, Dissolve ou Passagem pelo preto e a duração. Fade de entrada / saída também funcionam com um único clipe. Aplicar item salva o ajuste sem modificar o original.
+4. Escolha Program A ou B e pressione TAKE / Ctrl+Enter. O arquivo precisa fornecer um quadro no In antes de substituir o Program.
+5. Deixe Sequencial desmarcado para Takes manuais: o vídeo para no Out e mantém o último quadro. Com fade de saída, termina em preto. Ative Sequencial para avançar automaticamente; Repetir lista repete a lista, mesmo com um único item. Cada Program tem seu modo. Repetir canal selecionado repete somente o recorte atual no modo manual.
+6. Em Saídas, escolha o Program e a tela. Reutilizar o Program espelha os mesmos quadros; o áudio toca uma vez por Program. Escape fecha a saída.
+7. Salvar show grava um .mizinshow de esquema 2 com os ajustes. Shows antigos de esquema 1 continuam abrindo. Duplicar item reutiliza o mesmo arquivo com recortes independentes.
 
-1. Abra MizinPlayout.exe ou Start Mizin Playout.cmd após compilar.
-2. Use **Adicionar arquivos**, **Adicionar pasta** ou arraste arquivos/pastas locais para a janela. A busca nas pastas ocorre em segundo plano. Os originais permanecem no lugar.
-3. Clique duas vezes em um item para prepará-lo na **Prévia**, com áudio mudo.
-4. Selecione **Programa A** ou **Programa B** como destino.
-5. Use **ENVIAR** ou **Ctrl+Enter**. O novo deck precisa fornecer um quadro antes de substituir o programa atual. Este protótipo faz cortes.
-6. Em **Saídas**, escolha o programa e a tela. Use **Janela de teste** antes de ocupar um projetor e clique em **Abrir saída**.
-7. Escolha o mesmo programa em várias saídas para espelhar o vídeo, ou programas diferentes para conteúdos independentes. O áudio toca uma vez por programa, sem duplicação por espelho.
-8. Pressione **Escape** na janela de saída para fechá-la. **Preto no canal selecionado** limpa um programa.
-9. Use **Salvar show** para criar um .mizinshow. **Abrir show** restaura referências e ordem de reprodução. Mover mídias pode exigir reconstruir as referências neste protótipo.
+## Operação ao vivo
 
-A troca de idioma preserva reprodução e nomes de mídia. As preferências oferecem hardware automático ou CPU; reinicie para aplicar. F1 abre a ajuda nativa.
+Cada TAKE inicia uma cópia da lista atual naquele Program. Edições posteriores entram no próximo TAKE. O modo sequencial prepara um próximo item; se ele não estiver pronto, aguarda no limite. Uma falha na próxima mídia é informada e interrompe o avanço automático. Preview segue independente e sem áudio. Em recortes curtos, fades são limitados à metade do trecho. Um próximo item preparado substitui o fade de saída do item atual na sequência.
 
-MP4/MKV/AVI/MOV são contêineres. A reprodução depende dos codecs e do backend FFmpeg fixado. Não há conversão obrigatória para formatos de navegador. Mídias incompatíveis/corrompidas geram erro; falha na preparação da próxima mídia preserva o programa atual.
+## Idioma e desempenho
 
-## Limites do desenvolvimento
-
-Esta etapa tem dois programas lógicos e três linhas de roteamento. Dissolve/composição, trim, áudio por dispositivo, autosave/relink, agenda, remoto e qualificação de produção são marcos futuros. Janelas de saída não comprovam sincronismo entre conectores físicos ou genlock. Validar o show na máquina e nas telas reais antes do uso operacional.
+Inglês é o padrão; Português (Brasil) pode ser escolhido durante a reprodução. As opções de decodificação automática por hardware e por CPU ficam em Preferências e exigem reinício. O suporte depende de codec, perfil e driver. Cortes encaminham os quadros nativos compartilhados; transições convertem e compõem em CPU, uma vez por Program. Composição em GPU, controle remoto, agendamento e validação de desempenho/sincronismo para produção seguem como próximas etapas. Pranchetas de exemplo não são reprodução real.

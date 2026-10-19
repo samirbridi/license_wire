@@ -11,12 +11,12 @@ Qt's FFmpeg deployment is available as a target-private SDK. GStreamer remains a
 ## Constraints
 
 - Each Program has two native decks. Incoming media is muted during preroll; current Program remains until a video frame or audio-only readiness arrives.
-- Preview is a separate paused/muted channel. Mirroring forwards implicitly shared QVideoFrame objects to QVideoWidget sinks. No QImage conversion/readback is introduced by application code. Backend GPU interop and actual copies still need instrumentation.
+- Preview is a separate paused/muted channel. Mirroring forwards implicitly shared QVideoFrame objects to QVideoWidget sinks. The normal cut path introduces no application QImage conversion. ADR-002 adds CPU image conversion only during transitions. Backend GPU interop and actual copies still need instrumentation.
 - Two independent logical Programs are present. This is a bounded proof, not the final output count.
 - Qt hardware selection is automatic. CPU mode sets QT_FFMPEG_DECODING_HW_DEVICE_TYPES to an empty device list before backend construction. This is a private Qt configuration API: version pinned; retest when upgrading.
 - A GPU decoder logo or utilization number is not displayed without measured evidence. CPU mode means software decoding, not necessarily software presentation.
 - Windows is the first compiled target. Source uses portable Qt APIs; Linux/macOS compatibility is not yet a tested deliverable.
-- Remote, scheduler, dissolve, HDR/alpha composition and per-device audio routing are not implemented in this slice.
+- Remote, scheduler, GPU/HDR/alpha composition and per-device audio routing remain future work. A CPU dissolve/fade reference path, trims and sequential playback were subsequently implemented in ADR-002.
 
 ## Sources
 

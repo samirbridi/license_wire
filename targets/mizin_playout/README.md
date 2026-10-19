@@ -2,16 +2,19 @@
 
 **Native media playback. Independent Programs. Shared outputs.**
 
-Original C++20 desktop application under active development. English is the default language; Português (Brasil) can be selected at runtime. This product is independently implemented from our requirements; it does not reuse Azimuth code or artwork.
+Original C++20 desktop application under active development. English is the default language; Português (Brasil) can be selected at runtime. This product is independently implemented from our requirements; it does not reuse Azimuth, ffplayout or CasparCG implementation code or artwork. See the [reference study](docs/reference-study.md).
 
 ## Current slice
 
 - Native Qt 6.10.2 / FFmpeg playback, without browser video or mandatory conversion.
 - Paused, muted Preview and two independent logical Programs (A/B).
-- Two decks per Program: muted preroll before a cut; preserve current Program if incoming media fails.
+- Two decks per Program: muted preroll at In before TAKE; preserve current Program if incoming media fails.
 - Three route rows: mirror the same Program or select another Program for independent video.
 - Native file/folder import and OS drag/drop; background recursive folder discovery.
-- Running-order selection/reordering, project save/open, loop and black per selected channel.
+- Per-item In/Out with millisecond fields, scrub/Mark In/Mark Out, duplication and reordering.
+- Cut, Dissolve and Fade through black between clips; entry/exit fades for a standalone clip.
+- Manual or sequential playback, repeat order, current-range loop and black per selected Program.
+- Schema-2 show persistence for trim/transition metadata, with schema-1 migration.
 - English and PT-BR catalogs, language switching without rebuilding the playback engine.
 - Native F1 help and [English quick start](docs/quick-start.en.md) / [Início rápido PT-BR](docs/quick-start.pt-BR.md).
 
@@ -48,12 +51,14 @@ scripts/version.py reads actual target Git commits since the recorded source com
 
 ## Estado Atual e Próximos Passos
 
-Windows native build passed. All 14 functional checks passed: five media formats, independent Programs/mirrored frame consumers, and continuity after invalid incoming media, in both automatic and CPU decoding modes. Fixtures are synthetic 640×360/30 fps clips; this is functional validation, not 1080p/4K or physical-output qualification. Four 1600×1000 native boards were reviewed, and the 84-entry English/PT-BR catalogs match. See [validation evidence](evidence/validation.json).
+Windows native **v0.3.3 (build 0009)** passed **50 functional checks**: seven format/channel/continuity checks and eighteen model/compositor/transport checks in each of automatic and CPU decoding modes. The trim test published frames from 500 ms through 1566 ms for a [500, 1600) ms segment. Fixtures are synthetic 640×360/30 fps. Four 1600×1000 native boards were reviewed and all 112 English/PT-BR catalog keys match. See [validation evidence](evidence/validation.json).
 
-The Windows accessibility tree confirmed the default English interface. The external Windows capture tool timed out and pointer geometry was unavailable, so manual OS interaction/drag-drop and physical outputs remain unverified. The boards are exported by the application's native Qt renderer with clearly marked sample content. Human visual approval is pending.
+Each TAKE starts a snapshot of the current running order for that Program. Edits apply on the next TAKE. Manual playback holds at Out (or ends on black with an exit fade). Sequential playback prepares the next item and uses its transition, with an optional repeat order. A next item that is late waits at the boundary; a failed item reports an error and stops advance. Fades are clamped on short segments. Trim is not a destructive file operation; backend seeking and timing have not been qualified as broadcast frame/sample accuracy.
 
-Next: review the native boards, validate physical multi-display behavior and profile GPU/software paths. Then add a measured compositor/dissolve path, per-device audio, persistence recovery and remote control. Scheduling/24-hour operation follows event workflow.
+Automatic hardware decoding and forced CPU decoding remain available. Normal cuts share native frames; transitions currently use a CPU image compositor once per Program and share its result with mirrored outputs. This is a reference composition path. NVIDIA/AMD high-resolution GPU composition, HDR/alpha/color qualification, physical display synchronization and production AV-sync remain open.
 
-Windows is the first validation platform. macOS/Linux builds, remote control, scheduling, dissolve, trim, relink/autosave and production qualification are **not delivered in this slice**. Two logical Programs and three route rows are a bounded first proof; physical capability and final output count require measurement.
+The Windows accessibility tree was verified in the previous milestone. External Windows capture timed out and pointer geometry was unavailable, so manual OS interaction/drag-drop and physical outputs remain unverified. Boards are exported by the native Qt renderer with clearly marked sample content; human visual approval remains pending.
 
-Architecture decision: [ADR-001](notes/ADR-001-native-engine.md). This is a native application; the later web surface is for remote operation only.
+Windows is the first validation platform. macOS/Linux builds, authenticated remote control, scheduling/24-hour operation, per-device audio, relink/autosave and production qualification remain future work. Two logical Programs and three route rows are a bounded first proof.
+
+Architecture decision: [ADR-001](notes/ADR-001-native-engine.md). This is a native application; a later web surface is for remote operation.

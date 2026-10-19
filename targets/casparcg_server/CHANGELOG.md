@@ -1,4 +1,18 @@
-# 📜 CHANGELOG - casparcg_server
+# CHANGELOG — CasparCG Server
+
+## v0.2.0 (build 0002) - 2026-10-19
+
+### 💥 Breaking Changes
+- None.
+
+### ✨ Features
+- feat: documenta referencias ffplayout e CasparCG com origem e hashes (e29a44500d8c949b6a03f01b37d3d682000f0fe0)
+
+### 🐛 Fixes
+- None.
+
+### ⚡ Improvements
+- None.
 
 Todas as descobertas, módulos dissecados e correções desta análise são registrados aqui.
 Formato de versão obrigatório: `vX.Y.Z (build XXXX)`.

@@ -1,0 +1,96 @@
+{
+  "date": "2026-10-19",
+  "version": "v0.2.3 (build 0005)",
+  "source_commit": "832cc95c7343d6f5cf811e04d0bdd41bb189c46a",
+  "milestone_result": "PASS_NATIVE_FUNCTIONAL_PROTOTYPE",
+  "build": "PASS",
+  "native_functional_checks_passed": 14,
+  "fixtures": {
+    "count": 5,
+    "width": 640,
+    "height": 360,
+    "fps": 30,
+    "seconds": 3,
+    "codecs": [
+      "H.264 MP4",
+      "H.265 MP4",
+      "H.264 MKV",
+      "MJPEG AVI",
+      "ProRes MOV"
+    ]
+  },
+  "modes": {
+    "auto": {
+      "result": "PASS",
+      "checks": 7,
+      "continued_frames_on_invalid_incoming": 28
+    },
+    "cpu": {
+      "result": "PASS",
+      "checks": 7,
+      "continued_frames_on_invalid_incoming": 27
+    }
+  },
+  "catalog_keys": 84,
+  "catalog_parity": "PASS",
+  "version_policy_tests": 4,
+  "boards": [
+    {
+      "file": "design/boards/01-show-en.png",
+      "sha256": "3a4e86336c518dd5dfa4f964676f31cea5d42cccedb97947e4ae96e2c70c3dc2",
+      "width": 1600,
+      "height": 1000,
+      "brand_glyph_pixels": 543
+    },
+    {
+      "file": "design/boards/02-outputs-en.png",
+      "sha256": "7a01b99a3a4a10817e1ba583251ffd76f279ec36b6111d0201b2e1c0e5f11ad0",
+      "width": 1600,
+      "height": 1000,
+      "brand_glyph_pixels": 543
+    },
+    {
+      "file": "design/boards/03-library-en.png",
+      "sha256": "900680fe74868ab95a5e1bb64a70139303a8a681d25837f692dcbe91d8b678ad",
+      "width": 1600,
+      "height": 1000,
+      "brand_glyph_pixels": 543
+    },
+    {
+      "file": "design/boards/04-show-pt-BR.png",
+      "sha256": "7109bb1a1c59d030f04141f1aa8e7593ec361a50278f31a4c58ace587f662ae6",
+      "width": 1600,
+      "height": 1000,
+      "brand_glyph_pixels": 543
+    }
+  ],
+  "executable": {
+    "path": "dist/MizinPlayout.exe",
+    "bytes": 227328,
+    "sha256": "e90b511bfab43a3daeb0f2cf4c9c6d2a394ee36b2a1a42e60fd0503b2d6aecc6"
+  },
+  "runtime_package": {
+    "files": 25,
+    "bytes": 56277712,
+    "browser_runtime_included": false
+  },
+  "ui_inspection": {
+    "native_default_language": "English observed through Windows accessibility at build 0003",
+    "layout": "native PNGs exported and visually inspected",
+    "windows_capture_tool": "FrameArrived timed out",
+    "pointer_automation": "coordinate input geometry unavailable",
+    "manual_user_interaction": "not verified",
+    "human_visual_approval": "pending"
+  },
+  "not_qualified": [
+    "physical multi-display routing and synchronization",
+    "1080p/4K performance and A/V sync",
+    "AMD hardware",
+    "macOS and Linux builds",
+    "long-running playback",
+    "dissolve compositing",
+    "remote control",
+    "scheduling"
+  ],
+  "history_note": "Build 0004 verbose diagnostics allowed the finite 3-second fixture to reach EOS in the negative test; final continuity test uses loop and advancing frame count. Historical results retained."
+}

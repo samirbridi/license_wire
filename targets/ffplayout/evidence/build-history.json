@@ -1,0 +1,16 @@
+[
+  {
+    "display": "v0.2.0 (build 0002)",
+    "previous": "v0.1.0 (build 1)",
+    "source_commit": "e29a44500d8c949b6a03f01b37d3d682000f0fe0",
+    "commits": [
+      {
+        "sha": "e29a44500d8c949b6a03f01b37d3d682000f0fe0",
+        "subject": "feat: documenta referencias ffplayout e CasparCG com origem e hashes",
+        "kind": "feat"
+      }
+    ],
+    "date": "2026-10-19",
+    "build_status": "PASS"
+  }
+]

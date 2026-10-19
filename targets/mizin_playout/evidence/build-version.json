@@ -1,11 +1,11 @@
 {
-  "display": "v0.2.3 (build 0005)",
-  "previous": "v0.2.2 (build 0004)",
-  "source_commit": "832cc95c7343d6f5cf811e04d0bdd41bb189c46a",
+  "display": "v0.3.3 (build 0009)",
+  "previous": "v0.3.2 (build 0008)",
+  "source_commit": "ee5c2882f78cf3d755de7886d943c98bb3b0daea",
   "commits": [
     {
-      "sha": "832cc95c7343d6f5cf811e04d0bdd41bb189c46a",
-      "subject": "fix: estabiliza captura de pranchetas e ensaio de continuidade",
+      "sha": "ee5c2882f78cf3d755de7886d943c98bb3b0daea",
+      "subject": "fix: preserva limites no loop e melhora leitura dos controles de playout",
       "kind": "fix"
     }
   ],

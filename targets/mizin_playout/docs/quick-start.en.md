@@ -1,21 +1,17 @@
 # Your first show
 
-Status: development prototype. English is the default; Português (Brasil) is available in the top bar.
+1. Add files, add a folder or drop local media on the window.
+2. Double-click a running-order item to load muted Preview. Scrub the slider, then Mark In / Mark Out, or enter seconds with milliseconds. Out = End of media uses the full remaining file.
+3. Select Cut, Dissolve or Fade through black and its duration. Fade in / Fade out also work for a single clip. Apply cue saves these non-destructive settings.
+4. Choose Program A or B, then TAKE / Ctrl+Enter. The incoming file must produce its frame at In before replacing Program.
+5. Leave Sequential off for manual Takes; playback holds at Out. With Fade out, it ends on black. Enable Sequential to advance automatically; Repeat order repeats the running order, including a single item. Each Program has its own mode. Loop selected channel repeats only its current trimmed range, in manual mode.
+6. Open Outputs to assign Programs to displays. The same Program mirrors the same frames and audio plays once per Program. Escape closes an output window.
+7. Save show writes a schema-2 .mizinshow with all cue settings. Older schema-1 shows can still be opened. Duplicate cue reuses the same file with independent trim settings.
 
-1. Open MizinPlayout.exe or Start Mizin Playout.cmd after building.
-2. Choose **Add files** or **Add folder**, or drop local files/folders on the window. Folder discovery runs in the background. Original files stay in place.
-3. Double-click a running-order item to prepare it in **Preview**, with muted audio.
-4. Select **Program A** or **Program B** in Take destination.
-5. Choose **TAKE** or press **Ctrl+Enter**. The incoming deck must produce a frame before replacing the current Program. This prototype uses cuts.
-6. In **Outputs**, select the source Program and a display. **Floating test window** is useful before using a projector. Choose **Open output**.
-7. Select the same Program for multiple outputs to mirror video, or different Programs for independent content. Audio is emitted once per Program, not once per mirror.
-8. Press **Escape** in an output window to close it. **Black selected channel** clears one Program.
-9. Choose **Save show** to create a .mizinshow file. **Open show** restores its media references and running order. Moving media may require rebuilding references in this prototype.
+## Live operation
 
-The top-bar language switch preserves playback and media names. Preferences stores automatic hardware selection or CPU decoding; restart to apply. F1 opens native help.
+Each TAKE starts a snapshot of the current running order for that Program. Further edits apply on the next TAKE. Sequential mode preloads one next item; an unready next item waits at the boundary. A failed next item reports an error and stops automatic advance. Preview stays independent and muted. Short ranges clamp fades to half the range. In sequential playback, a prepared next cue replaces the current cue's exit fade.
 
-MP4/MKV/AVI/MOV are containers. Playback depends on their actual codecs and the pinned FFmpeg backend. The program does not require conversion to a browser format. Unsupported or damaged media reports an error; current Program is preserved if incoming preparation fails.
+## Language and performance
 
-## Development limits
-
-Two logical Programs and three output-route rows are implemented in this first slice. Dissolve/compositing, trim controls, per-device audio routing, autosave/relink, scheduling, remote control and production qualification remain milestones. Multiple output windows are not evidence of synchronized physical connectors or genlock. Test the show on its actual machine and displays before operational use.
+English is default; Português (Brasil) can be selected during playback. Automatic hardware decoding and CPU decoding are available in Settings after restart. Codec/profile/driver support varies. Cuts forward native shared frames; transitions currently convert and compose frames in CPU, once per Program. GPU composition, remote control, scheduling and production AV-sync/performance validation are future work. Layout samples are demonstrations, not actual playback.

@@ -1,5 +1,61 @@
 # CHANGELOG — Mizin Playout
 
+## v0.3.3 (build 0009) - 2026-10-19
+
+### 💥 Breaking Changes
+- None.
+
+### ✨ Features
+- None.
+
+### 🐛 Fixes
+- fix: preserva limites no loop e melhora leitura dos controles de playout (ee5c2882f78cf3d755de7886d943c98bb3b0daea)
+
+### ⚡ Improvements
+- None.
+
+## v0.3.2 (build 0008) - 2026-10-19
+
+### 💥 Breaking Changes
+- None.
+
+### ✨ Features
+- None.
+
+### 🐛 Fixes
+- fix: aguarda seek nativo antes de preparar recortes de midia (3b10ec301d6bad40425a065e16a7215c6a95c992)
+
+### ⚡ Improvements
+- None.
+
+## v0.3.1 (build 0007) - 2026-10-19
+
+### 💥 Breaking Changes
+- None.
+
+### ✨ Features
+- None.
+
+### 🐛 Fixes
+- fix: recompila objetos nativos ao alterar cabecalhos no MSVC (07aa21e8a61d733169eb96c983e6d2a0f5ecde24)
+
+### ⚡ Improvements
+- None.
+
+## v0.3.0 (build 0006) - 2026-10-19
+
+### 💥 Breaking Changes
+- None.
+
+### ✨ Features
+- feat: adiciona recortes In Out transicoes e sequencia independente ao playout (3add27dc0340ec364a334c7b0db73262940aba6e)
+
+### 🐛 Fixes
+- None.
+
+### ⚡ Improvements
+- improve: registra pranchetas e validacao nativa do Mizin Playout (a541bc79a04a56407b181f411603e96824fc58cf)
+
 ## v0.2.3 (build 0005) - 2026-10-19
 
 ### 💥 Breaking Changes
