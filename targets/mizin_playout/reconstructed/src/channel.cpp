@@ -19,6 +19,7 @@ NativeChannel::NativeChannel(bool preview, QObject* parent) : QObject(parent), p
             auto& deck=decks_[i];
             const qint64 timestamp=frame.startTime()<0 ? deck.player->position() : frame.startTime()/1000;
             if (pending_ && i==incoming_ && (!deck.seekSet || timestamp+2<deck.cue.in)) return;
+            if (i==active_ && timestamp+2<deck.cue.in) return;
             if (i==active_ && deck.cue.end(deck.player->duration())>0 && timestamp>=deck.cue.end(deck.player->duration())) {
                 finishRange(); return;
             }

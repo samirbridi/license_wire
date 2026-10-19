@@ -65,6 +65,16 @@ int runTransportTests(const QString& directory,const QString& resultPath) {
     errors.clear();const auto pathBefore=channel.path();channel.loadCue(Cue{second,500,999999});
     const bool rejected=until([&]{return !errors.isEmpty();});
     record("out_beyond_duration_preserves_program",rejected && channel.path()==pathBefore,{{"error",errors.join("; ")}});
+    order.stop();pump(80);starts=0;timestamps.clear();track=true;channel.setLoop(true);
+    order.start({Cue{source,300,1100}},0);
+    const bool looped=until([&]{return channel.frames()>=55;},9000);
+    bool loopBounds=!timestamps.isEmpty();for(auto t:timestamps)loopBounds &= t>=298 && t<1100;
+    record("manual_loop_repeats_only_trimmed_range",looped && loopBounds && starts==1 && channel.playing(),{{"frames",timestamps.size()}});
+    track=false;channel.setLoop(false);
+    order.stop();pump(80);starts=0;errors.clear();order.setSequential(true);
+    order.start({Cue{source,200,1400},Cue{QDir(directory).absoluteFilePath("missing-next.mp4")}},0);
+    const bool failedNextStopped=until([&]{return channel.ended() && !errors.isEmpty();});
+    record("failed_next_item_stops_sequence",failedNextStopped && starts==1 && channel.path()==source && channel.lastFrame().isValid(),{{"starts",starts}});
     order.stop();pump(80);starts=0;order.setRepeat(true);order.setSequential(true);order.start({Cue{source,300,1100}},0);
     const bool repeats=until([&]{return starts>=3;},12000);
     record("single_item_sequence_repeat",repeats,{{"starts",starts}});
