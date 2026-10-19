@@ -51,3 +51,26 @@ graph TD
 1. **Interseção Vetorial CPU/GPU**: O uso de nós de máscara booleana geométrica (`Mask Arc` com `Pie`) recalcula interseções de polígonos. Quando o palco possui mais de 40 slices, isso causa quedas de frame.
 2. **Falta de Shader SDF**: Não utiliza distância com sinal (Signed Distance Fields), o que impede cantos arredondados contínuos e transições de degradê suave na cauda do feixe.
 3. **Ausência de Reatividade de Áudio Direta**: Depende de parâmetros manuais de velocidade em vez de extração nativa por bandas de frequência (BPM/FFT).
+
+---
+
+## 🚀 Arquitetura Expandida do Nosso Plugin: `SliceOutliner Pro v2`
+
+Em comparação ao design restrito do Easy Outliner (18 nós), o `SliceOutliner Pro v2` utiliza uma pipeline avançada de **306 nós e 58 parâmetros expostos**, com shader de mapeamento UV contínuo e injeção de superpoderes via API REST ao vivo:
+
+### 1. BPM Sync Engine
+- **`Transport Info`** (`77697265-66b1-4c28-a5a9-1f64026d769b`): Extrai o BPM global da composição do Resolume Arena em tempo real.
+- **`Bpm to Frequency`** (`77697265-d6a0-423f-99f8-608fa5e03e97`): Converte o andamento musical em frequência em Hertz.
+- **`BPM Multiplier`**: Multiplicador paramétrico (0.125x a 8x) para divisões rítmicas (semínimas, colcheias, compassos inteiros).
+- **`BPM Switch`**: Alternador suave entre velocidade manual em Hertz e sincronização automática com a batida da música.
+
+### 2. Controle de Sentido e Movimento (Direction Control)
+- **Horário / Direto**: Oscilador dente-de-serra padrão (`Saw Oscillator` `0.0 -> 1.0`).
+- **Anti-horário / Reverso**: Inversor de rampa (`1 - x` `1.0 -> 0.0`) acionado por `Tracer Reverse`.
+- **Ping-Pong (Vai-e-Volta)**: Oscilador triangular unipolar (`Triangle Oscillator` `0.0 <-> 1.0`) acionado por `Tracer Ping-Pong`.
+
+### 3. Traçador Duplo & Choque de Luz (Dual Head Collision)
+- **Modo Twin (180°)**: Adiciona defasagem de 0.5 envolta por `Fract` para criar duas cabeças simétricas que orbitam o perímetro.
+- **Modo Mirror / Choque**: Inverte o sentido da segunda cabeça (`1 - Phase`), fazendo as duas viajarem em sentidos opostos.
+- **Fusão Aditiva de Choque (`Add` + `Clamp`)**: No instante em que as duas cabeças colidem nos cantos dos slices, suas intensidades de brilho somam-se criando um flash duplo explosivo na tela de LED.
+- **`Dual Head Switch`**: Ativação instantânea no painel do Arena com mapeamento direto para botões MIDI.

@@ -33,11 +33,13 @@
 - [x] Análise estática do motor de carregamento no `WireLib.dll` (`0x151310` e `0x153600`)
 - [x] Descoberta do grafo de nós no arquivo `evidence/easy_outliner_nodes.json`
 - [x] Documentação técnica completa em `notes/01_overview.md`, `notes/02_architecture.md`, `notes/03_protocols_apis.md` e `notes/04_crypto_security.md`
-- [x] Blueprint de otimização em `reconstructed/README.md`
+- [x] Construção do bridge REST com a live API do Resolume Wire (`scripts/wire_bridge.py`)
+- [x] Injeção em tempo real de 3 Superpoderes no `SliceOutliner Pro v2` (BPM Sync, Direction Control, Dual Head Collision) elevando de 279 para 306 nós e 58 parâmetros expostos no Resolume Arena
+- [x] Salvamento nativo validado pelo compilador C++ do Resolume Wire
 
 ### Próximos passos prioritários:
-1. Montar a versão expandida no Resolume Wire com o blueprint do `reconstructed/README.md`
-2. Implementar shader de cauda com atenuação suave e reatividade de BPM
+1. Testar o comportamento das 58 variáveis diretamente no Resolume Arena com palco de slices reais
+2. Criar presets de animação pré-configurados (Neon Chase, Techno Strobe, Laser Clash)
 
 ---
 

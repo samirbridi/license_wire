@@ -1,5 +1,10 @@
 ﻿# 📜 CHANGELOG - resolume_easy_outliner
 
+## v0.3.0 (build 3) - 2026-10-19
+
+### âœ¨ Features
+- feat: Injeta superpoderes BPM Sync, Direction Control e Dual Head Collision no SliceOutliner Pro v2 via Live Wire REST API
+
 ## v0.2.0 (build 2) - 2026-10-19
 
 ### âœ¨ Features
@@ -17,5 +22,6 @@ Formato de versão obrigatório: `vX.Y.Z (build XXXX)`.
 
 ### ⚡ Improvements
 - improve: cria estrutura padronizada de diretórios (binaries, evidence, ghidra, notes, scripts, reconstructed)
+
 
 

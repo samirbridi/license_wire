@@ -29,8 +29,10 @@ ghidra_*.log
 *.bak
 *.swp
 
-# Node / Dependencies
+# Node & Python Dependencies / Caches
 node_modules/
+__pycache__/
+*.pyc
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
