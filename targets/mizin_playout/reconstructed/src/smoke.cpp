@@ -44,16 +44,18 @@ int runSmoke(const QString& directory, const QString& resultPath) {
         if (current < files.size()) channel.load(QDir(directory).absoluteFilePath(files[current]));
         else if (files.size() >= 2 && !phaseIndependent) {
             phaseIndependent = true;
+            channel.setLoop(true); independent.setLoop(true);
             channel.load(QDir(directory).absoluteFilePath(files[0]));
             independent.load(QDir(directory).absoluteFilePath(files[1]));
         } else if(phaseIndependent) {
             timer.stop();
             const QString previousPath=channel.path();
+            const int previousFrames=channel.frames();
             const bool created=invalid.open();
             if(created){invalid.write("Deliberately invalid synthetic media");invalid.close();channel.load(invalid.fileName());}
-            QTimer::singleShot(900,&channel,[&,previousPath,created]{
-                const bool preserved=created&&!error.isEmpty()&&channel.path()==previousPath&&channel.playing()&&channel.position()>250;
-                tests.append(QJsonObject{{"name","invalid_incoming_preserves_program"},{"pass",preserved},{"error_reported",!error.isEmpty()},{"program_preserved",channel.path()==previousPath}});
+            QTimer::singleShot(900,&channel,[&,previousPath,previousFrames,created]{
+                const bool preserved=created&&!error.isEmpty()&&channel.path()==previousPath&&channel.playing()&&channel.frames()>previousFrames;
+                tests.append(QJsonObject{{"name","invalid_incoming_preserves_program"},{"pass",preserved},{"error_reported",!error.isEmpty()},{"program_preserved",channel.path()==previousPath},{"continued_frames",channel.frames()-previousFrames},{"looped_source",true}});
                 hadFailure|=!preserved;finish();
             });
         } else finish();

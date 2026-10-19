@@ -234,7 +234,8 @@ int main(int argc,char** argv){
     parser.addHelpOption();
     parser.addOption(QCommandLineOption(QStringLiteral("board"),QStringLiteral("Show sample content for layout review")));
     parser.addOption(QCommandLineOption(QStringLiteral("lang"),QStringLiteral("UI language"),QStringLiteral("locale")));
-    parser.addOption(QCommandLineOption(QStringLiteral("capture-dir"),QStringLiteral("Export native layout boards and exit"),QStringLiteral("directory")));
+    parser.addOption(QCommandLineOption(QStringLiteral("capture-dir"),QStringLiteral("Export one native layout board and exit"),QStringLiteral("directory")));
+    parser.addOption(QCommandLineOption(QStringLiteral("capture-page"),QStringLiteral("Layout page: 0 show, 1 library, 2 outputs"),QStringLiteral("page"),QStringLiteral("0")));
     parser.addOption(QCommandLineOption(QStringLiteral("state-dir"),QStringLiteral("Portable settings directory"),QStringLiteral("directory")));
     parser.addOption(QCommandLineOption(QStringLiteral("cpu"),QStringLiteral("Force software decoding")));
     parser.addOption(QCommandLineOption(QStringLiteral("smoke-test"),QStringLiteral("Decode fixture suite and exit")));
@@ -248,7 +249,10 @@ int main(int argc,char** argv){
     MainWindow window(parser.isSet("board"),parser.value("lang"),state);window.show();window.importExternal(parser.positionalArguments());
     if(parser.isSet("capture-dir")){
         const QString dir=parser.value("capture-dir");QDir().mkpath(dir);
-        QTimer::singleShot(900,&window,[&window,dir]{window.selectPage(0);window.capture(dir+"/01-show-en.png");window.selectPage(2);QTimer::singleShot(180,&window,[&window,dir]{window.capture(dir+"/02-outputs-en.png");window.selectPage(1);QTimer::singleShot(180,&window,[&window,dir]{window.capture(dir+"/03-library-en.png");window.setLanguage("pt-BR");window.selectPage(0);QTimer::singleShot(180,&window,[&window,dir]{window.capture(dir+"/04-show-pt-BR.png");QCoreApplication::quit();});});});});
+        const int page=qBound(0,parser.value("capture-page").toInt(),2);window.selectPage(page);
+        const bool portuguese=parser.value("lang")=="pt-BR";
+        const QString name=page==2?"02-outputs-en.png":page==1?"03-library-en.png":portuguese?"04-show-pt-BR.png":"01-show-en.png";
+        QTimer::singleShot(900,&window,[&window,dir,name]{window.capture(dir+"/"+name);QCoreApplication::quit();});
     }
     return app.exec();
 }
