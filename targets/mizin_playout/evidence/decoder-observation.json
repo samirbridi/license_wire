@@ -1,0 +1,7 @@
+{
+  "observed_in_build": "0004",
+  "backend": "Qt Multimedia FFmpeg 7.1.2 LGPL 2.1 or later",
+  "d3d11_format_selected_count": 5,
+  "scope": "Hardware-frame selection observed, not a vendor-specific performance qualification",
+  "raw_log": "runtime-final-auto.log"
+}

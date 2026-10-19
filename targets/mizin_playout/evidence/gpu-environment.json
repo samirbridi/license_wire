@@ -1,0 +1,14 @@
+[
+  {
+    "Name": "Parsec Virtual Display Adapter",
+    "DriverVersion": "0.45.0.0"
+  },
+  {
+    "Name": "Intel(R) UHD Graphics 630",
+    "DriverVersion": "30.0.101.1660"
+  },
+  {
+    "Name": "NVIDIA GeForce GTX 1660 Ti",
+    "DriverVersion": "32.0.15.9174"
+  }
+]

@@ -1,0 +1,58 @@
+[
+  {
+    "display": "v0.2.0 (build 0002)",
+    "previous": "v0.1.0 (build 1)",
+    "source_commit": "05bd2d73679dd6cb009e9ca2a66a6afd41e0795d",
+    "commits": [
+      {
+        "sha": "05bd2d73679dd6cb009e9ca2a66a6afd41e0795d",
+        "subject": "feat: inicia Mizin Playout nativo com programas independentes e idiomas EN e PT-BR",
+        "kind": "feat"
+      }
+    ],
+    "date": "2026-10-19",
+    "build_status": "FAIL"
+  },
+  {
+    "display": "v0.2.1 (build 0003)",
+    "previous": "v0.2.0 (build 0002)",
+    "source_commit": "c7267d80e543c0c512a75397a5e65c8b51f17000",
+    "commits": [
+      {
+        "sha": "c7267d80e543c0c512a75397a5e65c8b51f17000",
+        "subject": "fix: corrige construcao das opcoes de linha de comando do playout",
+        "kind": "fix"
+      }
+    ],
+    "date": "2026-10-19",
+    "build_status": "PASS"
+  },
+  {
+    "display": "v0.2.2 (build 0004)",
+    "previous": "v0.2.1 (build 0003)",
+    "source_commit": "d12883dc45af7baa2bd2ef109a667690ec8aa779",
+    "commits": [
+      {
+        "sha": "d12883dc45af7baa2bd2ef109a667690ec8aa779",
+        "subject": "fix: completa capturas nativas e valida falha da midia de entrada",
+        "kind": "fix"
+      }
+    ],
+    "date": "2026-10-19",
+    "build_status": "PASS"
+  },
+  {
+    "display": "v0.2.3 (build 0005)",
+    "previous": "v0.2.2 (build 0004)",
+    "source_commit": "832cc95c7343d6f5cf811e04d0bdd41bb189c46a",
+    "commits": [
+      {
+        "sha": "832cc95c7343d6f5cf811e04d0bdd41bb189c46a",
+        "subject": "fix: estabiliza captura de pranchetas e ensaio de continuidade",
+        "kind": "fix"
+      }
+    ],
+    "date": "2026-10-19",
+    "build_status": "PASS"
+  }
+]

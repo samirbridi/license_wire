@@ -1,0 +1,130 @@
+[
+  {
+    "name": "01-h264.mp4",
+    "sha256": "2ae852d3eb029e42bef5b13aa9d9d9657f5884c8b7daf44f46da1d741dddc81f",
+    "probe": {
+      "programs": [],
+      "stream_groups": [],
+      "streams": [
+        {
+          "codec_name": "h264",
+          "profile": "Constrained Baseline",
+          "codec_type": "video",
+          "width": 640,
+          "height": 360,
+          "pix_fmt": "yuv420p"
+        },
+        {
+          "codec_name": "aac",
+          "profile": "LC",
+          "codec_type": "audio"
+        }
+      ],
+      "format": {
+        "duration": "3.000000"
+      }
+    }
+  },
+  {
+    "name": "02-hevc.mp4",
+    "sha256": "852d3c11953caafcbf5edcaf95a2bc33d2a7ee06f15a35e7f6f69023be6d3efc",
+    "probe": {
+      "programs": [],
+      "stream_groups": [],
+      "streams": [
+        {
+          "codec_name": "hevc",
+          "profile": "Main",
+          "codec_type": "video",
+          "width": 640,
+          "height": 360,
+          "pix_fmt": "yuv420p"
+        },
+        {
+          "codec_name": "aac",
+          "profile": "LC",
+          "codec_type": "audio"
+        }
+      ],
+      "format": {
+        "duration": "3.000000"
+      }
+    }
+  },
+  {
+    "name": "03-h264.mkv",
+    "sha256": "34a8e75533571cebd041a36abb53aaef6c4065c5b9734924c25689b554f4e545",
+    "probe": {
+      "programs": [],
+      "stream_groups": [],
+      "streams": [
+        {
+          "codec_name": "h264",
+          "profile": "Constrained Baseline",
+          "codec_type": "video",
+          "width": 640,
+          "height": 360,
+          "pix_fmt": "yuv420p"
+        },
+        {
+          "codec_name": "aac",
+          "profile": "LC",
+          "codec_type": "audio"
+        }
+      ],
+      "format": {
+        "duration": "3.021000"
+      }
+    }
+  },
+  {
+    "name": "04-mjpeg.avi",
+    "sha256": "67047463b54c7b250874a9c5f2ceccf7368e29c16e3ba5ef48a7b53100bf5cd0",
+    "probe": {
+      "programs": [],
+      "stream_groups": [],
+      "streams": [
+        {
+          "codec_name": "mjpeg",
+          "profile": "Baseline",
+          "codec_type": "video",
+          "width": 640,
+          "height": 360,
+          "pix_fmt": "yuvj420p"
+        },
+        {
+          "codec_name": "pcm_s16le",
+          "codec_type": "audio"
+        }
+      ],
+      "format": {
+        "duration": "3.000000"
+      }
+    }
+  },
+  {
+    "name": "05-prores.mov",
+    "sha256": "6cc4b3f2d5bdca282ea5a5081ca31c3dd62fb096164c9dc0d4557a5fa77551d2",
+    "probe": {
+      "programs": [],
+      "stream_groups": [],
+      "streams": [
+        {
+          "codec_name": "prores",
+          "profile": "Standard",
+          "codec_type": "video",
+          "width": 640,
+          "height": 360,
+          "pix_fmt": "yuv422p10le"
+        },
+        {
+          "codec_name": "pcm_s16le",
+          "codec_type": "audio"
+        }
+      ],
+      "format": {
+        "duration": "3.000000"
+      }
+    }
+  }
+]

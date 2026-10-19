@@ -48,7 +48,9 @@ scripts/version.py reads actual target Git commits since the recorded source com
 
 ## Estado Atual e Próximos Passos
 
-Initial implementation written; build, media smoke tests and board inspection are the active validation steps. Consult evidence/validation.json for the final verified state of this milestone.
+Windows native build passed. All 14 functional checks passed: five media formats, independent Programs/mirrored frame consumers, and continuity after invalid incoming media, in both automatic and CPU decoding modes. Fixtures are synthetic 640×360/30 fps clips; this is functional validation, not 1080p/4K or physical-output qualification. Four 1600×1000 native boards were reviewed, and the 84-entry English/PT-BR catalogs match. See [validation evidence](evidence/validation.json).
+
+The Windows accessibility tree confirmed the default English interface. The external Windows capture tool timed out and pointer geometry was unavailable, so manual OS interaction/drag-drop and physical outputs remain unverified. The boards are exported by the application's native Qt renderer with clearly marked sample content. Human visual approval is pending.
 
 Next: review the native boards, validate physical multi-display behavior and profile GPU/software paths. Then add a measured compositor/dissolve path, per-device audio, persistence recovery and remote control. Scheduling/24-hour operation follows event workflow.
 

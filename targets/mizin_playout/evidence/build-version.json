@@ -1,0 +1,14 @@
+{
+  "display": "v0.2.3 (build 0005)",
+  "previous": "v0.2.2 (build 0004)",
+  "source_commit": "832cc95c7343d6f5cf811e04d0bdd41bb189c46a",
+  "commits": [
+    {
+      "sha": "832cc95c7343d6f5cf811e04d0bdd41bb189c46a",
+      "subject": "fix: estabiliza captura de pranchetas e ensaio de continuidade",
+      "kind": "fix"
+    }
+  ],
+  "date": "2026-10-19",
+  "build_status": "PASS"
+}
