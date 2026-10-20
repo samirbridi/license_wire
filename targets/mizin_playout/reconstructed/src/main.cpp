@@ -125,7 +125,7 @@ public:
         contentLayout->addLayout(top);contentLayout->addWidget(pages_,1);
         footer_=new QLabel;footer_->setObjectName("footer");contentLayout->addWidget(footer_);
         outer->addWidget(rail);outer->addWidget(content,1);setCentralWidget(shell);
-        pages_->addWidget(mainPage());pages_->addWidget(editorPage());pages_->addWidget(libraryPage());pages_->addWidget(outputsPage());pages_->addWidget(audioPage());pages_->addWidget(settingsPage());
+        pages_->addWidget(mainPage());pages_->addWidget(scrollPage(editorPage()));pages_->addWidget(scrollPage(libraryPage()));pages_->addWidget(scrollPage(outputsPage()));pages_->addWidget(scrollPage(audioPage()));pages_->addWidget(scrollPage(settingsPage()));
         refreshScreens();
         auto watchScreen=[this](QScreen* screen){connect(screen,&QScreen::geometryChanged,this,[this]{refreshScreens();});connect(screen,&QScreen::logicalDotsPerInchChanged,this,[this]{refreshScreens();});};
         for(auto* screen:QGuiApplication::screens())watchScreen(screen);
@@ -223,6 +223,7 @@ private:
     void readDictionary(){QFile f(":/i18n/"+(language_=="pt-BR"?QString("pt-BR"):QString("en"))+".json");if(f.open(QIODevice::ReadOnly))dictionary_=QJsonDocument::fromJson(f.readAll()).object();}
     QLabel* label(const QString& key,const QString& style={}){auto* l=new QLabel(tx(key));if(!style.isEmpty())l->setObjectName(style);bindings_.append({l,key});return l;}
     QPushButton* button(const QString& key,const QString& style={}){auto* b=new QPushButton(tx(key));b->setMinimumHeight(34);if(!style.isEmpty())b->setObjectName(style);bindings_.append({b,key});return b;}
+    QWidget* scrollPage(QWidget* page){auto* area=new QScrollArea;area->setWidgetResizable(true);area->setFrameShape(QFrame::NoFrame);area->setWidget(page);return area;}
     QWidget* monitor(NativeChannel* channel,int sample){
         if(demo_)return new DeskMonitor(new SamplePicture(sample));
         auto* video=new QVideoWidget;video->setMinimumSize(0,0);video->setAspectRatioMode(Qt::KeepAspectRatio);connect(channel,&NativeChannel::frameReady,video,[video](const QVideoFrame& f){video->videoSink()->setVideoFrame(f);});return new DeskMonitor(video);
@@ -300,7 +301,7 @@ private:
         const std::array<NativeChannel*,3> channels{&preview_,&programA_,&programB_};
         for(int i=0;i<3;++i){auto* c=channels[i];if(deckState_[i])deckState_[i]->setText(tx(i==0?"Muted":demo_?"Sample":c->pending()?"Preparing":c->path().isEmpty()?"Empty":c->playing()?"Playing":"Paused"));
             if(deckPlay_[i])deckPlay_[i]->setIcon(deskIcon(!demo_&&c->playing()?DeskIcon::Pause:DeskIcon::Play));
-            if(deckProgress_[i])deckProgress_[i]->setValue(demo_?(i==1?560:i==2?120:0):c->duration()>0?int(qBound<qint64>(0,1000*c->position()/c->duration(),1000)):0);
+            if(deckProgress_[i])deckProgress_[i]->setValue(demo_?(i==1?560:i==2?120:0):c->duration()>0?int(qBound<qint64>(qint64{0},1000*c->position()/c->duration(),qint64{1000})):0);
         }
         for(int i=0;i<3;++i){if(!routeSummary_[i]||i>=sourceBoxes_.size())continue;const bool open=routeWindows_[i]&&routeWindows_[i]->isVisible();const int source=open?routePrograms_[i]:sourceBoxes_[i]->currentIndex();
             routeSummary_[i]->setText(QString("%1 → %2\n%3").arg(i+1,2,10,QChar('0')).arg(source==0?"A":"B",tx(open?"Open":"Closed")));

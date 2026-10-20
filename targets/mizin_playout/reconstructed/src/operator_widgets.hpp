@@ -45,7 +45,7 @@ class DeskMonitor final : public QWidget {
     QWidget* image_;
 public:
     explicit DeskMonitor(QWidget* image):image_(image) {
-        image_->setParent(this);setMinimumSize(120,100);setSizePolicy(QSizePolicy::Expanding,QSizePolicy::Expanding);
+        image_->setParent(this);setMinimumSize(120,80);setSizePolicy(QSizePolicy::Expanding,QSizePolicy::Expanding);
         setAutoFillBackground(true);auto colors=palette();colors.setColor(QPalette::Window,Qt::black);setPalette(colors);
     }
 protected:
