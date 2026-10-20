@@ -118,7 +118,7 @@ public:
         nav->addStretch();auto* help=button("Quick start  ·  F1");nav->addWidget(help);connect(help,&QPushButton::clicked,this,[this]{helpDialog();});
         nav->addWidget(label(demo_ ? "DESIGN PREVIEW" : "DEVELOPMENT", "eyebrow"));
         auto* content = new QWidget;auto* contentLayout = new QVBoxLayout(content);contentLayout->setContentsMargins(18,16,18,10);contentLayout->setSpacing(12);
-        auto* top = new QHBoxLayout;showTitle_=new QLabel;showTitle_->setObjectName("heading");top->addWidget(showTitle_);top->addStretch();
+        auto* top = new QHBoxLayout;showTitle_=new ElidedLabel;showTitle_->setObjectName("heading");top->addWidget(showTitle_,1);
         languageBox_=new QComboBox;languageBox_->addItem("English","en");languageBox_->addItem("Português (Brasil)","pt-BR");languageBox_->setCurrentIndex(language_=="pt-BR"?1:0);top->addWidget(languageBox_);
         auto* open=button("Open show");open->setIcon(deskIcon(DeskIcon::Folder));top->addWidget(open);connect(open,&QPushButton::clicked,this,[this]{openProject();});
         auto* save=button("Save show");save->setIcon(deskIcon(DeskIcon::Save));top->addWidget(save);connect(save,&QPushButton::clicked,this,[this]{saveProject(false);});
@@ -277,7 +277,7 @@ private:
         connect(sequentialBox_,&QCheckBox::toggled,this,[this](bool value){targetController()->setSequential(value);if(value)loopBox_->setChecked(false);loopBox_->setEnabled(!value);repeatBox_->setEnabled(value);refreshDashboard();});
         connect(repeatBox_,&QCheckBox::toggled,this,[this](bool value){targetController()->setRepeat(value);});
         connect(targetBox_,&QComboBox::currentIndexChanged,this,[this]{QSignalBlocker a(sequentialBox_),b(repeatBox_);sequentialBox_->setChecked(targetController()->sequential());repeatBox_->setChecked(targetController()->repeat());repeatBox_->setEnabled(targetController()->sequential());loopBox_->setEnabled(!targetController()->sequential());refreshDashboard();});repeatBox_->setEnabled(false);
-        playlistTable_=makeTable();playlistTable_->setObjectName("runningOrder");playlistTable_->setMinimumHeight(150);playlistTable_->setColumnWidth(2,190);playlistTable_->setColumnWidth(3,150);playlistTable_->setItemDelegateForColumn(1,new MediaDelegate(playlistTable_));orderLayout->addWidget(playlistTable_,1);
+        playlistTable_=makeTable();playlistTable_->setObjectName("runningOrder");playlistTable_->setMinimumHeight(150);playlistTable_->verticalHeader()->setDefaultSectionSize(38);playlistTable_->setColumnWidth(2,190);playlistTable_->setColumnWidth(3,150);playlistTable_->setItemDelegateForColumn(1,new MediaDelegate(playlistTable_));orderLayout->addWidget(playlistTable_,1);
         connect(playlistTable_,&QTableWidget::itemSelectionChanged,this,[this]{syncEditor(playlistTable_->currentRow());});connect(playlistTable_,&QTableWidget::cellDoubleClicked,this,[this](int row,int){cueRow(row);});
         auto* bottom=new QHBoxLayout;auto* cue=button("Cue selected");bottom->addWidget(cue);connect(cue,&QPushButton::clicked,this,[this]{cueRow(playlistTable_->currentRow());});
         auto* edit=button("Edit cue");edit->setIcon(deskIcon(DeskIcon::Edit));bottom->addWidget(edit);connect(edit,&QPushButton::clicked,this,[this]{editSelected();});bottom->addStretch();
@@ -295,6 +295,7 @@ private:
         return strip;
     }
     void refreshDashboard(){
+        for(auto* name:{previewName_,programName_,secondaryName_}){name->setToolTip(name->text());name->setAccessibleName(name->text());}
         if(!targetA_||!manualMode_||!playlistTable_)return;
         targetA_->setChecked(targetBox_->currentIndex()==0);targetB_->setChecked(targetBox_->currentIndex()==1);
         manualMode_->setChecked(!targetController()->sequential());sequentialMode_->setChecked(targetController()->sequential());
