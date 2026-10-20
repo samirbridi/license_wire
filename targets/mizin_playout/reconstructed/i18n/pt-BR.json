@@ -192,5 +192,6 @@
   "Audio device unavailable; local output muted": "Dispositivo de áudio indisponível; saída local silenciada",
   "Unsupported decoded audio format; network audio requires stereo float 48 kHz": "Formato de áudio decodificado incompatível; a rede requer estéreo float de 48 kHz",
   "HDR network output requires tone mapping; sending black": "A saída HDR em rede requer conversão de tons; transmitindo preto",
-  "Network frame exceeds tested pixel budget; sending black": "O quadro excede o limite de pixels testado na rede; transmitindo preto"
+  "Network frame exceeds tested pixel budget; sending black": "O quadro excede o limite de pixels testado na rede; transmitindo preto",
+  "OMT video codec unavailable. Reinstall the OMT libraries.": "Codec de vídeo OMT indisponível. Reinstale as bibliotecas OMT."
 }

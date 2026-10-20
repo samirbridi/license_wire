@@ -23,7 +23,7 @@ bool NetworkSender::start(NetworkProtocol protocol,const QString& name,qint64 or
         impl_->omtSender=impl_->omt->send_create(utf.constData(),OMTQuality_High);if(!impl_->omtSender){error_="Could not create OMT sender";impl_.reset();return false;}
         char address[2048]={};impl_->omt->send_getaddress(impl_->omtSender,address,sizeof(address));address_=QString::fromUtf8(address);
     }
-    QImage black(1280,720,QImage::Format_ARGB32);black.fill(Qt::black);latest_=black;fps_=30;videoTimestamp_=origin;newVideo_=true;clockOrigin_=origin+initializing.nsecsElapsed()/1000;stopping_=false;running_=true;worker_=std::thread(&NetworkSender::work,this);return true;
+    QImage black(1280,720,QImage::Format_ARGB32);black.fill(Qt::black);latest_=black;fps_=30;videoTimestamp_=origin;newVideo_=true;clockOrigin_=origin+initializing.nsecsElapsed()/1000;senderClock_.start();stopping_=false;running_=true;worker_=std::thread(&NetworkSender::work,this);return true;
 }
 void NetworkSender::stop(){stopping_=true;wake_.notify_all();if(worker_.joinable())worker_.join();running_=false;
     if(impl_){if(impl_->ndiSender)impl_->ndi->send_destroy(impl_->ndiSender);if(impl_->omtSender)impl_->omt->send_destroy(impl_->omtSender);impl_.reset();}
@@ -36,10 +36,10 @@ void NetworkSender::audio(const AudioPacket& packet){if(!running_ || !audioEnabl
 void NetworkSender::reset(){std::lock_guard lock(mutex_);audio_.clear();}
 QJsonObject NetworkSender::statistics()const{return {{"running",bool(running_)},{"connections",int(connections_)},{"video_frames",int(videos_)},{"audio_packets",int(audios_)},{"superseded_video",int(droppedVideo_)},{"dropped_audio",int(droppedAudio_)},{"source",address()},{"error",error()}};}
 void NetworkSender::work(){
-    QElapsedTimer timer;timer.start();qint64 sentVideoAt=-1000000,lastPts=-1;
+    qint64 sentVideoAt=-1000000,lastPts=-1;
     while(!stopping_){
         QImage video;AudioPacket audioPacket;qreal fps=30;qint64 pts=0;bool sendVideo=false,sendAudio=false;
-        const qint64 now=clockOrigin_+timer.nsecsElapsed()/1000;
+        const qint64 now=clockOrigin_+senderClock_.nsecsElapsed()/1000;
         {std::unique_lock lock(mutex_);wake_.wait_for(lock,std::chrono::milliseconds(2));if(stopping_)break;
             if(!audio_.empty()){audioPacket=std::move(audio_.front());audio_.pop_front();sendAudio=audioEnabled_;}
             while(!videoQueue_.empty() && videoQueue_.front().time+40000<=now){if(newVideo_)++droppedVideo_;auto v=std::move(videoQueue_.front());videoQueue_.pop_front();latest_=v.image;videoTimestamp_=v.time;fps_=v.fps;newVideo_=true;}

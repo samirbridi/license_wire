@@ -46,6 +46,7 @@ int runNetworkTests(const QString& directory,const QString& resultPath){
     bool monotonic=true;for(int i=1;i<times.size();++i)monotonic&=times[i]>times[i-1];record("program_audio_timestamps_stay_monotonic",monotonic);
     NetworkSender missing;qputenv("MIZIN_DISABLE_NETWORK_RUNTIME","1");record("missing_runtime_fails_without_stopping_program",!missing.start(NetworkProtocol::Ndi,"QA",0) && channel.playing());qunsetenv("MIZIN_DISABLE_NETWORK_RUNTIME");
     record("empty_source_name_is_rejected",!missing.start(NetworkProtocol::Omt," ",0));
+    const auto previousOmt=qgetenv("MIZIN_OMT_RUNTIME");qputenv("MIZIN_OMT_RUNTIME",(QCoreApplication::applicationDirPath()+"/missing-codec/libomt.dll").toUtf8());{OmtApi absent;record("missing_omt_codec_is_reported_before_sender_creation",!absent.ready && absent.error.contains("codec") && channel.playing());}if(previousOmt.isEmpty())qunsetenv("MIZIN_OMT_RUNTIME");else qputenv("MIZIN_OMT_RUNTIME",previousOmt);
     auto ndi=ndiApi();auto omt=omtApi();record("installed_ndi_runtime_loaded",ndi->ready,{{"path",ndi->path},{"version",ndi->versionText},{"error",ndi->error}});record("packaged_omt_runtime_loaded",omt->ready,{{"path",omt->path},{"error",omt->error}});
     NetworkBus bus(&channel),busB(&other);record("network_senders_are_off_by_default",!bus.sender(NetworkProtocol::Ndi).running() && !bus.sender(NetworkProtocol::Omt).running());
     const QString token=QString::number(QCoreApplication::applicationPid());

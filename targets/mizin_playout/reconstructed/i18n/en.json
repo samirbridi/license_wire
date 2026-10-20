@@ -192,5 +192,6 @@
   "Audio device unavailable; local output muted": "Audio device unavailable; local output muted",
   "Unsupported decoded audio format; network audio requires stereo float 48 kHz": "Unsupported decoded audio format; network audio requires stereo float 48 kHz",
   "HDR network output requires tone mapping; sending black": "HDR network output requires tone mapping; sending black",
-  "Network frame exceeds tested pixel budget; sending black": "Network frame exceeds tested pixel budget; sending black"
+  "Network frame exceeds tested pixel budget; sending black": "Network frame exceeds tested pixel budget; sending black",
+  "OMT video codec unavailable. Reinstall the OMT libraries.": "OMT video codec unavailable. Reinstall the OMT libraries."
 }

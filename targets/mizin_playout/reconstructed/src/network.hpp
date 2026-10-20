@@ -40,6 +40,7 @@ private:
     std::atomic<int> videos_{0},audios_{0},droppedAudio_{0},droppedVideo_{0},connections_{0};
     bool newVideo_=false;
     qint64 clockOrigin_=0;
+    QElapsedTimer senderClock_;
     void work();
 };
 
