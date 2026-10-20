@@ -57,7 +57,7 @@
     void rebuildSelectedDeck(){
         // The meter follows the edit/TAKE destination; the multiview always shows every Program.
         while(auto* item=secondaryMeterLayout_->takeAt(0)){delete item->widget();delete item;}mainMeters_[1]=nullptr;
-        if(selectedProgram_>0){secondaryMeterLayout_->addWidget(label(programDefinitions_[selectedProgram_].name,"meterTitle"));mainMeters_[1]=new StereoMeter(targetChannel(),demo_);secondaryMeterLayout_->addWidget(mainMeters_[1]);}
+        if(selectedProgram_>0){secondaryMeterLayout_->addWidget(label(programDefinitions_[selectedProgram_].name,"meterTitle"));mainMeters_[1]=new StereoMeter(targetChannel(),demo_);mainMeters_[1]->setMinimumWidth(80);secondaryMeterLayout_->addWidget(mainMeters_[1],1);}
         secondaryMeter_->setVisible(selectedProgram_>0);rebuildMultiview();
     }
     bool addRouteForProgram(int index){
