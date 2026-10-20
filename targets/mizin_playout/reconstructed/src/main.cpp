@@ -68,6 +68,12 @@ class MainWindow final : public QMainWindow {
     QString editorStatusKey_="Select a cue to edit.";
     QPushButton *cutButton_=nullptr,*fadeButton_=nullptr;
     QPushButton *targetA_=nullptr,*targetB_=nullptr,*manualMode_=nullptr,*sequentialMode_=nullptr;
+    int programCount_=1,displayCount_=1;
+    QFrame* secondaryDeck_=nullptr;
+    QWidget* secondaryMeter_=nullptr;
+    QPushButton *addProgram_=nullptr,*toggleProgram_=nullptr,*addDisplay_=nullptr,*removeDisplay_=nullptr;
+    QLabel* outputConfigurationLabel_=nullptr;
+    std::array<QWidget*,3> routePanels_{};
     std::array<QPushButton*,3> deckPlay_{};
     std::array<QLabel*,3> deckState_{};
     std::array<QProgressBar*,3> deckProgress_{};
@@ -151,12 +157,13 @@ public:
         auto* saveKey=new QShortcut(QKeySequence::Save,this);connect(saveKey,&QShortcut::activated,this,[this]{saveProject(false);});
         auto* ticker=new QTimer(this);connect(ticker,&QTimer::timeout,this,[this]{refreshTransport();});ticker->start(200);
         if(demo_) { for(const auto& s : {"01 - Doors open.mp4","02 - Opening film.mov","03 - Speaker intro.mkv","04 - Sponsor loop.avi","05 - Closing credits.mov"}) {library_<<s;playlist_<<Cue{QString(s),0,150000,Transition::Dissolve,600,400,600};} folders_<<"Show media"<<"Sponsor assets"; }
-        retranslate();
+        refreshOutputConfiguration();retranslate();
         if(demo_){playlistTable_->selectRow(2);syncEditor(2);}
     }
     void selectPage(int page){pages_->setCurrentIndex(page);if(navigation_->button(page))navigation_->button(page)->setChecked(true);}
     void selectDigital(){selectPage(3);outputsTabs_->setCurrentIndex(1);}
     void selectDiagnostics(){selectPage(5);settingsTabs_->setCurrentIndex(1);}
+    void configureBoardOutputs(){if(demo_)applyOutputConfiguration(OutputConfiguration{2,3,{0,0,1}},false);}
     void setLanguage(const QString& lang){languageBox_->setCurrentIndex(lang=="pt-BR"?1:0);}
     void capture(const QString& path){
         retranslate();
@@ -172,6 +179,22 @@ public:
         auto wait=[&](const std::function<bool()>& predicate,int limit=8000){QElapsedTimer clock;clock.start();while(!predicate()&&clock.elapsed()<limit){QCoreApplication::processEvents(QEventLoop::AllEvents,10);QThread::msleep(2);}QCoreApplication::processEvents();return predicate();};
         auto pump=[&](int ms){QElapsedTimer clock;clock.start();wait([&]{return clock.elapsed()>=ms;},ms+1000);};
         pump(100);
+        record("fresh_launch_has_one_program_and_one_display",programCount_==1&&displayCount_==1&&targetBox_->count()==1&&sourceBoxes_[0]->count()==1&&secondaryDeck_->isHidden()&&secondaryMeter_->isHidden()&&targetB_->isHidden()&&routePanels_[1]->isHidden()&&audioPanels_[1]->isHidden()&&digitalPanels_[1]->isHidden()&&programB_.path().isEmpty()&&!programB_.preparing());
+        record("single_dashboard_omits_b_and_inactive_routes",!networkSummary_[0]->text().contains("B:")&&routeSummary_[1]->isHidden()&&routeSummary_[2]->isHidden()&&addProgram_->isVisible());
+        for(const auto& locale:{QString("en"),QString("pt-BR")})for(const auto& viewport:{QSize(1600,1000),QSize(1280,800)}){
+            setLanguage(locale);resize(viewport);pump(80);auto inside=[this](QWidget* widget){return widget->isVisible()&&centralWidget()->rect().contains(QRect(widget->mapTo(centralWidget(),QPoint()),widget->size()));};
+            record(QString("single_program_fits_%1_%2x%3").arg(locale).arg(viewport.width()).arg(viewport.height()),size()==viewport&&inside(cutButton_)&&inside(fadeButton_)&&inside(addProgram_)&&inside(deckState_[1])&&inside(networkSummary_[1])&&!secondaryDeck_->isVisible());
+        }
+        resize(1600,1000);setLanguage("en");selectDiagnostics();diagnosticsPanel_->refresh();
+        auto* channelMetrics=findChild<QTableWidget*>("engineMetrics");auto* networkMetrics=findChild<QTableWidget*>("networkMetrics");
+        record("single_diagnostics_marks_and_hides_disabled_program",channelMetrics->isColumnHidden(3)&&networkMetrics->isRowHidden(2)&&!diagnosticsReport()["channels"].toArray()[2].toObject()["enabled"].toBool());
+        selectPage(3);addDisplay_->click();pump(40);
+        record("adding_display_mirrors_without_second_program",displayCount_==2&&programCount_==1&&sourceBoxes_[1]->count()==1&&sourceBoxes_[1]->currentIndex()==0&&!routePanels_[1]->isHidden());
+        addDisplay_->click();addDisplay_->click();record("display_capacity_is_bounded",displayCount_==3&&!addDisplay_->isEnabled());
+        openOutput(2);pump(100);removeDisplay_->click();record("open_display_cannot_be_removed",displayCount_==3&&routeWindows_[2]&&routeWindows_[2]->isVisible());
+        routeWindows_[2]->close();pump(30);removeDisplay_->click();removeDisplay_->click();removeDisplay_->click();record("closed_displays_remove_to_one_minimum",displayCount_==1&&!removeDisplay_->isEnabled()&&routePanels_[1]->isHidden());
+        openOutput(1);record("inactive_display_cannot_open",!routeWindows_[1]);selectPage(0);targetB_->click();record("disabled_b_cannot_become_take_destination",targetBox_->currentIndex()==0);
+        addProgram_->click();pump(80);record("adding_program_exposes_independent_controls",programCount_==2&&targetBox_->count()==2&&sourceBoxes_[0]->count()==2&&secondaryDeck_->isVisible()&&!audioPanels_[1]->isHidden()&&!digitalPanels_[1]->isHidden());
         // Regression checks for the approved live desk: usable controls in both locales
         // and at a smaller viewport, plus real destination/mode and navigation actions.
         for(const auto& locale:{QString("en"),QString("pt-BR")})for(const auto& viewport:{QSize(1600,1000),QSize(1280,800)}){
@@ -194,6 +217,8 @@ public:
         const bool cut=wait([&]{return programA_.path()==playlist_[0].path && programA_.frames()>=4;});
         record("cut_button_bypasses_editor_transition",ready && cut && programA_.cue().enterMs==0 && programA_.cue().transition==Transition::Cut && programA_.composedFrames()==composed);
         record("ready_badge_requires_verified_selected_trim",readiness_.readyFor(playlist_[0])&&deckState_[0]->text()==tx("READY"));
+        const auto runningA=programA_.path();auto single=currentOutputConfiguration();single.programs=1;single.sources={0,0,0};const bool removedEmptyB=applyOutputConfiguration(single);const int beforeAdd=programA_.frames();addProgram_->click();pump(140);
+        record("add_remove_idle_program_preserves_running_a",removedEmptyB&&programCount_==2&&programA_.path()==runningA&&programA_.playing()&&programA_.frames()>beforeAdd);
         selectDiagnostics();diagnosticsPanel_->refresh();const auto report=diagnosticsReport();
         record("diagnostics_open_without_stopping_program",pages_->currentIndex()==5&&settingsTabs_->currentIndex()==1&&programA_.playing()&&report["channels"].toArray().size()==3&&report["network"].toArray().size()==4);
         const auto reportPath=QFileInfo(resultPath).absolutePath()+"/engine-"+QFileInfo(resultPath).completeBaseName()+".json";const bool saved=diagnosticsPanel_->exportTo(reportPath);QFile exported(reportPath);exported.open(QIODevice::ReadOnly);const auto exportedReport=QJsonDocument::fromJson(exported.readAll()).object();
@@ -224,6 +249,17 @@ public:
         record("digital_outputs_require_manual_start",!networkA_.sender(NetworkProtocol::Ndi).running() && !networkA_.sender(NetworkProtocol::Omt).running() && !networkB_.sender(NetworkProtocol::Omt).running());
         selectPage(0);const QString liveA=programA_.path(),liveB=programB_.path();playlist_<<Cue{QDir(directory).absoluteFilePath("missing-ready.mp4")};refreshTables();playlistTable_->selectRow(2);cueRow(2);pump(120);
         record("readiness_error_blocks_take_and_preserves_both_programs",readiness_.state()==CueReadiness::State::Error&&!canTake()&&!cutButton_->isEnabled()&&deckState_[0]->text()==tx("Error")&&programA_.path()==liveA&&programB_.path()==liveB);
+        auto reduced=currentOutputConfiguration();reduced.programs=1;reduced.sources={0,0,0};record("live_program_cannot_be_removed",!applyOutputConfiguration(reduced)&&programCount_==2&&programB_.path()==liveB);
+        const auto originalShow=Show{library_,folders_,playlist_,currentOutputConfiguration()};Show oneProgram;oneProgram.cues={Cue{"replacement.mp4"}};
+        record("opening_reduced_show_is_atomic_while_b_active",!applyShow(oneProgram,"blocked.mizinshow")&&playlist_.size()==originalShow.cues.size()&&playlist_[0].path==originalShow.cues[0].path&&programCount_==2&&programB_.path()==liveB);
+        controllerB_.stop();auto multi=currentOutputConfiguration();multi.displays=3;multi.sources={0,0,1};applyOutputConfiguration(multi);selectPage(3);openOutput(2);pump(80);
+        record("open_b_route_blocks_program_removal_after_black",!applyOutputConfiguration(reduced)&&programCount_==2&&routeWindows_[2]&&routeWindows_[2]->isVisible());routeWindows_[2]->close();pump(30);
+        const bool networkStarted=networkB_.start(NetworkProtocol::Omt,"Mizin Output Config QA");record("sending_b_blocks_program_removal",networkStarted&&!applyOutputConfiguration(reduced)&&programCount_==2);networkB_.stop(NetworkProtocol::Omt);
+        const auto showPath=QFileInfo(resultPath).absolutePath()+"/outputs-"+QFileInfo(resultPath).completeBaseName()+".mizinshow";projectPath_=showPath;saveProject(false);QFile savedShow(showPath);const bool opened=savedShow.open(QIODevice::ReadOnly);Show restored;const bool parsed=opened&&Show::read(QJsonDocument::fromJson(savedShow.readAll()).object(),restored);
+        const bool backToSingle=applyOutputConfiguration(OutputConfiguration{});const bool restoredShow=parsed&&applyShow(restored,showPath);pump(80);
+        record("show_file_restores_programs_displays_and_sources",backToSingle&&restoredShow&&programCount_==2&&displayCount_==3&&sourceBoxes_[2]->currentIndex()==1&&(!routeWindows_[2]||!routeWindows_[2]->isVisible())&&!networkB_.sender(NetworkProtocol::Omt).running());
+        record("restoring_configuration_does_not_open_outputs_or_start_senders",(!routeWindows_[0]||!routeWindows_[0]->isVisible())&&(!routeWindows_[1]||!routeWindows_[1]->isVisible())&&(!routeWindows_[2]||!routeWindows_[2]->isVisible())&&!networkA_.sender(NetworkProtocol::Ndi).running()&&!networkB_.sender(NetworkProtocol::Ndi).running());
+        applyOutputConfiguration(OutputConfiguration{});selectPage(0);pump(80);capture(QFileInfo(resultPath).absolutePath()+"/single-"+QFileInfo(resultPath).completeBaseName()+".png");selectDiagnostics();capture(QFileInfo(resultPath).absolutePath()+"/single-engine-"+QFileInfo(resultPath).completeBaseName()+".png");diagnosticsPanel_->exportTo(QFileInfo(resultPath).absolutePath()+"/single-engine-"+QFileInfo(resultPath).completeBaseName()+".json");
         controllerA_.stop();controllerB_.stop();preview_.black();
         QJsonObject result{{"result",all?"PASS":"FAIL"},{"version",QString(MizinVersion)},{"mode",qEnvironmentVariable("MIZIN_DECODE_MODE","auto")},{"scope","In-process native Qt widget actions and real synthetic media; not OS pointer interaction or physical display qualification"},{"tests",tests}};
         QFile out(resultPath);if(!out.open(QIODevice::WriteOnly))return 3;out.write(QJsonDocument(result).toJson());return all?0:2;
@@ -237,7 +273,7 @@ protected:
         for(auto& output:outputWindows_)if(output)output->close();event->accept();
     }
 private:
-    QString tx(const QString& key)const{return dictionary_.value(key).toString(key);}
+    QString tx(const QString& key)const{const QString resolved=programCount_==1&&key=="Program A"?"Program":programCount_==1&&key=="PROGRAM A"?"PROGRAM":key;return dictionary_.value(resolved).toString(resolved);}
     void readDictionary(){QFile f(":/i18n/"+(language_=="pt-BR"?QString("pt-BR"):QString("en"))+".json");if(f.open(QIODevice::ReadOnly))dictionary_=QJsonDocument::fromJson(f.readAll()).object();}
     QLabel* label(const QString& key,const QString& style={}){auto* l=new QLabel(tx(key));if(!style.isEmpty())l->setObjectName(style);bindings_.append({l,key});return l;}
     QPushButton* button(const QString& key,const QString& style={}){auto* b=new QPushButton(tx(key));b->setMinimumHeight(34);if(!style.isEmpty())b->setObjectName(style);bindings_.append({b,key});return b;}
@@ -271,14 +307,14 @@ private:
         auto* deckRow=new QHBoxLayout;deckRow->setSpacing(12);
         deckRow->addWidget(deckPanel("PREVIEW",&preview_,0,&previewName_,&previewTime_,"preview",true),37);
         deckRow->addWidget(deckPanel("PROGRAM A",&programA_,1,&programName_,&programTime_,"program",true),37);
-        deckRow->addWidget(deckPanel("PROGRAM B",&programB_,2,&secondaryName_,&secondaryTime_,"secondary",true),26);layout->addLayout(deckRow,4);
+        secondaryDeck_=deckPanel("PROGRAM B",&programB_,2,&secondaryName_,&secondaryTime_,"secondary",true);deckRow->addWidget(secondaryDeck_,26);layout->addLayout(deckRow,4);
 
         auto* takePanel=new QFrame;takePanel->setObjectName("takeStrip");auto* transport=new QHBoxLayout(takePanel);transport->setContentsMargins(12,10,12,10);transport->setSpacing(12);
         auto* destination=new QVBoxLayout;destination->setSpacing(6);destination->addWidget(label("TAKE DESTINATION","eyebrow"));
         targetBox_=new QComboBox(takePanel);targetBox_->addItems({"Program A","Program B"});targetBox_->hide();
         auto* targets=new QHBoxLayout;targets->setSpacing(0);targetA_=button("Program A","targetA");targetB_=button("Program B","targetB");
-        for(auto* b:{targetA_,targetB_}){b->setCheckable(true);targets->addWidget(b);}destination->addLayout(targets);transport->addLayout(destination,2);
-        connect(targetA_,&QPushButton::clicked,this,[this]{targetBox_->setCurrentIndex(0);refreshDashboard();});connect(targetB_,&QPushButton::clicked,this,[this]{targetBox_->setCurrentIndex(1);refreshDashboard();});
+        for(auto* b:{targetA_,targetB_}){b->setCheckable(true);targets->addWidget(b);}addProgram_=button("+ Add Program");addProgram_->setObjectName("addProgram");targets->addWidget(addProgram_);connect(addProgram_,&QPushButton::clicked,this,[this]{auto config=currentOutputConfiguration();config.programs=2;applyOutputConfiguration(config);});destination->addLayout(targets);transport->addLayout(destination,2);
+        connect(targetA_,&QPushButton::clicked,this,[this]{targetBox_->setCurrentIndex(0);refreshDashboard();});connect(targetB_,&QPushButton::clicked,this,[this]{if(programCount_==2)targetBox_->setCurrentIndex(1);refreshDashboard();});
         cutButton_=button("CUT","cut");cutButton_->setIcon(deskIcon(DeskIcon::Cut,QColor("#1b2229")));cutButton_->setToolTip("Ctrl+Enter");cutButton_->setMinimumSize(120,62);transport->addWidget(cutButton_,2);connect(cutButton_,&QPushButton::clicked,this,[this]{takeSelected(PlaylistController::ManualTake::Cut);});
         fadeButton_=button("FADE","take");fadeButton_->setIcon(deskIcon(DeskIcon::Fade,QColor("#10232c")));fadeButton_->setToolTip("Ctrl+Space");fadeButton_->setMinimumSize(120,62);transport->addWidget(fadeButton_,2);connect(fadeButton_,&QPushButton::clicked,this,[this]{takeSelected(PlaylistController::ManualTake::Fade);});
         auto* fadeDuration=new QVBoxLayout;fadeDuration->setSpacing(5);fadeDuration->addWidget(label("Fade duration","muted"));manualFadeTime_=new QSpinBox;manualFadeTime_->setRange(1,10000);manualFadeTime_->setSingleStep(50);manualFadeTime_->setSuffix(" ms");manualFadeTime_->setValue(qBound(1,settings_->value("manualFadeMs",300).toInt(),10000));manualFadeTime_->setFixedWidth(104);fadeDuration->addWidget(manualFadeTime_);transport->addLayout(fadeDuration);
@@ -309,7 +345,7 @@ private:
         auto* strip=new QFrame;strip->setObjectName("dashboard");auto* row=new QHBoxLayout(strip);row->setContentsMargins(10,10,10,10);row->setSpacing(10);
         auto* outputs=iconButton("Output routing",DeskIcon::Display);row->addWidget(outputs);connect(outputs,&QPushButton::clicked,this,[this]{selectPage(3);});
         auto* diagnostics=iconButton("Engine diagnostics",DeskIcon::Settings);row->addWidget(diagnostics);connect(diagnostics,&QPushButton::clicked,this,[this]{selectDiagnostics();});
-        for(int i=0;i<2;++i){auto* panel=new QWidget;panel->setMinimumWidth(120);auto* l=new QVBoxLayout(panel);l->setContentsMargins(4,0,6,0);l->setSpacing(4);auto* title=label(i==0?"Program A":"Program B","meterTitle");title->setProperty("channel",i==0?"program":"secondary");l->addWidget(title);auto* meter=new StereoMeter(i==0?&programA_:&programB_,demo_);meter->setObjectName(i==0?"mainMeterA":"mainMeterB");mainMeters_[i]=meter;l->addWidget(meter);row->addWidget(panel,2);}
+        for(int i=0;i<2;++i){auto* panel=new QWidget;if(i==1)secondaryMeter_=panel;panel->setMinimumWidth(120);auto* l=new QVBoxLayout(panel);l->setContentsMargins(4,0,6,0);l->setSpacing(4);auto* title=label(i==0?"Program A":"Program B","meterTitle");title->setProperty("channel",i==0?"program":"secondary");l->addWidget(title);auto* meter=new StereoMeter(i==0?&programA_:&programB_,demo_);meter->setObjectName(i==0?"mainMeterA":"mainMeterB");mainMeters_[i]=meter;l->addWidget(meter);row->addWidget(panel,2);}
         for(int i=0;i<3;++i){auto* tile=new QPushButton;tile->setObjectName("statusTile");tile->setMinimumWidth(0);tile->setSizePolicy(QSizePolicy::Ignored,QSizePolicy::Preferred);tile->setMinimumHeight(52);routeSummary_[i]=tile;row->addWidget(tile,1);connect(tile,&QPushButton::clicked,this,[this]{selectPage(3);outputsTabs_->setCurrentIndex(0);});}
         for(int i=0;i<2;++i){auto* tile=new QPushButton;tile->setObjectName("networkTile");tile->setMinimumWidth(0);tile->setSizePolicy(QSizePolicy::Ignored,QSizePolicy::Preferred);tile->setMinimumHeight(58);networkSummary_[i]=tile;row->addWidget(tile,1);connect(tile,&QPushButton::clicked,this,[this]{selectDigital();});}
         return strip;
@@ -331,17 +367,17 @@ private:
             const QString health=key=="READY"?"ready":key=="Error"?"error":key=="Preparing"?"pending":"idle";if(badge->property("health")!=health){badge->setProperty("health",health);badge->style()->unpolish(badge);badge->style()->polish(badge);}
         }
         for(int i=0;i<3;++i){if(!routeSummary_[i]||i>=sourceBoxes_.size())continue;const bool open=routeWindows_[i]&&routeWindows_[i]->isVisible();const int source=open?routePrograms_[i]:sourceBoxes_[i]->currentIndex();
-            routeSummary_[i]->setText(QString("%1 → %2\n%3").arg(i+1,2,10,QChar('0')).arg(source==0?"A":"B",tx(open?"Open":"Closed")));
+            routeSummary_[i]->setText(QString("%1 → %2\n%3").arg(i+1,2,10,QChar('0')).arg(programCount_==1?tx("PROGRAM"):source==0?"A":"B",tx(open?"Open":"Closed")));
             routeSummary_[i]->setToolTip(QString("%1 %2 · %3\n%4").arg(tx("Output"),QString::number(i+1),tx(source==0?"Program A":"Program B"),open?routeWindows_[i]->windowTitle():tx("Closed")));
         }
         for(int i=0;i<2;++i){if(!networkSummary_[i])continue;const auto protocol=i==0?NetworkProtocol::Ndi:NetworkProtocol::Omt;auto& a=networkA_.sender(protocol);auto& b=networkB_.sender(protocol);
             auto state=[this](NetworkSender& s){return tx(s.running()?"Sending":s.error().isEmpty()?"Stopped":"Error");};
-            networkSummary_[i]->setText(QString("%1\nA: %2\nB: %3").arg(i==0?"NDI":"OMT",state(a),state(b)));networkSummary_[i]->setToolTip(tx("Digital outputs")+"\nA: "+a.error()+"\nB: "+b.error());
+            networkSummary_[i]->setText(programCount_==1?QString("%1\n%2").arg(i==0?"NDI":"OMT",state(a)):QString("%1\nA: %2\nB: %3").arg(i==0?"NDI":"OMT",state(a),state(b)));networkSummary_[i]->setToolTip(tx("Digital outputs")+"\n"+a.error()+(programCount_==2?"\nB: "+b.error():QString{}));
         }
         const QString key=QString::number(cuedRow_)+programA_.path()+QString::number(programA_.cue().in)+QString::number(programA_.cue().out)+programB_.path()+QString::number(programB_.cue().in)+QString::number(programB_.cue().out)+language_;
         if(key!=runningMarkKey_){runningMarkKey_=key;for(int i=0;i<playlist_.size();++i){auto* item=playlistTable_->item(i,1);if(!item)continue;const auto& cue=playlist_[i];QStringList marks;
-            if(demo_?i==1:!programA_.path().isEmpty()&&programA_.path()==cue.path&&programA_.cue().in==cue.in&&programA_.cue().out==cue.out)marks<<"A";
-            if(demo_?i==3:!programB_.path().isEmpty()&&programB_.path()==cue.path&&programB_.cue().in==cue.in&&programB_.cue().out==cue.out)marks<<"B";
+            if(demo_?i==1:!programA_.path().isEmpty()&&programA_.path()==cue.path&&programA_.cue().in==cue.in&&programA_.cue().out==cue.out)marks<<(programCount_==1?tx("PROGRAM"):"A");
+            if(programCount_==2&&(demo_?i==3:!programB_.path().isEmpty()&&programB_.path()==cue.path&&programB_.cue().in==cue.in&&programB_.cue().out==cue.out))marks<<"B";
             if(marks.isEmpty()&&(demo_?i==2:i==cuedRow_))marks<<tx("CUED");item->setData(Qt::UserRole+1,marks.join("+"));
         }}
     }
@@ -364,14 +400,49 @@ private:
             outputStatus_[i]->setText(tx("Source %1 → Output %2 · %3").arg(QString("%1 × %2").arg(source.width()).arg(source.height()),QString("%1 × %2").arg(output.width()).arg(output.height()),mode));
         }
     }
+    OutputConfiguration currentOutputConfiguration()const{OutputConfiguration config;config.programs=programCount_;config.displays=displayCount_;for(int i=0;i<displayCount_;++i)config.sources[i]=sourceBoxes_[i]->currentIndex();return config;}
+    bool canApplyOutputConfiguration(const OutputConfiguration& config){
+        if(!config.valid()){footer_->setText(tx("Invalid output configuration"));return false;}
+        if(config.programs<programCount_){
+            bool busy=!programB_.path().isEmpty()||programB_.preparing()||programB_.transitioning();
+            for(auto protocol:{NetworkProtocol::Ndi,NetworkProtocol::Omt})busy|=networkB_.sender(protocol).running();
+            for(int i=0;i<3;++i)busy|=routeWindows_[i]&&routeWindows_[i]->isVisible()&&routePrograms_[i]==1;
+            if(busy){footer_->setText(tx("Black Program B and close its display and digital outputs before removing it."));return false;}
+        }
+        for(int i=config.displays;i<displayCount_;++i)if(routeWindows_[i]&&routeWindows_[i]->isVisible()){footer_->setText(tx("Close this display output before removing it."));return false;}
+        return true;
+    }
+    bool applyOutputConfiguration(const OutputConfiguration& config,bool markDirty=true){
+        if(!canApplyOutputConfiguration(config))return false;
+        programCount_=config.programs;displayCount_=config.displays;
+        // Block index signals while rebuilding: removing B must never retarget transport to a dormant channel.
+        {QSignalBlocker block(targetBox_);const int target=targetBox_->currentIndex();targetBox_->clear();for(int i=0;i<programCount_;++i)targetBox_->addItem(tx(i==0?"Program A":"Program B"));targetBox_->setCurrentIndex(qBound(0,target,programCount_-1));}
+        for(int i=0;i<3;++i){QSignalBlocker block(sourceBoxes_[i]);sourceBoxes_[i]->clear();for(int program=0;program<programCount_;++program)sourceBoxes_[i]->addItem(tx(program==0?"Program A":"Program B"));sourceBoxes_[i]->setCurrentIndex(i<displayCount_?config.sources[i]:0);}
+        refreshOutputConfiguration();
+        {QSignalBlocker a(sequentialBox_),b(repeatBox_),c(loopBox_);sequentialBox_->setChecked(targetController()->sequential());repeatBox_->setChecked(targetController()->repeat());loopBox_->setChecked(targetChannel()->loop());loopBox_->setEnabled(!targetController()->sequential());repeatBox_->setEnabled(targetController()->sequential());}
+        if(markDirty&&!demo_)dirty_=true;retranslate();return true;
+    }
+    void refreshOutputConfiguration(){
+        const bool dual=programCount_==2;secondaryDeck_->setVisible(dual);secondaryMeter_->setVisible(dual);targetB_->setVisible(dual);targetB_->setEnabled(dual);addProgram_->setVisible(!dual);
+        if(targetBox_->count()>programCount_)targetBox_->removeItem(1);
+        for(int i=0;i<3;++i){routePanels_[i]->setVisible(i<displayCount_);routeSummary_[i]->setVisible(i<displayCount_);if(sourceBoxes_[i]->count()>programCount_)sourceBoxes_[i]->removeItem(1);}
+        if(audioPanels_.size()>1){audioPanels_[1]->setVisible(dual);audioPanels_[1]->setEnabled(dual);}
+        if(digitalPanels_.size()>1){digitalPanels_[1]->setVisible(dual);digitalPanels_[1]->setEnabled(dual);}
+        addDisplay_->setEnabled(displayCount_<3);removeDisplay_->setEnabled(displayCount_>1);runningMarkKey_.clear();
+    }
     QWidget* physicalOutputsPage(){auto* page=new QWidget;auto* l=new QVBoxLayout(page);l->setContentsMargins(0,0,0,0);l->setSpacing(16);l->addWidget(label("Output routing","heading"));l->addWidget(label("Share one Program across screens, or send independent content.","muted"));
-        for(int i=0;i<3;++i){auto* panel=new QFrame;panel->setObjectName("panel");auto* body=new QVBoxLayout(panel);body->setContentsMargins(20,18,20,18);auto* row=new QHBoxLayout;
+        auto* configuration=new QFrame;configuration->setObjectName("panel");auto* management=new QVBoxLayout(configuration);management->setContentsMargins(20,16,20,16);outputConfigurationLabel_=new QLabel;management->addWidget(outputConfigurationLabel_);auto* actions=new QHBoxLayout;
+        toggleProgram_=new QPushButton;toggleProgram_->setObjectName("toggleProgram");toggleProgram_->setMinimumHeight(34);actions->addWidget(toggleProgram_);connect(toggleProgram_,&QPushButton::clicked,this,[this]{auto config=currentOutputConfiguration();config.programs=programCount_==1?2:1;if(config.programs==1)config.sources={0,0,0};applyOutputConfiguration(config);});
+        addDisplay_=button("+ Add display output");addDisplay_->setObjectName("addDisplay");actions->addWidget(addDisplay_);connect(addDisplay_,&QPushButton::clicked,this,[this]{auto config=currentOutputConfiguration();if(config.displays<3){config.sources[config.displays++]=0;applyOutputConfiguration(config);}});
+        removeDisplay_=button("Remove last display output");actions->addWidget(removeDisplay_);connect(removeDisplay_,&QPushButton::clicked,this,[this]{auto config=currentOutputConfiguration();if(config.displays>1){--config.displays;applyOutputConfiguration(config);}});actions->addStretch();management->addLayout(actions);
+        auto* scope=label("Up to 2 independent Programs and 3 display outputs. New display outputs mirror the main Program.","muted");scope->setWordWrap(true);management->addWidget(scope);l->addWidget(configuration);
+        for(int i=0;i<3;++i){auto* panel=new QFrame;routePanels_[i]=panel;panel->setObjectName("panel");auto* body=new QVBoxLayout(panel);body->setContentsMargins(20,18,20,18);auto* row=new QHBoxLayout;
             auto* number=new QLabel(QString("0%1").arg(i+1));number->setObjectName("routeNumber");row->addWidget(number);row->addSpacing(16);
-            auto* col=new QVBoxLayout;col->addWidget(label("SOURCE","eyebrow"));auto* source=new QComboBox;source->addItems({"Program A","Program B"});source->setCurrentIndex(i==2?1:0);sourceBoxes_<<source;col->addWidget(source);row->addLayout(col,1);row->addSpacing(16);row->addWidget(new QLabel("→"));row->addSpacing(16);
+            auto* col=new QVBoxLayout;col->addWidget(label("SOURCE","eyebrow"));auto* source=new QComboBox;source->addItems({"Program A","Program B"});sourceBoxes_<<source;connect(source,&QComboBox::currentIndexChanged,this,[this]{if(!demo_)dirty_=true;refreshTransport();});col->addWidget(source);row->addLayout(col,1);row->addSpacing(16);row->addWidget(new QLabel("→"));row->addSpacing(16);
             auto* dest=new QVBoxLayout;dest->addWidget(label("DISPLAY","eyebrow"));auto* screen=new QComboBox;screen->addItem(tx("Floating test window"),"floating");screenBoxes_<<screen;dest->addWidget(screen);row->addLayout(dest,2);
             auto* quality=new QVBoxLayout;quality->addWidget(label("SCALING","eyebrow"));auto* scaling=new QComboBox;scaling->addItem(tx("Native · performance"),"native");scaling->addItem(tx("Lanczos · experimental (CPU)"),"lanczos");scaling->addItem(tx("Lanczos · GPU (SDR)"),"gpu");scaling->setCurrentIndex(qMax(0,scaling->findData(settings_->value(QString("outputScaler%1").arg(i),"native").toString())));scalingBoxes_<<scaling;quality->addWidget(scaling);row->addLayout(quality,1);
             connect(scaling,&QComboBox::currentIndexChanged,this,[this,scaling,i]{if(!demo_)settings_->setValue(QString("outputScaler%1").arg(i),scaling->currentData());});
-            auto* open=button("Open output");row->addSpacing(12);row->addWidget(open);connect(open,&QPushButton::clicked,this,[this,i]{openOutput(i);});body->addLayout(row);auto* status=new QLabel;status->setObjectName("muted");outputStatus_<<status;body->addWidget(status);l->addWidget(panel);
+            auto* open=button("Open output");row->addSpacing(12);row->addWidget(open);connect(open,&QPushButton::clicked,this,[this,i]{openOutput(i);});auto* close=button("Close output");row->addWidget(close);connect(close,&QPushButton::clicked,this,[this,i]{if(routeWindows_[i])routeWindows_[i]->close();refreshTransport();});body->addLayout(row);auto* status=new QLabel;status->setObjectName("muted");outputStatus_<<status;body->addWidget(status);l->addWidget(panel);
         }
         for(auto key:{"Selected displays open fullscreen at their current resolution. Aspect ratio is preserved.","Native is recommended for live playback. GPU Lanczos improves SDR scaling; test it on your system.","Changes apply when opening an output. Escape closes it; Programs keep running."}){auto* hint=label(key,"muted");hint->setWordWrap(true);l->addWidget(hint);}
         l->addWidget(label("Outputs using the same Program share decoded frames. Audio plays once per Program.","muted"));l->addStretch();return page;}
@@ -391,13 +462,13 @@ private:
         l->addWidget(label("Prototype: trims, fades, sequential playback and independent Programs.","muted"));l->addWidget(label("Transitions currently use a shared CPU compositor. GPU composition, scheduling and remote access are future milestones.","muted"));l->addStretch();return page;}
     NativeChannel* targetChannel(){return targetBox_->currentIndex()==0?&programA_:&programB_;}
     QJsonObject diagnosticsReport(){
-        QJsonArray channels;for(auto pair:{std::pair{"Preview",&preview_},std::pair{"A",&programA_},std::pair{"B",&programB_}}){auto snapshot=pair.second->diagnostics();snapshot["id"]=pair.first;channels.append(snapshot);}
-        QJsonArray senders;for(int i=0;i<2;++i)for(auto protocol:{NetworkProtocol::Ndi,NetworkProtocol::Omt}){auto status=(i==0?networkA_:networkB_).sender(protocol).statistics();status["program"]=i==0?"A":"B";status["protocol"]=protocol==NetworkProtocol::Ndi?"NDI":"OMT";senders.append(status);}
-        QJsonArray outputs;for(int i=0;i<3;++i){const auto window=routeWindows_[i];const bool open=window&&window->isVisible();outputs.append(QJsonObject{{"route",i+1},{"open",open},{"program",open?(routePrograms_[i]==0?"A":"B"):sourceBoxes_.value(i)&&sourceBoxes_[i]->currentIndex()==0?"A":"B"},{"published_to_window",window?window->frames():0},{"width",window?window->targetPixels().width():0},{"height",window?window->targetPixels().height():0},{"gpu_scaler_active",window&&window->gpuActive()}});}
-        return {{"schema",1},{"version",QString(MizinVersion)},{"recorded_utc",QDateTime::currentDateTimeUtc().toString(Qt::ISODateWithMs)},{"language",language_},{"decode_mode_requested",qEnvironmentVariable("MIZIN_DECODE_MODE","auto")},{"sample_content",demo_},{"take_enabled",canTake()},{"selected_row",playlistTable_->currentRow()},{"readiness",readiness_.snapshot()},{"channels",channels},{"network",senders},{"outputs",outputs},{"scope","Qt callback counts and CPU composition timing; no decoder/GPU timing, decoder packet queue or physical delivery measurement."}};
+        QJsonArray channels;for(auto pair:{std::pair{"Preview",&preview_},std::pair{"A",&programA_},std::pair{"B",&programB_}}){auto snapshot=pair.second->diagnostics();snapshot["id"]=pair.first;snapshot["enabled"]=pair.second!=&programB_||programCount_==2;channels.append(snapshot);}
+        QJsonArray senders;for(int i=0;i<2;++i)for(auto protocol:{NetworkProtocol::Ndi,NetworkProtocol::Omt}){auto status=(i==0?networkA_:networkB_).sender(protocol).statistics();status["program"]=i==0?"A":"B";status["enabled"]=i<programCount_;status["protocol"]=protocol==NetworkProtocol::Ndi?"NDI":"OMT";senders.append(status);}
+        QJsonArray outputs;for(int i=0;i<3;++i){const auto window=routeWindows_[i];const bool open=window&&window->isVisible();outputs.append(QJsonObject{{"route",i+1},{"enabled",i<displayCount_},{"open",open},{"program",open?(routePrograms_[i]==0?"A":"B"):sourceBoxes_.value(i)&&sourceBoxes_[i]->currentIndex()==0?"A":"B"},{"published_to_window",window?window->frames():0},{"width",window?window->targetPixels().width():0},{"height",window?window->targetPixels().height():0},{"gpu_scaler_active",window&&window->gpuActive()}});}
+        return {{"schema",1},{"version",QString(MizinVersion)},{"recorded_utc",QDateTime::currentDateTimeUtc().toString(Qt::ISODateWithMs)},{"language",language_},{"decode_mode_requested",qEnvironmentVariable("MIZIN_DECODE_MODE","auto")},{"sample_content",demo_},{"output_configuration",currentOutputConfiguration().json()},{"take_enabled",canTake()},{"selected_row",playlistTable_->currentRow()},{"readiness",readiness_.snapshot()},{"channels",channels},{"network",senders},{"outputs",outputs},{"scope","Qt callback counts and CPU composition timing; no decoder/GPU timing, decoder packet queue or physical delivery measurement."}};
     }
     PlaylistController* targetController(){return targetBox_->currentIndex()==0?&controllerA_:&controllerB_;}
-    bool canTake()const{return cuedRow_>=0&&cuedRow_<playlist_.size()&&cuedRow_==playlistTable_->currentRow()&&readiness_.readyFor(playlist_[cuedRow_]);}
+    bool canTake()const{return targetBox_->currentIndex()>=0&&targetBox_->currentIndex()<programCount_&&cuedRow_>=0&&cuedRow_<playlist_.size()&&cuedRow_==playlistTable_->currentRow()&&readiness_.readyFor(playlist_[cuedRow_]);}
     void takeSelected(PlaylistController::ManualTake mode){
         if(demo_){footer_->setText(tx("Layout preview — sample content"));return;}
         if(pages_->currentIndex()!=0)return;
@@ -467,15 +538,17 @@ private:
         if(scrub_&&!scrub_->isSliderDown()&&preview_.duration()>0)scrub_->setValue(int(1000.0*preview_.position()/preview_.duration()));
         previewName_->setText(name(preview_));programName_->setText(name(programA_));secondaryName_->setText(name(programB_));previewTime_->setText(clockText(preview_.position()));programTime_->setText(clockText(qMax<qint64>(0,programA_.rangeEnd()-programA_.position())));secondaryTime_->setText(clockText(qMax<qint64>(0,programB_.rangeEnd()-programB_.position())));refreshDashboard();
     }
-    void retranslate(){if(settingsTabs_){settingsTabs_->setTabText(0,tx("Playback"));settingsTabs_->setTabText(1,tx("Engine diagnostics"));}if(diagnosticsPanel_)diagnosticsPanel_->retranslate();for(auto* widget:findChildren<QWidget*>()){const auto key=widget->property("tipKey").toString();if(!key.isEmpty()){widget->setToolTip(tx(key));widget->setAccessibleName(tx(key));}}for(auto* panel:audioPanels_)panel->retranslate();for(auto* panel:digitalPanels_)panel->retranslate();if(outputsTabs_){outputsTabs_->setTabText(0,tx("Displays"));outputsTabs_->setTabText(1,tx("Digital / IP"));}if(editorStatus_)editorStatus_->setText(tx(editorStatusKey_));for(auto* scaling:scalingBoxes_){scaling->setItemText(0,tx("Native · performance"));scaling->setItemText(1,tx("Lanczos · experimental (CPU)"));scaling->setItemText(2,tx("Lanczos · GPU (SDR)"));}for(const auto& b:bindings_){if(!b.widget)continue;if(auto* l=qobject_cast<QLabel*>(b.widget.data()))l->setText(tx(b.key));else if(auto* p=qobject_cast<QPushButton*>(b.widget.data()))p->setText(tx(b.key));else if(auto* c=qobject_cast<QCheckBox*>(b.widget.data()))c->setText(tx(b.key));else if(auto* e=qobject_cast<QLineEdit*>(b.widget.data()))e->setPlaceholderText(tx(b.key));}if(decodingBox_){decodingBox_->setItemText(0,tx("Automatic hardware selection"));decodingBox_->setItemText(1,tx("CPU decoding"));}if(transitionBox_){for(auto* spin:{inBox_,outBox_,transitionTime_,enterBox_,exitBox_})spin->setLocale(QLocale(language_=="pt-BR"?"pt_BR":"en_US"));transitionBox_->setItemText(0,tx("Cut"));transitionBox_->setItemText(1,tx("Dissolve"));transitionBox_->setItemText(2,tx("Fade through black"));outBox_->setSpecialValueText(tx("End of media"));}showTitle_->setText(demo_?"Opening Night / "+tx("Sample show"):projectPath_.isEmpty()?tx("Untitled show"):QFileInfo(projectPath_).completeBaseName());for(auto* screen:screenBoxes_)screen->setItemText(0,tx("Floating test window"));targetBox_->setItemText(0,tx("Program A"));targetBox_->setItemText(1,tx("Program B"));for(auto* source:sourceBoxes_){source->setItemText(0,tx("Program A"));source->setItemText(1,tx("Program B"));}footer_->setText(demo_?tx("Layout preview — sample content"):tx("Native playback · EN / PT-BR · No mandatory conversion"));refreshTables();refreshTransport();}
+    void retranslate(){if(toggleProgram_)toggleProgram_->setText(tx(programCount_==1?"+ Add independent Program":"Remove Program B"));if(outputConfigurationLabel_)outputConfigurationLabel_->setText(tx("%1 Program(s) · %2 display output(s)").arg(programCount_).arg(displayCount_));if(settingsTabs_){settingsTabs_->setTabText(0,tx("Playback"));settingsTabs_->setTabText(1,tx("Engine diagnostics"));}if(diagnosticsPanel_)diagnosticsPanel_->retranslate();for(auto* widget:findChildren<QWidget*>()){const auto key=widget->property("tipKey").toString();if(!key.isEmpty()){widget->setToolTip(tx(key));widget->setAccessibleName(tx(key));}}for(auto* panel:audioPanels_)panel->retranslate();for(auto* panel:digitalPanels_)panel->retranslate();if(outputsTabs_){outputsTabs_->setTabText(0,tx("Displays"));outputsTabs_->setTabText(1,tx("Digital / IP"));}if(editorStatus_)editorStatus_->setText(tx(editorStatusKey_));for(auto* scaling:scalingBoxes_){scaling->setItemText(0,tx("Native · performance"));scaling->setItemText(1,tx("Lanczos · experimental (CPU)"));scaling->setItemText(2,tx("Lanczos · GPU (SDR)"));}for(const auto& b:bindings_){if(!b.widget)continue;if(auto* l=qobject_cast<QLabel*>(b.widget.data()))l->setText(tx(b.key));else if(auto* p=qobject_cast<QPushButton*>(b.widget.data()))p->setText(tx(b.key));else if(auto* c=qobject_cast<QCheckBox*>(b.widget.data()))c->setText(tx(b.key));else if(auto* e=qobject_cast<QLineEdit*>(b.widget.data()))e->setPlaceholderText(tx(b.key));}if(decodingBox_){decodingBox_->setItemText(0,tx("Automatic hardware selection"));decodingBox_->setItemText(1,tx("CPU decoding"));}if(transitionBox_){for(auto* spin:{inBox_,outBox_,transitionTime_,enterBox_,exitBox_})spin->setLocale(QLocale(language_=="pt-BR"?"pt_BR":"en_US"));transitionBox_->setItemText(0,tx("Cut"));transitionBox_->setItemText(1,tx("Dissolve"));transitionBox_->setItemText(2,tx("Fade through black"));outBox_->setSpecialValueText(tx("End of media"));}showTitle_->setText(demo_?"Opening Night / "+tx("Sample show"):projectPath_.isEmpty()?tx("Untitled show"):QFileInfo(projectPath_).completeBaseName());for(auto* screen:screenBoxes_)screen->setItemText(0,tx("Floating test window"));targetBox_->setItemText(0,tx("Program A"));targetBox_->setItemText(1,tx("Program B"));for(auto* source:sourceBoxes_){source->setItemText(0,tx("Program A"));source->setItemText(1,tx("Program B"));}footer_->setText(demo_?tx("Layout preview — sample content"):tx("Native playback · EN / PT-BR · No mandatory conversion"));refreshTables();refreshTransport();}
     void openOutput(int index){
+        if(index<0||index>=displayCount_||sourceBoxes_[index]->currentIndex()<0||sourceBoxes_[index]->currentIndex()>=programCount_){footer_->setText(tx("Add this output before opening it."));return;}
         if(demo_){footer_->setText(tx("Layout preview — sample content"));return;}
         auto* screen=selectedScreen(index);if(screenBoxes_[index]->currentData().toString()!="floating" && !screen){footer_->setText(tx("Selected display is unavailable"));return;}
         if(routeWindows_[index])routeWindows_[index]->close();auto* channel=sourceBoxes_[index]->currentIndex()==0?&programA_:&programB_;
         const auto profile=scalingBoxes_[index]->currentData().toString();auto* window=new OutputWindow(channel,&outputRouter_,profile=="gpu"?OutputScaling::GpuLanczos:profile=="lanczos"?OutputScaling::CpuLanczos:OutputScaling::Native);window->setWindowTitle(QString("Mizin Playout — Output %1").arg(index+1));connect(window,&OutputWindow::warning,this,[this](const QString& text){footer_->setText(tx(text));});routePrograms_[index]=sourceBoxes_[index]->currentIndex();routeWindows_[index]=window;outputWindows_<<window;window->openOn(screen);
     }
-    void saveProject(bool){if(demo_)return;QString path=projectPath_;if(path.isEmpty())path=QFileDialog::getSaveFileName(this,tx("Save show"),{},"Mizin show (*.mizinshow)");if(path.isEmpty())return;if(!path.endsWith(".mizinshow",Qt::CaseInsensitive))path+=".mizinshow";QJsonObject root=Show{library_,folders_,playlist_}.json();QSaveFile f(path);if(!f.open(QIODevice::WriteOnly)||f.write(QJsonDocument(root).toJson())<0||!f.commit()){footer_->setText(tx("Could not save show"));return;}projectPath_=path;dirty_=false;showTitle_->setText(QFileInfo(path).completeBaseName());footer_->setText(tx("Show saved"));}
-    void openProject(){if(demo_)return;if(dirty_&&QMessageBox::question(this,tx("Unsaved show"),tx("Open another show without saving?"),QMessageBox::Yes|QMessageBox::No,QMessageBox::No)!=QMessageBox::Yes)return;const auto path=QFileDialog::getOpenFileName(this,tx("Open show"),{},"Mizin show (*.mizinshow)");if(path.isEmpty())return;QFile f(path);if(!f.open(QIODevice::ReadOnly)){footer_->setText(tx("Could not open show"));return;}QJsonParseError error;auto doc=QJsonDocument::fromJson(f.readAll(),&error);auto obj=doc.object();Show loaded;if(error.error!=QJsonParseError::NoError || !Show::read(obj,loaded)){footer_->setText(tx("Invalid show file"));return;}library_=loaded.library;playlist_=loaded.cues;folders_=loaded.folders;editing_=cuedRow_=-1;projectPath_=path;dirty_=false;refreshTables();showTitle_->setText(QFileInfo(path).completeBaseName());}
+    void saveProject(bool){if(demo_)return;QString path=projectPath_;if(path.isEmpty())path=QFileDialog::getSaveFileName(this,tx("Save show"),{},"Mizin show (*.mizinshow)");if(path.isEmpty())return;if(!path.endsWith(".mizinshow",Qt::CaseInsensitive))path+=".mizinshow";QJsonObject root=Show{library_,folders_,playlist_,currentOutputConfiguration()}.json();QSaveFile f(path);if(!f.open(QIODevice::WriteOnly)||f.write(QJsonDocument(root).toJson())<0||!f.commit()){footer_->setText(tx("Could not save show"));return;}projectPath_=path;dirty_=false;showTitle_->setText(QFileInfo(path).completeBaseName());footer_->setText(tx("Show saved"));}
+    bool applyShow(const Show& loaded,const QString& path){if(!applyOutputConfiguration(loaded.outputs,false))return false;library_=loaded.library;playlist_=loaded.cues;folders_=loaded.folders;editing_=cuedRow_=-1;readiness_.clear();projectPath_=path;dirty_=false;refreshTables();refreshTransport();showTitle_->setText(QFileInfo(path).completeBaseName());return true;}
+    void openProject(){if(demo_)return;if(dirty_&&QMessageBox::question(this,tx("Unsaved show"),tx("Open another show without saving?"),QMessageBox::Yes|QMessageBox::No,QMessageBox::No)!=QMessageBox::Yes)return;const auto path=QFileDialog::getOpenFileName(this,tx("Open show"),{},"Mizin show (*.mizinshow)");if(path.isEmpty())return;QFile f(path);if(!f.open(QIODevice::ReadOnly)){footer_->setText(tx("Could not open show"));return;}QJsonParseError error;auto doc=QJsonDocument::fromJson(f.readAll(),&error);auto obj=doc.object();Show loaded;if(error.error!=QJsonParseError::NoError || !Show::read(obj,loaded)){footer_->setText(tx("Invalid show file"));return;}applyShow(loaded,path);}
     void helpDialog(){QDialog dialog(this);dialog.setWindowTitle(tx("Quick start"));dialog.resize(700,540);auto* l=new QVBoxLayout(&dialog);auto* browser=new QTextBrowser;browser->setOpenExternalLinks(false);browser->setMarkdown(tx("HELP_MARKDOWN"));l->addWidget(browser);auto* close=button("Close");l->addWidget(close);connect(close,&QPushButton::clicked,&dialog,&QDialog::accept);dialog.exec();}
 };
 
@@ -553,6 +626,7 @@ int main(int argc,char** argv){
     QCommandLineParser parser;
     parser.addHelpOption();
     parser.addOption(QCommandLineOption(QStringLiteral("board"),QStringLiteral("Show sample content for layout review")));
+    parser.addOption(QCommandLineOption(QStringLiteral("board-multi-output"),QStringLiteral("Show optional two-Program / three-display layout in sample mode")));
     parser.addOption(QCommandLineOption(QStringLiteral("lang"),QStringLiteral("UI language"),QStringLiteral("locale")));
     parser.addOption(QCommandLineOption(QStringLiteral("capture-dir"),QStringLiteral("Export one native layout board and exit"),QStringLiteral("directory")));
     parser.addOption(QCommandLineOption(QStringLiteral("capture-page"),QStringLiteral("Layout page: 0 MAIN, 1 EDIT, 2 library, 3 outputs, 4 audio"),QStringLiteral("page"),QStringLiteral("0")));
@@ -581,6 +655,7 @@ int main(int argc,char** argv){
     const QString state=parser.isSet("state-dir")?parser.value("state-dir"):QCoreApplication::applicationDirPath()+"/state";
     QSettings decodeSettings(state+"/preferences.ini",QSettings::IniFormat);if(decodeSettings.value("decode","auto").toString()=="cpu"){qputenv("QT_FFMPEG_DECODING_HW_DEVICE_TYPES",",");qputenv("MIZIN_DECODE_MODE","cpu");}
     MainWindow window(parser.isSet("board"),parser.value("lang"),state);
+    if(parser.isSet("board-multi-output"))window.configureBoardOutputs();
     if(parser.isSet("capture-dir")){const auto match=QRegularExpression("^([0-9]{3,4})x([0-9]{3,4})$").match(parser.value("capture-size"));if(!match.hasMatch()||match.captured(1).toInt()<1280||match.captured(2).toInt()<800)return 4;window.resize(match.captured(1).toInt(),match.captured(2).toInt());}
     window.show();if(parser.isSet("ui-test"))return window.runUiTests(parser.value("fixtures"),parser.value("result"));window.importExternal(parser.positionalArguments());
     if(parser.isSet("capture-dir")){

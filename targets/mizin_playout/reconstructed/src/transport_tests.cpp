@@ -25,7 +25,14 @@ int runTransportTests(const QString& directory,const QString& resultPath) {
     const QString second=QDir(directory).absoluteFilePath("03-h264.mkv");
     Cue trimmed{source,500,1600,Transition::Cut,400,0,0};
     Show show{{source,second},{directory},{trimmed,Cue{second,200,1400,Transition::Dissolve,350,100,200}}},loaded;
-    record("schema2_roundtrip_preserves_cues",Show::read(show.json(),loaded) && loaded.json()==show.json());
+    record("schema3_roundtrip_preserves_cues_and_single_output",Show::read(show.json(),loaded) && loaded.json()==show.json()&&loaded.outputs.programs==1&&loaded.outputs.displays==1);
+    auto schema2=show.json();schema2["schema"]=2;schema2.remove("outputs");
+    record("schema2_migrates_to_single_program",Show::read(schema2,loaded)&&loaded.cues.size()==2&&loaded.outputs.programs==1&&loaded.outputs.displays==1);
+    show.outputs={2,3,{0,0,1}};record("schema3_preserves_mirrored_and_independent_routes",Show::read(show.json(),loaded)&&loaded.outputs.json()==show.outputs.json());
+    const auto saved=loaded.json();auto rejectOutput=[&](const QJsonValue& value){auto broken=show.json();broken["outputs"]=value;return !Show::read(broken,loaded)&&loaded.json()==saved;};
+    record("output_config_rejects_missing_or_fractional_counts_atomically",rejectOutput(QJsonValue{})&&rejectOutput(QJsonObject{{"programs",1.5},{"displays",QJsonArray{QJsonObject{{"program",0}}}}}));
+    record("output_config_rejects_zero_and_excess_capacity",rejectOutput(QJsonObject{{"programs",0},{"displays",QJsonArray{QJsonObject{{"program",0}}}}})&&rejectOutput(QJsonObject{{"programs",3},{"displays",QJsonArray{QJsonObject{{"program",0}}}}})&&rejectOutput(QJsonObject{{"programs",1},{"displays",QJsonArray{}}})&&rejectOutput(QJsonObject{{"programs",1},{"displays",QJsonArray{QJsonObject{{"program",0}},QJsonObject{{"program",0}},QJsonObject{{"program",0}},QJsonObject{{"program",0}}}}}));
+    record("output_config_rejects_disabled_or_fractional_source",rejectOutput(QJsonObject{{"programs",1},{"displays",QJsonArray{QJsonObject{{"program",1}}}}})&&rejectOutput(QJsonObject{{"programs",2},{"displays",QJsonArray{QJsonObject{{"program",.5}}}}}));
     const QJsonObject legacy{{"schema",1},{"library",QJsonArray{source}},{"folders",QJsonArray{}},{"playlist",QJsonArray{source,source}}};
     record("schema1_migration_and_duplicate_files",Show::read(legacy,loaded) && loaded.cues.size()==2 && loaded.cues[0].out==-1);
     auto invalid=show.json();auto badCue=trimmed.json();badCue["out_ms"]=400;invalid["playlist"]=QJsonArray{badCue};

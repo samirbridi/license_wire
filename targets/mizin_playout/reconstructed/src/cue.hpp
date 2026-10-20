@@ -4,6 +4,7 @@
 #include <QList>
 #include <QStringList>
 #include <cmath>
+#include <array>
 
 enum class Transition { Cut, Dissolve, FadeBlack };
 struct Cue {
@@ -42,18 +43,42 @@ struct Cue {
         return cue.error().isEmpty();
     }
 };
+struct OutputConfiguration {
+    int programs=1, displays=1;
+    std::array<int,3> sources{0,0,0};
+    bool valid() const {
+        if(programs<1 || programs>2 || displays<1 || displays>3)return false;
+        for(int i=0;i<displays;++i)if(sources[i]<0 || sources[i]>=programs)return false;
+        return true;
+    }
+    QJsonObject json() const {
+        QJsonArray routes;for(int i=0;i<displays;++i)routes.append(QJsonObject{{"program",sources[i]}});
+        return {{"programs",programs},{"displays",routes}};
+    }
+    static bool read(const QJsonValue& value,OutputConfiguration& destination){
+        if(!value.isObject())return false;const auto o=value.toObject();const auto count=o["programs"];
+        if(!count.isDouble() || count.toDouble()!=count.toInt() || !o["displays"].isArray())return false;
+        OutputConfiguration result;result.programs=count.toInt();const auto routes=o["displays"].toArray();result.displays=routes.size();
+        if(result.displays<1 || result.displays>3)return false;
+        for(int i=0;i<routes.size();++i){if(!routes[i].isObject())return false;const auto source=routes[i].toObject()["program"];
+            if(!source.isDouble() || source.toDouble()!=source.toInt())return false;result.sources[i]=source.toInt();}
+        if(!result.valid())return false;destination=result;return true;
+    }
+};
 struct Show {
     QStringList library, folders;
     QList<Cue> cues;
+    OutputConfiguration outputs;
     QJsonObject json() const {
         QJsonArray items; for (const auto& cue : cues) items.append(cue.json());
-        return {{"schema",2},{"library",QJsonArray::fromStringList(library)},
-                {"folders",QJsonArray::fromStringList(folders)},{"playlist",items}};
+        return {{"schema",3},{"library",QJsonArray::fromStringList(library)},
+                {"folders",QJsonArray::fromStringList(folders)},{"playlist",items},{"outputs",outputs.json()}};
     }
     static bool read(const QJsonObject& o, Show& destination) {
         const int schema = o["schema"].toInt();
-        if ((schema != 1 && schema != 2) || !o["playlist"].isArray() || !o["library"].isArray() || !o["folders"].isArray()) return false;
+        if ((schema != 1 && schema != 2 && schema != 3) || !o["playlist"].isArray() || !o["library"].isArray() || !o["folders"].isArray()) return false;
         Show result;
+        if(schema==3 && !OutputConfiguration::read(o["outputs"],result.outputs))return false;
         auto strings = [](const QJsonArray& a, QStringList& out) {
             for (const auto& v : a) { if (!v.isString()) return false; out.append(v.toString()); } return true;
         };

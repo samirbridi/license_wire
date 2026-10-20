@@ -31,6 +31,7 @@ void DiagnosticsPanel::refresh(){
     auto put=[](QTableWidget* table,int row,int column,const QString& text,const QString& hint=QString{}){auto* item=table->item(row,column);if(!item){item=new QTableWidgetItem;table->setItem(row,column,item);}item->setText(text);item->setToolTip(hint.isEmpty()?text:hint);};
     for(int row=0;row<labels.size();++row)put(channels_,row,0,tx_(labels[row]));
     const auto channelData=report["channels"].toArray();
+    channels_->setColumnHidden(3,!channelData[2].toObject()["enabled"].toBool(true));
     for(int col=0;col<3;++col){const auto c=channelData[col].toObject();const QString unavailable=tx_("Not available");
         auto number=[&](const QString& key,int decimals=0){const auto value=c[key];return value.isDouble()?QString::number(value.toDouble(),'f',decimals):unavailable;};
         const QString source=c["source"].toString();const int w=c["width"].toInt(),h=c["height"].toInt();
@@ -42,7 +43,7 @@ void DiagnosticsPanel::refresh(){
         for(int row=0;row<values.size();++row)put(channels_,row,col+1,demo_?tx_("Sample"):values[row],row==0?source:row==2?c["preparation_source"].toString()+"\n"+c["preparation_error"].toString():QString{});
     }
     const auto senders=report["network"].toArray();network_->setRowCount(senders.size());
-    for(int row=0;row<senders.size();++row){const auto s=senders[row].toObject();const QStringList values{tx_(s["program"].toString()=="A"?"Program A":"Program B"),s["protocol"].toString(),tx_(s["running"].toBool()?"Sending":s["error"].toString().isEmpty()?"Stopped":"Error"),QString::number(s["video_frames"].toInt()),QString::number(s["audio_packets"].toInt()),QString::number(s["superseded_video"].toInt()),QString::number(s["dropped_audio"].toInt()),QString::number(s["connections"].toInt())};for(int col=0;col<values.size();++col)put(network_,row,col,demo_?tx_("Sample"):values[col],col==2?s["error"].toString():QString{});}
+    for(int row=0;row<senders.size();++row){const auto s=senders[row].toObject();network_->setRowHidden(row,!s["enabled"].toBool(true));const QStringList values{tx_(s["program"].toString()=="A"?"Program A":"Program B"),s["protocol"].toString(),tx_(s["running"].toBool()?"Sending":s["error"].toString().isEmpty()?"Stopped":"Error"),QString::number(s["video_frames"].toInt()),QString::number(s["audio_packets"].toInt()),QString::number(s["superseded_video"].toInt()),QString::number(s["dropped_audio"].toInt()),QString::number(s["connections"].toInt())};for(int col=0;col<values.size();++col)put(network_,row,col,demo_?tx_("Sample"):values[col],col==2?s["error"].toString():QString{});}
 }
 bool DiagnosticsPanel::exportTo(const QString& path){
     QSaveFile file(path);const auto payload=QJsonDocument(report_()).toJson();
