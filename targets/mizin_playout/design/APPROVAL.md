@@ -1,0 +1,11 @@
+# Live Desk direction — approved 2026-10-20
+
+The user selected **proposal A — Live Desk** after comparing the three static MAIN concepts: “Gostei muito do modelo A”. They then requested continuation.
+
+Approved direction: dark native workspace, sidebar navigation, prominent Preview / Program A, persistent Program B, explicit A/B take destination, horizontal CUT / FADE strip (300 ms default), a shared running-order table and a compact audio/output dashboard.
+
+The implementation uses native Qt widgets, original vector icons and native sample graphics. Generated concept screenshots remain review references and are not embedded as application textures. English remains default with runtime PT-BR switching. Existing EDIT, Library, Outputs, Audio and Settings functions remain available.
+
+The direction approval does not certify final native rendering or physical audio/video output. Export and review actual native boards after compilation; report technical checks separately from the user's final visual assessment.
+
+Reference: [approved A concept](proposals/2026-10-20-layout-r1/A-live-desk.png). B and C are retained as alternatives, not selected directions.

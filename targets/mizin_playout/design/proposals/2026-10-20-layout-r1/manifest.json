@@ -1,0 +1,41 @@
+{
+  "created": "2026-10-20",
+  "status": "direction_A_approved",
+  "approved_direction": "A",
+  "approval_record": "../../APPROVAL.md",
+  "artifact_type": "generated_static_ui_concepts",
+  "generation_mode": "built-in imagegen",
+  "application_baseline": "v0.7.3 (build 0020)",
+  "application_modified_during_mockup_generation": false,
+  "build_run": false,
+  "ui_language": "en",
+  "files": [
+    {
+      "file": "A-live-desk.png",
+      "direction": "Live Desk",
+      "width": 1586,
+      "height": 992,
+      "bytes": 1643641,
+      "sha256": "5c33d26f239dbe6242832115079b181ccafdec9bc6c8ad13ab4b2d5d395048bb",
+      "generation_source": "C:\\Users\\Avell Mizin\\.codex\\generated_images\\01a154fa-f837-7753-ac0d-e265d03745f9\\exec-9b8fb262-04a5-421c-bfe1-ecb7c4639ce0.png"
+    },
+    {
+      "file": "B-dual-program.png",
+      "direction": "Dual Program",
+      "width": 1586,
+      "height": 992,
+      "bytes": 1704238,
+      "sha256": "db1fe56208e07c390bf15ab5368df0d93b3b15dafe1ce2b9f2afe72b183b49b8",
+      "generation_source": "C:\\Users\\Avell Mizin\\.codex\\generated_images\\01a154fa-f837-7753-ac0d-e265d03745f9\\exec-4117ec1f-33f6-4b4f-9eb6-c9dd04b44922.png"
+    },
+    {
+      "file": "C-stage-focus.png",
+      "direction": "Stage Focus",
+      "width": 1586,
+      "height": 992,
+      "bytes": 1684424,
+      "sha256": "dbcd58354c0894e7324ef1e479549ab24605eb734f7e346af821f5c99d994f60",
+      "generation_source": "C:\\Users\\Avell Mizin\\.codex\\generated_images\\01a154fa-f837-7753-ac0d-e265d03745f9\\exec-4e6d5f10-406f-4233-91ba-96c337473257.png"
+    }
+  ]
+}
