@@ -487,5 +487,24 @@
     ],
     "date": "2026-10-20",
     "build_status": "PASS"
+  },
+  {
+    "display": "v0.13.0 (build 0033)",
+    "previous": "v0.12.1 (build 0032)",
+    "source_commit": "97949546b898d8eb697496cf89a3983842208be7",
+    "commits": [
+      {
+        "sha": "d3ed5e053c2dd4c7d308d2ee8cfbfa490693d343",
+        "subject": "improve: registra layout minimalista metricas e validacao do build 0032",
+        "kind": "improve"
+      },
+      {
+        "sha": "97949546b898d8eb697496cf89a3983842208be7",
+        "subject": "feat: mostra memoria em MB GB e adiciona uso de memoria GPU por DXGI",
+        "kind": "feat"
+      }
+    ],
+    "date": "2026-10-20",
+    "build_status": "PASS"
   }
 ]

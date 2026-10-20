@@ -1,5 +1,19 @@
 # CHANGELOG — Mizin Playout
 
+## v0.13.0 (build 0033) - 2026-10-20
+
+### 💥 Breaking Changes
+- None.
+
+### ✨ Features
+- feat: mostra memoria em MB GB e adiciona uso de memoria GPU por DXGI (97949546b898d8eb697496cf89a3983842208be7)
+
+### 🐛 Fixes
+- None.
+
+### ⚡ Improvements
+- improve: registra layout minimalista metricas e validacao do build 0032 (d3ed5e053c2dd4c7d308d2ee8cfbfa490693d343)
+
 ## v0.12.1 (build 0032) - 2026-10-20
 
 ### 💥 Breaking Changes

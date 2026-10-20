@@ -23,3 +23,6 @@ The user subsequently requested alignment/spacing fixes, an all-Program multivie
 
 
 The user then reported remaining TAKE alignment and selected-Sequential clipping, requested a vMix-like performance footer and a more minimal organization. ADR-012 addresses those concrete corrections within Live Desk A. Previous build-0030 boards/package are preserved; new selected-mode captures are implementation evidence pending the user's visual assessment.
+
+
+The user subsequently requested decimal MB/GB, GPU activity plus application-memory usage, and clarification of Mix. ADR-013 changes footer metrics/labels within the accepted minimal Live Desk layout. It does not imply new human approval or physical output qualification. Prior build-0032 assets/package are preserved.

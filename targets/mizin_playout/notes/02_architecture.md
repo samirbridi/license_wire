@@ -25,3 +25,6 @@ MAIN now keeps a shared-frame multiview of every configured Program. Stable-ID t
 
 
 The Live Desk now uses a common 40px TAKE grid and stable selected/unselected mode typography. ProcessUsage samples CPU/RAM and optional PID-scoped GPU Engine counters on a serialized worker; the persistent footer exposes those values plus selected Program publications and CPU composition timing. Unavailable/stale resource values remain null. See ADR-012-minimal-desk-and-process-usage.md.
+
+
+The footer now converts exact memory bytes to decimal MB/GB. GPU activity remains PDH process-engine load; GPU memory is independently queried through DXGI CurrentUsage LOCAL + NON_LOCAL on node 0 of each hardware adapter, with complete-or-null aggregates and raw per-adapter evidence. Composition/Composição replaces Mix. See ADR-013-decimal-units-and-gpu-memory.md.

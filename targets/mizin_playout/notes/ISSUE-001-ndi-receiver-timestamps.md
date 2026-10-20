@@ -25,3 +25,6 @@ Build 0030 current bounded regression: no failure observed; the known issue rema
 
 
 Build 0032 minimal-controls/resource-footer regression: no strict failure observed in the bounded run; issue remains open. Results/exits are retained in evidence/dynamic-program-suites-0032.json. No network timestamp implementation changes were made.
+
+
+Build 0033 decimal-memory/DXGI footer regression: no strict failure observed in this bounded run; issue remains open. Results/exits remain in evidence/dynamic-program-suites-0033.json. No network timestamp implementation changed.

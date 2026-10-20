@@ -1,0 +1,97 @@
+{
+  "version": "v0.13.0 (build 0033)",
+  "source_commit": "97949546b898d8eb697496cf89a3983842208be7",
+  "reports": {
+    "auto": {
+      "cpu_percent": 7.764562190311034,
+      "gpu_engine": "\\\\DESKTOP-BBB9G7I\\GPU Engine(pid_33848_luid_0x00000000_0x00016E0F_phys_0_eng_3_engtype_VideoDecode)\\Utilization Percentage",
+      "gpu_memory_adapters": [
+        {
+          "available": true,
+          "local_bytes": 128090112,
+          "luid": "00000000:00016e0f",
+          "name": "NVIDIA GeForce GTX 1660 Ti",
+          "node": 0,
+          "nonlocal_bytes": 63561728
+        },
+        {
+          "available": true,
+          "local_bytes": 0,
+          "luid": "00000000:0001648e",
+          "name": "Intel(R) UHD Graphics 630",
+          "node": 0,
+          "nonlocal_bytes": 0
+        },
+        {
+          "available": true,
+          "local_bytes": 0,
+          "luid": "00000000:00020e02",
+          "name": "Intel(R) UHD Graphics 630",
+          "node": 0,
+          "nonlocal_bytes": 0
+        }
+      ],
+      "gpu_memory_bytes": 191651840,
+      "gpu_memory_complete": true,
+      "gpu_memory_local_bytes": 128090112,
+      "gpu_memory_nonlocal_bytes": 63561728,
+      "gpu_memory_scope": "Current process DXGI LOCAL + NON_LOCAL usage, node 0 on each hardware adapter; not physical VRAM capacity. Partial queries remain unavailable.",
+      "gpu_percent": 3.14611704220433,
+      "interval_ms": 1308.0261,
+      "pid": 33848,
+      "provider": "Windows GetProcessTimes / GetProcessMemoryInfo / PDH GPU Engine / DXGI QueryVideoMemoryInfo",
+      "sampled_unix_ms": 1792539540473,
+      "scope": "Current process; CPU normalized by logical processors, RAM working set, busiest observed process GPU engine. Not decoder identification or whole-system load.",
+      "stale": false,
+      "working_set_bytes": 304594944
+    },
+    "cpu": {
+      "cpu_percent": 4.943975329533962,
+      "gpu_engine": "\\\\DESKTOP-BBB9G7I\\GPU Engine(pid_27112_luid_0x00000000_0x00016E0F_phys_0_eng_0_engtype_3D)\\Utilization Percentage",
+      "gpu_memory_adapters": [
+        {
+          "available": true,
+          "local_bytes": 39714816,
+          "luid": "00000000:00016e0f",
+          "name": "NVIDIA GeForce GTX 1660 Ti",
+          "node": 0,
+          "nonlocal_bytes": 8818688
+        },
+        {
+          "available": true,
+          "local_bytes": 0,
+          "luid": "00000000:0001648e",
+          "name": "Intel(R) UHD Graphics 630",
+          "node": 0,
+          "nonlocal_bytes": 0
+        },
+        {
+          "available": true,
+          "local_bytes": 0,
+          "luid": "00000000:00020e02",
+          "name": "Intel(R) UHD Graphics 630",
+          "node": 0,
+          "nonlocal_bytes": 0
+        }
+      ],
+      "gpu_memory_bytes": 48533504,
+      "gpu_memory_complete": true,
+      "gpu_memory_local_bytes": 39714816,
+      "gpu_memory_nonlocal_bytes": 8818688,
+      "gpu_memory_scope": "Current process DXGI LOCAL + NON_LOCAL usage, node 0 on each hardware adapter; not physical VRAM capacity. Partial queries remain unavailable.",
+      "gpu_percent": 3.4899526475435683,
+      "interval_ms": 1000.7972,
+      "pid": 27112,
+      "provider": "Windows GetProcessTimes / GetProcessMemoryInfo / PDH GPU Engine / DXGI QueryVideoMemoryInfo",
+      "sampled_unix_ms": 1792539882258,
+      "scope": "Current process; CPU normalized by logical processors, RAM working set, busiest observed process GPU engine. Not decoder identification or whole-system load.",
+      "stale": false,
+      "working_set_bytes": 232738816
+    }
+  },
+  "units": {
+    "MB": 1000000,
+    "GB": 1000000000
+  },
+  "scope": "Actual process DXGI CurrentUsage snapshots, node 0 per hardware adapter. Not physical capacity, decoder identity or a throughput benchmark."
+}
