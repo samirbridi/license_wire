@@ -134,5 +134,38 @@
     ],
     "date": "2026-10-20",
     "build_status": "PASS"
+  },
+  {
+    "display": "v0.5.0 (build 0011)",
+    "previous": "v0.4.0 (build 0010)",
+    "source_commit": "0247f77e0729f3edb739af7f97431d57a7738302",
+    "commits": [
+      {
+        "sha": "eaae4e7021c7ee6311ef60d37bce7462b9a4c6ee",
+        "subject": "improve: registra MAIN EDIT e setenta e seis verificacoes nativas",
+        "kind": "improve"
+      },
+      {
+        "sha": "0247f77e0729f3edb739af7f97431d57a7738302",
+        "subject": "feat: adiciona escala Lanczos e fullscreen vinculado a tela detectada",
+        "kind": "feat"
+      }
+    ],
+    "date": "2026-10-20",
+    "build_status": "PASS"
+  },
+  {
+    "display": "v0.5.1 (build 0012)",
+    "previous": "v0.5.0 (build 0011)",
+    "source_commit": "75a10a6536357b4ebab21e54fa52bf7c62be172a",
+    "commits": [
+      {
+        "sha": "75a10a6536357b4ebab21e54fa52bf7c62be172a",
+        "subject": "perf: explicita limite do Lanczos CPU e mede quadros da fonte correta",
+        "kind": "perf"
+      }
+    ],
+    "date": "2026-10-20",
+    "build_status": "PASS"
   }
 ]

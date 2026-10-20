@@ -1,0 +1,10 @@
+{
+  "package_version": "v0.4.0 (build 0010)",
+  "date": "2026-10-20",
+  "backend": "Qt FFmpeg 7.1.2",
+  "d3d11_selected_count": 5,
+  "native_probe_result": "PASS",
+  "evidence": "hardware-decode-excerpts-build0010.log",
+  "raw_log_sha256": "9030eeccee852417cdbe4bd66fa3c7194cb5aa5ff318cdc4f4cbb1d12efbea5d",
+  "scope": "Hardware decode path selection observed. Exact adapter not attributed by this log; AMD not present or tested. No vendor-specific certification or throughput claim."
+}

@@ -1,5 +1,33 @@
 # CHANGELOG — Mizin Playout
 
+## v0.5.1 (build 0012) - 2026-10-20
+
+### 💥 Breaking Changes
+- None.
+
+### ✨ Features
+- None.
+
+### 🐛 Fixes
+- None.
+
+### ⚡ Improvements
+- perf: explicita limite do Lanczos CPU e mede quadros da fonte correta (75a10a6536357b4ebab21e54fa52bf7c62be172a)
+
+## v0.5.0 (build 0011) - 2026-10-20
+
+### 💥 Breaking Changes
+- None.
+
+### ✨ Features
+- feat: adiciona escala Lanczos e fullscreen vinculado a tela detectada (0247f77e0729f3edb739af7f97431d57a7738302)
+
+### 🐛 Fixes
+- None.
+
+### ⚡ Improvements
+- improve: registra MAIN EDIT e setenta e seis verificacoes nativas (eaae4e7021c7ee6311ef60d37bce7462b9a4c6ee)
+
 ## v0.4.0 (build 0010) - 2026-10-20
 
 ### 💥 Breaking Changes

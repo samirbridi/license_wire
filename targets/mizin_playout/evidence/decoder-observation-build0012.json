@@ -1,0 +1,9 @@
+{
+  "version": "v0.5.1 (build 0012)",
+  "source_commit": "75a10a6536357b4ebab21e54fa52bf7c62be172a",
+  "d3d11_selected_count": 5,
+  "result": "PASS",
+  "excerpt": "hardware-decode-excerpts-build0012.log",
+  "raw_log_sha256": "7b8fac88da023a016e092f2fdd93e494edc5a778e701f0e855b90b7b535dd3d6",
+  "scope": "H.264/H.265 hardware path selected; exact adapter not attributed; AMD not present/tested; no vendor certification"
+}

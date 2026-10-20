@@ -1,67 +1,72 @@
 {
   "result": "PASS_NATIVE_FUNCTIONAL_PROTOTYPE",
-  "version": "v0.4.0 (build 0010)",
-  "source_commit": "3b7d64b223bfb647c5a9e27a3a219fb5adcd4de1",
-  "recorded_utc": "2026-10-20T11:55:40.178829+00:00",
-  "functional_checks_passed": 76,
+  "version": "v0.5.1 (build 0012)",
+  "source_commit": "75a10a6536357b4ebab21e54fa52bf7c62be172a",
+  "recorded_utc": "2026-10-20T12:28:14.388451+00:00",
+  "functional_checks_passed": 114,
   "suites": [
     {
       "suite": "smoke",
       "mode": "cpu",
       "checks": 7,
       "result": "PASS",
-      "file": "evidence/smoke-cpu-0010.json"
+      "file": "evidence/smoke-cpu-0012.json"
     },
     {
       "suite": "transport",
       "mode": "cpu",
       "checks": 23,
       "result": "PASS",
-      "file": "evidence/transport-cpu-0010.json"
+      "file": "evidence/transport-cpu-0012.json"
     },
     {
       "suite": "ui",
       "mode": "cpu",
       "checks": 8,
       "result": "PASS",
-      "file": "evidence/ui-cpu-0010.json"
+      "file": "evidence/ui-cpu-0012.json"
+    },
+    {
+      "suite": "output",
+      "mode": "cpu",
+      "checks": 19,
+      "result": "PASS",
+      "file": "evidence/output-cpu-0012.json"
     },
     {
       "suite": "smoke",
       "mode": "auto",
       "checks": 7,
       "result": "PASS",
-      "file": "evidence/smoke-auto-0010.json"
+      "file": "evidence/smoke-auto-0012.json"
     },
     {
       "suite": "transport",
       "mode": "auto",
       "checks": 23,
       "result": "PASS",
-      "file": "evidence/transport-auto-0010.json"
+      "file": "evidence/transport-auto-0012.json"
     },
     {
       "suite": "ui",
       "mode": "auto",
       "checks": 8,
       "result": "PASS",
-      "file": "evidence/ui-auto-0010.json"
+      "file": "evidence/ui-auto-0012.json"
+    },
+    {
+      "suite": "output",
+      "mode": "auto",
+      "checks": 19,
+      "result": "PASS",
+      "file": "evidence/output-auto-0012.json"
     }
   ],
   "fixtures": {
-    "width": 640,
-    "height": 360,
-    "fps": 30,
-    "synthetic": true,
-    "codecs": [
-      "H.264 MP4",
-      "H.265 MP4",
-      "H.264 MKV",
-      "MJPEG AVI",
-      "ProRes MOV"
-    ]
+    "baseline": "Five synthetic 640x360/30 fps clips: H.264 MP4/MKV, H.265 MP4, MJPEG AVI, ProRes MOV",
+    "resolution": "Two synthetic 2s H.264/30 fps clips: 1920x1080 and 3840x2160"
   },
-  "catalog_keys": 131,
+  "catalog_keys": 151,
   "version_policy_tests": 4,
   "boards": [
     {
@@ -74,7 +79,7 @@
     },
     {
       "file": "design/boards/02-outputs-en.png",
-      "sha256": "e53e37ee245bc3bb8007300ede6ea85be8888860c8dc263d43814a63f4ae4b02",
+      "sha256": "ce3b2c9d9c40d9aa0b0d6a9252575f61491dccfb0a413d465f8ba350a0407e91",
       "width": 1600,
       "height": 1000,
       "brand_bright_pixels": 469,
@@ -114,43 +119,104 @@
     }
   ],
   "package": {
-    "executable_sha256": "11e1b4c50f427deed928afa0ac8bba979969cdaf78a72ebeca40a4c280db6f73",
+    "executable_sha256": "89e10631e44f295831839bfefea22e9a5a3d23a53dddb1cfa63cabb4e45d93e1",
     "files": 25,
-    "bytes": 56399056
+    "bytes": 56471760
   },
-  "manual_controls": {
-    "pages": [
-      "MAIN",
-      "EDIT",
-      "Library",
-      "Outputs",
-      "Settings"
-    ],
-    "fade_default_ms": 300,
-    "fade_range_ms": [
-      1,
-      10000
-    ],
-    "shortcuts": {
-      "CUT": "Ctrl+Enter",
-      "FADE": "Ctrl+Space"
-    },
-    "preferences": "manualFadeMs",
-    "applied_cue_required": true,
-    "manual_override_preserves_sequence": true
+  "hardware_decode_observation": {
+    "version": "v0.5.1 (build 0012)",
+    "source_commit": "75a10a6536357b4ebab21e54fa52bf7c62be172a",
+    "d3d11_selected_count": 5,
+    "result": "PASS",
+    "excerpt": "hardware-decode-excerpts-build0012.log",
+    "raw_log_sha256": "7b8fac88da023a016e092f2fdd93e494edc5a778e701f0e855b90b7b535dd3d6",
+    "scope": "H.264/H.265 hardware path selected; exact adapter not attributed; AMD not present/tested; no vendor certification"
   },
-  "composition": "Shared CPU image compositor during transitions; normal cuts forward native frames. Hardware decode auto selection and forced CPU modes tested.",
+  "output_scaling": {
+    "default": "Native",
+    "optional": "Lanczos CPU experimental (SDR 8-bit)",
+    "queue_bound": "One in-flight worker and one newest pending frame per Program/pixel-size pair",
+    "lanczos_output_pixel_cap": 8847360,
+    "fallback": "Native for high-depth, HDR, transformed/cropped or oversized frames",
+    "live_4k_lanczos_qualified": false,
+    "performance_note": "Current CPU service times exceed 30 fps; thread-count experiment did not resolve cost. GPU HQ scaling remains open.",
+    "detected_screens": [
+      {
+        "dpr": 1,
+        "logical_h": 1080,
+        "logical_w": 1920,
+        "name": "SONY TV",
+        "pixel_h": 1080,
+        "pixel_w": 1920,
+        "refresh_hz": 60
+      }
+    ],
+    "measurements": {
+      "cpu": [
+        {
+          "down_ms": 117.0111,
+          "scope": "single constant-image resample, not playback throughput",
+          "up_ms": 204.2548
+        },
+        {
+          "elapsed_ms": 1278,
+          "frames": 8,
+          "last_service_ms": 143.0754,
+          "output_h": 1080,
+          "output_w": 1920,
+          "scope": "short functional stream; not sustained performance or AV sync qualification",
+          "source_h": 2160,
+          "source_w": 3840
+        },
+        {
+          "elapsed_ms": 1703,
+          "frames": 8,
+          "last_service_ms": 189.93449999999999,
+          "output_h": 2160,
+          "output_w": 3840,
+          "scope": "short functional stream; not sustained performance or AV sync qualification",
+          "source_h": 1080,
+          "source_w": 1920
+        }
+      ],
+      "auto": [
+        {
+          "down_ms": 122.3637,
+          "scope": "single constant-image resample, not playback throughput",
+          "up_ms": 201.0613
+        },
+        {
+          "elapsed_ms": 1481,
+          "frames": 8,
+          "last_service_ms": 162.99460000000002,
+          "output_h": 1080,
+          "output_w": 1920,
+          "scope": "short functional stream; not sustained performance or AV sync qualification",
+          "source_h": 2160,
+          "source_w": 3840
+        },
+        {
+          "elapsed_ms": 1904,
+          "frames": 8,
+          "last_service_ms": 219.0925,
+          "output_h": 2160,
+          "output_w": 3840,
+          "scope": "short functional stream; not sustained performance or AV sync qualification",
+          "source_h": 1080,
+          "source_w": 1920
+        }
+      ]
+    }
+  },
   "not_validated": [
-    "Physical displays/hotplug",
-    "1080p/4K throughput",
-    "AMD/NVIDIA vendor-specific qualification",
-    "GPU transition composition",
-    "Audio sample/frame synchronization and listening",
+    "NVIDIA/AMD vendor-specific codec qualification",
+    "High-quality GPU scaling/compositing",
+    "Sustained 1080p/4K throughput, multi-output load and AV sync",
+    "Physical signal integrity, hotplug and visual approval",
     "HDR/alpha/color accuracy",
-    "Manual OS pointer/drag-drop interactions",
+    "OS pointer/drag-drop interactions",
     "macOS/Linux builds",
     "Remote operation",
-    "24/72-hour endurance",
-    "Human visual approval"
+    "24/72-hour endurance"
   ]
 }

@@ -1,0 +1,113 @@
+{
+  "mode": "auto",
+  "result": "PASS",
+  "scope": "Native synthetic 640x360 media; functional ranges, compositor pixels and transport state. Not physical display or AV sync qualification.",
+  "tests": [
+    {
+      "name": "schema2_roundtrip_preserves_cues",
+      "pass": true
+    },
+    {
+      "name": "schema1_migration_and_duplicate_files",
+      "pass": true
+    },
+    {
+      "name": "invalid_show_is_atomic",
+      "pass": true
+    },
+    {
+      "name": "fractional_and_invalid_range_rejected",
+      "pass": true
+    },
+    {
+      "name": "dissolve_pixel_mix",
+      "pass": true
+    },
+    {
+      "name": "fade_black_midpoint",
+      "pass": true
+    },
+    {
+      "name": "single_clip_fade_pixel",
+      "pass": true
+    },
+    {
+      "first_ms": 500,
+      "frames": 33,
+      "last_ms": 1566,
+      "name": "trim_in_out_exclusive",
+      "pass": true
+    },
+    {
+      "name": "manual_mode_holds_without_advancing",
+      "pass": true
+    },
+    {
+      "composed_frames": 17,
+      "name": "single_clip_entry_exit_fades",
+      "pass": true
+    },
+    {
+      "composed_frames": 12,
+      "name": "sequential_dissolve",
+      "pass": true,
+      "starts": 2
+    },
+    {
+      "composed_frames": 12,
+      "name": "sequential_fade_black",
+      "pass": true,
+      "starts": 2
+    },
+    {
+      "name": "pause_freezes_transition",
+      "pass": true
+    },
+    {
+      "name": "resume_transition_completes",
+      "pass": true
+    },
+    {
+      "error": "Trim exceeds media duration",
+      "name": "out_beyond_duration_preserves_program",
+      "pass": true
+    },
+    {
+      "frames": 55,
+      "name": "manual_loop_repeats_only_trimmed_range",
+      "pass": true
+    },
+    {
+      "name": "failed_next_item_stops_sequence",
+      "pass": true,
+      "starts": 1
+    },
+    {
+      "name": "single_item_sequence_repeat",
+      "pass": true,
+      "starts": 3
+    },
+    {
+      "name": "manual_cut_bypasses_saved_entry_fade",
+      "pass": true
+    },
+    {
+      "name": "manual_override_preserves_sequence_settings",
+      "pass": true
+    },
+    {
+      "name": "manual_fade_defaults_300_from_black",
+      "pass": true
+    },
+    {
+      "name": "manual_fade_configured_between_clips",
+      "pass": true
+    },
+    {
+      "name": "invalid_manual_fade_does_not_replace_program",
+      "pass": true
+    }
+  ],
+  "version": "v0.5.1 (build 0012)",
+  "source_commit": "75a10a6536357b4ebab21e54fa52bf7c62be172a"
+}

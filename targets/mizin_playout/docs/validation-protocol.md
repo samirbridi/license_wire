@@ -29,3 +29,9 @@ For interface review, run scripts/capture-boards.ps1 and inspect all six PNGs, t
 Builds use a clean MSVC/NMake compilation because localized include-dependency scanning omitted changed headers in an earlier incremental build. Every compilation still advances the generated build counter. Earlier diagnostic logs and failed iterations are retained; the validation manifest identifies the package and results that constitute the current milestone.
 
 Before a production claim: validate physical output routing/hotplug, codec profiles/bit depths, audio devices/A-V sync, 1080p/4K load, transitions, memory growth and 24/72-hour behavior on each supported platform/GPU.
+
+## Resolution-specific checks
+
+Generate additional synthetic two-second H.264 clips with scripts/make-resolution-fixtures.ps1 -FFmpeg <QA-tool-path>. They live separately under binaries/resolution-fixtures, preserving the original five-file matrix. Run --output-test --fixtures binaries/resolution-fixtures --result evidence/output-auto.json, with --cpu for software decode.
+
+This suite checks physical/DIP pixel math, 4K/1080p aspect fitting, actual Lanczos output pixels, shared mirrored frames, bounded pending work, stale-frame invalidation, high-depth/transformation fallback, feed cleanup, native 4K H.264 frames, detected-screen fullscreen geometry, output close continuity, and actual source-matched downscale/upscale frames. A test PASS means functional behavior, not an acceptable live frame rate. Current CPU Lanczos 4K processing exceeds the 30 fps budget and is marked experimental. The screen detected by Qt is recorded; this does not establish visual approval, physical signal integrity or hotplug qualification.

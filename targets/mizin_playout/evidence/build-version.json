@@ -1,17 +1,12 @@
 {
-  "display": "v0.4.0 (build 0010)",
-  "previous": "v0.3.3 (build 0009)",
-  "source_commit": "3b7d64b223bfb647c5a9e27a3a219fb5adcd4de1",
+  "display": "v0.5.1 (build 0012)",
+  "previous": "v0.5.0 (build 0011)",
+  "source_commit": "75a10a6536357b4ebab21e54fa52bf7c62be172a",
   "commits": [
     {
-      "sha": "21e3dc3e5aab6d39f860134a1ee73211e92c4401",
-      "subject": "improve: registra pranchetas manuais e cinquenta verificacoes do playout",
-      "kind": "improve"
-    },
-    {
-      "sha": "3b7d64b223bfb647c5a9e27a3a219fb5adcd4de1",
-      "subject": "feat: organiza MAIN e EDIT com CUT e FADE manual de 300 ms",
-      "kind": "feat"
+      "sha": "75a10a6536357b4ebab21e54fa52bf7c62be172a",
+      "subject": "perf: explicita limite do Lanczos CPU e mede quadros da fonte correta",
+      "kind": "perf"
     }
   ],
   "date": "2026-10-20",

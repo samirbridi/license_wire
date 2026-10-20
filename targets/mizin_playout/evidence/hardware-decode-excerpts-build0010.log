@@ -1,0 +1,16 @@
+1: qt.multimedia.ffmpeg: Using Qt multimedia with FFmpeg version 7.1.2 LGPL version 2.1 or later
+2241: qt.multimedia.ffmpeg.hwaccel: Found potential codec "h264" for hw accel 7 ; Checking the hw device...
+2244: qt.multimedia.ffmpeg.hwaccel: HW device is OK
+2338: default: "FFmpeg log: Format d3d11 chosen by get_format()."
+2675: qt.multimedia.ffmpeg.hwaccel: Found potential codec "hevc" for hw accel 7 ; Checking the hw device...
+2680: qt.multimedia.ffmpeg.hwaccel: HW device is OK
+2782: default: "FFmpeg log: Format d3d11 chosen by get_format()."
+3163: qt.multimedia.ffmpeg.hwaccel: Found potential codec "h264" for hw accel 7 ; Checking the hw device...
+3170: qt.multimedia.ffmpeg.hwaccel: HW device is OK
+3266: default: "FFmpeg log: Format d3d11 chosen by get_format()."
+4407: qt.multimedia.ffmpeg.hwaccel: Found potential codec "h264" for hw accel 7 ; Checking the hw device...
+4489: qt.multimedia.ffmpeg.hwaccel: HW device is OK
+4580: qt.multimedia.ffmpeg.hwaccel: Found potential codec "hevc" for hw accel 7 ; Checking the hw device...
+4586: default: "FFmpeg log: Format d3d11 chosen by get_format()."
+4698: qt.multimedia.ffmpeg.hwaccel: HW device is OK
+4806: default: "FFmpeg log: Format d3d11 chosen by get_format()."

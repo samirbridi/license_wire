@@ -1,0 +1,10 @@
+# Output-resolution milestone — 2026-10-20
+
+- Build 0011 added explicit QScreen fullscreen binding, native aspect-preserving output and optional CPU Lanczos using the deployed LGPL runtime. Functional tests passed, but 4K resampling service times were too high for live 30 fps.
+- A direct libswscale 1/2/4/8-thread experiment retained in scaler-thread-benchmark.json did not resolve the measured cost. That change was not applied to the player.
+- Build 0012 labels the CPU profile experimental and warns when it exceeds the source frame budget. Native remains the default/recommended live profile. High-quality GPU scaling was not implemented in this milestone.
+- The final upscale test counts only frames whose active source is 1080p, excluding the previous 4K Program retained during preroll. Historical build-0011 outputs are preserved; final performance observations use output-*-0012.json.
+- All 114 functional checks passed in build 0012: 7 smoke + 23 transport + 8 UI + 19 output checks in each of CPU/automatic modes. A functional PASS does not qualify frame rate, AV sync or physical display quality.
+- Final short-stream Lanczos service samples were approximately 143–219 ms; overloaded pending frames were superseded. Treat these as bounded test observations, not sustained benchmarks. The output test detected a SONY TV desktop screen at 1920×1080 / 60 Hz and verified Qt fullscreen geometry; physical signal integrity and multi-display/hotplug approval remain pending.
+- A separate verbose native decode probe on the final executable selected D3D11 hardware formats five times for H.264/H.265 samples. Exact adapter attribution was not present in that log; the machine lists Intel/NVIDIA plus a virtual adapter, and AMD hardware was not available. Decoder acceleration does not establish GPU transitions or a GPU Lanczos implementation.
+- Original baseline media fixtures were retained. Separate 1080p/UHD H.264 clips were generated with scripts/make-resolution-fixtures.ps1; hashes are in binaries/SHA256SUMS.txt. Existing boards/validation were archived under build-0010 before updating the current artifacts.

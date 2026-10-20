@@ -1,0 +1,7 @@
+{
+  "library": "swscale-8.dll",
+  "sha256": "e9a7f5342fa2b157c20ba2483397f6fecca0d46f6453d651c8f76dc7cd72fe7a",
+  "version_integer": 525156,
+  "license": "LGPL version 2.1 or later",
+  "api_reference": "https://ffmpeg.org/doxygen/7.1/group__libsws.html"
+}

@@ -4,6 +4,7 @@ This target contains original application code. No Azimuth implementation or art
 
 - Qt 6.10.2 open-source SDK from official Qt archives via aqtinstall 3.3.0. Review the selected Qt module licenses and notices before distributing a package; preserve corresponding source/build information and relinking rights as applicable.
 - Qt Multimedia logs identify its native backend as FFmpeg 7.1.2, LGPL 2.1 or later. Exact binaries/configuration/notices must be included in the distribution inventory; do not infer all dependency terms only from the framework name.
+- Optional CPU Lanczos uses public functions from the already deployed swscale-8.dll and avutil-59.dll. ABI majors are checked before use. The runtime's own swscale_license result is LGPL version 2.1 or later; its hash and version are recorded in evidence/scaler-runtime.json. No QA-only GPL FFmpeg library is loaded for this feature.
 - BtbN FFmpeg GPL shared build is a **QA-only tool**, downloaded into ignored binaries/qa to generate synthetic fixtures. It is not copied to the application package.
 - The bundled Python runtime is used for build orchestration and validation, not required by the compiled application at runtime.
 
