@@ -1,0 +1,19 @@
+{
+  "display": "v0.12.0 (build 0031)",
+  "previous": "v0.11.1 (build 0030)",
+  "source_commit": "1488b9371b971c55b36b0739d84d0bc0dae4b3a4",
+  "commits": [
+    {
+      "sha": "a89814e9a0036fc6a10a9e4b7dba43fdb13e1cf0",
+      "subject": "improve: registra multiview alinhamentos e validacao nativa do build 0030",
+      "kind": "improve"
+    },
+    {
+      "sha": "1488b9371b971c55b36b0739d84d0bc0dae4b3a4",
+      "subject": "feat: adiciona rodape de desempenho e simplifica controles da Live Desk",
+      "kind": "feat"
+    }
+  ],
+  "date": "2026-10-20",
+  "build_status": "PASS"
+}

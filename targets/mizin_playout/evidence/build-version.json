@@ -1,11 +1,11 @@
 {
-  "display": "v0.11.1 (build 0030)",
-  "previous": "v0.11.0 (build 0029)",
-  "source_commit": "d344e3100a0eb7948293af5d6898bad7bed1c480",
+  "display": "v0.12.1 (build 0032)",
+  "previous": "v0.12.0 (build 0031)",
+  "source_commit": "ab9b1cb480829c00519d49f8b64e25db6577f109",
   "commits": [
     {
-      "sha": "d344e3100a0eb7948293af5d6898bad7bed1c480",
-      "subject": "fix: ajusta multiview compacto e atualiza ajuda e quadros pausados",
+      "sha": "ab9b1cb480829c00519d49f8b64e25db6577f109",
+      "subject": "fix: melhora contraste das setas e leitura das metricas no rodape",
       "kind": "fix"
     }
   ],

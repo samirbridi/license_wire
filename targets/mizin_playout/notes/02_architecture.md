@@ -22,3 +22,6 @@ Dynamic Programs now allocate extra NativeChannel/PlaylistController/NetworkBus 
 
 
 MAIN now keeps a shared-frame multiview of every configured Program. Stable-ID tile actions resolve the runtime at activation, preserving identity through middle removals and show reloads. The Outputs inventory separates logical Programs from display routes and adds a closed route for a selected Program without opening screens or starting network senders. See ADR-011-multiview-and-routing-inventory.md.
+
+
+The Live Desk now uses a common 40px TAKE grid and stable selected/unselected mode typography. ProcessUsage samples CPU/RAM and optional PID-scoped GPU Engine counters on a serialized worker; the persistent footer exposes those values plus selected Program publications and CPU composition timing. Unavailable/stale resource values remain null. See ADR-012-minimal-desk-and-process-usage.md.

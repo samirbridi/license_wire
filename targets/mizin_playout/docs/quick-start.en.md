@@ -72,3 +72,10 @@ NDI requires an official installed runtime; missing dependencies are reported. R
 
 
 Known issue: local regression intermittently fails strict NDI receiver video timestamp monotonicity, even while video/audio arrive. This remains unresolved; see [ISSUE-001](../notes/ISSUE-001-ndi-receiver-timestamps.md). NDI frame-order/AV-sync qualification is pending.
+
+
+## Minimal controls and resource footer
+
+In MAIN, **Add media** opens file/folder import options. The **+** icon beside the destination adds an independent Program. Reorder arrows move a selected cue; **More** contains Duplicate cue and Remove cue. Cue, Edit and Copy A remain directly accessible. Manual/Sequential share stable text sizing in both states.
+
+The persistent footer shows this process's normalized CPU load, RAM working set (MiB) and busiest observed Windows GPU engine when available. FPS counts video publications from the selected Program in the last second; it does not measure the physical display. Mix is the last CPU transition composition time, not total rendering latency. Hover for scope/version. Missing/stale counters use a dash. Sampling runs in the background about once per second. Engine diagnostics JSON includes the underlying process_usage values; this does not identify which GPU decodes a video.

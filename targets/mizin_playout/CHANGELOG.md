@@ -1,5 +1,33 @@
 # CHANGELOG — Mizin Playout
 
+## v0.12.1 (build 0032) - 2026-10-20
+
+### 💥 Breaking Changes
+- None.
+
+### ✨ Features
+- None.
+
+### 🐛 Fixes
+- fix: melhora contraste das setas e leitura das metricas no rodape (ab9b1cb480829c00519d49f8b64e25db6577f109)
+
+### ⚡ Improvements
+- None.
+
+## v0.12.0 (build 0031) - 2026-10-20
+
+### 💥 Breaking Changes
+- None.
+
+### ✨ Features
+- feat: adiciona rodape de desempenho e simplifica controles da Live Desk (1488b9371b971c55b36b0739d84d0bc0dae4b3a4)
+
+### 🐛 Fixes
+- None.
+
+### ⚡ Improvements
+- improve: registra multiview alinhamentos e validacao nativa do build 0030 (a89814e9a0036fc6a10a9e4b7dba43fdb13e1cf0)
+
 ## v0.11.1 (build 0030) - 2026-10-20
 
 ### 💥 Breaking Changes

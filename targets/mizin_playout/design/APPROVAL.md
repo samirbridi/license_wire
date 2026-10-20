@@ -20,3 +20,6 @@ On 2026-10-20 the user explicitly requested dynamic Programs/outputs and indepen
 
 
 The user subsequently requested alignment/spacing fixes, an all-Program multiview, a complete Program list in Outputs and the label NDI / OMT. ADR-011 implements that request within the accepted Live Desk direction. New native captures are implementation evidence for review; this entry does not claim final human approval of the revised rendering.
+
+
+The user then reported remaining TAKE alignment and selected-Sequential clipping, requested a vMix-like performance footer and a more minimal organization. ADR-012 addresses those concrete corrections within Live Desk A. Previous build-0030 boards/package are preserved; new selected-mode captures are implementation evidence pending the user's visual assessment.

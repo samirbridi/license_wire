@@ -64,3 +64,10 @@ This initial IP path performs one frame readback/conversion per Program and uses
 ## Primary references
 
 [Qt FFmpeg backend selection](https://doc.qt.io/qt-6.10/advanced-ffmpeg-configuration.html), [Qt video widget](https://doc.qt.io/qt-6.10/qvideowidget.html), [Qt OpenGL widget lifecycle](https://doc.qt.io/qt-6.10/qopenglwidget.html), [FFmpeg 7.1 resampler API](https://ffmpeg.org/doxygen/7.1/group__libsws.html). These describe interfaces and capabilities; repository measurements establish the narrower current validation scope.
+
+
+## Application resource footer (v0.12.1 (build 0032))
+
+The current Windows collector uses process CPU time normalized across active logical processors, process working-set RAM in MiB and optional PDH GPU Engine counters filtered to this PID. The displayed GPU rate is the busiest valid observed process engine across adapters; it is not a decoder identification, per-frame GPU timing, total system usage or vendor benchmark. Sampling is serialized on a worker about once per second. First/failed/unavailable and over-3.5s-old resource samples remain null and display a dash. See [ADR-012 and primary API sources](../notes/ADR-012-minimal-desk-and-process-usage.md).
+
+FPS is the selected Program's existing publication count in the last second. Mix is the last recorded CPU transition composition time. Neither measures full render/scanout latency or physical display FPS. The local regression records 424/424 passing checks, including 144 UI checks, and 39 native boards with selected Sequential at full/compact EN/PT sizes. [Current stage](../evidence/minimal-usage-0032.md). Existing throughput numbers above remain historical; this footer adds no new AMD/other-OS or maximum-concurrency qualification.

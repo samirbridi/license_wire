@@ -22,3 +22,6 @@ Build 0028 reproduced the strict receiver timestamp failure in both automatic an
 
 
 Build 0030 current bounded regression: no failure observed; the known issue remains open pending diagnosis and independent qualification. Raw results and exits are retained in evidence/dynamic-program-suites-0030.json. No network implementation fix was introduced by the multiview/UI stage.
+
+
+Build 0032 minimal-controls/resource-footer regression: no strict failure observed in the bounded run; issue remains open. Results/exits are retained in evidence/dynamic-program-suites-0032.json. No network timestamp implementation changes were made.

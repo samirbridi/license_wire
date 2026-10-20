@@ -72,3 +72,10 @@ NDI precisa do runtime oficial instalado; a integração detecta a instalação 
 
 
 Pendência conhecida: a regressão local apresentou falha intermitente na ordem estritamente crescente dos timestamps de vídeo recebidos por NDI, mesmo com chegada de vídeo/áudio. Ainda não foi resolvida; veja [ISSUE-001](../notes/ISSUE-001-ndi-receiver-timestamps.md). A validação de ordem de quadros/sincronismo NDI permanece pendente.
+
+
+## Controles simplificados e rodapé de desempenho
+
+Na MAIN, **Adicionar mídia** reúne as opções de importar arquivos/pasta. O ícone **+** ao lado do destino adiciona um Programa independente. As setas movem o item selecionado; **Mais** reúne Duplicar item e Remover item. Carregar, Editar e Copiar playlist de A continuam diretamente acessíveis. Manual/Sequencial mantêm tamanho de texto estável nos dois estados.
+
+O rodapé permanente mostra CPU normalizada do processo, RAM residente (MiB) e o motor GPU Windows mais ocupado observado para este aplicativo, quando disponível. FPS conta quadros publicados pelo Programa selecionado no último segundo; não mede a tela física. Mix é o tempo da última composição de transição em CPU, não a latência total de renderização. Passe o mouse para ver escopo/versão. Contadores ausentes/desatualizados mostram um traço. A coleta roda em segundo plano aproximadamente uma vez por segundo. O JSON dos Diagnósticos inclui process_usage; isso não identifica qual GPU decodifica o vídeo.
