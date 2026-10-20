@@ -1,5 +1,9 @@
 #pragma once
 #include "cue.hpp"
+#include "audio.hpp"
+#include <QAudioBufferOutput>
+#include <QAudioDevice>
+#include <QElapsedTimer>
 #include <QObject>
 #include <QAudioOutput>
 #include <QMediaPlayer>
@@ -35,6 +39,19 @@ public:
     int frames() const;
     int composedFrames() const { return composedFrames_; }
     QVideoFrame lastFrame() const { return output_; }
+    void setMasterVolume(float volume);
+    void setAudioMuted(bool muted);
+    void setLocalAudioEnabled(bool enabled);
+    void setAudioDevice(const QByteArray& id);
+    float masterVolume()const{return volume_;}
+    bool audioMuted()const{return muted_;}
+    bool localAudioEnabled()const{return localAudio_;}
+    bool audioDeviceAvailable()const{return deviceAvailable_;}
+    QByteArray audioDeviceId()const{return deviceId_;}
+    qint64 programTimeUs()const{return clock_.nsecsElapsed()/1000;}
+    qint64 videoTimeUs()const;
+    int audioBuffers()const{return audioBuffers_;}
+    float localDeckVolume(int index)const{return decks_[index].audio->volume();}
 signals:
     void frameReady(const QVideoFrame& frame);
     void changed();
@@ -42,15 +59,22 @@ signals:
     void preparedReady();
     void started();
     void rangeEnded();
+    void audioReady(const AudioPacket& packet);
+    void audioReset();
+    void audioMeter(float left,float right);
+    void audioWarning(const QString& message);
 private:
     struct Deck {
         QMediaPlayer* player;
         QAudioOutput* audio;
         QVideoSink* sink;
+        QAudioBufferOutput* tap=nullptr;
         Cue cue;
         QVideoFrame last;
         int frames = 0;
         bool seekSet = false;
+        float gain=0;
+        qint64 offsetUs=0;
     };
     std::array<Deck,2> decks_{};
     int active_ = 0, incoming_ = 1, outgoing_ = -1;
@@ -61,6 +85,19 @@ private:
     int composedFrames_ = 0;
     QVideoFrame output_;
     QTimer timeout_, boundary_;
+    QTimer audioTimer_;
+    QElapsedTimer clock_;
+    AudioMixRing audioMix_;
+    qint64 audioCursor_=0,pausedAtUs_=-1;
+    float volume_=1;
+    bool muted_=false,localAudio_=true,deviceAvailable_=true;
+    QByteArray deviceId_;
+    int audioBuffers_=0;
+    void applyLocalAudio();
+    void receiveAudio(int deck,const QAudioBuffer& buffer);
+    void pumpAudio();
+    void syncAudioTimeline(int deck,qint64 mediaUs);
+    void flushAudio();
     void beginPrepare(const Cue& cue, bool autoTake, bool play);
     void setupSeek(int index);
     void acceptPrepared();

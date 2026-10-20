@@ -18,6 +18,12 @@ try {
     Copy-Item -LiteralPath (Join-Path $playoutBuild 'MizinPlayout.exe') -Destination $playoutDist -Force
     & (Join-Path $QtRoot 'bin\windeployqt.exe') --release --no-translations (Join-Path $playoutDist 'MizinPlayout.exe')
     if ($LASTEXITCODE -ne 0) { throw 'Native dependency deployment failed' }
+    $omtRuntime = Join-Path $playoutRoot 'binaries/network-sdk/omt-1.0.0.19/Libraries/Winx64'
+    if(Test-Path -LiteralPath $omtRuntime){
+        foreach($dll in @('libomt.dll','libvmx.dll')){Copy-Item -LiteralPath (Join-Path $omtRuntime $dll) -Destination $playoutDist -Force}
+        $notices=Join-Path $playoutDist 'licenses/omt';New-Item -ItemType Directory -Path $notices -Force | Out-Null
+        Copy-Item -LiteralPath (Join-Path $playoutRoot 'reconstructed/third_party/omt/LICENSE.txt') -Destination $notices -Force
+    } else {Write-Warning 'OMT runtime not installed; run scripts/setup-network-runtime.ps1 to enable OMT.'}
     & $Python (Join-Path $PSScriptRoot 'version.py') --status PASS
     Get-FileHash -LiteralPath (Join-Path $playoutDist 'MizinPlayout.exe') -Algorithm SHA256
 } catch {
