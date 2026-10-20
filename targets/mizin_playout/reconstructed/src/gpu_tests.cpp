@@ -10,6 +10,7 @@
 #include <QOffscreenSurface>
 #include <QPainter>
 #include <QThread>
+#include <QWindow>
 #include <algorithm>
 #include <cmath>
 #include <functional>
@@ -61,11 +62,15 @@ int runGpuTests(const QString& directory,const QString& resultPath){
     cache->image(red);cache->image(red);record("mirrors_share_input_readback",router.gpuCache(&injected)==cache && cache->conversions()==1);
     NativeChannel other(false);record("independent_programs_have_independent_caches",router.gpuCache(&other)!=cache);
     auto* output=new OutputWindow(&injected,&router,OutputScaling::GpuLanczos);output->openOn(nullptr);pump(250);emit injected.frameReady(red);
-    const bool painted=waitFor([&]{return output->gpu() && output->gpu()->frames()>0;});
-    record("gpu_output_presents_frame",painted && output->gpuActive(),{{"valid",output->gpu() && output->gpu()->isValid()},{"error",output->gpu()?output->gpu()->error():"no surface"},{"frames",output->gpu()?output->gpu()->frames():0}});
+    // The QA process is launched hidden. A non-exposed first window does not
+    // receive repaint events; explicitly render its framebuffer for this check.
+    const bool exposed=output->windowHandle() && output->windowHandle()->isExposed();
+    auto outputImage=output->gpu()?output->gpu()->grabFramebuffer():QImage{};
+    const bool painted=output->gpu() && output->gpu()->frames()>0 && !outputImage.isNull();
+    record("gpu_output_framebuffer_pixels",painted && output->gpuActive() && outputImage.pixelColor(outputImage.width()/2,outputImage.height()/2)==Qt::red,{{"valid",output->gpu() && output->gpu()->isValid()},{"window_exposed",exposed},{"error",output->gpu()?output->gpu()->error():"no surface"},{"frames",output->gpu()?output->gpu()->frames():0}});
     if(painted){
         for(int i=0;i<40;++i){QVideoFrame f(small);f.setStartTime(1000000+i*33333);emit injected.frameReady(f);}
-        const auto last=1000000+39*33333;const bool latest=waitFor([&]{return output->gpu()->timestamp()==last;});
+        const auto last=1000000+39*33333;output->gpu()->grabFramebuffer();const bool latest=output->gpu()->timestamp()==last;
         record("gpu_surface_coalesces_burst_to_latest",latest && output->gpu()->superseded()>=38,{{"superseded_frames",output->gpu()->superseded()}});
         emit injected.frameReady(QVideoFrame{});pump(60);auto black=output->gpu()->grabFramebuffer();record("black_clears_gpu_output",output->gpu()->timestamp()==-1 && !black.isNull() && black.pixelColor(black.width()/2,black.height()/2)==Qt::black);
         QVideoFrame rotated(small);rotated.setRotation(QtVideo::Rotation::Clockwise90);emit injected.frameReady(rotated);record("gpu_rotation_falls_back_to_native",!output->gpuActive() && output->video()->videoSink()->videoFrame()==rotated);
