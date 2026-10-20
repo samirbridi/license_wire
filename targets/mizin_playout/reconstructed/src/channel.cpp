@@ -20,7 +20,7 @@ NativeChannel::NativeChannel(bool preview, QObject* parent) : QObject(parent), p
         d.player->setAudioOutput(d.audio); d.player->setVideoSink(d.sink); d.audio->setMuted(true);
         if(!preview_){QAudioFormat f;f.setSampleRate(48000);f.setChannelCount(2);f.setSampleFormat(QAudioFormat::Float);d.tap=new QAudioBufferOutput(f,this);d.player->setAudioBufferOutput(d.tap);connect(d.tap,&QAudioBufferOutput::audioBufferReceived,this,[this,i](const QAudioBuffer& b){receiveAudio(i,b);});}
         connect(d.sink,&QVideoSink::videoFrameChanged,this,[this,i](const QVideoFrame& frame){
-            if (!frame.isValid()) return;
+            if (!frame.isValid() || decks_[i].cue.path.isEmpty() || decks_[i].player->source().isEmpty()) return;
             auto& deck=decks_[i];
             const qint64 timestamp=frame.startTime()<0 ? deck.player->position() : frame.startTime()/1000;
             if (pending_ && i==incoming_ && (!deck.seekSet || timestamp+2<deck.cue.in)) return;
@@ -93,7 +93,7 @@ void NativeChannel::takePrepared() {
     blendType_=hadProgram && c.transition!=Transition::Cut ? c.transition : Transition::Dissolve;
     if (hadProgram && blendMs_>0 && c.transition!=Transition::Cut) outgoing_=previous;
     else {decks_[previous].audio->setMuted(true);decks_[previous].player->stop();audioMix_.envelope[previous].cutoffUs=programTimeUs();outgoing_=-1;}
-    auto& d=decks_[active_];d.audio->setVolume(blendMs_>0?0:1);d.audio->setMuted(preview_);
+    auto& d=decks_[active_];d.audio->setVolume(blendMs_>0?0:1);d.audio->setMuted(true);
     syncAudioTimeline(active_,c.in*1000);
     if(outgoing_>=0){auto& old=audioMix_.envelope[outgoing_];old.fadeOutStartUs=programTimeUs();old.fadeOutUs=blendMs_*1000/(blendType_==Transition::FadeBlack?2:1);}
     if (playIncoming_) d.player->play();
@@ -131,7 +131,7 @@ void NativeChannel::finishRange() {
     ended_=true;decks_[active_].player->pause();decks_[active_].audio->setMuted(true);stopOutgoing();
     if (!preview_ && cue().exitMs>0 && !ready_) {output_={};emit frameReady(output_);}
     if (loop_) {
-        ended_=false;decks_[active_].player->setPosition(cue().in);decks_[active_].audio->setMuted(preview_);decks_[active_].player->play();
+        ended_=false;decks_[active_].player->setPosition(cue().in);decks_[active_].audio->setMuted(true);decks_[active_].player->play();
         syncAudioTimeline(active_,cue().in*1000);applyLocalAudio();
     } else emit rangeEnded();
     emit changed();
@@ -145,7 +145,7 @@ void NativeChannel::togglePause() {
     if (playing()) {pausedAtUs_=programTimeUs();player->pause();if(outgoing_>=0)decks_[outgoing_].player->pause();flushAudio();}
     else if (!player->source().isEmpty()) {
         if (ended_) {ended_=false;player->setPosition(cue().in);}
-        decks_[active_].audio->setMuted(preview_);player->play();if(outgoing_>=0)decks_[outgoing_].player->play();
+        decks_[active_].audio->setMuted(true);player->play();if(outgoing_>=0)decks_[outgoing_].player->play();
         if(pausedAtUs_>=0){const auto delta=programTimeUs()-pausedAtUs_;for(int i=0;i<2;++i){decks_[i].offsetUs+=delta;audioMix_.envelope[i].shift(delta);}pausedAtUs_=-1;}else syncAudioTimeline(active_,position()*1000);
         applyLocalAudio();
     }

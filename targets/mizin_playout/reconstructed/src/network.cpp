@@ -9,7 +9,7 @@ struct NetworkSender::Impl {NetworkProtocol protocol;std::shared_ptr<NdiApi> ndi
 NetworkSender::NetworkSender()=default;
 NetworkSender::~NetworkSender(){stop();}
 bool NetworkSender::start(NetworkProtocol protocol,const QString& name,qint64 origin){
-    stop();error_.clear();address_.clear();videos_=audios_=droppedAudio_=droppedVideo_=connections_=0;
+    QElapsedTimer initializing;initializing.start();stop();error_.clear();address_.clear();videos_=audios_=droppedAudio_=droppedVideo_=connections_=0;
     const auto cleaned=name.trimmed();if(cleaned.isEmpty() || cleaned.toUtf8().size()>200 || cleaned.contains(QChar('\n'))){error_="Enter a source name (1–200 UTF-8 bytes).";return false;}
     if(qEnvironmentVariableIsSet("MIZIN_DISABLE_NETWORK_RUNTIME")){error_="Network runtime unavailable";return false;}
     impl_=std::make_unique<Impl>();impl_->protocol=protocol;const auto utf=cleaned.toUtf8();
@@ -23,7 +23,7 @@ bool NetworkSender::start(NetworkProtocol protocol,const QString& name,qint64 or
         impl_->omtSender=impl_->omt->send_create(utf.constData(),OMTQuality_High);if(!impl_->omtSender){error_="Could not create OMT sender";impl_.reset();return false;}
         char address[2048]={};impl_->omt->send_getaddress(impl_->omtSender,address,sizeof(address));address_=QString::fromUtf8(address);
     }
-    QImage black(1280,720,QImage::Format_ARGB32);black.fill(Qt::black);latest_=black;fps_=30;videoTimestamp_=origin;newVideo_=true;clockOrigin_=origin;stopping_=false;running_=true;worker_=std::thread(&NetworkSender::work,this);return true;
+    QImage black(1280,720,QImage::Format_ARGB32);black.fill(Qt::black);latest_=black;fps_=30;videoTimestamp_=origin;newVideo_=true;clockOrigin_=origin+initializing.nsecsElapsed()/1000;stopping_=false;running_=true;worker_=std::thread(&NetworkSender::work,this);return true;
 }
 void NetworkSender::stop(){stopping_=true;wake_.notify_all();if(worker_.joinable())worker_.join();running_=false;
     if(impl_){if(impl_->ndiSender)impl_->ndi->send_destroy(impl_->ndiSender);if(impl_->omtSender)impl_->omt->send_destroy(impl_->omtSender);impl_.reset();}
@@ -72,6 +72,6 @@ void NetworkBus::frame(const QVideoFrame& frame){
     }
     if(note!=lastWarning_){lastWarning_=note;if(!note.isEmpty())emit warning(note);}
     if(image.isNull()){image=QImage(lastSize_,QImage::Format_ARGB32);image.fill(Qt::black);}else lastSize_=image.size();
-    const qreal fps=frame.streamFrameRate()>0?frame.streamFrameRate():frame.surfaceFormat().streamFrameRate();
+    const qreal rate=frame.streamFrameRate()>0?frame.streamFrameRate():frame.surfaceFormat().streamFrameRate();if(rate>0)lastFps_=rate;const qreal fps=lastFps_;
     const qint64 time=frame.isValid()?channel_->videoTimeUs():channel_->programTimeUs();for(auto& sender:senders_)sender.video(image,time,fps);
 }

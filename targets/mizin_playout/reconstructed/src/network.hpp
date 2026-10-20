@@ -59,5 +59,6 @@ private:
     bool audioEnabled_=true;
     QString lastWarning_;
     QSize lastSize_{1280,720};
+    qreal lastFps_=30;
     void frame(const QVideoFrame& frame);
 };
