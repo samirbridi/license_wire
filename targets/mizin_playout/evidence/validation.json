@@ -1,64 +1,96 @@
 {
-  "result": "PASS_NATIVE_LIVE_DESK_LAYOUT",
-  "version": "v0.7.6 (build 0023)",
-  "source_commit": "5220488564be5e9a0722b4a884793720db8c34a7",
-  "recorded_utc": "2026-10-20T17:18:15.721885+00:00",
-  "functional_checks_passed": 174,
+  "result": "PASS_NATIVE_READINESS_DIAGNOSTICS",
+  "version": "v0.8.0 (build 0024)",
+  "source_commit": "4c614f9058e8badf1e322c11ea4775036c0a7677",
+  "recorded_utc": "2026-10-20T17:53:44.324246+00:00",
+  "functional_checks_passed": 314,
   "suites": [
+    {
+      "suite": "readiness",
+      "mode": "auto",
+      "checks": 24,
+      "result": "PASS",
+      "file": "evidence/readiness-auto-0024.json",
+      "sha256": "2a03a768771f8bcd47d2985d5fd3ccd4c2c2b44260ec281b6795a91b8723ec6a"
+    },
     {
       "suite": "ui",
       "mode": "auto",
-      "checks": 19,
+      "checks": 25,
       "result": "PASS",
-      "file": "evidence/ui-auto-0023.json",
-      "sha256": "ff2e874617c280720f2120d3174450c83a095e0974331b52cec8eedb3ffc180c"
+      "file": "evidence/ui-auto-0024.json",
+      "sha256": "2fed479778cf26762a5c947607999f8fc3ae6e72820db0008b2d71651045c525"
     },
     {
       "suite": "smoke",
       "mode": "auto",
       "checks": 7,
       "result": "PASS",
-      "file": "evidence/smoke-auto-0023.json",
-      "sha256": "c1470db130174fdeefad239013e19f8a075ae1f6a346d767234a017c3610faac"
+      "file": "evidence/smoke-auto-0024.json",
+      "sha256": "93a4819a0d822b9495cd904fe6ae301c94997d9569649ad51b1c8b553627e463"
     },
     {
       "suite": "transport",
       "mode": "auto",
       "checks": 23,
       "result": "PASS",
-      "file": "evidence/transport-auto-0023.json",
-      "sha256": "807dcf696253dafbc59f9410f878f12ccb703309c06ad205c3749a25efa4ca31"
+      "file": "evidence/transport-auto-0024.json",
+      "sha256": "2e5fb884cd629e5c762bf46aa7994c14cd3218531bc3a6b3bab491e0e85a7113"
     },
     {
       "suite": "network",
       "mode": "auto",
       "checks": 38,
       "result": "PASS",
-      "file": "evidence/network-auto-0023.json",
-      "sha256": "a81b406de4d5583dfe8ceeed3d7d8478cf7823f4475840d5c3aaa5c6c4db3298"
+      "file": "evidence/network-auto-0024.json",
+      "sha256": "162a4945aaa78b05e80882d63c6c7584c0fc6c080bcd82f1c1da298d81a472ab"
+    },
+    {
+      "suite": "output",
+      "mode": "auto",
+      "checks": 19,
+      "result": "PASS",
+      "file": "evidence/output-auto-0024.json",
+      "sha256": "b2f0e0bb24f5281e1abca0172d6bd806ad5bd1aab5b52015aced80b911d4eae8"
+    },
+    {
+      "suite": "gpu",
+      "mode": "auto",
+      "checks": 21,
+      "result": "PASS",
+      "file": "evidence/gpu-auto-0024.json",
+      "sha256": "2b8e3078b7588cdef3dadf6d06a101791f87839029ca6aa42d14d5192e8bf680"
+    },
+    {
+      "suite": "readiness",
+      "mode": "cpu",
+      "checks": 24,
+      "result": "PASS",
+      "file": "evidence/readiness-cpu-0024.json",
+      "sha256": "146d0dadd425eae3ea18b280a06dff2a84249a383d02ff9ae2a0848fb17031c2"
     },
     {
       "suite": "ui",
       "mode": "cpu",
-      "checks": 19,
+      "checks": 25,
       "result": "PASS",
-      "file": "evidence/ui-cpu-0023.json",
-      "sha256": "8e2b564cd5aeab3a2ca32376d8b3d87b1dec37156d04762af65088d06556dfca"
+      "file": "evidence/ui-cpu-0024.json",
+      "sha256": "e4f55360d8cc24f4644c132f9f8fd91a7c6526de24c83f2abaab4fae94f5a8de"
     },
     {
       "suite": "smoke",
       "mode": "cpu",
       "checks": 7,
       "result": "PASS",
-      "file": "evidence/smoke-cpu-0023.json",
-      "sha256": "d1164e4d54a6c280c0557908558f27b59eb410a00f2ccd258bfd72a0b2b8f27c"
+      "file": "evidence/smoke-cpu-0024.json",
+      "sha256": "c8835f35898c6798cc2fc83f91a2c7751923e959fb0423fdf32d167a430338d8"
     },
     {
       "suite": "transport",
       "mode": "cpu",
       "checks": 23,
       "result": "PASS",
-      "file": "evidence/transport-cpu-0023.json",
+      "file": "evidence/transport-cpu-0024.json",
       "sha256": "1bb18d0d95ce9cdb4e0a0d8f00fac3c92f60b0a4baef54c6c13311a29199d792"
     },
     {
@@ -66,11 +98,27 @@
       "mode": "cpu",
       "checks": 38,
       "result": "PASS",
-      "file": "evidence/network-cpu-0023.json",
-      "sha256": "55d0494ea17c0c18533a2bc845525429415d09d1b2fcb7b1810a7a5ce2890ae2"
+      "file": "evidence/network-cpu-0024.json",
+      "sha256": "85072945ba4c48ea53cef2a0e53b3f50acf26801aeff261064668688794c39c5"
+    },
+    {
+      "suite": "output",
+      "mode": "cpu",
+      "checks": 19,
+      "result": "PASS",
+      "file": "evidence/output-cpu-0024.json",
+      "sha256": "530efdc112b68688bc5361a24021027e53fb4179834cbccfcce908901cfc8e8e"
+    },
+    {
+      "suite": "gpu",
+      "mode": "cpu",
+      "checks": 21,
+      "result": "PASS",
+      "file": "evidence/gpu-cpu-0024.json",
+      "sha256": "119329ea448babf650ae87998632034b8ea9b6e54dd03a34338bb8a7afeb716b"
     }
   ],
-  "catalog_keys": 213,
+  "catalog_keys": 259,
   "matched_en_pt_catalogs": true,
   "version_policy_tests_passed": 4,
   "native_boards": [
@@ -78,8 +126,8 @@
       "file": "design/boards/01-main-en.png",
       "width": 1600,
       "height": 1000,
-      "bytes": 195129,
-      "sha256": "d7744f4c9d7d5eae6298a2f454c7d3a47d3dcf53abfc695282e423cdb7511ebf",
+      "bytes": 196435,
+      "sha256": "5f463e6ca3770c69eb73039515cee051e8d466b3c826a63794cff2f769bb90b9",
       "brand_pixels_match": true
     },
     {
@@ -102,8 +150,8 @@
       "file": "design/boards/04-main-pt-BR.png",
       "width": 1600,
       "height": 1000,
-      "bytes": 198031,
-      "sha256": "81b2a5699fdd27c96a91b88bf43151b3c186beac4646078cbb4e8563bd87c20f",
+      "bytes": 199575,
+      "sha256": "622280e9fbf81142d7f8c21e5197e746dd1beb52b3e3badf603235e1c4ef203e",
       "brand_pixels_match": true
     },
     {
@@ -155,20 +203,68 @@
       "brand_pixels_match": true
     },
     {
+      "file": "design/boards/11-engine-en.png",
+      "width": 1600,
+      "height": 1000,
+      "bytes": 65494,
+      "sha256": "052d75c34a2944f5144f0bba74941eb1d79990ec34351c7c9bf9ea4b6d931aca",
+      "brand_pixels_match": true
+    },
+    {
+      "file": "design/boards/12-engine-pt-BR.png",
+      "width": 1600,
+      "height": 1000,
+      "bytes": 70531,
+      "sha256": "2e61bd2198adfbba2d2ce9b790ea16647ac5201bed193a51666b45fe25db92fe",
+      "brand_pixels_match": true
+    },
+    {
       "file": "design/boards/compact/01-main-en.png",
       "width": 1280,
       "height": 800,
-      "bytes": 109015,
-      "sha256": "ce11cdd3e09efd374970978254e5480dcf5828f2032e67cb69df184b1d7413cb",
+      "bytes": 110108,
+      "sha256": "ccff710a63ff9244a2a24a3de0e0a692b6caa41788b1908d8ff5415c4e99e3d2",
       "brand_pixels_match": true
     },
     {
       "file": "design/boards/compact/04-main-pt-BR.png",
       "width": 1280,
       "height": 800,
-      "bytes": 111601,
-      "sha256": "37527c27f62eb47445b92552ee0de519f175100c83430cdaa104ac6b989198f1",
+      "bytes": 113154,
+      "sha256": "7df3f0388bd4213603915df902bfd82843d1921b426b99fb5ba1e64d21b9dd48",
       "brand_pixels_match": true
+    }
+  ],
+  "live_widget_artifacts": [
+    {
+      "file": "evidence/ready-ui-auto-0024.png",
+      "sha256": "3ba484b99209cf8149636ec25929e74910136000bdf1fee0ec6767eaff728d10",
+      "scope": "In-process live widget state; hardware video surfaces may be omitted, not physical-display proof."
+    },
+    {
+      "file": "evidence/engine-ui-auto-0024.png",
+      "sha256": "48dd9b6f78e2529dff6448cc7e52afba8599c42646e6965029c877f20661e088",
+      "scope": "In-process live widget state; hardware video surfaces may be omitted, not physical-display proof."
+    },
+    {
+      "file": "evidence/engine-ui-auto-0024.json",
+      "sha256": "54c9ab9788415f78cefb0348fcfb3f168a7115d0a27351abe2d08144f41b1c20",
+      "scope": "Exported real diagnostics, with unavailable metrics preserved as null."
+    },
+    {
+      "file": "evidence/ready-ui-cpu-0024.png",
+      "sha256": "69ca8ad916f93e9820f8673475f8785b5150677bec1856d4f0ea7696cf422e32",
+      "scope": "In-process live widget state; hardware video surfaces may be omitted, not physical-display proof."
+    },
+    {
+      "file": "evidence/engine-ui-cpu-0024.png",
+      "sha256": "68b42693a768535cf66c9399c5ace85ad702b3bc47b45f6a4be0acf93338ea5a",
+      "scope": "In-process live widget state; hardware video surfaces may be omitted, not physical-display proof."
+    },
+    {
+      "file": "evidence/engine-ui-cpu-0024.json",
+      "sha256": "9afa08a40100c44e2cbe9418db28c1ca3622636858e6d7403a84e3cea98b09c7",
+      "scope": "Exported real diagnostics, with unavailable metrics preserved as null."
     }
   ],
   "fixture_hashes": [
@@ -206,9 +302,9 @@
     }
   ],
   "package": {
-    "executable_sha256": "464af69a0ebe0d47e6ebe46de1d41644777a43d7108684055fbe975f191dc96b",
+    "executable_sha256": "d11e8b7a7e13f4b9d4154ffe8f23fdba847cc5837ffce8830f8e7d4858a97c6c",
     "file_count": 30,
-    "bytes": 66231703,
+    "bytes": 66319255,
     "files": [
       {
         "file": "avcodec-61.dll",
@@ -272,8 +368,8 @@
       },
       {
         "file": "MizinPlayout.exe",
-        "bytes": 648192,
-        "sha256": "464af69a0ebe0d47e6ebe46de1d41644777a43d7108684055fbe975f191dc96b"
+        "bytes": 735744,
+        "sha256": "d11e8b7a7e13f4b9d4154ffe8f23fdba847cc5837ffce8830f8e7d4858a97c6c"
       },
       {
         "file": "multimedia/ffmpegmediaplugin.dll",
@@ -363,7 +459,6 @@
     ]
   },
   "approved_direction": "A - Live Desk",
-  "approval_record": "design/APPROVAL.md",
-  "historical_output_gpu_validation": "evidence/validation-build-0020.json",
-  "scope": "Native widget actions and local fixture playback/network loopback. Boards use sample content. No new GPU throughput, physical display, external LAN, physical audio, OS pointer or production AV-sync qualification."
+  "readiness_contract": "Source/trim check in muted Preview. Program prepares on TAKE; audio-only checks use backend readiness, not decoded-PCM proof.",
+  "scope": "Local synthetic fixtures, in-process widget actions and real local network loopback. GPU results are bounded to the detected renderer. No new AMD/physical AV-sync/external LAN/OS-pointer certification."
 }

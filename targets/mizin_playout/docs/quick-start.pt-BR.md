@@ -2,6 +2,10 @@
 
 O layout Live Desk aprovado destaca Prévia e Programa A, mantém o Programa B visível e concentra as trocas manuais no centro. Escolha o destino pelos botões **Programa A / Programa B** antes de usar CUT ou FADE. A edição permanece em uma aba separada.
 
+Aguarde o indicador verde **PRONTO** ao lado da Prévia sem áudio antes da troca manual. Ele verifica o arquivo selecionado, o recorte aplicado e um quadro de vídeo dentro desse recorte. Um novo In/Out aplicado passa por outra conferência. **Preparando**, **Não preparado** e **Erro** não liberam CUT/FADE. Corrija a origem e carregue o item novamente. Alterar o arquivo invalida PRONTO; outra checagem do arquivo ocorre no envio. O Program ainda prepara seu próprio deck ao receber o envio; PRONTO não promete troca sem atraso. Arquivos somente de áudio usam o estado de preparação/navegação informado pelo backend.
+
+Abra **Configurações → Diagnósticos do motor** ou use a pequena engrenagem no rodapé da MAIN. O painel mostra estados dos canais, quadros publicados, progresso de buffer, tempos de composição CPU e contadores NDI/OMT de A/B. **Exportar relatório** salva um JSON local. **Não disponível** indica uma medição não exposta pelo backend; não significa uso zero ou ausência de quadros perdidos. A contagem de publicações não comprova FPS no monitor físico.
+
 1. Na **MAIN**, adicione arquivos, uma pasta ou arraste mídias locais para a janela.
 2. Dê dois cliques em um item da lista, ou use Carregar selecionado, para preparar o Preview sem áudio. CUT e FADE ficam disponíveis quando o item selecionado estiver preparado.
 3. Escolha **Editar item** ou abra **EDIÇÃO** para preparar In/Out e transições por item. Selecione o item, navegue no Preview e use Marcar In / Marcar Out, ou digite segundos com milissegundos. Out = Fim da mídia usa o restante do arquivo. Aplicar item salva os ajustes sem modificar o original. Restaurar ajustes recarrega os valores aplicados.

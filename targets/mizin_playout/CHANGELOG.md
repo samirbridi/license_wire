@@ -1,5 +1,19 @@
 # CHANGELOG — Mizin Playout
 
+## v0.8.0 (build 0024) - 2026-10-20
+
+### 💥 Breaking Changes
+- None.
+
+### ✨ Features
+- feat: adiciona READY por origem e diagnosticos reais do motor (4c614f9058e8badf1e322c11ea4775036c0a7677)
+
+### 🐛 Fixes
+- None.
+
+### ⚡ Improvements
+- improve: registra layout A nativo e 174 verificacoes no build 0023 (98f555377804fcb0a42834f99566d1a0e5d0227e)
+
 ## v0.7.6 (build 0023) - 2026-10-20
 
 ### 💥 Breaking Changes

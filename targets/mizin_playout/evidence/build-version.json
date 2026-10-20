@@ -1,12 +1,17 @@
 {
-  "display": "v0.7.6 (build 0023)",
-  "previous": "v0.7.5 (build 0022)",
-  "source_commit": "5220488564be5e9a0722b4a884793720db8c34a7",
+  "display": "v0.8.0 (build 0024)",
+  "previous": "v0.7.6 (build 0023)",
+  "source_commit": "4c614f9058e8badf1e322c11ea4775036c0a7677",
   "commits": [
     {
-      "sha": "5220488564be5e9a0722b4a884793720db8c34a7",
-      "subject": "fix: exibe cinco itens completos e preserva nomes longos no layout",
-      "kind": "fix"
+      "sha": "98f555377804fcb0a42834f99566d1a0e5d0227e",
+      "subject": "improve: registra layout A nativo e 174 verificacoes no build 0023",
+      "kind": "improve"
+    },
+    {
+      "sha": "4c614f9058e8badf1e322c11ea4775036c0a7677",
+      "subject": "feat: adiciona READY por origem e diagnosticos reais do motor",
+      "kind": "feat"
     }
   ],
   "date": "2026-10-20",

@@ -1,0 +1,108 @@
+{
+    "mode": "auto",
+    "result": "PASS",
+    "scope": "In-process native Qt widget actions and real synthetic media; not OS pointer interaction or physical display qualification",
+    "tests": [
+        {
+            "name": "live_desk_fits_en_1600x1000",
+            "pass": true
+        },
+        {
+            "name": "live_desk_fits_en_1280x800",
+            "pass": true
+        },
+        {
+            "name": "live_desk_fits_pt-BR_1600x1000",
+            "pass": true
+        },
+        {
+            "name": "live_desk_fits_pt-BR_1280x800",
+            "pass": true
+        },
+        {
+            "name": "live_desk_modes_follow_independent_destination",
+            "pass": true
+        },
+        {
+            "name": "live_desk_output_tiles_open_correct_settings",
+            "pass": true
+        },
+        {
+            "name": "live_desk_network_tiles_start_stopped",
+            "pass": true
+        },
+        {
+            "name": "main_editor_separation_and_default_300",
+            "pass": true
+        },
+        {
+            "name": "native_scaler_is_default_gpu_is_optional",
+            "pass": true
+        },
+        {
+            "name": "cut_button_bypasses_editor_transition",
+            "pass": true
+        },
+        {
+            "name": "ready_badge_requires_verified_selected_trim",
+            "pass": true
+        },
+        {
+            "name": "diagnostics_open_without_stopping_program",
+            "pass": true
+        },
+        {
+            "name": "diagnostics_export_preserves_unknown_metrics",
+            "pass": true
+        },
+        {
+            "name": "editor_preview_does_not_interrupt_program",
+            "pass": true
+        },
+        {
+            "name": "fade_button_300_uses_applied_cue",
+            "pass": true
+        },
+        {
+            "name": "applying_editor_preserves_live_snapshot",
+            "pass": true
+        },
+        {
+            "name": "manual_cut_respects_destination_b",
+            "pass": true
+        },
+        {
+            "name": "applied_nonzero_in_is_verified_before_take",
+            "pass": true
+        },
+        {
+            "name": "different_selection_cannot_use_stale_ready",
+            "pass": true
+        },
+        {
+            "name": "manual_fade_duration_persisted",
+            "pass": true
+        },
+        {
+            "name": "language_switch_preserves_draft_and_playback",
+            "pass": true
+        },
+        {
+            "name": "gpu_profile_is_translated_and_persisted",
+            "pass": true
+        },
+        {
+            "name": "audio_controls_are_independent_and_persisted",
+            "pass": true
+        },
+        {
+            "name": "digital_outputs_require_manual_start",
+            "pass": true
+        },
+        {
+            "name": "readiness_error_blocks_take_and_preserves_both_programs",
+            "pass": true
+        }
+    ],
+    "version": "v0.8.0 (build 0024)"
+}

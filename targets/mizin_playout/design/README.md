@@ -4,7 +4,7 @@ The user approved **A — Live Desk** from the [three generated MAIN concepts](p
 
 MAIN now uses proportional Preview / Program A / Program B cards, a horizontal take strip, segmented A/B destination and Manual/Sequential controls, a shared running-order table and an audio/output dashboard. Coral identifies A, violet B and cyan Preview / FADE. CUT remains amber. EDIT remains separate.
 
-Ten 1600×1000 boards cover MAIN, EDIT, Library, physical outputs, audio and digital outputs, including EN/PT-BR pairs. Two additional compact MAIN boards cover 1280×800. See [REVIEW.md](REVIEW.md) for links and validation scope.
+Twelve 1600×1000 boards cover MAIN, EDIT, Library, physical outputs, audio, digital outputs and Engine diagnostics, including EN/PT-BR pairs. Two compact MAIN boards cover 1280×800. See [REVIEW.md](REVIEW.md) for links and validation scope. READY is shown as a marked sample in demo boards; actual verified READY and real diagnostics reports are retained separately under evidence/.
 
 Sample filenames, native stage illustrations, timecodes and sample meters are marked as layout-preview content. They do not demonstrate playback, decoder performance or physical signals. Real media and network-loopback test evidence lives under evidence/.
 

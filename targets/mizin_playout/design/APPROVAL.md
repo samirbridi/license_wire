@@ -2,6 +2,8 @@
 
 The user selected **proposal A — Live Desk** after comparing the three static MAIN concepts: “Gostei muito do modelo A”. They then requested continuation.
 
+After the native build-0023 implementation was presented, the user endorsed it with “Ficou muito bom!”. The accepted native baseline is preserved in archive/build-0023/. Subsequent READY/diagnostics additions retain this direction and are documented in REVIEW.md.
+
 Approved direction: dark native workspace, sidebar navigation, prominent Preview / Program A, persistent Program B, explicit A/B take destination, horizontal CUT / FADE strip (300 ms default), a shared running-order table and a compact audio/output dashboard.
 
 The implementation uses native Qt widgets, original vector icons and native sample graphics. Generated concept screenshots remain review references and are not embedded as application textures. English remains default with runtime PT-BR switching. Existing EDIT, Library, Outputs, Audio and Settings functions remain available.

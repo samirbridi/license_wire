@@ -1,0 +1,200 @@
+{
+    "device": {
+        "renderer": "NVIDIA GeForce GTX 1660 Ti/PCIe/SSE2",
+        "vendor": "NVIDIA Corporation",
+        "version": "3.3.0 NVIDIA 591.74"
+    },
+    "mode": "auto",
+    "quality": {
+        "checkerboard_max_error": 1,
+        "gpu_wave_mse": 0.22054061036816372,
+        "identity_max_error": 0,
+        "qt_smooth_wave_mse": 5.46294012392911,
+        "sdr_gamma_encoded_rgb": true,
+        "timer_query_supported": true
+    },
+    "result": "PASS",
+    "scope": "GPU SDR 8-bit scaler functional/quality tests and bounded playback measurements; not AMD/macOS/Linux, physical 4K, AV sync or show-duration certification",
+    "streams": [
+        {
+            "device": {
+                "renderer": "NVIDIA GeForce GTX 1660 Ti/PCIe/SSE2",
+                "vendor": "NVIDIA Corporation",
+                "version": "3.3.0 NVIDIA 591.74"
+            },
+            "direction": "4K to 1080p",
+            "elapsed_ms": 4009,
+            "framebuffer_pixels": "1920x1080",
+            "gpu_filter_median_ms": 1.673216,
+            "gpu_filter_p95_ms": 3.420864,
+            "output_h": 1080,
+            "output_w": 1920,
+            "render_fps": 22.69892741332003,
+            "rendered_unique_frames": 91,
+            "scope": "4-second native stream; CPU service includes input readback/upload/submission; async GPU queries cover filter passes only; excludes scanout and AV sync",
+            "service_cpu_median_ms": 32.2852,
+            "service_cpu_p95_ms": 39.2556,
+            "source_frames": 119,
+            "superseded_frames": 43
+        },
+        {
+            "device": {
+                "renderer": "NVIDIA GeForce GTX 1660 Ti/PCIe/SSE2",
+                "vendor": "NVIDIA Corporation",
+                "version": "3.3.0 NVIDIA 591.74"
+            },
+            "direction": "1080p to 4K",
+            "elapsed_ms": 4015,
+            "framebuffer_pixels": "3840x2160",
+            "gpu_filter_median_ms": 2.349056,
+            "gpu_filter_p95_ms": 3.103552,
+            "output_h": 2160,
+            "output_w": 3840,
+            "render_fps": 29.389788293897883,
+            "rendered_unique_frames": 118,
+            "scope": "4-second native stream; CPU service includes input readback/upload/submission; async GPU queries cover filter passes only; excludes scanout and AV sync",
+            "service_cpu_median_ms": 8.1296,
+            "service_cpu_p95_ms": 11.8826,
+            "source_frames": 119,
+            "superseded_frames": 3
+        }
+    ],
+    "tests": [
+        {
+            "name": "opengl_context",
+            "pass": true
+        },
+        {
+            "error": "",
+            "name": "shader_compiles_and_links",
+            "pass": true
+        },
+        {
+            "max_channel_error": 0,
+            "name": "identity_preserves_pixels_and_orientation",
+            "pass": true
+        },
+        {
+            "maximum_error_from_midgray": 1,
+            "name": "downscale_kernel_suppresses_checkerboard_aliasing",
+            "pass": true
+        },
+        {
+            "gpu_mse": 0.22054061036816372,
+            "name": "upscale_reconstructs_wave_better_than_linear",
+            "pass": true,
+            "qt_smooth_mse": 5.46294012392911
+        },
+        {
+            "name": "gpu_1080_to_4k_pixels",
+            "pass": true
+        },
+        {
+            "name": "gpu_4k_to_1080_pixels",
+            "pass": true
+        },
+        {
+            "name": "excessive_reduction_is_rejected",
+            "pass": true
+        },
+        {
+            "name": "mirrors_share_input_readback",
+            "pass": true
+        },
+        {
+            "name": "independent_programs_have_independent_caches",
+            "pass": true
+        },
+        {
+            "error": "",
+            "frames": 1,
+            "name": "gpu_output_framebuffer_pixels",
+            "pass": true,
+            "valid": true,
+            "window_exposed": false
+        },
+        {
+            "name": "gpu_surface_coalesces_burst_to_latest",
+            "pass": true,
+            "superseded_frames": 40
+        },
+        {
+            "name": "black_clears_gpu_output",
+            "pass": true
+        },
+        {
+            "name": "gpu_rotation_falls_back_to_native",
+            "pass": true
+        },
+        {
+            "name": "gpu_10bit_falls_back_without_requantizing",
+            "pass": true
+        },
+        {
+            "name": "gpu_resumes_after_compatible_frame",
+            "pass": true
+        },
+        {
+            "name": "unavailable_gpu_uses_native",
+            "pass": true
+        },
+        {
+            "actual_h": 1080,
+            "actual_w": 1920,
+            "name": "stream_1080_framebuffer_size",
+            "pass": true
+        },
+        {
+            "device": {
+                "renderer": "NVIDIA GeForce GTX 1660 Ti/PCIe/SSE2",
+                "vendor": "NVIDIA Corporation",
+                "version": "3.3.0 NVIDIA 591.74"
+            },
+            "direction": "4K to 1080p",
+            "elapsed_ms": 4009,
+            "framebuffer_pixels": "1920x1080",
+            "gpu_filter_median_ms": 1.673216,
+            "gpu_filter_p95_ms": 3.420864,
+            "name": "gpu_native_4k_downscale_stream",
+            "output_h": 1080,
+            "output_w": 1920,
+            "pass": true,
+            "render_fps": 22.69892741332003,
+            "rendered_unique_frames": 91,
+            "scope": "4-second native stream; CPU service includes input readback/upload/submission; async GPU queries cover filter passes only; excludes scanout and AV sync",
+            "service_cpu_median_ms": 32.2852,
+            "service_cpu_p95_ms": 39.2556,
+            "source_frames": 119,
+            "superseded_frames": 43
+        },
+        {
+            "actual_h": 2160,
+            "actual_w": 3840,
+            "name": "stream_4k_framebuffer_size",
+            "pass": true
+        },
+        {
+            "device": {
+                "renderer": "NVIDIA GeForce GTX 1660 Ti/PCIe/SSE2",
+                "vendor": "NVIDIA Corporation",
+                "version": "3.3.0 NVIDIA 591.74"
+            },
+            "direction": "1080p to 4K",
+            "elapsed_ms": 4015,
+            "framebuffer_pixels": "3840x2160",
+            "gpu_filter_median_ms": 2.349056,
+            "gpu_filter_p95_ms": 3.103552,
+            "name": "gpu_native_1080_upscale_stream",
+            "output_h": 2160,
+            "output_w": 3840,
+            "pass": true,
+            "render_fps": 29.389788293897883,
+            "rendered_unique_frames": 118,
+            "scope": "4-second native stream; CPU service includes input readback/upload/submission; async GPU queries cover filter passes only; excludes scanout and AV sync",
+            "service_cpu_median_ms": 8.1296,
+            "service_cpu_p95_ms": 11.8826,
+            "source_frames": 119,
+            "superseded_frames": 3
+        }
+    ]
+}

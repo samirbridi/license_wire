@@ -2,6 +2,10 @@
 
 The approved Live Desk layout keeps Preview and Program A prominent, Program B visible and manual takes in the center. Choose the destination using the **Program A / Program B** buttons before CUT or FADE. EDIT stays separate.
 
+Wait for the green **READY** badge beside muted Preview before a manual take. It verifies the selected file, applied trim and a decoded video frame in range. A new applied range is checked again. **Preparing**, **Not cued** and **Error** do not enable CUT/FADE. Correct an error and cue the source again. Files changed after preparation lose READY; a final file check also runs on TAKE. The Program still prepares its own deck when you take the source; READY is not a promise of zero-delay switching. Audio-only files use the backend's preparation/seek state.
+
+Open **Settings → Engine diagnostics**, or use the small gear in MAIN's bottom dashboard. Refresh reads channel states, frame publications, buffer progress, CPU composition times and A/B NDI/OMT counters. **Export report** saves a local JSON report. **Not available** means the backend does not expose the measurement; it does not mean zero usage or zero dropped frames. Video publications are callbacks, not proof of physical monitor FPS.
+
 1. In **MAIN**, add files, add a folder or drop local media on the window.
 2. Double-click a running-order item, or choose Cue selected, to load muted Preview. CUT and FADE become available when that selected item is prepared.
 3. Choose **Edit cue** or open **EDIT** to prepare In/Out and per-item transitions. Select a cue, scrub Preview and Mark In / Mark Out, or enter seconds with milliseconds. Out = End of media uses the remaining file. Apply cue saves these non-destructive settings. Reset edits reloads the applied values.
