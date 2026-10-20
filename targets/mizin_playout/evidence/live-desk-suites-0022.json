@@ -1,0 +1,66 @@
+﻿[
+    {
+        "suite":  "ui",
+        "mode":  "auto",
+        "result":  "PASS",
+        "checks":  19,
+        "exit":  0,
+        "file":  "D:\\REA - ENGENHARIA REVERSA\\targets\\mizin_playout\\evidence\\ui-auto-0022.json"
+    },
+    {
+        "suite":  "smoke",
+        "mode":  "auto",
+        "result":  "PASS",
+        "checks":  7,
+        "exit":  0,
+        "file":  "D:\\REA - ENGENHARIA REVERSA\\targets\\mizin_playout\\evidence\\smoke-auto-0022.json"
+    },
+    {
+        "suite":  "transport",
+        "mode":  "auto",
+        "result":  "PASS",
+        "checks":  23,
+        "exit":  0,
+        "file":  "D:\\REA - ENGENHARIA REVERSA\\targets\\mizin_playout\\evidence\\transport-auto-0022.json"
+    },
+    {
+        "suite":  "network",
+        "mode":  "auto",
+        "result":  "PASS",
+        "checks":  38,
+        "exit":  0,
+        "file":  "D:\\REA - ENGENHARIA REVERSA\\targets\\mizin_playout\\evidence\\network-auto-0022.json"
+    },
+    {
+        "suite":  "ui",
+        "mode":  "cpu",
+        "result":  "PASS",
+        "checks":  19,
+        "exit":  0,
+        "file":  "D:\\REA - ENGENHARIA REVERSA\\targets\\mizin_playout\\evidence\\ui-cpu-0022.json"
+    },
+    {
+        "suite":  "smoke",
+        "mode":  "cpu",
+        "result":  "PASS",
+        "checks":  7,
+        "exit":  0,
+        "file":  "D:\\REA - ENGENHARIA REVERSA\\targets\\mizin_playout\\evidence\\smoke-cpu-0022.json"
+    },
+    {
+        "suite":  "transport",
+        "mode":  "cpu",
+        "result":  "PASS",
+        "checks":  23,
+        "exit":  0,
+        "file":  "D:\\REA - ENGENHARIA REVERSA\\targets\\mizin_playout\\evidence\\transport-cpu-0022.json"
+    },
+    {
+        "suite":  "network",
+        "mode":  "cpu",
+        "result":  "PASS",
+        "checks":  38,
+        "exit":  0,
+        "file":  "D:\\REA - ENGENHARIA REVERSA\\targets\\mizin_playout\\evidence\\network-cpu-0022.json"
+    }
+]

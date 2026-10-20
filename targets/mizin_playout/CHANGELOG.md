@@ -1,5 +1,48 @@
 # CHANGELOG — Mizin Playout
 
+## v0.7.6 (build 0023) - 2026-10-20
+
+### 💥 Breaking Changes
+- None.
+
+### ✨ Features
+- None.
+
+### 🐛 Fixes
+- fix: exibe cinco itens completos e preserva nomes longos no layout (5220488564be5e9a0722b4a884793720db8c34a7)
+
+### ⚡ Improvements
+- None.
+
+## v0.7.5 (build 0022) - 2026-10-20
+
+### 💥 Breaking Changes
+- None.
+
+### ✨ Features
+- None.
+
+### 🐛 Fixes
+- fix: ajusta tipos Qt e dimensoes minimas da mesa nativa (deada01fd376ca24b3bd175886b85d909bb5a2fa)
+
+### ⚡ Improvements
+- None.
+
+## v0.7.4 (build 0021) - 2026-10-20
+
+### 💥 Breaking Changes
+- None.
+
+### ✨ Features
+- None.
+
+### 🐛 Fixes
+- None.
+
+### ⚡ Improvements
+- improve: documenta audio NDI OMT e 240 verificacoes do playout (1fd1d1da112d7ade2c181b0fd63f83dafbd5cafb)
+- improve: aplica layout Live Desk aprovado ao playout nativo (3f4b4df63b6e0110e4c5b4ba04e8026d157734d1)
+
 ## v0.7.3 (build 0020) - 2026-10-20
 
 ### 💥 Breaking Changes

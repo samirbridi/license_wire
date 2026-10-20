@@ -289,5 +289,52 @@
     ],
     "date": "2026-10-20",
     "build_status": "PASS"
+  },
+  {
+    "display": "v0.7.4 (build 0021)",
+    "previous": "v0.7.3 (build 0020)",
+    "source_commit": "3f4b4df63b6e0110e4c5b4ba04e8026d157734d1",
+    "commits": [
+      {
+        "sha": "1fd1d1da112d7ade2c181b0fd63f83dafbd5cafb",
+        "subject": "improve: documenta audio NDI OMT e 240 verificacoes do playout",
+        "kind": "improve"
+      },
+      {
+        "sha": "3f4b4df63b6e0110e4c5b4ba04e8026d157734d1",
+        "subject": "improve: aplica layout Live Desk aprovado ao playout nativo",
+        "kind": "improve"
+      }
+    ],
+    "date": "2026-10-20",
+    "build_status": "FAIL"
+  },
+  {
+    "display": "v0.7.5 (build 0022)",
+    "previous": "v0.7.4 (build 0021)",
+    "source_commit": "deada01fd376ca24b3bd175886b85d909bb5a2fa",
+    "commits": [
+      {
+        "sha": "deada01fd376ca24b3bd175886b85d909bb5a2fa",
+        "subject": "fix: ajusta tipos Qt e dimensoes minimas da mesa nativa",
+        "kind": "fix"
+      }
+    ],
+    "date": "2026-10-20",
+    "build_status": "PASS"
+  },
+  {
+    "display": "v0.7.6 (build 0023)",
+    "previous": "v0.7.5 (build 0022)",
+    "source_commit": "5220488564be5e9a0722b4a884793720db8c34a7",
+    "commits": [
+      {
+        "sha": "5220488564be5e9a0722b4a884793720db8c34a7",
+        "subject": "fix: exibe cinco itens completos e preserva nomes longos no layout",
+        "kind": "fix"
+      }
+    ],
+    "date": "2026-10-20",
+    "build_status": "PASS"
   }
 ]

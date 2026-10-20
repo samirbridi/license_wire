@@ -1,0 +1,633 @@
+{
+  "result": "PASS_NATIVE_AUDIO_DIGITAL_PROTOTYPE",
+  "version": "v0.7.3 (build 0020)",
+  "source_commit": "8f75a54bc637fcb77caa31cc553f9ba5e4867cd3",
+  "recorded_utc": "2026-10-20T13:45:22.313696+00:00",
+  "functional_checks_passed": 240,
+  "suites": [
+    {
+      "suite": "smoke",
+      "mode": "auto",
+      "checks": 7,
+      "result": "PASS",
+      "file": "evidence/smoke-auto-0020.json",
+      "sha256": "da88cb50f727c162a9760ffc55e93863e245511e91de51fecbc63257bd292896"
+    },
+    {
+      "suite": "transport",
+      "mode": "auto",
+      "checks": 23,
+      "result": "PASS",
+      "file": "evidence/transport-auto-0020.json",
+      "sha256": "807dcf696253dafbc59f9410f878f12ccb703309c06ad205c3749a25efa4ca31"
+    },
+    {
+      "suite": "ui",
+      "mode": "auto",
+      "checks": 12,
+      "result": "PASS",
+      "file": "evidence/ui-auto-0020.json",
+      "sha256": "e29f47e38b74a512fb412b2ce83b45bc954cbf5b6ca49bafcac7b930489f5c0b"
+    },
+    {
+      "suite": "output",
+      "mode": "auto",
+      "checks": 19,
+      "result": "PASS",
+      "file": "evidence/output-auto-0020.json",
+      "sha256": "113f0c0faa349adf0df2cb8a5881c7f28bf5066f3a1a2727ba63da60c8c1ae88"
+    },
+    {
+      "suite": "gpu",
+      "mode": "auto",
+      "checks": 21,
+      "result": "PASS",
+      "file": "evidence/gpu-auto-0020.json",
+      "sha256": "ca5155c4579f761ab943bb0407bd9bef03c9e5af03c6c8c7d3b034e8fe8b8081"
+    },
+    {
+      "suite": "network",
+      "mode": "auto",
+      "checks": 38,
+      "result": "PASS",
+      "file": "evidence/network-auto-0020.json",
+      "sha256": "e52dda155df31d75bea89aa3d4d213119dba6506343c138c40d6c70d238bec94"
+    },
+    {
+      "suite": "smoke",
+      "mode": "cpu",
+      "checks": 7,
+      "result": "PASS",
+      "file": "evidence/smoke-cpu-0020.json",
+      "sha256": "bfd9ca2d445341932542e1a1dd94e35764abac05a40643dc25b647cfc455b7c1"
+    },
+    {
+      "suite": "transport",
+      "mode": "cpu",
+      "checks": 23,
+      "result": "PASS",
+      "file": "evidence/transport-cpu-0020.json",
+      "sha256": "1bb18d0d95ce9cdb4e0a0d8f00fac3c92f60b0a4baef54c6c13311a29199d792"
+    },
+    {
+      "suite": "ui",
+      "mode": "cpu",
+      "checks": 12,
+      "result": "PASS",
+      "file": "evidence/ui-cpu-0020.json",
+      "sha256": "dc4c0d1bcd3487be408015643eeb6911f418150cb94603a33f4a394fd34b2bc7"
+    },
+    {
+      "suite": "output",
+      "mode": "cpu",
+      "checks": 19,
+      "result": "PASS",
+      "file": "evidence/output-cpu-0020.json",
+      "sha256": "2c908bc685a7f9f453b5b51d89b2a1c1bcecb87e1dd9a756ef3449243982c10a"
+    },
+    {
+      "suite": "gpu",
+      "mode": "cpu",
+      "checks": 21,
+      "result": "PASS",
+      "file": "evidence/gpu-cpu-0020.json",
+      "sha256": "477dccacc69a60606019ec7398e3357912f0e8080b1d10c88cb190c043dab232"
+    },
+    {
+      "suite": "network",
+      "mode": "cpu",
+      "checks": 38,
+      "result": "PASS",
+      "file": "evidence/network-cpu-0020.json",
+      "sha256": "d7de974420b415be62b98acc35be39866e625da2a32082a3f3cc688c14c3be36"
+    }
+  ],
+  "fixtures": {
+    "baseline": "Five synthetic 640x360/30 fps clips: H.264 MP4/MKV, H.265 MP4, MJPEG AVI, ProRes MOV",
+    "resolution": "Two synthetic 2s H.264/30 fps clips: 1920x1080 and 3840x2160",
+    "network": "Eight-second H.264 1920x1080/30 + stereo AAC 48 kHz, left 440 Hz / right 880 Hz"
+  },
+  "fixture_hashes_verified": 8,
+  "catalog_keys": 195,
+  "version_policy_tests": 4,
+  "boards": [
+    {
+      "file": "design/boards/01-main-en.png",
+      "sha256": "3352fb86a702c14110b2dd4e72a1be59b3c8dec53fcc4fb8c85a142f0a3ec7bd",
+      "width": 1600,
+      "height": 1000,
+      "brand_bright_pixels": 548,
+      "header_bright_pixels": 1392
+    },
+    {
+      "file": "design/boards/02-outputs-en.png",
+      "sha256": "2a67c4653d653d1072c91a98f49a0f942dd39d6f63c284354839c21b0ec9dcd4",
+      "width": 1600,
+      "height": 1000,
+      "brand_bright_pixels": 548,
+      "header_bright_pixels": 1392
+    },
+    {
+      "file": "design/boards/03-library-en.png",
+      "sha256": "33cf08883021511b95cfe05739ddcb4d6d8ed1923d2115ee21f9e0638e7f86e9",
+      "width": 1600,
+      "height": 1000,
+      "brand_bright_pixels": 548,
+      "header_bright_pixels": 1392
+    },
+    {
+      "file": "design/boards/04-main-pt-BR.png",
+      "sha256": "cad89a7355344bce8b2ba5617cac839d4af26b8516fe2d97d588760d27a8f411",
+      "width": 1600,
+      "height": 1000,
+      "brand_bright_pixels": 548,
+      "header_bright_pixels": 1591
+    },
+    {
+      "file": "design/boards/05-edit-en.png",
+      "sha256": "71b8e1fcefa8de90b228f1efbf505d157884838e29bc9dbf9606834c463fa26c",
+      "width": 1600,
+      "height": 1000,
+      "brand_bright_pixels": 548,
+      "header_bright_pixels": 1392
+    },
+    {
+      "file": "design/boards/06-edit-pt-BR.png",
+      "sha256": "bcaf49437207c2d5123de80208141fcd811d48962edb2220aba410d19637cd2d",
+      "width": 1600,
+      "height": 1000,
+      "brand_bright_pixels": 548,
+      "header_bright_pixels": 1591
+    },
+    {
+      "file": "design/boards/07-audio-en.png",
+      "sha256": "da5fd9f6aeb63bb8cfd19bf5a480e1154100a5628c67018500ebf87cdaf596e3",
+      "width": 1600,
+      "height": 1000,
+      "brand_bright_pixels": 548,
+      "header_bright_pixels": 1392
+    },
+    {
+      "file": "design/boards/08-audio-pt-BR.png",
+      "sha256": "9961accc4862bdbf371a628a405f4b8eb0b3fd93f3adcc0e761fdf941fcdb11a",
+      "width": 1600,
+      "height": 1000,
+      "brand_bright_pixels": 548,
+      "header_bright_pixels": 1591
+    },
+    {
+      "file": "design/boards/09-network-en.png",
+      "sha256": "3f29ced8d38c746e6e42225d3aa04cccc752e6ae1c07844ee79e28760a431a91",
+      "width": 1600,
+      "height": 1000,
+      "brand_bright_pixels": 548,
+      "header_bright_pixels": 1392
+    },
+    {
+      "file": "design/boards/10-network-pt-BR.png",
+      "sha256": "9a4ae18ffdd593f343ce4aad9c03326882af6b13141719c6354ea76a46f92e20",
+      "width": 1600,
+      "height": 1000,
+      "brand_bright_pixels": 548,
+      "header_bright_pixels": 1591
+    }
+  ],
+  "package": {
+    "executable_sha256": "2c71235027f76e2a772e70b112204d3da02cd8fe057ae539a55fbab9a543fd36",
+    "files": 30,
+    "bytes": 66178967
+  },
+  "hardware_decode_observation": {
+    "version": "v0.5.1 (build 0012)",
+    "source_commit": "75a10a6536357b4ebab21e54fa52bf7c62be172a",
+    "d3d11_selected_count": 5,
+    "result": "PASS",
+    "excerpt": "hardware-decode-excerpts-build0012.log",
+    "raw_log_sha256": "7b8fac88da023a016e092f2fdd93e494edc5a778e701f0e855b90b7b535dd3d6",
+    "scope": "H.264/H.265 hardware path selected; exact adapter not attributed; AMD not present/tested; no vendor certification"
+  },
+  "output_scaling": {
+    "default": "Native",
+    "optional": [
+      "Lanczos GPU SDR 8-bit",
+      "Lanczos CPU experimental SDR 8-bit"
+    ],
+    "gpu_queue_bound": "One latest pending surface frame; input conversion cache shared per Program; textures/passes per output",
+    "cpu_queue_bound": "One worker and one newest pending frame per Program/pixel-size pair",
+    "gpu_output_pixel_cap": 8847360,
+    "gpu_axis_dimension_cap": 4096,
+    "gpu_max_downscale_ratio_per_axis": 4,
+    "zero_copy": false,
+    "gpu_scaled_output_readback_in_production": false,
+    "fallback": "Native for unsupported high-depth/HDR/transformed/cropped/subtitle frames and unavailable/failed graphics resources",
+    "detected_screens": [
+      {
+        "dpr": 1,
+        "logical_h": 1080,
+        "logical_w": 1920,
+        "name": "SONY TV",
+        "pixel_h": 1080,
+        "pixel_w": 1920,
+        "refresh_hz": 60
+      }
+    ],
+    "live_4k_lanczos_qualified": false,
+    "performance_note": "Local four-second native streams, not AV-sync or long-show qualification. GPU filter is fast, input readback/upload remains a cost; auto 4K downscale still supersedes frames.",
+    "gpu_measurements": {
+      "auto": [
+        {
+          "device": {
+            "renderer": "NVIDIA GeForce GTX 1660 Ti/PCIe/SSE2",
+            "vendor": "NVIDIA Corporation",
+            "version": "3.3.0 NVIDIA 591.74"
+          },
+          "direction": "4K to 1080p",
+          "elapsed_ms": 4023,
+          "framebuffer_pixels": "1920x1080",
+          "gpu_filter_median_ms": 1.660928,
+          "gpu_filter_p95_ms": 3.21152,
+          "output_h": 1080,
+          "output_w": 1920,
+          "render_fps": 27.094208302261993,
+          "rendered_unique_frames": 109,
+          "scope": "4-second native stream; CPU service includes input readback/upload/submission; async GPU queries cover filter passes only; excludes scanout and AV sync",
+          "service_cpu_median_ms": 26.3829,
+          "service_cpu_p95_ms": 35.644,
+          "source_frames": 121,
+          "superseded_frames": 25
+        },
+        {
+          "device": {
+            "renderer": "NVIDIA GeForce GTX 1660 Ti/PCIe/SSE2",
+            "vendor": "NVIDIA Corporation",
+            "version": "3.3.0 NVIDIA 591.74"
+          },
+          "direction": "1080p to 4K",
+          "elapsed_ms": 4012,
+          "framebuffer_pixels": "3840x2160",
+          "gpu_filter_median_ms": 2.3088,
+          "gpu_filter_p95_ms": 5.79584,
+          "output_h": 2160,
+          "output_w": 3840,
+          "render_fps": 29.162512462612163,
+          "rendered_unique_frames": 117,
+          "scope": "4-second native stream; CPU service includes input readback/upload/submission; async GPU queries cover filter passes only; excludes scanout and AV sync",
+          "service_cpu_median_ms": 6.6904,
+          "service_cpu_p95_ms": 11.7333,
+          "source_frames": 119,
+          "superseded_frames": 3
+        }
+      ],
+      "cpu": [
+        {
+          "device": {
+            "renderer": "NVIDIA GeForce GTX 1660 Ti/PCIe/SSE2",
+            "vendor": "NVIDIA Corporation",
+            "version": "3.3.0 NVIDIA 591.74"
+          },
+          "direction": "4K to 1080p",
+          "elapsed_ms": 4004,
+          "framebuffer_pixels": "1920x1080",
+          "gpu_filter_median_ms": 1.686336,
+          "gpu_filter_p95_ms": 1.978368,
+          "output_h": 1080,
+          "output_w": 1920,
+          "render_fps": 28.221778221778223,
+          "rendered_unique_frames": 113,
+          "scope": "4-second native stream; CPU service includes input readback/upload/submission; async GPU queries cover filter passes only; excludes scanout and AV sync",
+          "service_cpu_median_ms": 21.6722,
+          "service_cpu_p95_ms": 30.6556,
+          "source_frames": 118,
+          "superseded_frames": 18
+        },
+        {
+          "device": {
+            "renderer": "NVIDIA GeForce GTX 1660 Ti/PCIe/SSE2",
+            "vendor": "NVIDIA Corporation",
+            "version": "3.3.0 NVIDIA 591.74"
+          },
+          "direction": "1080p to 4K",
+          "elapsed_ms": 4001,
+          "framebuffer_pixels": "3840x2160",
+          "gpu_filter_median_ms": 2.310144,
+          "gpu_filter_p95_ms": 4.53328,
+          "output_h": 2160,
+          "output_w": 3840,
+          "render_fps": 29.492626843289177,
+          "rendered_unique_frames": 118,
+          "scope": "4-second native stream; CPU service includes input readback/upload/submission; async GPU queries cover filter passes only; excludes scanout and AV sync",
+          "service_cpu_median_ms": 5.8737,
+          "service_cpu_p95_ms": 7.5715,
+          "source_frames": 118,
+          "superseded_frames": 1
+        }
+      ]
+    },
+    "gpu_quality": {
+      "checkerboard_max_error": 1,
+      "gpu_wave_mse": 0.22054061036816372,
+      "identity_max_error": 0,
+      "qt_smooth_wave_mse": 5.46294012392911,
+      "sdr_gamma_encoded_rgb": true,
+      "timer_query_supported": true
+    },
+    "quality_board": {
+      "file": "evidence/gpu-quality-proof.png",
+      "sha256": "e083e5a95dbde5938c4be7225c058bb2905490f0517044b9e34e8d6a2ae5289b"
+    },
+    "cpu_measurements": {
+      "auto": [
+        {
+          "down_ms": 136.8223,
+          "scope": "single constant-image resample, not playback throughput",
+          "up_ms": 203.9559
+        },
+        {
+          "elapsed_ms": 1567,
+          "frames": 8,
+          "last_service_ms": 172.3022,
+          "output_h": 1080,
+          "output_w": 1920,
+          "scope": "short functional stream; not sustained performance or AV sync qualification",
+          "source_h": 2160,
+          "source_w": 3840
+        },
+        {
+          "elapsed_ms": 1960,
+          "frames": 8,
+          "last_service_ms": 226.0751,
+          "output_h": 2160,
+          "output_w": 3840,
+          "scope": "short functional stream; not sustained performance or AV sync qualification",
+          "source_h": 1080,
+          "source_w": 1920
+        }
+      ],
+      "cpu": [
+        {
+          "down_ms": 126.1759,
+          "scope": "single constant-image resample, not playback throughput",
+          "up_ms": 206.0168
+        },
+        {
+          "elapsed_ms": 1650,
+          "frames": 8,
+          "last_service_ms": 156.87779999999998,
+          "output_h": 1080,
+          "output_w": 1920,
+          "scope": "short functional stream; not sustained performance or AV sync qualification",
+          "source_h": 2160,
+          "source_w": 3840
+        },
+        {
+          "elapsed_ms": 1862,
+          "frames": 8,
+          "last_service_ms": 229.2338,
+          "output_h": 2160,
+          "output_w": 3840,
+          "scope": "short functional stream; not sustained performance or AV sync qualification",
+          "source_h": 1080,
+          "source_w": 1920
+        }
+      ]
+    }
+  },
+  "audio_network": {
+    "local": "Independent A/B master gain, mute, local monitoring and detected endpoint selection; Preview stays muted",
+    "network_pcm": "Stereo float32 48000 Hz, 10 ms packets, planar SDK adaptation",
+    "automatic_start": false,
+    "protocols_can_run_together": true,
+    "ndi_runtime_redistributed": false,
+    "omt_version": "v1.0.0.19",
+    "codec_dependency_checked_before_start": true,
+    "pcm_rings": "One second of fixed tagged storage per deck",
+    "sender_queue_bounds": {
+      "video_frames": 6,
+      "audio_packets": 20
+    },
+    "headroom_ms": 40,
+    "audio_devices": [
+      {
+        "id": "ezAuMC4wLjAwMDAwMDAwfS57YTBlZWIyNmEtYTYwMC00OTJlLWIzN2EtYmEzMzA4MTFhMTc2fQ==",
+        "name": "Alto-falantes (Realtek(R) Audio)"
+      },
+      {
+        "id": "ezAuMC4wLjAwMDAwMDAwfS57YTMyYzgwNzYtZjU0ZS00ZDY3LWE5YzQtNzdmNzU1MDgxMGUyfQ==",
+        "name": "CABLE Input (VB-Audio Virtual Cable)"
+      },
+      {
+        "id": "ezAuMC4wLjAwMDAwMDAwfS57YTdkMzI3YzEtN2Q3Mi00ZDJkLWEzYTYtZTIzMzcxMmI2MWY0fQ==",
+        "name": "SONY TV (NVIDIA High Definition Audio)"
+      },
+      {
+        "id": "ezAuMC4wLjAwMDAwMDAwfS57YjgxNmU3OGQtMDQ1Ny00ZjI1LWE1NjgtNDhlOGRhYmVmOTMzfQ==",
+        "name": "CABLE-B Input (VB-Audio Cable B)"
+      },
+      {
+        "id": "ezAuMC4wLjAwMDAwMDAwfS57YzFlNDQ4MTMtZmJhNS00YmU2LTkzMWUtZDQxNzBhYWY4YWVhfQ==",
+        "name": "CABLE-A Input (VB-Audio Cable A)"
+      },
+      {
+        "id": "ezAuMC4wLjAwMDAwMDAwfS57ZmZkNThmZmEtYWY4OS00YzEzLWJhZmYtZWQ0OTk0ZWIyODgwfQ==",
+        "name": "CABLE In 16ch (VB-Audio Virtual Cable)"
+      }
+    ],
+    "validation": {
+      "auto": {
+        "loopback": [
+          {
+            "protocol": "NDI",
+            "statistics": {
+              "audio_packets": 118,
+              "connections": 2,
+              "dropped_audio": 0,
+              "error": "",
+              "running": true,
+              "source": "DESKTOP-BBB9G7I (Mizin QA NDI 41376)",
+              "superseded_video": 15,
+              "video_frames": 53
+            }
+          },
+          {
+            "protocol": "OMT",
+            "statistics": {
+              "audio_packets": 118,
+              "connections": 2,
+              "dropped_audio": 0,
+              "error": "",
+              "running": true,
+              "source": "DESKTOP-BBB9G7I (Mizin QA OMT 41376)",
+              "superseded_video": 16,
+              "video_frames": 48
+            }
+          }
+        ],
+        "received": [
+          {
+            "audio_packets": 17,
+            "audio_peak": 0.025033749639987946,
+            "name": "ndi_loopback_receives_native_video_and_audio",
+            "pass": true,
+            "video_frames": 10
+          },
+          {
+            "audio_packets": 17,
+            "audio_peak": 0.025028904899954796,
+            "name": "omt_loopback_receives_native_video_and_audio",
+            "pass": true,
+            "video_frames": 8
+          },
+          {
+            "name": "master_mute_reaches_both_network_receivers",
+            "pass": true
+          },
+          {
+            "name": "master_unmute_restores_both_network_receivers",
+            "pass": true
+          },
+          {
+            "name": "black_reaches_both_network_outputs",
+            "native_frame_stays_invalid": true,
+            "ndi_black": true,
+            "ndi_fourcc": 1095911234,
+            "ndi_mean": 0.6666666666666666,
+            "omt_black": true,
+            "omt_codec": 826363974,
+            "omt_mean": 0,
+            "pass": true
+          }
+        ]
+      },
+      "cpu": {
+        "loopback": [
+          {
+            "protocol": "NDI",
+            "statistics": {
+              "audio_packets": 111,
+              "connections": 2,
+              "dropped_audio": 0,
+              "error": "",
+              "running": true,
+              "source": "DESKTOP-BBB9G7I (Mizin QA NDI 15944)",
+              "superseded_video": 23,
+              "video_frames": 64
+            }
+          },
+          {
+            "protocol": "OMT",
+            "statistics": {
+              "audio_packets": 111,
+              "connections": 2,
+              "dropped_audio": 0,
+              "error": "",
+              "running": true,
+              "source": "DESKTOP-BBB9G7I (Mizin QA OMT 15944)",
+              "superseded_video": 24,
+              "video_frames": 50
+            }
+          }
+        ],
+        "received": [
+          {
+            "audio_packets": 15,
+            "audio_peak": 0.025048527866601944,
+            "name": "ndi_loopback_receives_native_video_and_audio",
+            "pass": true,
+            "video_frames": 15
+          },
+          {
+            "audio_packets": 15,
+            "audio_peak": 0.025048527866601944,
+            "name": "omt_loopback_receives_native_video_and_audio",
+            "pass": true,
+            "video_frames": 8
+          },
+          {
+            "name": "master_mute_reaches_both_network_receivers",
+            "pass": true
+          },
+          {
+            "name": "master_unmute_restores_both_network_receivers",
+            "pass": true
+          },
+          {
+            "name": "black_reaches_both_network_outputs",
+            "native_frame_stays_invalid": true,
+            "ndi_black": true,
+            "ndi_fourcc": 1095911234,
+            "ndi_mean": 0.6666666666666666,
+            "omt_black": true,
+            "omt_codec": 826363974,
+            "omt_mean": 0,
+            "pass": true
+          }
+        ]
+      }
+    },
+    "dependency_inventory": "evidence/network-runtime.json",
+    "scope": "Windows SDK receivers in the same process/machine; not independent LAN application, physical listening, AV sync or event-duration certification"
+  },
+  "iterations": [
+    {
+      "build": 13,
+      "compilation": "PASS",
+      "gpu_suite": "CRASH",
+      "evidence": "evidence/gpu-crash-0013.log"
+    },
+    {
+      "build": 14,
+      "compilation": "PASS",
+      "gpu_suite": "FAIL",
+      "evidence": "evidence/gpu-auto-0014.json",
+      "note": "Smaller desktop-constrained QA surfaces; not 4K-output throughput"
+    },
+    {
+      "build": 15,
+      "compilation": "PASS",
+      "gpu_suite": "FAIL",
+      "evidence": "evidence/gpu-auto-0015.json",
+      "note": "Exact framebuffer sizes; first hidden output sample required explicit repaint"
+    },
+    {
+      "build": 16,
+      "compilation": "PASS",
+      "gpu_suite": "PASS",
+      "note": "All 160 functional checks passed"
+    },
+    {
+      "build": 17,
+      "compilation": "PASS",
+      "audio_network": "PASS_33_CHECKS",
+      "note": "Initial loopback 1080p/stereo; before additional receiver Black checks"
+    },
+    {
+      "build": 18,
+      "compilation": "PASS",
+      "audio_network": "FAIL_BLACK_RECEIVER_CHECK",
+      "evidence": "evidence/network-auto-0018.json"
+    },
+    {
+      "build": 19,
+      "compilation": "PASS",
+      "functional_checks": 238,
+      "note": "Late-frame rejection fixes Black; full regression passed"
+    },
+    {
+      "build": 20,
+      "compilation": "PASS",
+      "functional_checks": 240,
+      "note": "Adds OMT codec absence check and consolidated sender clock"
+    }
+  ],
+  "not_validated": [
+    "Independent receiver applications/computers, LAN discovery across switches/firewalls and physical listening",
+    "Long-duration AV sync, seamless audio loop/listening and 24/72-hour stability",
+    "4K NDI/OMT throughput, network GPU encoding, HX, HDR, multichannel mapping or exclusive ASIO",
+    "AMD/Intel GPU renderers and vendor-specific hardware decoder profiles",
+    "macOS/Linux builds and installers",
+    "Physical 4K output, hotplug and synchronized multi-monitor scanout",
+    "Zero-copy GPU frame interop and GPU transition composition",
+    "Authenticated remote control and scheduling",
+    "OS pointer/drag-drop human interaction and human visual approval"
+  ]
+}

@@ -1,11 +1,13 @@
 # Your first show
 
+The approved Live Desk layout keeps Preview and Program A prominent, Program B visible and manual takes in the center. Choose the destination using the **Program A / Program B** buttons before CUT or FADE. EDIT stays separate.
+
 1. In **MAIN**, add files, add a folder or drop local media on the window.
 2. Double-click a running-order item, or choose Cue selected, to load muted Preview. CUT and FADE become available when that selected item is prepared.
 3. Choose **Edit cue** or open **EDIT** to prepare In/Out and per-item transitions. Select a cue, scrub Preview and Mark In / Mark Out, or enter seconds with milliseconds. Out = End of media uses the remaining file. Apply cue saves these non-destructive settings. Reset edits reloads the applied values.
 4. Return to MAIN, choose Program A or B and press **CUT** for an immediate switch after preparation, or **FADE** for a dissolve. Fade duration defaults to **300 ms**, can be adjusted from 1 to 10000 ms and is remembered on this computer. CUT / Ctrl+Enter ignores the cue's entry fade. FADE / Ctrl+Space also fades from black when the destination is empty. These manual actions preserve saved cue settings. The shortcuts operate only in MAIN.
-5. Leave Sequential off for manual switches; playback holds at Out. With Fade out it ends on black. Enable Sequential to advance using each next item's saved transition; Repeat order repeats the list, including a single item. Each Program has its own mode. Loop selected channel repeats only the current trimmed range in manual mode.
-6. Open Outputs to assign Programs to displays. The same Program mirrors the same frames; audio plays once per Program. Escape closes an output window.
+5. Select **Manual** for manual switches; playback holds at Out. With Fade out it ends on black. Select **Sequential** to advance using each next item's saved transition; Repeat order repeats the list, including a single item. Each Program has its own mode. **Loop** repeats only the current trimmed range in manual mode.
+6. Open Outputs to assign Programs to displays. The same Program mirrors the same frames; audio plays once per Program. Escape closes an output window. The MAIN dashboard shows A/B audio peaks, three route states and A/B NDI/OMT publisher states. Clicking a route or protocol tile opens its settings; it does not activate that output. Use the audio icon to open Audio routing.
 7. Save show writes a schema-2 .mizinshow with applied cue settings. Schema-1 shows still open. Duplicate cue reuses a file with separate trim settings.
 
 ## Live operation
