@@ -87,14 +87,15 @@ public:
     void paint(QPainter* p,const QStyleOptionViewItem& option,const QModelIndex& index)const override {
         auto opt=option;initStyleOption(&opt,index);const QString name=opt.text;opt.text.clear();
         const auto* widget=opt.widget;(widget?widget->style():QApplication::style())->drawControl(QStyle::CE_ItemViewItem,&opt,p,widget);
-        p->save();p->setRenderHint(QPainter::Antialiasing);
+        p->save();p->setClipRect(opt.rect);p->setRenderHint(QPainter::Antialiasing);
         const QRect r=opt.rect.adjusted(8,5,-8,-5);const QString ext=QFileInfo(name).suffix().toUpper().left(6);
-        const QColor color=index.data(Qt::UserRole+1).toString().startsWith('A')?QColor("#f37e75"):index.data(Qt::UserRole+1).toString().startsWith('B')?QColor("#b38bea"):QColor("#64cde0");
+        const QString state=index.data(Qt::UserRole+1).toString();
+        const QColor color=state.startsWith('A')||state.startsWith("PROGRAM")?QColor("#f37e75"):state.startsWith('B')?QColor("#b38bea"):QColor("#64cde0");
         const QRect chip(r.x(),r.center().y()-12,46,24);p->setPen(QColor("#324d61"));p->setBrush(QColor("#1a3040"));p->drawRoundedRect(chip,3,3);
         p->setPen(color);p->setFont(QFont("Segoe UI",7,QFont::DemiBold));p->drawText(chip,Qt::AlignCenter,ext);
-        const QString state=index.data(Qt::UserRole+1).toString();const int badge=state.isEmpty()?0:55;
+        const int tagWidth=state.isEmpty()?0:qMin(qMax(49,QFontMetrics(option.font).horizontalAdvance(state)+12),qMax(0,r.width()-64));const int badge=tagWidth?tagWidth+6:0;
         const QRect textRect=r.adjusted(58,0,-badge,0);p->setFont(option.font);p->setPen(QColor("#e4edf6"));p->drawText(textRect,Qt::AlignVCenter|Qt::AlignLeft,QFontMetrics(option.font).elidedText(name,Qt::ElideMiddle,textRect.width()));
-        if(!state.isEmpty()){const QRect tag(r.right()-49,r.center().y()-10,49,20);p->setPen(color);p->drawText(tag,Qt::AlignCenter,state);}
+        if(tagWidth){const QRect tag(r.right()-tagWidth,r.center().y()-10,tagWidth,20);p->setPen(color);p->drawText(tag,Qt::AlignCenter,QFontMetrics(option.font).elidedText(state,Qt::ElideRight,tagWidth));}
         p->restore();
     }
 };
