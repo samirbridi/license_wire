@@ -1,1 +1,3 @@
 evidence/*.log -whitespace
+# Retain upstream license bytes, including their intentional final blank lines.
+packaging/notices/*.txt -text -whitespace

@@ -651,9 +651,12 @@ int main(int argc,char** argv){
     const QStringList raw=[&]{QStringList r;for(int i=1;i<argc;++i)r<<QString::fromLocal8Bit(argv[i]);return r;}();
     if(raw.contains("--cpu")){qputenv("QT_FFMPEG_DECODING_HW_DEVICE_TYPES",",");qputenv("MIZIN_DECODE_MODE","cpu");}
     QCoreApplication::setAttribute(Qt::AA_ShareOpenGLContexts);
-    QApplication app(argc,argv);QCoreApplication::setApplicationName("Mizin Playout");QCoreApplication::setOrganizationName("Mizin");app.setStyle("Fusion");app.setStyleSheet(style);
+    QApplication app(argc,argv);QCoreApplication::setApplicationName("Mizin Playout");QCoreApplication::setOrganizationName("Mizin");QCoreApplication::setApplicationVersion(MizinVersion);app.setStyle("Fusion");app.setStyleSheet(style);
     QCommandLineParser parser;
     parser.addHelpOption();
+    parser.addVersionOption();
+    parser.addOption(QCommandLineOption(QStringLiteral("portable"),QStringLiteral("Keep settings beside the executable in state/")));
+    parser.addOption(QCommandLineOption(QStringLiteral("runtime-info"),QStringLiteral("Write version and resolved settings path, then exit"),QStringLiteral("path")));
     parser.addOption(QCommandLineOption(QStringLiteral("board"),QStringLiteral("Show sample content for layout review")));
     parser.addOption(QCommandLineOption(QStringLiteral("board-multi-output"),QStringLiteral("Show three Programs and five display routes in sample mode")));
     parser.addOption(QCommandLineOption(QStringLiteral("board-programs"),QStringLiteral("Number of sample Programs in multiview"),QStringLiteral("count"),QStringLiteral("1")));
@@ -683,7 +686,17 @@ int main(int argc,char** argv){
     if(parser.isSet("output-test"))return runOutputTests(parser.value("fixtures"),parser.value("result"));
     if(parser.isSet("transport-test"))return runTransportTests(parser.value("fixtures"),parser.value("result"));
     if(parser.isSet("smoke-test"))return runSmoke(parser.value("fixtures"),parser.value("result"));
-    const QString state=parser.isSet("state-dir")?parser.value("state-dir"):QCoreApplication::applicationDirPath()+"/state";
+    const QString state=QDir::cleanPath(parser.isSet("state-dir")?QFileInfo(parser.value("state-dir")).absoluteFilePath():parser.isSet("portable")?QCoreApplication::applicationDirPath()+"/state":QStandardPaths::writableLocation(QStandardPaths::AppLocalDataLocation));
+    if(parser.isSet("runtime-info")){
+        QSaveFile report(parser.value("runtime-info"));if(!report.open(QIODevice::WriteOnly))return 5;
+        report.write(QJsonDocument(QJsonObject{{"version",QString(MizinVersion)},{"source_commit",QString(MizinSourceCommit)},{"state_dir",state},{"portable",parser.isSet("portable")},{"state_override",parser.isSet("state-dir")},{"default_language","en"}}).toJson());return report.commit()?0:5;
+    }
+    // Preserve legacy preferences on first normal launch; explicit/portable paths
+    // keep their old semantics. Never delete or replace an existing user profile.
+    const QString legacy=QCoreApplication::applicationDirPath()+"/state/preferences.ini";
+    if(!parser.isSet("state-dir")&&!parser.isSet("portable")&&!QFileInfo::exists(state+"/preferences.ini")&&QFileInfo::exists(legacy)){
+        if(!QDir().mkpath(state)||!QFile::copy(legacy,state+"/preferences.ini"))qWarning("Legacy preferences could not be copied; original retained.");
+    }
     QSettings decodeSettings(state+"/preferences.ini",QSettings::IniFormat);if(decodeSettings.value("decode","auto").toString()=="cpu"){qputenv("QT_FFMPEG_DECODING_HW_DEVICE_TYPES",",");qputenv("MIZIN_DECODE_MODE","cpu");}
     MainWindow window(parser.isSet("board"),parser.value("lang"),state);
     if(parser.isSet("board-multi-output"))window.configureBoardOutputs();

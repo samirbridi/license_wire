@@ -1,5 +1,6 @@
 build/
 dist/
+releases/
 .cache/
 evidence/runtime-*.log
 *.user

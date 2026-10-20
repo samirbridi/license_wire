@@ -1,2 +1,3 @@
 #pragma once
 inline constexpr const char* MizinVersion = "@MIZIN_VERSION@";
+inline constexpr const char* MizinSourceCommit = "@MIZIN_SOURCE_COMMIT@";

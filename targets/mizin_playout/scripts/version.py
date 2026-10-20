@@ -70,7 +70,7 @@ def main():
               'date': datetime.datetime.now(datetime.timezone(datetime.timedelta(hours=-3))).date().isoformat(),
               'build_status': 'RESERVED'}
     if args.reserve:
-        dirty = git('status', '--porcelain', '--untracked-files=normal', '--', TARGET + '/reconstructed', TARGET + '/scripts')
+        dirty = git('status', '--porcelain', '--untracked-files=normal', '--', TARGET + '/reconstructed', TARGET + '/scripts', TARGET + '/packaging')
         if dirty:
             raise ValueError('Commit source changes before compilation:\n' + dirty)
         (ROOT / 'VERSION').write_text(display + '\n', encoding='utf-8')
