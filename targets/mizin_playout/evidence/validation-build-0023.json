@@ -1,0 +1,369 @@
+{
+  "result": "PASS_NATIVE_LIVE_DESK_LAYOUT",
+  "version": "v0.7.6 (build 0023)",
+  "source_commit": "5220488564be5e9a0722b4a884793720db8c34a7",
+  "recorded_utc": "2026-10-20T17:18:15.721885+00:00",
+  "functional_checks_passed": 174,
+  "suites": [
+    {
+      "suite": "ui",
+      "mode": "auto",
+      "checks": 19,
+      "result": "PASS",
+      "file": "evidence/ui-auto-0023.json",
+      "sha256": "ff2e874617c280720f2120d3174450c83a095e0974331b52cec8eedb3ffc180c"
+    },
+    {
+      "suite": "smoke",
+      "mode": "auto",
+      "checks": 7,
+      "result": "PASS",
+      "file": "evidence/smoke-auto-0023.json",
+      "sha256": "c1470db130174fdeefad239013e19f8a075ae1f6a346d767234a017c3610faac"
+    },
+    {
+      "suite": "transport",
+      "mode": "auto",
+      "checks": 23,
+      "result": "PASS",
+      "file": "evidence/transport-auto-0023.json",
+      "sha256": "807dcf696253dafbc59f9410f878f12ccb703309c06ad205c3749a25efa4ca31"
+    },
+    {
+      "suite": "network",
+      "mode": "auto",
+      "checks": 38,
+      "result": "PASS",
+      "file": "evidence/network-auto-0023.json",
+      "sha256": "a81b406de4d5583dfe8ceeed3d7d8478cf7823f4475840d5c3aaa5c6c4db3298"
+    },
+    {
+      "suite": "ui",
+      "mode": "cpu",
+      "checks": 19,
+      "result": "PASS",
+      "file": "evidence/ui-cpu-0023.json",
+      "sha256": "8e2b564cd5aeab3a2ca32376d8b3d87b1dec37156d04762af65088d06556dfca"
+    },
+    {
+      "suite": "smoke",
+      "mode": "cpu",
+      "checks": 7,
+      "result": "PASS",
+      "file": "evidence/smoke-cpu-0023.json",
+      "sha256": "d1164e4d54a6c280c0557908558f27b59eb410a00f2ccd258bfd72a0b2b8f27c"
+    },
+    {
+      "suite": "transport",
+      "mode": "cpu",
+      "checks": 23,
+      "result": "PASS",
+      "file": "evidence/transport-cpu-0023.json",
+      "sha256": "1bb18d0d95ce9cdb4e0a0d8f00fac3c92f60b0a4baef54c6c13311a29199d792"
+    },
+    {
+      "suite": "network",
+      "mode": "cpu",
+      "checks": 38,
+      "result": "PASS",
+      "file": "evidence/network-cpu-0023.json",
+      "sha256": "55d0494ea17c0c18533a2bc845525429415d09d1b2fcb7b1810a7a5ce2890ae2"
+    }
+  ],
+  "catalog_keys": 213,
+  "matched_en_pt_catalogs": true,
+  "version_policy_tests_passed": 4,
+  "native_boards": [
+    {
+      "file": "design/boards/01-main-en.png",
+      "width": 1600,
+      "height": 1000,
+      "bytes": 195129,
+      "sha256": "d7744f4c9d7d5eae6298a2f454c7d3a47d3dcf53abfc695282e423cdb7511ebf",
+      "brand_pixels_match": true
+    },
+    {
+      "file": "design/boards/02-outputs-en.png",
+      "width": 1600,
+      "height": 1000,
+      "bytes": 67248,
+      "sha256": "bccd9016f36eb8afa3a47247d4ed13ec08a5100accf476832e71b940f114aa85",
+      "brand_pixels_match": true
+    },
+    {
+      "file": "design/boards/03-library-en.png",
+      "width": 1600,
+      "height": 1000,
+      "bytes": 52984,
+      "sha256": "61c597278a1be368d474ca2cf17cdef6c6bd1dfc00b8ac0f0d2ddf005fedbb75",
+      "brand_pixels_match": true
+    },
+    {
+      "file": "design/boards/04-main-pt-BR.png",
+      "width": 1600,
+      "height": 1000,
+      "bytes": 198031,
+      "sha256": "81b2a5699fdd27c96a91b88bf43151b3c186beac4646078cbb4e8563bd87c20f",
+      "brand_pixels_match": true
+    },
+    {
+      "file": "design/boards/05-edit-en.png",
+      "width": 1600,
+      "height": 1000,
+      "bytes": 180100,
+      "sha256": "f3b46ece834b5e6494777fc876169462433886ba48ae302edd4b1d6d6c68e357",
+      "brand_pixels_match": true
+    },
+    {
+      "file": "design/boards/06-edit-pt-BR.png",
+      "width": 1600,
+      "height": 1000,
+      "bytes": 184928,
+      "sha256": "f90b4756afe0f3897d7f034243c5800e3b10cfcaab74439c0d08ca39fe3d98d9",
+      "brand_pixels_match": true
+    },
+    {
+      "file": "design/boards/07-audio-en.png",
+      "width": 1600,
+      "height": 1000,
+      "bytes": 52212,
+      "sha256": "2097dc7913cb056e135fec5d0f75c726836a5241a3f2bd351bf2471ac985c3e3",
+      "brand_pixels_match": true
+    },
+    {
+      "file": "design/boards/08-audio-pt-BR.png",
+      "width": 1600,
+      "height": 1000,
+      "bytes": 55585,
+      "sha256": "219296b26264e683cf72034517bb8a34f5c8659d5bb85350cc3167914d080488",
+      "brand_pixels_match": true
+    },
+    {
+      "file": "design/boards/09-network-en.png",
+      "width": 1600,
+      "height": 1000,
+      "bytes": 57020,
+      "sha256": "a7bbf712fbbdd99d5a8c07854b626447be9f191c314a0db2b1ef2c39583dd286",
+      "brand_pixels_match": true
+    },
+    {
+      "file": "design/boards/10-network-pt-BR.png",
+      "width": 1600,
+      "height": 1000,
+      "bytes": 58497,
+      "sha256": "90ed15f78e18673dd7f951126030e9bd21f7bef7b813f919886e9a5471f56ba4",
+      "brand_pixels_match": true
+    },
+    {
+      "file": "design/boards/compact/01-main-en.png",
+      "width": 1280,
+      "height": 800,
+      "bytes": 109015,
+      "sha256": "ce11cdd3e09efd374970978254e5480dcf5828f2032e67cb69df184b1d7413cb",
+      "brand_pixels_match": true
+    },
+    {
+      "file": "design/boards/compact/04-main-pt-BR.png",
+      "width": 1280,
+      "height": 800,
+      "bytes": 111601,
+      "sha256": "37527c27f62eb47445b92552ee0de519f175100c83430cdaa104ac6b989198f1",
+      "brand_pixels_match": true
+    }
+  ],
+  "fixture_hashes": [
+    {
+      "file": "binaries/fixtures/01-h264.mp4",
+      "sha256": "2ae852d3eb029e42bef5b13aa9d9d9657f5884c8b7daf44f46da1d741dddc81f"
+    },
+    {
+      "file": "binaries/fixtures/02-hevc.mp4",
+      "sha256": "852d3c11953caafcbf5edcaf95a2bc33d2a7ee06f15a35e7f6f69023be6d3efc"
+    },
+    {
+      "file": "binaries/fixtures/03-h264.mkv",
+      "sha256": "34a8e75533571cebd041a36abb53aaef6c4065c5b9734924c25689b554f4e545"
+    },
+    {
+      "file": "binaries/fixtures/04-mjpeg.avi",
+      "sha256": "67047463b54c7b250874a9c5f2ceccf7368e29c16e3ba5ef48a7b53100bf5cd0"
+    },
+    {
+      "file": "binaries/fixtures/05-prores.mov",
+      "sha256": "6cc4b3f2d5bdca282ea5a5081ca31c3dd62fb096164c9dc0d4557a5fa77551d2"
+    },
+    {
+      "file": "binaries/resolution-fixtures/h264-1920x1080.mp4",
+      "sha256": "0f5588143dd898140579bc54fcb8244f59645c9723d92b831bade5fb0a1885f2"
+    },
+    {
+      "file": "binaries/resolution-fixtures/h264-3840x2160.mp4",
+      "sha256": "6ec6d00773bfea150620791e9e398b2dffd1df8a85102f85b1b042172c68ac57"
+    },
+    {
+      "file": "binaries/network-fixtures/01-h264.mp4",
+      "sha256": "d07831a4d796164fdcd8f883efb372a8c025419e2682375defdaa472b43b0bbd"
+    }
+  ],
+  "package": {
+    "executable_sha256": "464af69a0ebe0d47e6ebe46de1d41644777a43d7108684055fbe975f191dc96b",
+    "file_count": 30,
+    "bytes": 66231703,
+    "files": [
+      {
+        "file": "avcodec-61.dll",
+        "bytes": 13921592,
+        "sha256": "e419ac581dd7317dc49b54349827db26e479bc71a71fe7af7529086aa6fa7f60"
+      },
+      {
+        "file": "avformat-61.dll",
+        "bytes": 2642232,
+        "sha256": "570fe624961878fa08611335fe7f92b7ab898013e16ddb000e63dc7be1d6cd1b"
+      },
+      {
+        "file": "avutil-59.dll",
+        "bytes": 1198392,
+        "sha256": "c53a43cc7f15cf36e2143240302f2dcf0c10c9236e41ef6aba488d3986e90c96"
+      },
+      {
+        "file": "D3Dcompiler_47.dll",
+        "bytes": 4517376,
+        "sha256": "f642940ffb5dca7e548ba2270686798cf6b4c74b60e88bbb22f0991868cae3e5"
+      },
+      {
+        "file": "generic/qtuiotouchplugin.dll",
+        "bytes": 102712,
+        "sha256": "bf4efd69f22ad7b3f3bb79979e9fdef4182ef782e7ab2c4b80e6656bbe33e363"
+      },
+      {
+        "file": "icuuc.dll",
+        "bytes": 29696,
+        "sha256": "e76201d65fc58d1db0ec99bc8e875f47d692bcaa16bb6448b197bc86c08d1816"
+      },
+      {
+        "file": "imageformats/qgif.dll",
+        "bytes": 47928,
+        "sha256": "4fe24916a961587173c846055a34735b904900fb75716de4fa458c203da3e7ef"
+      },
+      {
+        "file": "imageformats/qico.dll",
+        "bytes": 45880,
+        "sha256": "0d79934047e06591b74201d826af72f6ab595f5df4705ad7f0c234c0e2cf3a32"
+      },
+      {
+        "file": "imageformats/qjpeg.dll",
+        "bytes": 577848,
+        "sha256": "004f456d513a6bfc58320652c326a023fa8fea905d26b642a561f7081442aff0"
+      },
+      {
+        "file": "libomt.dll",
+        "bytes": 6950400,
+        "sha256": "673b1d33222295f1c9190c54cefc89d5e322301702532e2c8fe78a16e8aa28da"
+      },
+      {
+        "file": "libvmx.dll",
+        "bytes": 540160,
+        "sha256": "effd2eb33a85689da940ab6744cf8931448445144c5d7991ac50908800af19be"
+      },
+      {
+        "file": "licenses/omt/LICENSE.txt",
+        "bytes": 1111,
+        "sha256": "616e62811c0395c0719bd77b2c2c4276a797e803f73d412e87c3834f2af8bda2"
+      },
+      {
+        "file": "MizinPlayout.exe",
+        "bytes": 648192,
+        "sha256": "464af69a0ebe0d47e6ebe46de1d41644777a43d7108684055fbe975f191dc96b"
+      },
+      {
+        "file": "multimedia/ffmpegmediaplugin.dll",
+        "bytes": 635704,
+        "sha256": "f9b77081dbe6557a89057735a0c7d8ed7268b6d60d9794b2890db55703a98fe1"
+      },
+      {
+        "file": "multimedia/windowsmediaplugin.dll",
+        "bytes": 291640,
+        "sha256": "049dbe8d45cdc3dcff82a6705da61fccf1022f162bd982224bcb81144bf02b13"
+      },
+      {
+        "file": "networkinformation/qnetworklistmanager.dll",
+        "bytes": 70968,
+        "sha256": "2f76ab1699bf9a1ef89404d054dc7325c4e18d4d27f52cd3ca3b5088d944eb18"
+      },
+      {
+        "file": "platforms/qwindows.dll",
+        "bytes": 997688,
+        "sha256": "540211565db496024246cb8a44437212e6b967f3ee7b899e888f41cc556bf041"
+      },
+      {
+        "file": "Qt6Core.dll",
+        "bytes": 10242360,
+        "sha256": "b98eea394a95563879b614dbd4432ce074b0fceeb154c3bae252f4e7a9376a40"
+      },
+      {
+        "file": "Qt6Gui.dll",
+        "bytes": 9494840,
+        "sha256": "28ca8b9e7d3d1c4e3cfafd6fe63877a05cf10202a240134a11f98384f01c9e37"
+      },
+      {
+        "file": "Qt6Multimedia.dll",
+        "bytes": 1241400,
+        "sha256": "97dbc2efc2dcc84ac8d6af1e7e6c4fcb23f8280af888a59d8667668c6b163416"
+      },
+      {
+        "file": "Qt6MultimediaWidgets.dll",
+        "bytes": 62264,
+        "sha256": "09fc6bd1dab4bd48fece8603ab0143e6e2af5af839b5b1af26970e3b35cf57ff"
+      },
+      {
+        "file": "Qt6Network.dll",
+        "bytes": 1766712,
+        "sha256": "905e1ce3947fadaad566b6deffe345daf7f6efbc57207ea7fcdbfa77669e3de6"
+      },
+      {
+        "file": "Qt6OpenGL.dll",
+        "bytes": 1977144,
+        "sha256": "a41b71127d07924ddda67e787e8765ebf60f217817199f1becdd63f3db88847e"
+      },
+      {
+        "file": "Qt6OpenGLWidgets.dll",
+        "bytes": 64312,
+        "sha256": "55e11e28c82b69ac67725ebdf05f0c703a2ea3b1443b141d37d537a34ac45e18"
+      },
+      {
+        "file": "Qt6Widgets.dll",
+        "bytes": 6576952,
+        "sha256": "f383fb6b3f6996efe23327ff607e7298fc47ee76e8b8ef8a65f8d2e0a91707e4"
+      },
+      {
+        "file": "styles/qmodernwindowsstyle.dll",
+        "bytes": 220984,
+        "sha256": "f9ddcd6f6319be76ec8ea1b95e6829cdc0f9600242b6bdd07babb0185e9762ab"
+      },
+      {
+        "file": "swresample-5.dll",
+        "bytes": 247096,
+        "sha256": "b516d8e9428e5afc8304e7087a673ed0289e87aba5e00f78e52af2d6b54c655e"
+      },
+      {
+        "file": "swscale-8.dll",
+        "bytes": 751928,
+        "sha256": "e9a7f5342fa2b157c20ba2483397f6fecca0d46f6453d651c8f76dc7cd72fe7a"
+      },
+      {
+        "file": "tls/qcertonlybackend.dll",
+        "bytes": 103224,
+        "sha256": "584392e25d46b6edc255e4c5849920da3e52c01172199def876284525587bb05"
+      },
+      {
+        "file": "tls/qschannelbackend.dll",
+        "bytes": 262968,
+        "sha256": "4632404cb87f860e7bb811f525685509127da8d05f398aada5b2b88318e4a621"
+      }
+    ]
+  },
+  "approved_direction": "A - Live Desk",
+  "approval_record": "design/APPROVAL.md",
+  "historical_output_gpu_validation": "evidence/validation-build-0020.json",
+  "scope": "Native widget actions and local fixture playback/network loopback. Boards use sample content. No new GPU throughput, physical display, external LAN, physical audio, OS pointer or production AV-sync qualification."
+}

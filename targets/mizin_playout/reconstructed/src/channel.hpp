@@ -11,6 +11,8 @@
 #include <QVideoFrame>
 #include <QVideoSink>
 #include <array>
+#include <deque>
+#include <QJsonObject>
 
 class NativeChannel final : public QObject {
     Q_OBJECT
@@ -33,7 +35,17 @@ public:
     bool playing() const;
     bool loop() const { return loop_; }
     bool pending() const { return pending_ && autoTake_; }
+    bool preparing() const { return pending_; }
     bool prepared() const { return ready_; }
+    quint64 requestGeneration() const { return requestGeneration_; }
+    quint64 activeGeneration() const { return activeGeneration_; }
+    quint64 publishedFrames() const { return publishedFrames_; }
+    QString preparationState() const { return preparationState_; }
+    QString preparationError() const { return preparationError_; }
+    bool hasVideo() const { return decks_[active_].player->hasVideo(); }
+    bool hasAudio() const { return decks_[active_].player->hasAudio(); }
+    bool seekable() const { return decks_[active_].player->isSeekable(); }
+    QJsonObject diagnostics() const;
     bool transitioning() const { return outgoing_ >= 0; }
     bool ended() const { return ended_; }
     int frames() const;
@@ -73,6 +85,7 @@ private:
         QVideoFrame last;
         int frames = 0;
         bool seekSet = false;
+        bool sourceLoaded = false;
         float gain=0;
         qint64 offsetUs=0;
     };
@@ -93,6 +106,14 @@ private:
     bool muted_=false,localAudio_=true,deviceAvailable_=true;
     QByteArray deviceId_;
     int audioBuffers_=0;
+    quint64 requestGeneration_=0,activeGeneration_=0,publishedFrames_=0,receivedFrames_=0,prerollFiltered_=0;
+    QString preparationState_="empty",preparationPath_,preparationError_,lastError_;
+    QElapsedTimer preparationClock_;
+    qint64 preparationMs_=0;
+    std::deque<qint64> publishedTimes_;
+    quint64 compositionSamples_=0;
+    double compositionLastMs_=0,compositionPeakMs_=0,compositionTotalMs_=0;
+    void preparationFailed(const QString& message);
     void applyLocalAudio();
     void receiveAudio(int deck,const QAudioBuffer& buffer);
     void pumpAudio();

@@ -4,6 +4,7 @@
 #include <QUrl>
 #include <QMediaDevices>
 #include <QAudioBuffer>
+#include <QMediaMetaData>
 #include <cmath>
 
 NativeChannel::NativeChannel(bool preview, QObject* parent) : QObject(parent), preview_(preview) {
@@ -21,9 +22,10 @@ NativeChannel::NativeChannel(bool preview, QObject* parent) : QObject(parent), p
         if(!preview_){QAudioFormat f;f.setSampleRate(48000);f.setChannelCount(2);f.setSampleFormat(QAudioFormat::Float);d.tap=new QAudioBufferOutput(f,this);d.player->setAudioBufferOutput(d.tap);connect(d.tap,&QAudioBufferOutput::audioBufferReceived,this,[this,i](const QAudioBuffer& b){receiveAudio(i,b);});}
         connect(d.sink,&QVideoSink::videoFrameChanged,this,[this,i](const QVideoFrame& frame){
             if (!frame.isValid() || decks_[i].cue.path.isEmpty() || decks_[i].player->source().isEmpty()) return;
+            ++receivedFrames_;
             auto& deck=decks_[i];
             const qint64 timestamp=frame.startTime()<0 ? deck.player->position() : frame.startTime()/1000;
-            if (pending_ && i==incoming_ && (!deck.seekSet || timestamp+2<deck.cue.in)) return;
+            if (pending_ && i==incoming_ && (!deck.sourceLoaded || !deck.seekSet || timestamp+2<deck.cue.in)) {++prerollFiltered_;return;}
             if (i==active_ && timestamp+2<deck.cue.in) return;
             if (i==active_ && deck.cue.end(deck.player->duration())>0 && timestamp>=deck.cue.end(deck.player->duration())) {
                 finishRange(); return;
@@ -35,7 +37,7 @@ NativeChannel::NativeChannel(bool preview, QObject* parent) : QObject(parent), p
         });
         connect(d.player,&QMediaPlayer::mediaStatusChanged,this,[this,i](QMediaPlayer::MediaStatus status){
             if (status==QMediaPlayer::InvalidMedia) reject(i,decks_[i].player->errorString());
-            if (status==QMediaPlayer::LoadedMedia || status==QMediaPlayer::BufferedMedia) setupSeek(i);
+            if (status==QMediaPlayer::LoadedMedia || status==QMediaPlayer::BufferedMedia) {decks_[i].sourceLoaded=true;setupSeek(i);}
             if (pending_ && i==incoming_ && status==QMediaPlayer::BufferedMedia && !decks_[i].player->hasVideo()) acceptPrepared();
             if (i==active_ && status==QMediaPlayer::EndOfMedia) finishRange();
             emit changed();
@@ -53,7 +55,7 @@ NativeChannel::NativeChannel(bool preview, QObject* parent) : QObject(parent), p
     if(!preview_){audioTimer_.setInterval(10);audioTimer_.setTimerType(Qt::PreciseTimer);connect(&audioTimer_,&QTimer::timeout,this,&NativeChannel::pumpAudio);audioTimer_.start();}
 }
 void NativeChannel::setupSeek(int i) {
-    if (!pending_ || i!=incoming_ || decks_[i].seekSet) return;
+    if (!pending_ || i!=incoming_ || decks_[i].seekSet || !decks_[i].sourceLoaded) return;
     auto& d=decks_[i];
     if (d.player->duration()<=0) return;
     if (const auto error=d.cue.error(d.player->duration()); !error.isEmpty()) {reject(i,error);return;}
@@ -63,12 +65,13 @@ void NativeChannel::setupSeek(int i) {
     d.seekSet=true; d.player->setPosition(d.cue.in);
 }
 void NativeChannel::beginPrepare(const Cue& cue, bool autoTake, bool play) {
-    if (const auto error=cue.error(); !error.isEmpty()) {emit failed(error);return;}
-    if (!QFileInfo(cue.path).isFile()) {emit failed("File not found: "+cue.path);return;}
-    cancelPrepared(); stopOutgoing();
+    cancelPrepared();++requestGeneration_;preparationPath_=cue.path;preparationError_.clear();lastError_.clear();preparationMs_=0;preparationClock_.start();preparationState_="preparing";
+    if (const auto error=cue.error(); !error.isEmpty()) {preparationFailed(error);return;}
+    if (!QFileInfo(cue.path).isFile()) {preparationFailed("File not found: "+cue.path);return;}
+    stopOutgoing();
     incoming_=1-active_; auto& d=decks_[incoming_];
     d.audio->setMuted(true); d.player->stop(); d.player->setSource({});
-    d.frames=0; d.last={}; d.cue=cue; d.seekSet=false;
+    d.frames=0; d.last={}; d.cue=cue; d.seekSet=false;d.sourceLoaded=false;
     audioMix_.clear(incoming_);
     pending_=true; autoTake_=autoTake; playIncoming_=play;
     timeout_.start(15000); d.player->setSource(QUrl::fromLocalFile(cue.path));
@@ -77,17 +80,17 @@ void NativeChannel::beginPrepare(const Cue& cue, bool autoTake, bool play) {
 void NativeChannel::loadCue(const Cue& cue, bool play) {beginPrepare(cue,true,play);}
 void NativeChannel::prepareCue(const Cue& cue) {beginPrepare(cue,false,true);}
 void NativeChannel::cancelPrepared() {
-    if (pending_ || ready_) {pending_=ready_=false;timeout_.stop();decks_[incoming_].audio->setMuted(true);decks_[incoming_].player->stop();}
+    if (pending_ || ready_) {pending_=ready_=false;preparationState_="cancelled";timeout_.stop();decks_[incoming_].audio->setMuted(true);decks_[incoming_].player->stop();}
 }
 void NativeChannel::acceptPrepared() {
     if (!pending_ || !decks_[incoming_].seekSet) return;
-    pending_=false;ready_=true;timeout_.stop();decks_[incoming_].player->pause();
+    pending_=false;ready_=true;preparationState_="ready";preparationMs_=preparationClock_.elapsed();timeout_.stop();decks_[incoming_].player->pause();
     const bool take=autoTake_; emit preparedReady(); if (take && ready_) takePrepared();
 }
 void NativeChannel::takePrepared() {
     if (!ready_) return;
     const int previous=active_; const bool hadProgram=!path().isEmpty() && output_.isValid();
-    active_=incoming_; incoming_=previous;ready_=false;ended_=false;pausedAtUs_=-1;
+    active_=incoming_; incoming_=previous;activeGeneration_=requestGeneration_;ready_=false;ended_=false;pausedAtUs_=-1;
     const auto c=cue(); const qint64 length=rangeEnd()-c.in;
     blendMs_=preview_?0:qMin<qint64>(hadProgram && c.transition!=Transition::Cut ? c.transitionMs : c.enterMs,qMax<qint64>(0,length/2));
     blendType_=hadProgram && c.transition!=Transition::Cut ? c.transition : Transition::Dissolve;
@@ -117,14 +120,16 @@ void NativeChannel::renderActive() {
     applyLocalAudio();
     QVideoFrame frame=d.last;
     if (frame.isValid() && (p<1 || exitGain<1)) {
+        QElapsedTimer composition;composition.start();
         const QImage old=outgoing_>=0?decks_[outgoing_].last.toImage():QImage{};
         QImage image=composeImages(old,frame.toImage(),p,blendType_);
         if (exitGain<1) image=composeImages({},image,exitGain,Transition::Dissolve);
         if (image.isNull()) {reject(active_,"Transition frame conversion failed");return;}
         frame=QVideoFrame(image);frame.setStartTime(d.last.startTime());frame.setEndTime(d.last.endTime());++composedFrames_;
+        compositionLastMs_=double(composition.nsecsElapsed())/1000000.0;compositionPeakMs_=qMax(compositionPeakMs_,compositionLastMs_);compositionTotalMs_+=compositionLastMs_;++compositionSamples_;
     }
     if (p>=1) stopOutgoing();
-    output_=frame;emit frameReady(output_);
+    output_=frame;if(frame.isValid()){++publishedFrames_;const auto now=clock_.elapsed();publishedTimes_.push_back(now);while(!publishedTimes_.empty()&&(publishedTimes_.front()<now-1000||publishedTimes_.size()>512))publishedTimes_.pop_front();}emit frameReady(output_);
 }
 void NativeChannel::finishRange() {
     if (ended_ || path().isEmpty()) return;
@@ -137,9 +142,11 @@ void NativeChannel::finishRange() {
     emit changed();
 }
 void NativeChannel::reject(int index,const QString& message) {
-    if ((pending_ || ready_) && index==incoming_) cancelPrepared();
+    lastError_=message;
+    if ((pending_ || ready_) && index==incoming_) {cancelPrepared();preparationState_="error";preparationError_=message;preparationMs_=preparationClock_.isValid()?preparationClock_.elapsed():0;}
     emit failed(message);emit changed();
 }
+void NativeChannel::preparationFailed(const QString& message){preparationState_="error";preparationError_=lastError_=message;preparationMs_=preparationClock_.elapsed();emit failed(message);emit changed();}
 void NativeChannel::togglePause() {
     auto* player=decks_[active_].player;
     if (playing()) {pausedAtUs_=programTimeUs();player->pause();if(outgoing_>=0)decks_[outgoing_].player->pause();flushAudio();}
@@ -157,6 +164,7 @@ void NativeChannel::seek(qint64 ms) {
 }
 void NativeChannel::black() {
     cancelPrepared();outgoing_=-1;ended_=false;pausedAtUs_=-1;
+    ++requestGeneration_;activeGeneration_=0;preparationState_="empty";preparationPath_.clear();preparationError_.clear();publishedTimes_.clear();
     for (auto& d:decks_) {d.audio->setMuted(true);d.player->stop();d.player->setSource({});d.cue={};d.last={};}
     output_={};emit frameReady(output_);emit changed();
     flushAudio();
@@ -166,6 +174,24 @@ qint64 NativeChannel::position() const {return decks_[active_].player->position(
 qint64 NativeChannel::duration() const {return decks_[active_].player->duration();}
 bool NativeChannel::playing() const {return decks_[active_].player->playbackState()==QMediaPlayer::PlayingState;}
 int NativeChannel::frames() const {return decks_[active_].frames;}
+QJsonObject NativeChannel::diagnostics()const {
+    const auto* player=decks_[active_].player;const auto metadata=player->metaData();const auto size=output_.isValid()?output_.size():metadata.value(QMediaMetaData::Resolution).toSize();
+    const double fps=metadata.value(QMediaMetaData::VideoFrameRate).toDouble();const auto now=clock_.elapsed();int recent=0;for(auto time:publishedTimes_)if(time>=now-1000)++recent;
+    const auto prepMs=preparationState_=="preparing"&&preparationClock_.isValid()?preparationClock_.elapsed():preparationMs_;
+    QJsonObject result{{"source",path()},{"playback",path().isEmpty()?"empty":pending()?"preparing":playing()?"playing":"paused"},
+        {"has_video",hasVideo()},{"has_audio",hasAudio()},{"seekable",seekable()},{"duration_ms",duration()},{"position_ms",position()},
+        {"width",size.width()},{"height",size.height()},{"nominal_fps",fps>0?QJsonValue(fps):QJsonValue(QJsonValue::Null)},
+        {"video_codec",metadata.stringValue(QMediaMetaData::VideoCodec)},{"audio_codec",metadata.stringValue(QMediaMetaData::AudioCodec)},
+        {"backend_buffer_progress",double(player->bufferProgress())},{"published_frames",double(publishedFrames_)},{"received_video_callbacks",double(receivedFrames_)},
+        {"video_frames_last_second",recent},{"preroll_frames_filtered",double(prerollFiltered_)},{"cpu_composed_frames",double(compositionSamples_)},
+        {"cpu_composition_last_ms",compositionSamples_?QJsonValue(compositionLastMs_):QJsonValue(QJsonValue::Null)},
+        {"cpu_composition_peak_ms",compositionSamples_?QJsonValue(compositionPeakMs_):QJsonValue(QJsonValue::Null)},
+        {"cpu_composition_mean_ms",compositionSamples_?QJsonValue(compositionTotalMs_/double(compositionSamples_)):QJsonValue(QJsonValue::Null)},
+        {"preparation_state",preparationState_},{"preparation_source",preparationPath_},{"preparation_ms",double(prepMs)},{"preparation_error",preparationError_},
+        {"request_generation",double(requestGeneration_)},{"active_generation",double(activeGeneration_)},{"audio_buffers_tapped",audioBuffers_},{"last_error",lastError_},
+        {"decoder_adapter",QJsonValue(QJsonValue::Null)},{"decode_time_ms",QJsonValue(QJsonValue::Null)},{"decoder_dropped_frames",QJsonValue(QJsonValue::Null)},{"decoder_packet_queue",QJsonValue(QJsonValue::Null)}};
+    return result;
+}
 void NativeChannel::setMasterVolume(float value){volume_=std::isfinite(value)?qBound(0.0f,value,1.0f):0;applyLocalAudio();emit changed();}
 void NativeChannel::setAudioMuted(bool value){if(value && !muted_)emit audioReset();muted_=value;applyLocalAudio();emit changed();}
 void NativeChannel::setLocalAudioEnabled(bool value){localAudio_=value;applyLocalAudio();emit changed();}

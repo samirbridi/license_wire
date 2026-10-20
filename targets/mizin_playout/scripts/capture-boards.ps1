@@ -13,4 +13,9 @@ foreach($board in @(@{page=0;lang='en'},@{page=3;lang='en'},@{page=2;lang='en'},
     $capture=Start-Process -FilePath $playoutExe -ArgumentList $captureArgs -WindowStyle Hidden -Wait -PassThru
     if($capture.ExitCode -ne 0){throw "Native capture failed: $($capture.ExitCode)"}
 }
+foreach($locale in @('en','pt-BR')){
+    $captureArgs='--board --lang '+$locale+' --capture-diagnostics --capture-size '+$Width+'x'+$Height+' --capture-dir "'+$boards+'" --state-dir "'+$state+'"'
+    $capture=Start-Process -FilePath $playoutExe -ArgumentList $captureArgs -WindowStyle Hidden -Wait -PassThru
+    if($capture.ExitCode -ne 0){throw "Native diagnostics capture failed: $($capture.ExitCode)"}
+}
 Get-ChildItem -LiteralPath $boards -Filter '*.png' | Select-Object Name,Length
