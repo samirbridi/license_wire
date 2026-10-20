@@ -4,7 +4,8 @@
 #include <QList>
 #include <QStringList>
 #include <cmath>
-#include <array>
+#include <vector>
+#include <QSet>
 
 enum class Transition { Cut, Dissolve, FadeBlack };
 struct Cue {
@@ -44,10 +45,12 @@ struct Cue {
     }
 };
 struct OutputConfiguration {
+    // Import/allocation guards, not a promise of concurrent playback capacity.
+    static constexpr int MaxPrograms=64,MaxDisplays=128;
     int programs=1, displays=1;
-    std::array<int,3> sources{0,0,0};
+    std::vector<int> sources{0};
     bool valid() const {
-        if(programs<1 || programs>2 || displays<1 || displays>3)return false;
+        if(programs<1 || programs>MaxPrograms || displays<1 || displays>MaxDisplays || sources.size()!=size_t(displays))return false;
         for(int i=0;i<displays;++i)if(sources[i]<0 || sources[i]>=programs)return false;
         return true;
     }
@@ -59,31 +62,57 @@ struct OutputConfiguration {
         if(!value.isObject())return false;const auto o=value.toObject();const auto count=o["programs"];
         if(!count.isDouble() || count.toDouble()!=count.toInt() || !o["displays"].isArray())return false;
         OutputConfiguration result;result.programs=count.toInt();const auto routes=o["displays"].toArray();result.displays=routes.size();
-        if(result.displays<1 || result.displays>3)return false;
+        if(result.displays<1 || result.displays>MaxDisplays)return false;
+        result.sources.resize(result.displays);
         for(int i=0;i<routes.size();++i){if(!routes[i].isObject())return false;const auto source=routes[i].toObject()["program"];
             if(!source.isDouble() || source.toDouble()!=source.toInt())return false;result.sources[i]=source.toInt();}
         if(!result.valid())return false;destination=result;return true;
     }
 };
+struct ProgramDefinition {
+    int id=1;
+    QString name="Program A";
+    QList<Cue> cues;
+    QJsonObject json()const{QJsonArray items;for(const auto& cue:cues)items.append(cue.json());return {{"id",id},{"name",name},{"playlist",items}};}
+};
 struct Show {
     QStringList library, folders;
     QList<Cue> cues;
     OutputConfiguration outputs;
+    QList<ProgramDefinition> programs;
+    QList<ProgramDefinition> definitions()const{
+        if(!programs.isEmpty())return programs;QList<ProgramDefinition> result;
+        for(int i=0;i<outputs.programs;++i)result.append({i+1,QString("Program %1").arg(i<26?QString(QChar('A'+i)):QString::number(i+1)),cues});return result;
+    }
     QJsonObject json() const {
-        QJsonArray items; for (const auto& cue : cues) items.append(cue.json());
-        return {{"schema",3},{"library",QJsonArray::fromStringList(library)},
-                {"folders",QJsonArray::fromStringList(folders)},{"playlist",items},{"outputs",outputs.json()}};
+        QJsonArray items;for(const auto& program:definitions())items.append(program.json());
+        return {{"schema",4},{"library",QJsonArray::fromStringList(library)},
+                {"folders",QJsonArray::fromStringList(folders)},{"programs",items},{"outputs",outputs.json()}};
     }
     static bool read(const QJsonObject& o, Show& destination) {
         const int schema = o["schema"].toInt();
-        if ((schema != 1 && schema != 2 && schema != 3) || !o["playlist"].isArray() || !o["library"].isArray() || !o["folders"].isArray()) return false;
+        if (schema<1 || schema>4 || o["schema"].toDouble()!=schema || !o["library"].isArray() || !o["folders"].isArray()) return false;
         Show result;
-        if(schema==3 && !OutputConfiguration::read(o["outputs"],result.outputs))return false;
+        if(schema>=3 && !OutputConfiguration::read(o["outputs"],result.outputs))return false;
         auto strings = [](const QJsonArray& a, QStringList& out) {
             for (const auto& v : a) { if (!v.isString()) return false; out.append(v.toString()); } return true;
         };
         if (!strings(o["library"].toArray(),result.library) || !strings(o["folders"].toArray(),result.folders)) return false;
-        for (const auto& v : o["playlist"].toArray()) { Cue c; if (!Cue::read(v,c,schema == 1)) return false; result.cues.append(c); }
+        if(schema==4){
+            if(!o["programs"].isArray() || o["programs"].toArray().size()!=result.outputs.programs)return false;
+            QSet<int> ids;
+            for(const auto& value:o["programs"].toArray()){
+                if(!value.isObject())return false;const auto p=value.toObject();const auto id=p["id"];
+                if(!id.isDouble() || id.toDouble()!=id.toInt() || id.toInt()<1 || id.toInt()>1000000 || ids.contains(id.toInt()) || !p["name"].isString() || p["name"].toString().trimmed().isEmpty() || p["name"].toString().size()>120 || !p["playlist"].isArray())return false;
+                ProgramDefinition program{id.toInt(),p["name"].toString(),{}};ids.insert(program.id);
+                for(const auto& v:p["playlist"].toArray()){Cue c;if(!Cue::read(v,c))return false;program.cues.append(c);}result.programs.append(program);
+            }
+            if(result.programs.first().id!=1)return false;result.cues=result.programs.first().cues;
+        }else{
+            if(!o["playlist"].isArray())return false;
+            for(const auto& v:o["playlist"].toArray()){Cue c;if(!Cue::read(v,c,schema==1))return false;result.cues.append(c);}
+            result.programs=result.definitions();
+        }
         destination = result; return true;
     }
 };

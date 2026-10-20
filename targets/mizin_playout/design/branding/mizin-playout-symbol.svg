@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" role="img" aria-label="Mizin Playout">
+  <defs><linearGradient id="teal" x1="5%" y1="15%" x2="95%" y2="90%"><stop stop-color="#00e8ed"/><stop offset="1" stop-color="#00aeba"/></linearGradient></defs>
+  <path fill="url(#teal)" d="M6 5 50 30 94 5 94 90 76 80 76 33 50 48 24 33 24 80 6 90Z"/>
+  <path fill="#00dbe4" d="M39 52 68 69 39 86Z"/>
+</svg>

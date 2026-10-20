@@ -19,7 +19,7 @@ DiagnosticsPanel::DiagnosticsPanel(Translate tx,std::function<QJsonObject()> rep
 void DiagnosticsPanel::retranslate(){
     heading_->setText(tx_("Engine diagnostics"));refresh_->setText(tx_("Refresh"));export_->setText(tx_("Export report"));
     hint_->setText(tx_("Local callback and CPU composition measurements. Decoder/GPU timing and packet queues are not exposed by this backend."));
-    channels_->setHorizontalHeaderLabels({tx_("Metric"),tx_("PREVIEW"),tx_("Program A"),tx_("Program B")});
+
     network_->setHorizontalHeaderLabels({tx_("Program"),tx_("Protocol"),tx_("Status"),tx_("Video frames"),tx_("Audio packets"),tx_("Superseded video"),tx_("Dropped audio"),tx_("Connections")});refresh();
 }
 void DiagnosticsPanel::refresh(){
@@ -31,8 +31,8 @@ void DiagnosticsPanel::refresh(){
     auto put=[](QTableWidget* table,int row,int column,const QString& text,const QString& hint=QString{}){auto* item=table->item(row,column);if(!item){item=new QTableWidgetItem;table->setItem(row,column,item);}item->setText(text);item->setToolTip(hint.isEmpty()?text:hint);};
     for(int row=0;row<labels.size();++row)put(channels_,row,0,tx_(labels[row]));
     const auto channelData=report["channels"].toArray();
-    channels_->setColumnHidden(3,!channelData[2].toObject()["enabled"].toBool(true));
-    for(int col=0;col<3;++col){const auto c=channelData[col].toObject();const QString unavailable=tx_("Not available");
+    channels_->setColumnCount(channelData.size()+1);QStringList headers{tx_("Metric")};for(const auto& c:channelData)headers<<c.toObject()["name"].toString();channels_->setHorizontalHeaderLabels(headers);for(int col=0;col<channels_->columnCount();++col)channels_->setColumnHidden(col,false);channels_->horizontalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
+    for(int col=0;col<channelData.size();++col){const auto c=channelData[col].toObject();const QString unavailable=tx_("Not available");
         auto number=[&](const QString& key,int decimals=0){const auto value=c[key];return value.isDouble()?QString::number(value.toDouble(),'f',decimals):unavailable;};
         const QString source=c["source"].toString();const int w=c["width"].toInt(),h=c["height"].toInt();
         const QStringList values{source.isEmpty()?tx_("No media loaded"):QFileInfo(source).fileName(),state(c["playback"].toString()),
@@ -43,7 +43,7 @@ void DiagnosticsPanel::refresh(){
         for(int row=0;row<values.size();++row)put(channels_,row,col+1,demo_?tx_("Sample"):values[row],row==0?source:row==2?c["preparation_source"].toString()+"\n"+c["preparation_error"].toString():QString{});
     }
     const auto senders=report["network"].toArray();network_->setRowCount(senders.size());
-    for(int row=0;row<senders.size();++row){const auto s=senders[row].toObject();network_->setRowHidden(row,!s["enabled"].toBool(true));const QStringList values{tx_(s["program"].toString()=="A"?"Program A":"Program B"),s["protocol"].toString(),tx_(s["running"].toBool()?"Sending":s["error"].toString().isEmpty()?"Stopped":"Error"),QString::number(s["video_frames"].toInt()),QString::number(s["audio_packets"].toInt()),QString::number(s["superseded_video"].toInt()),QString::number(s["dropped_audio"].toInt()),QString::number(s["connections"].toInt())};for(int col=0;col<values.size();++col)put(network_,row,col,demo_?tx_("Sample"):values[col],col==2?s["error"].toString():QString{});}
+    for(int row=0;row<senders.size();++row){const auto s=senders[row].toObject();network_->setRowHidden(row,!s["enabled"].toBool(true));const QStringList values{s["program_name"].toString(),s["protocol"].toString(),tx_(s["running"].toBool()?"Sending":s["error"].toString().isEmpty()?"Stopped":"Error"),QString::number(s["video_frames"].toInt()),QString::number(s["audio_packets"].toInt()),QString::number(s["superseded_video"].toInt()),QString::number(s["dropped_audio"].toInt()),QString::number(s["connections"].toInt())};for(int col=0;col<values.size();++col)put(network_,row,col,demo_?tx_("Sample"):values[col],col==2?s["error"].toString():QString{});}
 }
 bool DiagnosticsPanel::exportTo(const QString& path){
     QSaveFile file(path);const auto payload=QJsonDocument(report_()).toJson();
