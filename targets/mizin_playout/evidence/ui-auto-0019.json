@@ -1,0 +1,56 @@
+{
+    "mode": "auto",
+    "result": "PASS",
+    "scope": "In-process native Qt widget actions and real synthetic media; not OS pointer interaction or physical display qualification",
+    "tests": [
+        {
+            "name": "main_editor_separation_and_default_300",
+            "pass": true
+        },
+        {
+            "name": "native_scaler_is_default_gpu_is_optional",
+            "pass": true
+        },
+        {
+            "name": "cut_button_bypasses_editor_transition",
+            "pass": true
+        },
+        {
+            "name": "editor_preview_does_not_interrupt_program",
+            "pass": true
+        },
+        {
+            "name": "fade_button_300_uses_applied_cue",
+            "pass": true
+        },
+        {
+            "name": "applying_editor_preserves_live_snapshot",
+            "pass": true
+        },
+        {
+            "name": "manual_cut_respects_destination_b",
+            "pass": true
+        },
+        {
+            "name": "manual_fade_duration_persisted",
+            "pass": true
+        },
+        {
+            "name": "language_switch_preserves_draft_and_playback",
+            "pass": true
+        },
+        {
+            "name": "gpu_profile_is_translated_and_persisted",
+            "pass": true
+        },
+        {
+            "name": "audio_controls_are_independent_and_persisted",
+            "pass": true
+        },
+        {
+            "name": "digital_outputs_require_manual_start",
+            "pass": true
+        }
+    ],
+    "version": "v0.7.2 (build 0019)"
+}

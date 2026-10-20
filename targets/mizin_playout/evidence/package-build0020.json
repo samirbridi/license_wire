@@ -1,0 +1,156 @@
+{
+  "version": "v0.7.3 (build 0020)",
+  "source_commit": "8f75a54bc637fcb77caa31cc553f9ba5e4867cd3",
+  "files": [
+    {
+      "file": "avcodec-61.dll",
+      "bytes": 13921592,
+      "sha256": "e419ac581dd7317dc49b54349827db26e479bc71a71fe7af7529086aa6fa7f60"
+    },
+    {
+      "file": "avformat-61.dll",
+      "bytes": 2642232,
+      "sha256": "570fe624961878fa08611335fe7f92b7ab898013e16ddb000e63dc7be1d6cd1b"
+    },
+    {
+      "file": "avutil-59.dll",
+      "bytes": 1198392,
+      "sha256": "c53a43cc7f15cf36e2143240302f2dcf0c10c9236e41ef6aba488d3986e90c96"
+    },
+    {
+      "file": "D3Dcompiler_47.dll",
+      "bytes": 4517376,
+      "sha256": "f642940ffb5dca7e548ba2270686798cf6b4c74b60e88bbb22f0991868cae3e5"
+    },
+    {
+      "file": "generic/qtuiotouchplugin.dll",
+      "bytes": 102712,
+      "sha256": "bf4efd69f22ad7b3f3bb79979e9fdef4182ef782e7ab2c4b80e6656bbe33e363"
+    },
+    {
+      "file": "icuuc.dll",
+      "bytes": 29696,
+      "sha256": "e76201d65fc58d1db0ec99bc8e875f47d692bcaa16bb6448b197bc86c08d1816"
+    },
+    {
+      "file": "imageformats/qgif.dll",
+      "bytes": 47928,
+      "sha256": "4fe24916a961587173c846055a34735b904900fb75716de4fa458c203da3e7ef"
+    },
+    {
+      "file": "imageformats/qico.dll",
+      "bytes": 45880,
+      "sha256": "0d79934047e06591b74201d826af72f6ab595f5df4705ad7f0c234c0e2cf3a32"
+    },
+    {
+      "file": "imageformats/qjpeg.dll",
+      "bytes": 577848,
+      "sha256": "004f456d513a6bfc58320652c326a023fa8fea905d26b642a561f7081442aff0"
+    },
+    {
+      "file": "libomt.dll",
+      "bytes": 6950400,
+      "sha256": "673b1d33222295f1c9190c54cefc89d5e322301702532e2c8fe78a16e8aa28da"
+    },
+    {
+      "file": "libvmx.dll",
+      "bytes": 540160,
+      "sha256": "effd2eb33a85689da940ab6744cf8931448445144c5d7991ac50908800af19be"
+    },
+    {
+      "file": "licenses/omt/LICENSE.txt",
+      "bytes": 1111,
+      "sha256": "616e62811c0395c0719bd77b2c2c4276a797e803f73d412e87c3834f2af8bda2"
+    },
+    {
+      "file": "MizinPlayout.exe",
+      "bytes": 595456,
+      "sha256": "2c71235027f76e2a772e70b112204d3da02cd8fe057ae539a55fbab9a543fd36"
+    },
+    {
+      "file": "multimedia/ffmpegmediaplugin.dll",
+      "bytes": 635704,
+      "sha256": "f9b77081dbe6557a89057735a0c7d8ed7268b6d60d9794b2890db55703a98fe1"
+    },
+    {
+      "file": "multimedia/windowsmediaplugin.dll",
+      "bytes": 291640,
+      "sha256": "049dbe8d45cdc3dcff82a6705da61fccf1022f162bd982224bcb81144bf02b13"
+    },
+    {
+      "file": "networkinformation/qnetworklistmanager.dll",
+      "bytes": 70968,
+      "sha256": "2f76ab1699bf9a1ef89404d054dc7325c4e18d4d27f52cd3ca3b5088d944eb18"
+    },
+    {
+      "file": "platforms/qwindows.dll",
+      "bytes": 997688,
+      "sha256": "540211565db496024246cb8a44437212e6b967f3ee7b899e888f41cc556bf041"
+    },
+    {
+      "file": "Qt6Core.dll",
+      "bytes": 10242360,
+      "sha256": "b98eea394a95563879b614dbd4432ce074b0fceeb154c3bae252f4e7a9376a40"
+    },
+    {
+      "file": "Qt6Gui.dll",
+      "bytes": 9494840,
+      "sha256": "28ca8b9e7d3d1c4e3cfafd6fe63877a05cf10202a240134a11f98384f01c9e37"
+    },
+    {
+      "file": "Qt6Multimedia.dll",
+      "bytes": 1241400,
+      "sha256": "97dbc2efc2dcc84ac8d6af1e7e6c4fcb23f8280af888a59d8667668c6b163416"
+    },
+    {
+      "file": "Qt6MultimediaWidgets.dll",
+      "bytes": 62264,
+      "sha256": "09fc6bd1dab4bd48fece8603ab0143e6e2af5af839b5b1af26970e3b35cf57ff"
+    },
+    {
+      "file": "Qt6Network.dll",
+      "bytes": 1766712,
+      "sha256": "905e1ce3947fadaad566b6deffe345daf7f6efbc57207ea7fcdbfa77669e3de6"
+    },
+    {
+      "file": "Qt6OpenGL.dll",
+      "bytes": 1977144,
+      "sha256": "a41b71127d07924ddda67e787e8765ebf60f217817199f1becdd63f3db88847e"
+    },
+    {
+      "file": "Qt6OpenGLWidgets.dll",
+      "bytes": 64312,
+      "sha256": "55e11e28c82b69ac67725ebdf05f0c703a2ea3b1443b141d37d537a34ac45e18"
+    },
+    {
+      "file": "Qt6Widgets.dll",
+      "bytes": 6576952,
+      "sha256": "f383fb6b3f6996efe23327ff607e7298fc47ee76e8b8ef8a65f8d2e0a91707e4"
+    },
+    {
+      "file": "styles/qmodernwindowsstyle.dll",
+      "bytes": 220984,
+      "sha256": "f9ddcd6f6319be76ec8ea1b95e6829cdc0f9600242b6bdd07babb0185e9762ab"
+    },
+    {
+      "file": "swresample-5.dll",
+      "bytes": 247096,
+      "sha256": "b516d8e9428e5afc8304e7087a673ed0289e87aba5e00f78e52af2d6b54c655e"
+    },
+    {
+      "file": "swscale-8.dll",
+      "bytes": 751928,
+      "sha256": "e9a7f5342fa2b157c20ba2483397f6fecca0d46f6453d651c8f76dc7cd72fe7a"
+    },
+    {
+      "file": "tls/qcertonlybackend.dll",
+      "bytes": 103224,
+      "sha256": "584392e25d46b6edc255e4c5849920da3e52c01172199def876284525587bb05"
+    },
+    {
+      "file": "tls/qschannelbackend.dll",
+      "bytes": 262968,
+      "sha256": "4632404cb87f860e7bb811f525685509127da8d05f398aada5b2b88318e4a621"
+    }
+  ]
+}

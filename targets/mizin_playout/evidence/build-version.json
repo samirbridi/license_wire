@@ -1,11 +1,11 @@
 {
-  "display": "v0.6.3 (build 0016)",
-  "previous": "v0.6.2 (build 0015)",
-  "source_commit": "cf843e850dbd266a100ac7734b16fea9d7ac0e05",
+  "display": "v0.7.3 (build 0020)",
+  "previous": "v0.7.2 (build 0019)",
+  "source_commit": "8f75a54bc637fcb77caa31cc553f9ba5e4867cd3",
   "commits": [
     {
-      "sha": "cf843e850dbd266a100ac7734b16fea9d7ac0e05",
-      "subject": "fix: renderiza explicitamente o framebuffer no teste de janela oculta",
+      "sha": "8f75a54bc637fcb77caa31cc553f9ba5e4867cd3",
+      "subject": "fix: valida codec OMT e mantem relogio do emissor desde a criacao",
       "kind": "fix"
     }
   ],

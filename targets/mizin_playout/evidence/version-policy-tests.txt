@@ -4,6 +4,6 @@ test_fix_and_improvement_are_patch (test_version.Policy.test_fix_and_improvement
 test_rejects_nonstandard_version (test_version.Policy.test_rejects_nonstandard_version) ... ok
 
 ----------------------------------------------------------------------
-Ran 4 tests in 0.000s
+Ran 4 tests in 0.001s
 
 OK

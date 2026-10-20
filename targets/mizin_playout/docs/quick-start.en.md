@@ -31,3 +31,23 @@ Select the source, display and profile in Outputs, then Open output. Reopen the 
 The GPU path is currently for 8-bit SDR, with bounded sizes/reduction ratios. High-depth/HDR/transformed/subtitle frames use Native; GPU context/resource failures also return to Native and report a warning. A machine without supported hardware decoding can still decode on CPU. CPU decoding and GPU output scaling are separate settings. No pre-conversion is required for supported media, and original files are never rewritten.
 
 Lanczos is spatial resampling, not AI reconstruction. It cannot recover missing detail. The current GPU path still reads hardware frames back before upload; it is not zero-copy. See [current measured scope](compatibility-and-performance.md) for the tested GPU, actual framebuffers and remaining performance/AV-sync limits.
+
+## Program audio
+
+Open **Audio** to configure Programs A and B separately. **Master volume** and **Mute** affect both local and network audio. **Local monitoring** enables/disables only this machine's playback. Choose an **Audio device** for a detected HDMI, audio interface, USB or virtual endpoint. System default follows the OS default. An unavailable selected endpoint mutes local output until restored/replaced; it does not redirect sound silently to another device.
+
+L/R meters show Program mix peaks in dBFS. Preview stays muted and mirrored display outputs do not duplicate local sound. Audio preferences belong to this computer, separately from the show file.
+
+## Digital NDI and OMT outputs
+
+1. Open **Outputs → Digital / IP** and find Program A or B.
+2. Enter a **Source name** to identify this output at the receiver.
+3. Enable **Include audio** for stereo 48 kHz Program audio with SDR video; disable it for video only. This switch applies to both network protocols for that Program.
+4. Click **Start NDI** or **Start OMT**. Both protocols can run together alongside display outputs. The panel shows the published source and connection/video/audio counters.
+5. Select that source in a compatible receiver. Stop ends only that protocol; Program playback continues.
+
+Video follows source size/cadence. Black preserves the last stream size/cadence. An initially empty Program publishes 1280×720/30 black. Saved preferences/design previews never auto-start transmission. Closing the application stops its senders.
+
+NDI requires an official installed runtime; missing dependencies are reported. Restart the application after installing a missing runtime. OMT uses the native libraries included in this development package. The initial network path is 8-bit SDR/stereo, without HX, HDR, exclusive ASIO, multichannel mapping or a manual delay offset. Qualify a separate receiving computer and AV sync with actual media/network conditions before an event. See [scope and evidence](compatibility-and-performance.md).
+
+[About NDI®](https://ndi.video/) · NDI® is a registered trademark of Vizrt NDI AB.

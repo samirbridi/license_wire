@@ -8,6 +8,8 @@ Validated scope: Windows prototype, Qt 6.10.2 / native FFmpeg 7.1.2. The exact b
 | Native presentation/scaling | Shared QVideoFrame fitted by QVideoWidget | Default for live use. Detected desktop fullscreen geometry verified; physical signal/visual/sync qualification remains open. |
 | Transitions | Shared CPU image compositor per Program | Functional Cut/Dissolve/Fade tests; GPU scaling does not move this composition to the GPU. |
 | GPU Lanczos | Optional original two-pass Lanczos-3 in OpenGL 3.3 | Actual NVIDIA GTX 1660 Ti render context recorded, SDR quality tests and native source streams. AMD/Intel renderer qualification and macOS/Linux builds remain open. |
+| Program audio | Independent native local routes, master/mute and stereo 48 kHz network mix | Real decoded PCM and device/control tests. Physical listening remains open. |
+| Digital AV | NDI SDK 6.3.2 (installed runtime) and OMT v1.0.0.19 (packaged Native AOT) | Both SDK receivers returned 1080p video and stereo audio; mute/unmute/Black checked. Same process/machine only. |
 | CPU Lanczos | Optional experimental 8-bit SDR libswscale reference | Functional 1080p/4K pixels and source-matched streams. Prior measured service 143–219 ms exceeds 30 fps. |
 
 ## Media compatibility
@@ -34,18 +36,26 @@ The development desktop reports SONY TV at 1920×1080 / 60 Hz. A large off-deskt
 
 ## Local GPU measurements
 
-Final build v0.6.3 (build 0016) used NVIDIA GeForce GTX 1660 Ti / OpenGL 3.3 NVIDIA 591.74. Each row measures a four-second native H.264 stream after warmup, with actual framebuffer size verified.
+Final build v0.7.3 (build 0020) used NVIDIA GeForce GTX 1660 Ti / OpenGL 3.3 NVIDIA 591.74. Each row measures a four-second native H.264 stream after warmup, with actual framebuffer size verified.
 
 | Decoder mode | Source → framebuffer | GPU filter median | CPU service median / p95 | Distinct rendered fps |
 | --- | --- | --- | --- | --- |
-| auto | 4K to 1080p | 1.66 ms | 25.38 / 34.23 ms | 27.75 |
-| auto | 1080p to 4K | 2.36 ms | 7.13 / 9.99 ms | 29.74 |
-| cpu | 4K to 1080p | 1.68 ms | 20.57 / 23.58 ms | 28.75 |
-| cpu | 1080p to 4K | 2.31 ms | 5.92 / 7.46 ms | 29.75 |
+| auto | 4K to 1080p | 1.66 ms | 26.38 / 35.64 ms | 27.09 |
+| auto | 1080p to 4K | 2.31 ms | 6.69 / 11.73 ms | 29.16 |
+| cpu | 4K to 1080p | 1.69 ms | 21.67 / 30.66 ms | 28.22 |
+| cpu | 1080p to 4K | 2.31 ms | 5.87 / 7.57 ms | 29.49 |
 
-GPU and CPU service times overlap; do not add them or equate either with full latency. Automatic 4K reduction still superseded frames, so this result is not an unqualified 30 fps claim. Input readback/upload is the next optimization target; Native remains the live recommendation. See [automatic results](../evidence/gpu-auto-0016.json) and [CPU-decoder results](../evidence/gpu-cpu-0016.json).
+GPU and CPU service times overlap; do not add them or equate either with full latency. Automatic 4K reduction still superseded frames, so this result is not an unqualified 30 fps claim. Input readback/upload is the next optimization target; Native remains the live recommendation. See [automatic results](../evidence/gpu-auto-0020.json) and [CPU-decoder results](../evidence/gpu-cpu-0020.json).
 
 The nonuniform 1:1 pattern retained exact channels/orientation. A 2:1 checkerboard reduction differed from neutral gray by at most 1/255 away from borders. On the analytic 2× wave enlargement test, MSE was 0.22054 for GPU Lanczos versus 5.46294 for Qt Smooth. This synthetic result supports that specific reconstruction case, not a universal perceptual ranking. [Pixel comparison](../evidence/gpu-quality-proof.png).
+
+## Digital AV and audio scope
+
+The final package passed the audio/network suite in both decoder modes with native NDI and OMT receivers on this machine. The fixture is 1080p/30 H.264 with stereo AAC at 48 kHz. Both receivers returned nonzero stereo PCM and increasing video timestamps, then silence/return of audio under master mute/unmute and black pixels on Black. Starting/stopping publishers and the independent Program B path were checked. These facts do not establish independent application interoperability, LAN discovery across network equipment, physical sound or production AV sync. [Automatic results](../evidence/network-auto-0020.json), [CPU results](../evidence/network-cpu-0020.json).
+
+Local output selection detected Realtek, NVIDIA HDMI and virtual audio endpoints. Gain/mute apply to both local/network Program audio; local monitor enable and network Include audio are independent gates. Preview remains muted. Network format is stereo float32 48 kHz and 8-bit SDR. Black preserves the last stream size/cadence. Missing selected audio endpoints mute locally; absent NDI/OMT/VMX dependencies report an error before starting a sender. Installing a missing runtime requires restarting this version.
+
+This initial IP path performs one frame readback/conversion per Program and uses SDK worker threads for compression/sending. It makes no GPU encoding or 4K network throughput claim. Video queues hold up to six frames and audio queues twenty 10 ms packets per sender; overload may drop/supersede data. The mix/video headroom is 40 ms and has not been physically calibrated. Multichannel mapping, exclusive ASIO, manual delay offsets, HX and HDR network output are outside this milestone. Remote operator control remains separate future work.
 
 ## Primary references
 

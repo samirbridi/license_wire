@@ -1,0 +1,134 @@
+{
+    "measurements": [
+        {
+            "down_ms": 126.1759,
+            "scope": "single constant-image resample, not playback throughput",
+            "up_ms": 206.0168
+        },
+        {
+            "elapsed_ms": 1650,
+            "frames": 8,
+            "last_service_ms": 156.87779999999998,
+            "output_h": 1080,
+            "output_w": 1920,
+            "scope": "short functional stream; not sustained performance or AV sync qualification",
+            "source_h": 2160,
+            "source_w": 3840
+        },
+        {
+            "elapsed_ms": 1862,
+            "frames": 8,
+            "last_service_ms": 229.2338,
+            "output_h": 2160,
+            "output_w": 3840,
+            "scope": "short functional stream; not sustained performance or AV sync qualification",
+            "source_h": 1080,
+            "source_w": 1920
+        }
+    ],
+    "mode": "cpu",
+    "result": "PASS",
+    "scope": "Synthetic SDR resampling and short native 1080p/4K H.264 tests; detected desktop geometry only, not physical display or vendor-specific qualification",
+    "screens": [
+        {
+            "dpr": 1,
+            "logical_h": 1080,
+            "logical_w": 1920,
+            "name": "SONY TV",
+            "pixel_h": 1080,
+            "pixel_w": 1920,
+            "refresh_hz": 60
+        }
+    ],
+    "tests": [
+        {
+            "error": "",
+            "name": "pinned_lgpl_scaler_runtime",
+            "pass": true
+        },
+        {
+            "name": "4k_to_1080_fit",
+            "pass": true
+        },
+        {
+            "name": "1080_to_4k_fit",
+            "pass": true
+        },
+        {
+            "name": "portrait_aspect_is_preserved",
+            "pass": true
+        },
+        {
+            "name": "hidpi_uses_physical_pixels",
+            "pass": true
+        },
+        {
+            "name": "lanczos_1080_to_4k_pixels",
+            "pass": true
+        },
+        {
+            "name": "lanczos_4k_to_1080_pixels",
+            "pass": true
+        },
+        {
+            "name": "mirrors_share_one_scaled_frame",
+            "pass": true
+        },
+        {
+            "jobs": 2,
+            "name": "scaler_queue_is_bounded_latest_wins",
+            "pass": true,
+            "superseded_frames": 39
+        },
+        {
+            "name": "black_invalidates_pending_scaled_frame",
+            "pass": true
+        },
+        {
+            "name": "transformed_frame_uses_native_fallback",
+            "pass": true
+        },
+        {
+            "name": "10bit_frame_preserves_native_precision",
+            "pass": true
+        },
+        {
+            "name": "unused_scaler_feed_is_released",
+            "pass": true
+        },
+        {
+            "error": "",
+            "frames": 8,
+            "name": "native_4k_h264_decode",
+            "pass": true
+        },
+        {
+            "name": "detected_screen_fullscreen_geometry",
+            "pass": true
+        },
+        {
+            "name": "native_output_preserves_decoded_frame",
+            "pass": true
+        },
+        {
+            "name": "closing_output_preserves_program",
+            "pass": true
+        },
+        {
+            "delivered_frames": 8,
+            "elapsed_ms": 1650,
+            "last_service_ms": 156.87779999999998,
+            "name": "native_4k_downscale_1080_stream",
+            "pass": true,
+            "superseded_frames": 50
+        },
+        {
+            "delivered_frames": 8,
+            "elapsed_ms": 1862,
+            "last_service_ms": 229.2338,
+            "name": "native_1080_upscale_4k_stream",
+            "pass": true,
+            "superseded_frames": 55
+        }
+    ]
+}

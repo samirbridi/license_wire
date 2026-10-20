@@ -5,7 +5,7 @@
 3. Escolha **Editar item** ou abra **EDIÇÃO** para preparar In/Out e transições por item. Selecione o item, navegue no Preview e use Marcar In / Marcar Out, ou digite segundos com milissegundos. Out = Fim da mídia usa o restante do arquivo. Aplicar item salva os ajustes sem modificar o original. Restaurar ajustes recarrega os valores aplicados.
 4. Volte à MAIN, escolha Program A ou B e pressione **CUT** para uma troca imediata após a preparação, ou **FADE** para um dissolve. A duração começa em **300 ms**, pode variar de 1 a 10000 ms e é lembrada neste computador. CUT / Ctrl+Enter ignora o fade de entrada do item. FADE / Ctrl+Space também faz entrada a partir do preto se o destino estiver vazio. Essas ações manuais preservam os ajustes salvos do item. Os atalhos operam somente na MAIN.
 5. Deixe Sequencial desmarcado para trocas manuais: o vídeo para no Out e mantém o último quadro. Com fade de saída, termina em preto. Ative Sequencial para avançar usando a transição salva de cada próximo item; Repetir lista repete a lista, mesmo com um único item. Cada Program tem seu modo. Repetir canal selecionado repete somente o recorte atual no modo manual.
-6. Em Saídas, escolha o Program e a tela. Reutilizar o Program espelha os mesmos quadros; o áudio toca uma vez por Program. Escape fecha a saída.
+6. Em **Saídas → Telas**, escolha o Program e a tela. Reutilizar o Program espelha os mesmos quadros; o áudio toca uma vez por Program. Escape fecha a saída.
 7. Salvar show grava um .mizinshow de esquema 2 com os ajustes aplicados. Shows antigos de esquema 1 continuam abrindo. Duplicar item reutiliza o arquivo com recortes independentes.
 
 ## Operação ao vivo
@@ -31,3 +31,23 @@ Em Saídas, escolha fonte, tela e perfil; depois clique em Abrir saída. Reabra 
 O caminho GPU atual atende SDR de 8 bits, dentro dos limites de tamanho e redução. Quadros de alta profundidade/HDR/transformados/com legendas usam Native; falhas de contexto ou recursos gráficos também retornam ao Native com aviso. Uma máquina sem decodificação por hardware compatível pode decodificar na CPU. Decodificação em CPU e escala na GPU são configurações independentes. Mídias compatíveis não exigem conversão prévia e os originais nunca são regravados.
 
 Lanczos faz reamostragem espacial, sem reconstrução por IA. Ele não recupera detalhes ausentes. O caminho GPU atual ainda lê quadros de hardware antes do envio da textura; não é zero-copy. Veja o [escopo medido](compatibility-and-performance.md) para a GPU testada, os framebuffers reais e os limites de desempenho/sincronismo ainda abertos.
+
+## Áudio dos Programs
+
+Na aba **Áudio**, configure Program A e Program B separadamente. **Volume geral** e **Silenciar** afetam o som local e o enviado pela rede. **Monitoramento local** liga/desliga somente a escuta na máquina. Escolha **Dispositivo de áudio** para direcionar o som a HDMI, placa de áudio, USB ou dispositivo virtual disponível no sistema. A opção Padrão do sistema acompanha o dispositivo padrão do Windows. Se um dispositivo selecionado desaparecer, a saída local é silenciada até ele voltar ou você escolher outro; o áudio de rede continua independente.
+
+Os medidores L/R mostram o pico do mix do Program em dBFS. O Preview segue sempre sem áudio e espelhar vídeo em várias telas não multiplica o som local. As preferências de áudio ficam neste computador, separadas do arquivo do show.
+
+## Saídas digitais NDI e OMT
+
+1. Abra **Saídas → Digital / IP** e escolha o painel do Program A ou B.
+2. Defina um **Nome da fonte** que identifique essa saída no receptor.
+3. Marque **Incluir áudio** para enviar o mix estéreo de 48 kHz junto ao vídeo SDR. Desmarque para enviar somente vídeo. Essa opção vale para os dois protocolos daquele Program.
+4. Clique em **Iniciar NDI** ou **Iniciar OMT**. Os dois podem funcionar ao mesmo tempo e as telas locais continuam independentes. O painel mostra o nome publicado e os contadores de conexão/vídeo/áudio.
+5. No receptor compatível, selecione a fonte publicada. Clique em Parar para encerrar aquele protocolo sem parar o Program.
+
+O vídeo acompanha tamanho e cadência da fonte. Preto mantém a última resolução/cadência da transmissão. Sem mídia inicial, a fonte publica preto em 1280×720/30. As transmissões nunca iniciam automaticamente ao abrir o aplicativo ou uma prancheta de demonstração. Ao fechar o aplicativo, os emissores são encerrados.
+
+NDI precisa do runtime oficial instalado; a integração detecta a instalação existente e informa sua ausência. Reinicie o aplicativo depois de instalar um runtime ausente. OMT usa as bibliotecas nativas incluídas neste pacote de desenvolvimento. O caminho atual de rede é SDR de 8 bits com áudio estéreo; não oferece HX, HDR, ASIO exclusivo, mapa multicanal ou ajuste manual de atraso. Valide recepção em outro computador e sincronismo AV com os arquivos e a rede reais antes de um evento. Veja [escopo e evidências](compatibility-and-performance.md).
+
+[Sobre NDI®](https://ndi.video/) · NDI® is a registered trademark of Vizrt NDI AB.

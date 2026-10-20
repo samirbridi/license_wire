@@ -1,5 +1,61 @@
 # CHANGELOG — Mizin Playout
 
+## v0.7.3 (build 0020) - 2026-10-20
+
+### 💥 Breaking Changes
+- None.
+
+### ✨ Features
+- None.
+
+### 🐛 Fixes
+- fix: valida codec OMT e mantem relogio do emissor desde a criacao (8f75a54bc637fcb77caa31cc553f9ba5e4867cd3)
+
+### ⚡ Improvements
+- None.
+
+## v0.7.2 (build 0019) - 2026-10-20
+
+### 💥 Breaking Changes
+- None.
+
+### ✨ Features
+- None.
+
+### 🐛 Fixes
+- fix: ignora quadros tardios apos black e alinha relogio de inicio da rede (49c143b098d7e939149ea22321bcf7be5ec28971)
+
+### ⚡ Improvements
+- None.
+
+## v0.7.1 (build 0018) - 2026-10-20
+
+### 💥 Breaking Changes
+- None.
+
+### ✨ Features
+- None.
+
+### 🐛 Fixes
+- fix: preserva preto na rede ao limpar audio e valida mute nos receptores (51ce881a6bee2ed02649ad71556b9f94dd851cc0)
+
+### ⚡ Improvements
+- None.
+
+## v0.7.0 (build 0017) - 2026-10-20
+
+### 💥 Breaking Changes
+- None.
+
+### ✨ Features
+- feat: adiciona saidas NDI OMT e roteamento de audio por Program (5507b96e8724d60a2eb2539cabe55adf709c84b7)
+
+### 🐛 Fixes
+- None.
+
+### ⚡ Improvements
+- improve: registra validacao GPU NVIDIA e 160 verificacoes do playout (23b56f6e6202bd6482462e39e269fd32d41989bc)
+
 ## v0.6.3 (build 0016) - 2026-10-20
 
 ### 💥 Breaking Changes
