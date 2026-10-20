@@ -7,6 +7,7 @@
 class PlaylistController final : public QObject {
     Q_OBJECT
 public:
+    enum class ManualTake { Cut, Fade };
     explicit PlaylistController(NativeChannel* channel,QObject* parent=nullptr) : QObject(parent),channel_(channel) {
         connect(channel_,&NativeChannel::started,this,[this]{
             current_=queuedIndex_;queued_=false;blocked_=false;emit cueStarted(current_);
@@ -19,9 +20,22 @@ public:
     }
     void start(const QList<Cue>& items,int index) {
         if (index<0 || index>=items.size()) return;
-        items_=items;current_=-1;queuedIndex_=index;queued_=false;blocked_=false;
-        channel_->cancelPrepared();channel_->loadCue(items_[index]);
+        startCue(items,index,items[index]);
     }
+    bool takeManual(const QList<Cue>& items,int index,ManualTake mode,int milliseconds=300) {
+        if (index<0 || index>=items.size() || (mode==ManualTake::Fade && (milliseconds<1 || milliseconds>10000))) return false;
+        Cue incoming=items[index];
+        incoming.transition=mode==ManualTake::Cut?Transition::Cut:Transition::Dissolve;
+        incoming.transitionMs=mode==ManualTake::Cut?0:milliseconds;
+        incoming.enterMs=mode==ManualTake::Cut?0:milliseconds;
+        startCue(items,index,incoming);return true;
+    }
+private:
+    void startCue(const QList<Cue>& items,int index,const Cue& incoming) {
+        items_=items;current_=-1;queuedIndex_=index;queued_=false;blocked_=false;
+        channel_->cancelPrepared();channel_->loadCue(incoming);
+    }
+public:
     void setSequential(bool value) {
         sequential_=value;
         if (value) channel_->setLoop(false);

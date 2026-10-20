@@ -10,7 +10,7 @@ struct Cue {
     QString path;
     qint64 in = 0, out = -1; // -1 means native duration. Originals are never edited.
     Transition transition = Transition::Cut;
-    int transitionMs = 500, enterMs = 0, exitMs = 0;
+    int transitionMs = 300, enterMs = 0, exitMs = 0;
     qint64 end(qint64 duration) const { return out < 0 ? duration : out; }
     QString error(qint64 duration = 0) const {
         if (path.isEmpty()) return "Empty media path";

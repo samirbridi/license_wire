@@ -79,6 +79,26 @@ int runTransportTests(const QString& directory,const QString& resultPath) {
     const bool repeats=until([&]{return starts>=3;},12000);
     record("single_item_sequence_repeat",repeats,{{"starts",starts}});
     order.setSequential(false);order.stop();
+    // Manual actions override only this launch. Original cue settings are retained
+    // in the running-order snapshot for the next automatic/repeated occurrence.
+    Cue configured{source,200,2000,Transition::FadeBlack,700,600,0};
+    order.setRepeat(true);order.setSequential(true);starts=0;composed=channel.composedFrames();
+    order.takeManual({configured},0,PlaylistController::ManualTake::Cut);
+    const bool cutReady=until([&]{return starts==1 && channel.frames()>=4;});
+    record("manual_cut_bypasses_saved_entry_fade",cutReady && channel.cue().transition==Transition::Cut && channel.cue().enterMs==0 && channel.composedFrames()==composed);
+    const bool repeatedOriginal=until([&]{return starts>=2;});
+    record("manual_override_preserves_sequence_settings",repeatedOriginal && channel.cue().transition==configured.transition && channel.cue().transitionMs==configured.transitionMs);
+    order.setSequential(false);order.stop();pump(80);composed=channel.composedFrames();
+    const bool fadeRequested=order.takeManual({configured},0,PlaylistController::ManualTake::Fade);
+    const bool fadeReady=until([&]{return channel.path()==source && !channel.pending() && channel.frames()>=5;});
+    record("manual_fade_defaults_300_from_black",fadeRequested && fadeReady && channel.cue().enterMs==300 && channel.cue().transitionMs==300 && channel.composedFrames()>composed);
+    composed=channel.composedFrames();
+    order.takeManual({Cue{second,200,2300}},0,PlaylistController::ManualTake::Fade,450);
+    const bool incomingReady=until([&]{return channel.path()==second && channel.frames()>=5;});
+    record("manual_fade_configured_between_clips",incomingReady && channel.cue().transitionMs==450 && channel.composedFrames()>composed && channel.cue().in==200);
+    const auto preserved=channel.path();
+    record("invalid_manual_fade_does_not_replace_program",!order.takeManual({configured},0,PlaylistController::ManualTake::Fade,0) && channel.path()==preserved);
+    order.stop();
     QJsonObject result{{"result",pass?"PASS":"FAIL"},{"mode",qEnvironmentVariable("MIZIN_DECODE_MODE","auto")},
         {"scope","Native synthetic 640x360 media; functional ranges, compositor pixels and transport state. Not physical display or AV sync qualification."},{"tests",tests}};
     QFile out(resultPath);if(!out.open(QIODevice::WriteOnly))return 3;out.write(QJsonDocument(result).toJson());return pass?0:2;
