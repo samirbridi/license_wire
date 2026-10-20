@@ -19,3 +19,6 @@ One-output defaults, B activation, mirror routes, removal guards and show persis
 
 
 Build 0028 reproduced the strict receiver timestamp failure in both automatic and CPU modes, despite receiving video/audio. Raw evidence is in evidence/network-auto-0028.json and network-cpu-0028.json; no final-stage retry replaced those FAIL results. Dynamic Program/playlist, model, media and GPU/output suites passed. The issue remains OPEN.
+
+
+Build 0030 current bounded regression: no failure observed; the known issue remains open pending diagnosis and independent qualification. Raw results and exits are retained in evidence/dynamic-program-suites-0030.json. No network implementation fix was introduced by the multiview/UI stage.

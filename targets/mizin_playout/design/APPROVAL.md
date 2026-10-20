@@ -17,3 +17,6 @@ On 2026-10-20 the user requested one output by default, enabling more for events
 
 
 On 2026-10-20 the user explicitly requested dynamic Programs/outputs and independent playlists or copies of A. The implementation retains the Live Desk direction with a Program selector, main A plus the selected extra monitor, independent running orders and aggregate route/network tiles. In the same session the user approved logo proposal A (cyan M/play monogram); proposal B/C and all original boards/prompts remain in design/branding/proposals/2026-10-20-r1/. The SVG/native redraw follows this direction; it is separate from maximum-concurrency or physical-output approval.
+
+
+The user subsequently requested alignment/spacing fixes, an all-Program multiview, a complete Program list in Outputs and the label NDI / OMT. ADR-011 implements that request within the accepted Live Desk direction. New native captures are implementation evidence for review; this entry does not claim final human approval of the revised rendering.

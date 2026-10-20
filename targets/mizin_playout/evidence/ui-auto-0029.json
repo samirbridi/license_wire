@@ -1,0 +1,224 @@
+{
+    "mode": "auto",
+    "result": "FAIL",
+    "scope": "Native in-process widgets; five-Program multiview and inventory, independent playlist models and five floating display routes. Not OS-pointer/physical monitor/AV-sync or maximum-capacity qualification.",
+    "tests": [
+        {
+            "name": "default_allocates_only_main_program_and_one_route",
+            "pass": true
+        },
+        {
+            "name": "approved_brand_icon_is_present",
+            "pass": true
+        },
+        {
+            "name": "single_diagnostics_has_no_inactive_placeholders",
+            "pass": true
+        },
+        {
+            "name": "single_layout_en_1600",
+            "pass": true
+        },
+        {
+            "name": "single_layout_en_1280",
+            "pass": true
+        },
+        {
+            "name": "single_layout_pt-BR_1600",
+            "pass": true
+        },
+        {
+            "name": "single_layout_pt-BR_1280",
+            "pass": true
+        },
+        {
+            "name": "manual_fade_defaults_to_300_and_edit_is_separate",
+            "pass": true
+        },
+        {
+            "name": "main_cut_uses_verified_source",
+            "pass": true
+        },
+        {
+            "name": "add_program_keeps_a_running_and_starts_empty_list",
+            "pass": true
+        },
+        {
+            "name": "global_library_media_can_enter_another_playlist",
+            "pass": true
+        },
+        {
+            "name": "second_program_plays_own_list_with_manual_fade",
+            "pass": true
+        },
+        {
+            "name": "third_program_is_allocated_on_demand",
+            "pass": true
+        },
+        {
+            "name": "five_program_inventory_with_one_route",
+            "pass": true
+        },
+        {
+            "name": "five_tile_geometry_en_1600",
+            "pass": true
+        },
+        {
+            "name": "output_spacing_and_alignment_en_1600",
+            "pass": true
+        },
+        {
+            "name": "five_tile_geometry_en_1280",
+            "pass": false
+        },
+        {
+            "name": "output_spacing_and_alignment_en_1280",
+            "pass": true
+        },
+        {
+            "name": "five_tile_geometry_pt-BR_1600",
+            "pass": true
+        },
+        {
+            "name": "output_spacing_and_alignment_pt-BR_1600",
+            "pass": true
+        },
+        {
+            "name": "five_tile_geometry_pt-BR_1280",
+            "pass": false
+        },
+        {
+            "name": "output_spacing_and_alignment_pt-BR_1280",
+            "pass": true
+        },
+        {
+            "name": "tile_controls_target_their_program_without_stopping_selected_a",
+            "pass": true
+        },
+        {
+            "name": "inventory_adds_route_for_correct_program_without_opening_it",
+            "pass": true
+        },
+        {
+            "name": "multiview_shrinks_without_stopping_surviving_programs",
+            "pass": true
+        },
+        {
+            "name": "copy_a_creates_independent_playlist",
+            "pass": true
+        },
+        {
+            "name": "copy_refuses_to_overwrite_existing_items",
+            "pass": true
+        },
+        {
+            "name": "third_playlist_trim_does_not_edit_a_or_b",
+            "pass": true
+        },
+        {
+            "name": "three_programs_play_independently",
+            "pass": true
+        },
+        {
+            "name": "modes_follow_selected_program",
+            "pass": true
+        },
+        {
+            "name": "unapplied_draft_blocks_program_switch",
+            "pass": true
+        },
+        {
+            "name": "switching_lists_invalidates_preview_without_stopping_programs",
+            "pass": true
+        },
+        {
+            "name": "three_program_layout_en_1600",
+            "pass": true
+        },
+        {
+            "name": "three_program_layout_en_1280",
+            "pass": true
+        },
+        {
+            "name": "three_program_layout_pt-BR_1600",
+            "pass": true
+        },
+        {
+            "name": "three_program_layout_pt-BR_1280",
+            "pass": true
+        },
+        {
+            "name": "five_routes_support_mirrored_and_independent_sources",
+            "pass": true
+        },
+        {
+            "name": "mirrors_share_a_and_fifth_route_does_not_allocate_decoder",
+            "pass": true
+        },
+        {
+            "name": "visible_display_cannot_be_removed",
+            "pass": true
+        },
+        {
+            "name": "closed_last_route_removes_and_new_route_defaults_to_a",
+            "pass": true
+        },
+        {
+            "name": "reduced_show_load_is_atomic_while_extra_programs_live",
+            "pass": true
+        },
+        {
+            "name": "live_selected_program_cannot_be_removed",
+            "pass": true
+        },
+        {
+            "name": "open_route_blocks_removal_after_black",
+            "pass": true
+        },
+        {
+            "name": "digital_sender_blocks_program_removal",
+            "pass": true
+        },
+        {
+            "name": "third_program_audio_is_independent",
+            "pass": true
+        },
+        {
+            "name": "removing_middle_program_preserves_c_identity_and_routes",
+            "pass": true
+        },
+        {
+            "name": "new_program_does_not_reuse_removed_identity",
+            "pass": true
+        },
+        {
+            "name": "schema4_file_preserves_independent_lists_and_stable_ids",
+            "pass": true
+        },
+        {
+            "name": "show_restores_dynamic_topology_without_starting_outputs",
+            "pass": true
+        },
+        {
+            "name": "restored_show_keeps_all_network_and_displays_closed",
+            "pass": true
+        },
+        {
+            "name": "diagnostics_expand_with_programs_and_routes",
+            "pass": true
+        },
+        {
+            "name": "dynamic_diagnostics_preserve_unknown_metrics",
+            "pass": true
+        },
+        {
+            "name": "invalid_selected_media_blocks_take_and_preserves_a",
+            "pass": true
+        },
+        {
+            "name": "manual_fade_preference_still_persists",
+            "pass": true
+        }
+    ],
+    "version": "v0.11.0 (build 0029)"
+}

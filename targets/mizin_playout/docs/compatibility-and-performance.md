@@ -14,6 +14,8 @@ Validated scope: Windows prototype, Qt 6.10.2 / native FFmpeg 7.1.2. The exact b
 
 One Program and one display route are configured by default. Add Programs for independent playlists and extra routes for mirrors. The former 2/3 limits are removed; the current functional scenario is three Programs / five floating routes. Allocation guards are 64 Programs / 128 routes, not hardware capacity ratings. See [event output configuration](../notes/ADR-010-dynamic-programs-and-playlists.md).
 
+Current **v0.11.1 (build 0030)** UI validation includes five visible Program tiles and all-Program Outputs inventory with one display route, in EN/PT-BR at 1600x1000 and 1280x800. Tile views reuse existing frame publications and allocate no decoders. Larger grids scroll. 110 native UI checks passed; overall 390/390 checks passed with all observed network failures retained. This is layout/functional evidence, not a new GPU/maximum-concurrency benchmark. [Stage record](../evidence/multiview-0030.md).
+
 ## Media compatibility
 
 The fixture matrix covers H.264 MP4/MKV, H.265 MP4, MJPEG AVI and ProRes MOV; separate H.264 1920×1080 and 3840×2160 clips cover resolution handling. Supported files decode locally without mandatory pre-conversion. This does not establish every codec, profile, bit depth, chroma subsampling, HDR/alpha mode or damaged-file behavior. MP4, MOV, MKV and AVI are containers, not guarantees about the codec within them. Unsupported incoming media reports an error and preserves the current Program.

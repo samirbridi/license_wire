@@ -1,10 +1,10 @@
 # Your first show
 
-The Live Desk starts with muted Preview and one **PROGRAM**. **+ Add Program** creates an independent Program with an empty running order. Select the Program in MAIN to edit its playlist and operate CUT/FADE, Manual/Sequential, Loop and Repeat. Main A and the selected extra monitor remain visible; other Programs keep playing.
+The Live Desk starts with muted Preview and one **PROGRAM**. **+ Add Program** creates an independent Program with an empty running order. Select the Program in MAIN to edit its playlist and operate CUT/FADE, Manual/Sequential, Loop and Repeat. With additional Programs, MAIN builds a multiview of all Programs beside muted Preview. Click a Program name in the grid or use the destination menu to select its playlist and TAKE controls. Selection does not interrupt playback. Each tile has play/pause and Black controls for that tile's Program. Larger configurations scroll inside the multiview.
 
 Wait for the green **READY** badge beside muted Preview before a manual take. It verifies the selected file, applied trim and a decoded video frame in range. A new applied range is checked again. **Preparing**, **Not cued** and **Error** do not enable CUT/FADE. Correct an error and cue the source again. Files changed after preparation lose READY; a final file check also runs on TAKE. The Program still prepares its own deck when you take the source; READY is not a promise of zero-delay switching. Audio-only files use the backend's preparation/seek state.
 
-Open **Settings → Engine diagnostics**, or use the small gear in MAIN's bottom dashboard. Refresh reads channel states, frame publications, buffer progress, CPU composition times and A/B NDI/OMT counters. **Export report** saves a local JSON report. **Not available** means the backend does not expose the measurement; it does not mean zero usage or zero dropped frames. Video publications are callbacks, not proof of physical monitor FPS.
+Open **Settings → Engine diagnostics**, or use the small gear in MAIN's bottom dashboard. Refresh reads channel states, frame publications, buffer progress, CPU composition times and per-Program NDI/OMT counters. **Export report** saves a local JSON report. **Not available** means the backend does not expose the measurement; it does not mean zero usage or zero dropped frames. Video publications are callbacks, not proof of physical monitor FPS.
 
 1. In **MAIN**, add files, add a folder or drop local media on the window.
 2. Double-click a running-order item, or choose Cue selected, to load muted Preview. CUT and FADE become available when that selected item is prepared.
@@ -20,7 +20,9 @@ Every launch starts with one Program and one display route. **+ Add Program** cr
 
 **Copy A playlist** fills an empty selected list with copies of A's applied cues. Changes and playback are independent afterwards. Existing items are preserved; use a new/empty Program for a fresh copy. For live mirroring, use **Outputs → Displays → + Add display output** and choose A as the source. Mirrors follow A's current playback and do not allocate another decoder. Choose another Program for independent content.
 
-Add/remove routes as needed. Close the last display before removing it. Black an extra Program and close/stop its displays and NDI/OMT senders before removing that Program; loaded/paused media or an ongoing import also blocks removal. A cannot be removed. Select the Program in MAIN before using **Remove selected Program** in Outputs. Surviving identities/audio preferences are retained; closed routes pointing to a removed Program return to A.
+**Outputs → Displays** lists every Program, including those with no display route. The table shows playlist item counts and configured route numbers. **+ Add route** on a Program creates a closed route with that Program selected as its source; choose a screen/profile and open it manually. Creating a Program creates an independent playback channel, not another screen. The global **+ Add display output** defaults to A for mirroring. Changes to a route source take effect when reopening it.
+
+Add/remove routes as needed. Close the last display before removing it. Black an extra Program and close/stop its displays and NDI/OMT senders before removing that Program; loaded/paused media or an ongoing import also blocks removal. A cannot be removed. Select the Program in MAIN or the Outputs inventory before using **Remove selected Program** in Outputs. Surviving identities/audio preferences are retained; closed routes pointing to a removed Program return to A.
 
 Save show stores all applied playlists, stable Program IDs and route sources (schema 4). Legacy schema 1/2 open as one Program; schema 3's shared running order becomes an independent copy for each legacy Program. Loading never starts displays/senders. Three Programs and five floating display routes are the functional proof, not a hardware capacity rating. Defensive allocation guards are 64 Programs / 128 routes; actual usable concurrency depends on the machine/media and must be measured for the event.
 
@@ -56,7 +58,7 @@ L/R meters show Program mix peaks in dBFS. Preview stays muted and mirrored disp
 
 ## Digital NDI and OMT outputs
 
-1. Open **Outputs → Digital / IP** and find the main Program, or B after enabling it.
+1. Open **Outputs → NDI / OMT** and find the main Program, or B after enabling it.
 2. Enter a **Source name** to identify this output at the receiver.
 3. Enable **Include audio** for stereo 48 kHz Program audio with SDR video; disable it for video only. This switch applies to both network protocols for that Program.
 4. Click **Start NDI** or **Start OMT**. Both protocols can run together alongside display outputs. The panel shows the published source and connection/video/audio counters.

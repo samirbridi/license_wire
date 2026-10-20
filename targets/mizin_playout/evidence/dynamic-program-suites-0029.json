@@ -1,0 +1,14 @@
+[
+  {
+    "suite": "ui",
+    "mode": "auto",
+    "version": "v0.11.0 (build 0029)",
+    "package_sha256": "d54518e3a66ae4c2234d63281655eef14052b337dd81c5ac5b640cefcd1a569e",
+    "result": "FAIL",
+    "checks": 54,
+    "exit": 2,
+    "file": "D:\\REA - ENGENHARIA REVERSA\\targets\\mizin_playout\\evidence\\ui-auto-0029.json",
+    "native_arguments": "--ui-test --lang en --fixtures \"D:\\REA - ENGENHARIA REVERSA\\targets\\mizin_playout\\binaries\\fixtures\" --result \"D:\\REA - ENGENHARIA REVERSA\\targets\\mizin_playout\\evidence\\ui-auto-0029.json\" --state-dir \"D:\\REA - ENGENHARIA REVERSA\\targets\\mizin_playout\\binaries\\qa\\dynamic-ui-auto-0029-cd9ac18e31e14b4a82d69e32ff52bc42\"",
+    "log": "D:\\REA - ENGENHARIA REVERSA\\targets\\mizin_playout\\binaries\\qa\\dynamic-ui-auto-0029-cd9ac18e31e14b4a82d69e32ff52bc42\\native.log"
+  }
+]

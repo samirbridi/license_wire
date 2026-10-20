@@ -1,10 +1,10 @@
 # Seu primeiro show
 
-A Live Desk começa com Prévia sem áudio e um único **PROGRAMA**. **+ Adicionar Program** cria um Program independente com playlist vazia. Selecione o Program na MAIN para editar sua lista e operar CUT/FADE, Manual/Sequencial, Loop e Repetir. A principal e o monitor extra selecionado ficam visíveis; os demais Programs continuam reproduzindo.
+A Live Desk começa com Prévia sem áudio e um único **PROGRAMA**. **+ Adicionar Program** cria um Program independente com playlist vazia. Selecione o Program na MAIN para editar sua lista e operar CUT/FADE, Manual/Sequencial, Loop e Repetir. Ao adicionar Programs, a MAIN monta um multiview de todos eles ao lado da Prévia. Clique no nome de um Program na grade ou use o menu de destino para selecionar sua playlist e os controles de envio. Selecionar não interrompe a reprodução. Cada quadro tem controles próprios de reproduzir/pausar e Preto. Configurações maiores usam rolagem dentro do multiview.
 
 Aguarde o indicador verde **PRONTO** ao lado da Prévia sem áudio antes da troca manual. Ele verifica o arquivo selecionado, o recorte aplicado e um quadro de vídeo dentro desse recorte. Um novo In/Out aplicado passa por outra conferência. **Preparando**, **Não preparado** e **Erro** não liberam CUT/FADE. Corrija a origem e carregue o item novamente. Alterar o arquivo invalida PRONTO; outra checagem do arquivo ocorre no envio. O Program ainda prepara seu próprio deck ao receber o envio; PRONTO não promete troca sem atraso. Arquivos somente de áudio usam o estado de preparação/navegação informado pelo backend.
 
-Abra **Configurações → Diagnósticos do motor** ou use a pequena engrenagem no rodapé da MAIN. O painel mostra estados dos canais, quadros publicados, progresso de buffer, tempos de composição CPU e contadores NDI/OMT de A/B. **Exportar relatório** salva um JSON local. **Não disponível** indica uma medição não exposta pelo backend; não significa uso zero ou ausência de quadros perdidos. A contagem de publicações não comprova FPS no monitor físico.
+Abra **Configurações → Diagnósticos do motor** ou use a pequena engrenagem no rodapé da MAIN. O painel mostra estados dos canais, quadros publicados, progresso de buffer, tempos de composição CPU e contadores NDI/OMT por Program. **Exportar relatório** salva um JSON local. **Não disponível** indica uma medição não exposta pelo backend; não significa uso zero ou ausência de quadros perdidos. A contagem de publicações não comprova FPS no monitor físico.
 
 1. Na **MAIN**, adicione arquivos, uma pasta ou arraste mídias locais para a janela.
 2. Dê dois cliques em um item da lista, ou use Carregar selecionado, para preparar o Preview sem áudio. CUT e FADE ficam disponíveis quando o item selecionado estiver preparado.
@@ -20,7 +20,9 @@ Cada abertura começa com um Program e uma rota. **+ Adicionar Program** cria ou
 
 **Copiar playlist de A** preenche uma lista selecionada vazia com cópias dos itens aplicados de A. Depois, edição e reprodução são independentes. Os itens existentes são preservados; use um Program novo/vazio para uma nova cópia. Para espelhamento ao vivo, use **Saídas → Telas → + Adicionar saída de tela** e escolha A como fonte. O espelho acompanha a reprodução de A sem criar outro decodificador. Escolha outro Program para conteúdo independente.
 
-Adicione/remova rotas conforme o evento. Feche a última tela antes de remover a rota. Para remover um Program extra, coloque-o em Preto e feche/pare suas telas e transmissores NDI/OMT; mídia carregada/pausada ou importação em andamento também bloqueiam a remoção. A não pode ser removido. Selecione o Program na MAIN antes de usar **Remover Program selecionado** em Saídas. Identidades/preferências dos sobreviventes são preservadas; rotas fechadas do Program removido voltam para A.
+**Saídas → Telas** lista todos os Programs, inclusive os que estão sem rota de tela. A tabela mostra a quantidade de itens da playlist e os números das rotas configuradas. **+ Adicionar rota** na linha de um Program cria uma rota fechada com esse Program como fonte; escolha a tela/perfil e abra manualmente. Criar um Program adiciona um canal independente de reprodução, sem adicionar uma tela. O botão geral **+ Adicionar saída de tela** usa A para espelhamento. A alteração da fonte de uma rota entra ao reabri-la.
+
+Adicione/remova rotas conforme o evento. Feche a última tela antes de remover a rota. Para remover um Program extra, coloque-o em Preto e feche/pare suas telas e transmissores NDI/OMT; mídia carregada/pausada ou importação em andamento também bloqueiam a remoção. A não pode ser removido. Selecione o Program na MAIN ou na lista de Saídas antes de usar **Remover Program selecionado** em Saídas. Identidades/preferências dos sobreviventes são preservadas; rotas fechadas do Program removido voltam para A.
 
 Salvar show guarda todas as listas aplicadas, IDs dos Programs e fontes das rotas (esquema 4). Shows de esquema 1/2 abrem com um Program; a lista compartilhada do esquema 3 vira cópias independentes em cada Program antigo. Reabrir não inicia telas/transmissores. Três Programs e cinco rotas flutuantes são a prova funcional, não uma capacidade garantida de hardware. Existem proteções de alocação de 64 Programs / 128 rotas; a quantidade utilizável depende da máquina/mídias e deve ser medida para o evento.
 
@@ -56,7 +58,7 @@ Os medidores L/R mostram o pico do mix do Program em dBFS. O Preview segue sempr
 
 ## Saídas digitais NDI e OMT
 
-1. Abra **Saídas → Digital / IP** e escolha o painel do Program principal, ou B depois de habilitá-lo.
+1. Abra **Saídas → NDI / OMT** e escolha o painel do Program principal, ou B depois de habilitá-lo.
 2. Defina um **Nome da fonte** que identifique essa saída no receptor.
 3. Marque **Incluir áudio** para enviar o mix estéreo de 48 kHz junto ao vídeo SDR. Desmarque para enviar somente vídeo. Essa opção vale para os dois protocolos daquele Program.
 4. Clique em **Iniciar NDI** ou **Iniciar OMT**. Os dois podem funcionar ao mesmo tempo e as telas locais continuam independentes. O painel mostra o nome publicado e os contadores de conexão/vídeo/áudio.

@@ -1,5 +1,33 @@
 # CHANGELOG — Mizin Playout
 
+## v0.11.1 (build 0030) - 2026-10-20
+
+### 💥 Breaking Changes
+- None.
+
+### ✨ Features
+- None.
+
+### 🐛 Fixes
+- fix: ajusta multiview compacto e atualiza ajuda e quadros pausados (d344e3100a0eb7948293af5d6898bad7bed1c480)
+
+### ⚡ Improvements
+- None.
+
+## v0.11.0 (build 0029) - 2026-10-20
+
+### 💥 Breaking Changes
+- None.
+
+### ✨ Features
+- feat: adiciona multiview de Programs e organiza rotas e controles (be4f76bcf2cc83c50789ca40b38f43eab2be901f)
+
+### 🐛 Fixes
+- None.
+
+### ⚡ Improvements
+- improve: registra playlists dinamicas identidade A e validacao nativa (cfab9c54e36175a2369cf83a34eba35e69b12eae)
+
 ## v0.10.1 (build 0028) - 2026-10-20
 
 ### 💥 Breaking Changes

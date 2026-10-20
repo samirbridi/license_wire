@@ -19,3 +19,6 @@ Event output configuration now starts with one logical Program and one display r
 
 
 Dynamic Programs now allocate extra NativeChannel/PlaylistController/NetworkBus objects on demand and store independent applied playlist models. Mirrors reference a Program without an additional decoder. Schema 4 persists stable Program IDs, names and playlists; schema-3 shared lists migrate to separate copies. MAIN stores the selected model before switching and clears Preview readiness, without stopping live Programs. Removed Program identities do not renumber surviving runtime/settings IDs. Diagnostics and route/panel collections grow dynamically. See ADR-010-dynamic-programs-and-playlists.md. GPU transition composition remains deferred; ISSUE-001 remains open.
+
+
+MAIN now keeps a shared-frame multiview of every configured Program. Stable-ID tile actions resolve the runtime at activation, preserving identity through middle removals and show reloads. The Outputs inventory separates logical Programs from display routes and adds a closed route for a selected Program without opening screens or starting network senders. See ADR-011-multiview-and-routing-inventory.md.

@@ -421,5 +421,38 @@
     ],
     "date": "2026-10-20",
     "build_status": "PASS"
+  },
+  {
+    "display": "v0.11.0 (build 0029)",
+    "previous": "v0.10.1 (build 0028)",
+    "source_commit": "be4f76bcf2cc83c50789ca40b38f43eab2be901f",
+    "commits": [
+      {
+        "sha": "cfab9c54e36175a2369cf83a34eba35e69b12eae",
+        "subject": "improve: registra playlists dinamicas identidade A e validacao nativa",
+        "kind": "improve"
+      },
+      {
+        "sha": "be4f76bcf2cc83c50789ca40b38f43eab2be901f",
+        "subject": "feat: adiciona multiview de Programs e organiza rotas e controles",
+        "kind": "feat"
+      }
+    ],
+    "date": "2026-10-20",
+    "build_status": "PASS"
+  },
+  {
+    "display": "v0.11.1 (build 0030)",
+    "previous": "v0.11.0 (build 0029)",
+    "source_commit": "d344e3100a0eb7948293af5d6898bad7bed1c480",
+    "commits": [
+      {
+        "sha": "d344e3100a0eb7948293af5d6898bad7bed1c480",
+        "subject": "fix: ajusta multiview compacto e atualiza ajuda e quadros pausados",
+        "kind": "fix"
+      }
+    ],
+    "date": "2026-10-20",
+    "build_status": "PASS"
   }
 ]

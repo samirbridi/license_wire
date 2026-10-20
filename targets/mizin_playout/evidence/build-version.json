@@ -1,11 +1,11 @@
 {
-  "display": "v0.10.1 (build 0028)",
-  "previous": "v0.10.0 (build 0027)",
-  "source_commit": "fe641f91021ed5bd755a3a369fe4bb8e1d42dcba",
+  "display": "v0.11.1 (build 0030)",
+  "previous": "v0.11.0 (build 0029)",
+  "source_commit": "d344e3100a0eb7948293af5d6898bad7bed1c480",
   "commits": [
     {
-      "sha": "fe641f91021ed5bd755a3a369fe4bb8e1d42dcba",
-      "subject": "fix: corrige tipo do progresso no painel dinamico",
+      "sha": "d344e3100a0eb7948293af5d6898bad7bed1c480",
+      "subject": "fix: ajusta multiview compacto e atualiza ajuda e quadros pausados",
       "kind": "fix"
     }
   ],
