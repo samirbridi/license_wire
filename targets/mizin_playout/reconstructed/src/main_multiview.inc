@@ -7,7 +7,7 @@
         if(programTiles_.isEmpty())return;
         const int columns=qBound(1,(multiview_->viewport()->width()+8)/220,3);
         const int rows=(programTiles_.size()+columns-1)/columns;
-        const int height=qBound(144,(multiview_->viewport()->height()-8*(rows-1))/qMin(rows,2),240);
+        const int height=qBound(124,(multiview_->viewport()->height()-8*(rows-1))/qMin(rows,2),240);
         for(int i=0;i<programTiles_.size();++i){auto* panel=programTiles_[i].panel;multiviewGrid_->addWidget(panel,i/columns,i%columns);panel->setFixedHeight(height);}
         multiviewGrid_->setAlignment(Qt::AlignTop);
     }
@@ -18,6 +18,7 @@
     void rebuildMultiview(){
         if(!programViews_)return;
         programViews_->setCurrentIndex(programCount_==1?0:1);
+        programViews_->setMinimumHeight(programCount_==1?0:256);playlistTable_->setMinimumHeight(programCount_==1?150:120);
         deckRow_->setStretch(0,programCount_==1?37:30);deckRow_->setStretch(1,programCount_==1?37:70);
         bool same=programTiles_.size()==programCount_;
         for(int i=0;same&&i<programCount_;++i)same=programTiles_[i].id==programDefinitions_[i].id;
@@ -35,7 +36,7 @@
                 auto* name=new ElidedLabel;name->setObjectName("muted");body->addWidget(name);
                 auto* controls=new QHBoxLayout;controls->setSpacing(5);auto* time=new QLabel;time->setObjectName("tileTime");controls->addWidget(time,1);
                 auto* play=iconButton("Play / pause",DeskIcon::Play);play->setFixedSize(28,24);controls->addWidget(play);connect(play,&QPushButton::clicked,this,[this,id]{const int index=programIndexById(id);if(index>=0)channelAt(index)->togglePause();});
-                auto* stop=iconButton("Black selected channel",DeskIcon::Stop);stop->setFixedSize(28,24);controls->addWidget(stop);connect(stop,&QPushButton::clicked,this,[this,id]{const int index=programIndexById(id);if(index>=0)controllerAt(index)->stop();});body->addLayout(controls);
+                auto* stop=iconButton("Black this Program",DeskIcon::Stop);stop->setFixedSize(28,24);controls->addWidget(stop);connect(stop,&QPushButton::clicked,this,[this,id]{const int index=programIndexById(id);if(index>=0)controllerAt(index)->stop();});body->addLayout(controls);
                 programTiles_.append({id,panel,select,state,name,time,play});
             }
             multiview_->viewport()->installEventFilter(this);
@@ -75,7 +76,7 @@
             }
         }
         programInventory_->setHorizontalHeaderLabels({tx("Program"),tx("Playlist items"),tx("Configured routes"),tx("Display routes")});
-        programInventory_->setFixedHeight(32+42*qMin(programCount_,5));
+        programInventory_->setFixedHeight(qMax(programInventory_->horizontalHeader()->height(),programInventory_->horizontalHeader()->sizeHint().height())+42*qMin(programCount_,5)+2*programInventory_->frameWidth()+2);
         for(int row=0;row<programCount_;++row){
             QStringList routes;for(int i=0;i<sourceBoxes_.size();++i)if(sourceBoxes_[i]->currentIndex()==row)routes<<QString::number(i+1).rightJustified(2,'0');
             const int count=row==selectedProgram_?playlist_.size():programDefinitions_[row].cues.size();
