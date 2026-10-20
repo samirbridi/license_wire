@@ -21,3 +21,6 @@ English is default; Português (Brasil) can be selected during playback. Automat
 Displays open fullscreen at their current system mode; this application does not switch the desktop resolution. Video is fitted without distortion or cropping, with black bars for differing aspect ratios. A 4K source on a 1080p display is reduced; 1080p on 4K is enlarged. Scaling never restores missing source detail.
 
 Each route offers Native (performance) or Lanczos (higher-quality SDR scaling on CPU). Native remains the default. Lanczos runs one worker and keeps only the newest pending frame, sharing a result for mirrored outputs at the same pixel size. Under load, frames may be superseded. High-depth/HDR/transformed frames and sizes above the bounded Lanczos output budget use Native instead. This is spatial resampling, not AI reconstruction. High-resolution throughput, AV sync and vendor-specific quality remain to be qualified. Reopen/update a route to apply a changed source, screen or profile; Escape closes only that output. Displays added/removed are refreshed automatically.
+
+
+Lanczos CPU is experimental: current 4K measurements exceed the 30 fps frame budget. Native is the recommended live profile; GPU high-quality scaling remains future work. Increasing CPU thread counts did not resolve the measured cost.

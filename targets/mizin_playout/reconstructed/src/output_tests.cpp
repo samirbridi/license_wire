@@ -71,7 +71,7 @@ int runOutputTests(const QString& directory,const QString& resultPath){
         const QSize source=i==0?QSize(3840,2160):QSize(1920,1080),target=i==0?QSize(1920,1080):QSize(3840,2160);
         QVideoSink sink;auto* quality=router.feed(&channel,target);
         int count=0;QElapsedTimer elapsed;elapsed.start();
-        auto connection=QObject::connect(quality,&QualityFeed::frameReady,&sink,[&](const QVideoFrame& f){if(f.isValid() && f.size()==target){sink.setVideoFrame(f);++count;}});
+        auto connection=QObject::connect(quality,&QualityFeed::frameReady,&sink,[&](const QVideoFrame& f){if(f.isValid() && f.size()==target && channel.lastFrame().size()==source){sink.setVideoFrame(f);++count;}});
         if(i==1)channel.load(hd);else quality->refresh();
         const bool delivered=waitFor([&]{return count>=8 && channel.lastFrame().size()==source;});
         record(i==0?"native_4k_downscale_1080_stream":"native_1080_upscale_4k_stream",delivered,{{"delivered_frames",count},{"elapsed_ms",elapsed.elapsed()},{"last_service_ms",quality->lastMs()},{"superseded_frames",quality->dropped()}});

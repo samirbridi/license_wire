@@ -33,6 +33,7 @@ private:
     QString sourcePath_,note_;
     qint64 generation_=0;
     bool busy_=false;
+    bool latencyWarned_=false;
     int jobs_=0,dropped_=0;
     double lastMs_=0;
     void submit(const QVideoFrame& frame);

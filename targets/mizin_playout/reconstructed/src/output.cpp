@@ -14,7 +14,9 @@ QualityFeed::QualityFeed(NativeChannel* channel,QSize pixels,QObject* parent):QO
         const auto r=worker_.result();busy_=false;
         if(r.generation==generation_ && isSignalConnected(QMetaMethod::fromSignal(&QualityFeed::frameReady))){
             if(r.image.isNull()){if(channel_)fallback(channel_->lastFrame(),"Lanczos failed; using Native scaling");}
-            else {published_=QVideoFrame(r.image);published_.setStartTime(r.start);published_.setEndTime(r.end);published_.setStreamFrameRate(r.fps);published_.setSubtitleText(r.subtitle);lastMs_=r.ms;++jobs_;emit frameReady(published_);}
+            else {published_=QVideoFrame(r.image);published_.setStartTime(r.start);published_.setEndTime(r.end);published_.setStreamFrameRate(r.fps);published_.setSubtitleText(r.subtitle);lastMs_=r.ms;++jobs_;emit frameReady(published_);
+                if(!latencyWarned_ && r.ms>1000.0/(r.fps>0?r.fps:30)){latencyWarned_=true;emit warning("Lanczos exceeds the frame budget; use Native for live playback");}
+            }
         }
         const auto latest=pending_;pending_={};if(latest.isValid() && inUse())start(latest);
     });
