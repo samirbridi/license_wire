@@ -1,17 +1,12 @@
 {
-  "display": "v0.8.0 (build 0024)",
-  "previous": "v0.7.6 (build 0023)",
-  "source_commit": "4c614f9058e8badf1e322c11ea4775036c0a7677",
+  "display": "v0.9.1 (build 0026)",
+  "previous": "v0.9.0 (build 0025)",
+  "source_commit": "0b885f2d374bf0ddf4727d95db4b023f4920b6a3",
   "commits": [
     {
-      "sha": "98f555377804fcb0a42834f99566d1a0e5d0227e",
-      "subject": "improve: registra layout A nativo e 174 verificacoes no build 0023",
-      "kind": "improve"
-    },
-    {
-      "sha": "4c614f9058e8badf1e322c11ea4775036c0a7677",
-      "subject": "feat: adiciona READY por origem e diagnosticos reais do motor",
-      "kind": "feat"
+      "sha": "0b885f2d374bf0ddf4727d95db4b023f4920b6a3",
+      "subject": "fix: ajusta largura do indicador Program na lista de reproducao",
+      "kind": "fix"
     }
   ],
   "date": "2026-10-20",

@@ -1,5 +1,33 @@
 # CHANGELOG — Mizin Playout
 
+## v0.9.1 (build 0026) - 2026-10-20
+
+### 💥 Breaking Changes
+- None.
+
+### ✨ Features
+- None.
+
+### 🐛 Fixes
+- fix: ajusta largura do indicador Program na lista de reproducao (0b885f2d374bf0ddf4727d95db4b023f4920b6a3)
+
+### ⚡ Improvements
+- None.
+
+## v0.9.0 (build 0025) - 2026-10-20
+
+### 💥 Breaking Changes
+- None.
+
+### ✨ Features
+- feat: inicia com um Program e permite configurar saidas por evento (d315c2828d2a3cfbfefd8874c40a98688449eac1)
+
+### 🐛 Fixes
+- None.
+
+### ⚡ Improvements
+- improve: registra READY diagnosticos e 314 verificacoes nativas (ae1dfd1ddeb79da0713c92142fea755a56d291e6)
+
 ## v0.8.0 (build 0024) - 2026-10-20
 
 ### 💥 Breaking Changes

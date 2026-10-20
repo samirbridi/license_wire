@@ -1,0 +1,62 @@
+﻿[
+    {
+        "suite":  "readiness",
+        "mode":  "auto",
+        "version":  "v0.9.0 (build 0025)",
+        "package_sha256":  "3c4ce1b0abcecfc5f6917a06e9c860611ee5c9745a04e22baa08f5021617e4b4",
+        "result":  "PASS",
+        "checks":  24,
+        "exit":  0,
+        "file":  "D:\\REA - ENGENHARIA REVERSA\\targets\\mizin_playout\\evidence\\readiness-auto-0025.json",
+        "native_arguments":  "--readiness-test --lang en --fixtures \"D:\\REA - ENGENHARIA REVERSA\\targets\\mizin_playout\\binaries\" --result \"D:\\REA - ENGENHARIA REVERSA\\targets\\mizin_playout\\evidence\\readiness-auto-0025.json\" --state-dir \"D:\\REA - ENGENHARIA REVERSA\\targets\\mizin_playout\\binaries\\qa\\readiness-auto-0025-ef03ea285b084b04b90b9d7ca907f262\"",
+        "log":  "D:\\REA - ENGENHARIA REVERSA\\targets\\mizin_playout\\binaries\\qa\\readiness-auto-0025-ef03ea285b084b04b90b9d7ca907f262\\native.log"
+    },
+    {
+        "suite":  "ui",
+        "mode":  "auto",
+        "version":  "v0.9.0 (build 0025)",
+        "package_sha256":  "3c4ce1b0abcecfc5f6917a06e9c860611ee5c9745a04e22baa08f5021617e4b4",
+        "result":  "PASS",
+        "checks":  46,
+        "exit":  0,
+        "file":  "D:\\REA - ENGENHARIA REVERSA\\targets\\mizin_playout\\evidence\\ui-auto-0025.json",
+        "native_arguments":  "--ui-test --lang en --fixtures \"D:\\REA - ENGENHARIA REVERSA\\targets\\mizin_playout\\binaries\\fixtures\" --result \"D:\\REA - ENGENHARIA REVERSA\\targets\\mizin_playout\\evidence\\ui-auto-0025.json\" --state-dir \"D:\\REA - ENGENHARIA REVERSA\\targets\\mizin_playout\\binaries\\qa\\ui-auto-0025-c7d505e0cbf34c44bb4f3d1cc193e2f6\"",
+        "log":  "D:\\REA - ENGENHARIA REVERSA\\targets\\mizin_playout\\binaries\\qa\\ui-auto-0025-c7d505e0cbf34c44bb4f3d1cc193e2f6\\native.log"
+    },
+    {
+        "suite":  "smoke",
+        "mode":  "auto",
+        "version":  "v0.9.0 (build 0025)",
+        "package_sha256":  "3c4ce1b0abcecfc5f6917a06e9c860611ee5c9745a04e22baa08f5021617e4b4",
+        "result":  "PASS",
+        "checks":  7,
+        "exit":  0,
+        "file":  "D:\\REA - ENGENHARIA REVERSA\\targets\\mizin_playout\\evidence\\smoke-auto-0025.json",
+        "native_arguments":  "--smoke-test --lang en --fixtures \"D:\\REA - ENGENHARIA REVERSA\\targets\\mizin_playout\\binaries\\fixtures\" --result \"D:\\REA - ENGENHARIA REVERSA\\targets\\mizin_playout\\evidence\\smoke-auto-0025.json\" --state-dir \"D:\\REA - ENGENHARIA REVERSA\\targets\\mizin_playout\\binaries\\qa\\smoke-auto-0025-6c5f5295d6e24363b7f94eac4a71de79\"",
+        "log":  "D:\\REA - ENGENHARIA REVERSA\\targets\\mizin_playout\\binaries\\qa\\smoke-auto-0025-6c5f5295d6e24363b7f94eac4a71de79\\native.log"
+    },
+    {
+        "suite":  "transport",
+        "mode":  "auto",
+        "version":  "v0.9.0 (build 0025)",
+        "package_sha256":  "3c4ce1b0abcecfc5f6917a06e9c860611ee5c9745a04e22baa08f5021617e4b4",
+        "result":  "PASS",
+        "checks":  28,
+        "exit":  0,
+        "file":  "D:\\REA - ENGENHARIA REVERSA\\targets\\mizin_playout\\evidence\\transport-auto-0025.json",
+        "native_arguments":  "--transport-test --lang en --fixtures \"D:\\REA - ENGENHARIA REVERSA\\targets\\mizin_playout\\binaries\\fixtures\" --result \"D:\\REA - ENGENHARIA REVERSA\\targets\\mizin_playout\\evidence\\transport-auto-0025.json\" --state-dir \"D:\\REA - ENGENHARIA REVERSA\\targets\\mizin_playout\\binaries\\qa\\transport-auto-0025-48728eaa91054ba5b45d766c9f3adee9\"",
+        "log":  "D:\\REA - ENGENHARIA REVERSA\\targets\\mizin_playout\\binaries\\qa\\transport-auto-0025-48728eaa91054ba5b45d766c9f3adee9\\native.log"
+    },
+    {
+        "suite":  "network",
+        "mode":  "auto",
+        "version":  "v0.9.0 (build 0025)",
+        "package_sha256":  "3c4ce1b0abcecfc5f6917a06e9c860611ee5c9745a04e22baa08f5021617e4b4",
+        "result":  "FAIL",
+        "checks":  38,
+        "exit":  2,
+        "file":  "D:\\REA - ENGENHARIA REVERSA\\targets\\mizin_playout\\evidence\\network-auto-0025.json",
+        "native_arguments":  "--network-test --lang en --fixtures \"D:\\REA - ENGENHARIA REVERSA\\targets\\mizin_playout\\binaries\\network-fixtures\" --result \"D:\\REA - ENGENHARIA REVERSA\\targets\\mizin_playout\\evidence\\network-auto-0025.json\" --state-dir \"D:\\REA - ENGENHARIA REVERSA\\targets\\mizin_playout\\binaries\\qa\\network-auto-0025-6cf8c26fd5af487c8ed1a8f57e70f346\"",
+        "log":  "D:\\REA - ENGENHARIA REVERSA\\targets\\mizin_playout\\binaries\\qa\\network-auto-0025-6cf8c26fd5af487c8ed1a8f57e70f346\\native.log"
+    }
+]

@@ -9,8 +9,10 @@ Validated scope: Windows prototype, Qt 6.10.2 / native FFmpeg 7.1.2. The exact b
 | Transitions | Shared CPU image compositor per Program | Functional Cut/Dissolve/Fade tests; GPU scaling does not move this composition to the GPU. |
 | GPU Lanczos | Optional original two-pass Lanczos-3 in OpenGL 3.3 | Actual NVIDIA GTX 1660 Ti render context recorded, SDR quality tests and native source streams. AMD/Intel renderer qualification and macOS/Linux builds remain open. |
 | Program audio | Independent native local routes, master/mute and stereo 48 kHz network mix | Real decoded PCM and device/control tests. Physical listening remains open. |
-| Digital AV | NDI SDK 6.3.2 (installed runtime) and OMT v1.0.0.19 (packaged Native AOT) | Both SDK receivers returned 1080p video and stereo audio; mute/unmute/Black checked. Same process/machine only. |
+| Digital AV | NDI SDK 6.3.2 (installed runtime) and OMT v1.0.0.19 (packaged Native AOT) | Both SDK receivers returned 1080p video and stereo audio; mute/unmute/Black checked. Strict NDI receiver video timestamp monotonicity failed intermittently, reproduced in build 0026; see [ISSUE-001](../notes/ISSUE-001-ndi-receiver-timestamps.md). Same process/machine only; network regression is not fully green. |
 | CPU Lanczos | Optional experimental 8-bit SDR libswscale reference | Functional 1080p/4K pixels and source-matched streams. Prior measured service 143–219 ms exceeds 30 fps. |
+
+One Program and one display route are configured by default. Add B for independent content and extra routes for mirrors; the present capacity is two Programs / three display routes. See [event output configuration](../notes/ADR-009-event-output-configuration.md).
 
 ## Media compatibility
 

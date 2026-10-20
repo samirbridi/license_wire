@@ -1,6 +1,6 @@
 # Seu primeiro show
 
-O layout Live Desk aprovado destaca Prévia e Programa A, mantém o Programa B visível e concentra as trocas manuais no centro. Escolha o destino pelos botões **Programa A / Programa B** antes de usar CUT ou FADE. A edição permanece em uma aba separada.
+O layout Live Desk aprovado inicia com Prévia sem áudio e um único **PROGRAMA**. Use **+ Adicionar Program** na MAIN quando o evento precisar de conteúdo independente; os destinos A/B e os controles de B aparecem nessa hora. A edição permanece em uma aba separada.
 
 Aguarde o indicador verde **PRONTO** ao lado da Prévia sem áudio antes da troca manual. Ele verifica o arquivo selecionado, o recorte aplicado e um quadro de vídeo dentro desse recorte. Um novo In/Out aplicado passa por outra conferência. **Preparando**, **Não preparado** e **Erro** não liberam CUT/FADE. Corrija a origem e carregue o item novamente. Alterar o arquivo invalida PRONTO; outra checagem do arquivo ocorre no envio. O Program ainda prepara seu próprio deck ao receber o envio; PRONTO não promete troca sem atraso. Arquivos somente de áudio usam o estado de preparação/navegação informado pelo backend.
 
@@ -9,10 +9,18 @@ Abra **Configurações → Diagnósticos do motor** ou use a pequena engrenagem 
 1. Na **MAIN**, adicione arquivos, uma pasta ou arraste mídias locais para a janela.
 2. Dê dois cliques em um item da lista, ou use Carregar selecionado, para preparar o Preview sem áudio. CUT e FADE ficam disponíveis quando o item selecionado estiver preparado.
 3. Escolha **Editar item** ou abra **EDIÇÃO** para preparar In/Out e transições por item. Selecione o item, navegue no Preview e use Marcar In / Marcar Out, ou digite segundos com milissegundos. Out = Fim da mídia usa o restante do arquivo. Aplicar item salva os ajustes sem modificar o original. Restaurar ajustes recarrega os valores aplicados.
-4. Volte à MAIN, escolha Program A ou B e pressione **CUT** para uma troca imediata após a preparação, ou **FADE** para um dissolve. A duração começa em **300 ms**, pode variar de 1 a 10000 ms e é lembrada neste computador. CUT / Ctrl+Enter ignora o fade de entrada do item. FADE / Ctrl+Space também faz entrada a partir do preto se o destino estiver vazio. Essas ações manuais preservam os ajustes salvos do item. Os atalhos operam somente na MAIN.
+4. Volte à MAIN, escolha o destino (quando B estiver habilitado) e pressione **CUT** para uma troca imediata após a preparação, ou **FADE** para um dissolve. A duração começa em **300 ms**, pode variar de 1 a 10000 ms e é lembrada neste computador. CUT / Ctrl+Enter ignora o fade de entrada do item. FADE / Ctrl+Space também faz entrada a partir do preto se o destino estiver vazio. Essas ações manuais preservam os ajustes salvos do item. Os atalhos operam somente na MAIN.
 5. Selecione **Manual** para trocas manuais: o vídeo para no Out e mantém o último quadro. Com fade de saída, termina em preto. Selecione **Sequencial** para avançar usando a transição salva de cada próximo item; Repetir lista repete a lista, mesmo com um único item. Cada Program tem seu modo. **Loop** repete somente o recorte atual no modo manual.
-6. Em **Saídas → Telas**, escolha o Program e a tela. Reutilizar o Program espelha os mesmos quadros; o áudio toca uma vez por Program. Escape fecha a saída. O rodapé da MAIN mostra os níveis A/B, o estado das três rotas e os emissores NDI/OMT de cada Program. Clicar numa rota ou protocolo abre sua configuração, sem ativar a saída. O ícone de áudio abre o roteamento de áudio.
-7. Salvar show grava um .mizinshow de esquema 2 com os ajustes aplicados. Shows antigos de esquema 1 continuam abrindo. Duplicar item reutiliza o arquivo com recortes independentes.
+6. Em **Saídas → Telas**, escolha o Program e a tela. Reutilizar o Program espelha os mesmos quadros; o áudio toca uma vez por Program. Escape fecha a saída. O rodapé da MAIN mostra somente os Programs, as rotas e os estados NDI/OMT configurados. Clicar numa rota ou protocolo abre sua configuração, sem ativar a saída. O ícone de áudio abre o roteamento de áudio.
+7. Salvar show grava um .mizinshow de esquema 3 com os ajustes aplicados e a configuração de saídas. Shows antigos de esquema 1/2 continuam abrindo com um Program e uma rota. Duplicar item reutiliza o arquivo com recortes independentes.
+
+## Saídas para cada evento
+
+Cada abertura começa com **um Program e uma rota de tela**, sem abrir telas ou iniciar transmissores automaticamente. **Saídas → Telas → + Adicionar saída de tela** adiciona um espelho do Program principal. Para conteúdo diferente, habilite B por **+ Adicionar Program** na MAIN ou **+ Adicionar Program independente** em Saídas; depois selecione B na fonte da rota. A capacidade atual é de dois Programs independentes e três rotas de tela.
+
+Use **Fechar saída** (ou Escape) antes de remover a última rota. Para remover B, coloque-o em Preto, feche suas telas e pare os transmissores NDI/OMT; mídia carregada ou pausada também bloqueia a remoção. A continua reproduzindo. O último Program e a primeira rota não podem ser removidos.
+
+Salve o show para guardar as quantidades de Programs/telas e suas fontes para o evento. Reabrir restaura essas escolhas sem abrir telas ou iniciar transmissores. A escolha de monitores físicos e as preferências locais de áudio/escala são separadas.
 
 ## Operação ao vivo
 
@@ -40,13 +48,13 @@ Lanczos faz reamostragem espacial, sem reconstrução por IA. Ele não recupera 
 
 ## Áudio dos Programs
 
-Na aba **Áudio**, configure Program A e Program B separadamente. **Volume geral** e **Silenciar** afetam o som local e o enviado pela rede. **Monitoramento local** liga/desliga somente a escuta na máquina. Escolha **Dispositivo de áudio** para direcionar o som a HDMI, placa de áudio, USB ou dispositivo virtual disponível no sistema. A opção Padrão do sistema acompanha o dispositivo padrão do Windows. Se um dispositivo selecionado desaparecer, a saída local é silenciada até ele voltar ou você escolher outro; o áudio de rede continua independente.
+Na aba **Áudio**, configure separadamente os Programs ativos. **Volume geral** e **Silenciar** afetam o som local e o enviado pela rede. **Monitoramento local** liga/desliga somente a escuta na máquina. Escolha **Dispositivo de áudio** para direcionar o som a HDMI, placa de áudio, USB ou dispositivo virtual disponível no sistema. A opção Padrão do sistema acompanha o dispositivo padrão do Windows. Se um dispositivo selecionado desaparecer, a saída local é silenciada até ele voltar ou você escolher outro; o áudio de rede continua independente.
 
 Os medidores L/R mostram o pico do mix do Program em dBFS. O Preview segue sempre sem áudio e espelhar vídeo em várias telas não multiplica o som local. As preferências de áudio ficam neste computador, separadas do arquivo do show.
 
 ## Saídas digitais NDI e OMT
 
-1. Abra **Saídas → Digital / IP** e escolha o painel do Program A ou B.
+1. Abra **Saídas → Digital / IP** e escolha o painel do Program principal, ou B depois de habilitá-lo.
 2. Defina um **Nome da fonte** que identifique essa saída no receptor.
 3. Marque **Incluir áudio** para enviar o mix estéreo de 48 kHz junto ao vídeo SDR. Desmarque para enviar somente vídeo. Essa opção vale para os dois protocolos daquele Program.
 4. Clique em **Iniciar NDI** ou **Iniciar OMT**. Os dois podem funcionar ao mesmo tempo e as telas locais continuam independentes. O painel mostra o nome publicado e os contadores de conexão/vídeo/áudio.
@@ -57,3 +65,6 @@ O vídeo acompanha tamanho e cadência da fonte. Preto mantém a última resolu�
 NDI precisa do runtime oficial instalado; a integração detecta a instalação existente e informa sua ausência. Reinicie o aplicativo depois de instalar um runtime ausente. OMT usa as bibliotecas nativas incluídas neste pacote de desenvolvimento. O caminho atual de rede é SDR de 8 bits com áudio estéreo; não oferece HX, HDR, ASIO exclusivo, mapa multicanal ou ajuste manual de atraso. Valide recepção em outro computador e sincronismo AV com os arquivos e a rede reais antes de um evento. Veja [escopo e evidências](compatibility-and-performance.md).
 
 [Sobre NDI®](https://ndi.video/) · NDI® is a registered trademark of Vizrt NDI AB.
+
+
+Pendência conhecida: a regressão local apresentou falha intermitente na ordem estritamente crescente dos timestamps de vídeo recebidos por NDI, mesmo com chegada de vídeo/áudio. Ainda não foi resolvida; veja [ISSUE-001](../notes/ISSUE-001-ndi-receiver-timestamps.md). A validação de ordem de quadros/sincronismo NDI permanece pendente.

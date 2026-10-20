@@ -11,3 +11,6 @@ The implementation uses native Qt widgets, original vector icons and native samp
 The direction approval does not certify final native rendering or physical audio/video output. Export and review actual native boards after compilation; report technical checks separately from the user's final visual assessment.
 
 Reference: [approved A concept](proposals/2026-10-20-layout-r1/A-live-desk.png). B and C are retained as alternatives, not selected directions.
+
+
+On 2026-10-20 the user requested one output by default, enabling more for events that need them. This supersedes the persistent-B aspect above: the native revision keeps the approved A layout with a single PROGRAM by default and exposes B only after + Add Program. See ADR-009 and REVIEW.md for implementation evidence; the new captures remain available for visual assessment.

@@ -1,0 +1,52 @@
+{
+    "folders": [
+    ],
+    "library": [
+        "D:/REA - ENGENHARIA REVERSA/targets/mizin_playout/binaries/fixtures/01-h264.mp4",
+        "D:/REA - ENGENHARIA REVERSA/targets/mizin_playout/binaries/fixtures/03-h264.mkv"
+    ],
+    "outputs": {
+        "displays": [
+            {
+                "program": 0
+            },
+            {
+                "program": 0
+            },
+            {
+                "program": 1
+            }
+        ],
+        "programs": 2
+    },
+    "playlist": [
+        {
+            "enter_ms": 900,
+            "exit_ms": 0,
+            "in_ms": 0,
+            "out_ms": 2500,
+            "source": "D:/REA - ENGENHARIA REVERSA/targets/mizin_playout/binaries/fixtures/01-h264.mp4",
+            "transition": 2,
+            "transition_ms": 700
+        },
+        {
+            "enter_ms": 0,
+            "exit_ms": 0,
+            "in_ms": 400,
+            "out_ms": -1,
+            "source": "D:/REA - ENGENHARIA REVERSA/targets/mizin_playout/binaries/fixtures/03-h264.mkv",
+            "transition": 0,
+            "transition_ms": 300
+        },
+        {
+            "enter_ms": 0,
+            "exit_ms": 0,
+            "in_ms": 0,
+            "out_ms": -1,
+            "source": "D:/REA - ENGENHARIA REVERSA/targets/mizin_playout/binaries/fixtures/missing-ready.mp4",
+            "transition": 0,
+            "transition_ms": 300
+        }
+    ],
+    "schema": 3
+}

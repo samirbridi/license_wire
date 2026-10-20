@@ -1,0 +1,192 @@
+{
+    "mode": "auto",
+    "result": "PASS",
+    "scope": "In-process native Qt widget actions and real synthetic media; not OS pointer interaction or physical display qualification",
+    "tests": [
+        {
+            "name": "fresh_launch_has_one_program_and_one_display",
+            "pass": true
+        },
+        {
+            "name": "single_dashboard_omits_b_and_inactive_routes",
+            "pass": true
+        },
+        {
+            "name": "single_program_fits_en_1600x1000",
+            "pass": true
+        },
+        {
+            "name": "single_program_fits_en_1280x800",
+            "pass": true
+        },
+        {
+            "name": "single_program_fits_pt-BR_1600x1000",
+            "pass": true
+        },
+        {
+            "name": "single_program_fits_pt-BR_1280x800",
+            "pass": true
+        },
+        {
+            "name": "single_diagnostics_marks_and_hides_disabled_program",
+            "pass": true
+        },
+        {
+            "name": "adding_display_mirrors_without_second_program",
+            "pass": true
+        },
+        {
+            "name": "display_capacity_is_bounded",
+            "pass": true
+        },
+        {
+            "name": "open_display_cannot_be_removed",
+            "pass": true
+        },
+        {
+            "name": "closed_displays_remove_to_one_minimum",
+            "pass": true
+        },
+        {
+            "name": "inactive_display_cannot_open",
+            "pass": true
+        },
+        {
+            "name": "disabled_b_cannot_become_take_destination",
+            "pass": true
+        },
+        {
+            "name": "adding_program_exposes_independent_controls",
+            "pass": true
+        },
+        {
+            "name": "live_desk_fits_en_1600x1000",
+            "pass": true
+        },
+        {
+            "name": "live_desk_fits_en_1280x800",
+            "pass": true
+        },
+        {
+            "name": "live_desk_fits_pt-BR_1600x1000",
+            "pass": true
+        },
+        {
+            "name": "live_desk_fits_pt-BR_1280x800",
+            "pass": true
+        },
+        {
+            "name": "live_desk_modes_follow_independent_destination",
+            "pass": true
+        },
+        {
+            "name": "live_desk_output_tiles_open_correct_settings",
+            "pass": true
+        },
+        {
+            "name": "live_desk_network_tiles_start_stopped",
+            "pass": true
+        },
+        {
+            "name": "main_editor_separation_and_default_300",
+            "pass": true
+        },
+        {
+            "name": "native_scaler_is_default_gpu_is_optional",
+            "pass": true
+        },
+        {
+            "name": "cut_button_bypasses_editor_transition",
+            "pass": true
+        },
+        {
+            "name": "ready_badge_requires_verified_selected_trim",
+            "pass": true
+        },
+        {
+            "name": "add_remove_idle_program_preserves_running_a",
+            "pass": true
+        },
+        {
+            "name": "diagnostics_open_without_stopping_program",
+            "pass": true
+        },
+        {
+            "name": "diagnostics_export_preserves_unknown_metrics",
+            "pass": true
+        },
+        {
+            "name": "editor_preview_does_not_interrupt_program",
+            "pass": true
+        },
+        {
+            "name": "fade_button_300_uses_applied_cue",
+            "pass": true
+        },
+        {
+            "name": "applying_editor_preserves_live_snapshot",
+            "pass": true
+        },
+        {
+            "name": "manual_cut_respects_destination_b",
+            "pass": true
+        },
+        {
+            "name": "applied_nonzero_in_is_verified_before_take",
+            "pass": true
+        },
+        {
+            "name": "different_selection_cannot_use_stale_ready",
+            "pass": true
+        },
+        {
+            "name": "manual_fade_duration_persisted",
+            "pass": true
+        },
+        {
+            "name": "language_switch_preserves_draft_and_playback",
+            "pass": true
+        },
+        {
+            "name": "gpu_profile_is_translated_and_persisted",
+            "pass": true
+        },
+        {
+            "name": "audio_controls_are_independent_and_persisted",
+            "pass": true
+        },
+        {
+            "name": "digital_outputs_require_manual_start",
+            "pass": true
+        },
+        {
+            "name": "readiness_error_blocks_take_and_preserves_both_programs",
+            "pass": true
+        },
+        {
+            "name": "live_program_cannot_be_removed",
+            "pass": true
+        },
+        {
+            "name": "opening_reduced_show_is_atomic_while_b_active",
+            "pass": true
+        },
+        {
+            "name": "open_b_route_blocks_program_removal_after_black",
+            "pass": true
+        },
+        {
+            "name": "sending_b_blocks_program_removal",
+            "pass": true
+        },
+        {
+            "name": "show_file_restores_programs_displays_and_sources",
+            "pass": true
+        },
+        {
+            "name": "restoring_configuration_does_not_open_outputs_or_start_senders",
+            "pass": true
+        }
+    ],
+    "version": "v0.9.1 (build 0026)"
+}
