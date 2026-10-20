@@ -1,5 +1,7 @@
 # ADR-009 — One Program by default; event output configuration
 
+Historical stage: dynamic counts and independent playlists are superseded by [ADR-010](ADR-010-dynamic-programs-and-playlists.md).
+
 The operator requested a single output as the default, enabling more only when an event needs them. A logical Program is independent content; a display route mirrors an existing Program without adding another playback channel.
 
 ## Behavior

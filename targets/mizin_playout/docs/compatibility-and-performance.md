@@ -12,7 +12,7 @@ Validated scope: Windows prototype, Qt 6.10.2 / native FFmpeg 7.1.2. The exact b
 | Digital AV | NDI SDK 6.3.2 (installed runtime) and OMT v1.0.0.19 (packaged Native AOT) | Both SDK receivers returned 1080p video and stereo audio; mute/unmute/Black checked. Strict NDI receiver video timestamp monotonicity failed intermittently, reproduced in build 0026; see [ISSUE-001](../notes/ISSUE-001-ndi-receiver-timestamps.md). Same process/machine only; network regression is not fully green. |
 | CPU Lanczos | Optional experimental 8-bit SDR libswscale reference | Functional 1080p/4K pixels and source-matched streams. Prior measured service 143–219 ms exceeds 30 fps. |
 
-One Program and one display route are configured by default. Add B for independent content and extra routes for mirrors; the present capacity is two Programs / three display routes. See [event output configuration](../notes/ADR-009-event-output-configuration.md).
+One Program and one display route are configured by default. Add Programs for independent playlists and extra routes for mirrors. The former 2/3 limits are removed; the current functional scenario is three Programs / five floating routes. Allocation guards are 64 Programs / 128 routes, not hardware capacity ratings. See [event output configuration](../notes/ADR-010-dynamic-programs-and-playlists.md).
 
 ## Media compatibility
 

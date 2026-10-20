@@ -16,3 +16,6 @@ NativeChannel records bounded publication timestamps and actual CPU composition 
 
 
 Event output configuration now starts with one logical Program and one display route. UI activation exposes B and extra mirrors only when requested; native destinations reject inactive routes/Programs. Schema 3 persists counts and route sources with schema 1/2 migration. Busy B / open-route removal and show loads are guarded before mutation. See ADR-009-event-output-configuration.md.
+
+
+Dynamic Programs now allocate extra NativeChannel/PlaylistController/NetworkBus objects on demand and store independent applied playlist models. Mirrors reference a Program without an additional decoder. Schema 4 persists stable Program IDs, names and playlists; schema-3 shared lists migrate to separate copies. MAIN stores the selected model before switching and clears Preview readiness, without stopping live Programs. Removed Program identities do not renumber surviving runtime/settings IDs. Diagnostics and route/panel collections grow dynamically. See ADR-010-dynamic-programs-and-playlists.md. GPU transition composition remains deferred; ISSUE-001 remains open.

@@ -1,6 +1,6 @@
 # Your first show
 
-The approved Live Desk layout starts with muted Preview and one **PROGRAM**. Use **+ Add Program** in MAIN when the event needs independent content; A/B destination buttons and B controls then appear. EDIT stays separate.
+The Live Desk starts with muted Preview and one **PROGRAM**. **+ Add Program** creates an independent Program with an empty running order. Select the Program in MAIN to edit its playlist and operate CUT/FADE, Manual/Sequential, Loop and Repeat. Main A and the selected extra monitor remain visible; other Programs keep playing.
 
 Wait for the green **READY** badge beside muted Preview before a manual take. It verifies the selected file, applied trim and a decoded video frame in range. A new applied range is checked again. **Preparing**, **Not cued** and **Error** do not enable CUT/FADE. Correct an error and cue the source again. Files changed after preparation lose READY; a final file check also runs on TAKE. The Program still prepares its own deck when you take the source; READY is not a promise of zero-delay switching. Audio-only files use the backend's preparation/seek state.
 
@@ -9,18 +9,20 @@ Open **Settings → Engine diagnostics**, or use the small gear in MAIN's bottom
 1. In **MAIN**, add files, add a folder or drop local media on the window.
 2. Double-click a running-order item, or choose Cue selected, to load muted Preview. CUT and FADE become available when that selected item is prepared.
 3. Choose **Edit cue** or open **EDIT** to prepare In/Out and per-item transitions. Select a cue, scrub Preview and Mark In / Mark Out, or enter seconds with milliseconds. Out = End of media uses the remaining file. Apply cue saves these non-destructive settings. Reset edits reloads the applied values.
-4. Return to MAIN, choose the destination (when B is enabled) and press **CUT** for an immediate switch after preparation, or **FADE** for a dissolve. Fade duration defaults to **300 ms**, can be adjusted from 1 to 10000 ms and is remembered on this computer. CUT / Ctrl+Enter ignores the cue's entry fade. FADE / Ctrl+Space also fades from black when the destination is empty. These manual actions preserve saved cue settings. The shortcuts operate only in MAIN.
+4. Return to MAIN, select the destination Program and press **CUT** for an immediate switch after preparation, or **FADE** for a dissolve. Fade duration defaults to **300 ms**, can be adjusted from 1 to 10000 ms and is remembered on this computer. CUT / Ctrl+Enter ignores the cue's entry fade. FADE / Ctrl+Space also fades from black when the destination is empty. These manual actions preserve saved cue settings. The shortcuts operate only in MAIN.
 5. Select **Manual** for manual switches; playback holds at Out. With Fade out it ends on black. Select **Sequential** to advance using each next item's saved transition; Repeat order repeats the list, including a single item. Each Program has its own mode. **Loop** repeats only the current trimmed range in manual mode.
-6. Open Outputs to assign Programs to displays. The same Program mirrors the same frames; audio plays once per Program. Escape closes an output window. The MAIN dashboard shows only configured Programs, display routes and NDI/OMT states. Clicking a route or protocol tile opens its settings; it does not activate that output. Use the audio icon to open Audio routing.
-7. Save show writes a schema-3 .mizinshow with applied cue settings and output configuration. Schema-1/2 shows still open with one Program and one display route. Duplicate cue reuses a file with separate trim settings.
+6. Open Outputs to assign Programs to displays. The same Program mirrors the same frames; audio plays once per Program. Escape closes an output window. The MAIN dashboard shows main/selected audio meters and aggregate configured/open/sending counts; detailed per-Program/route state is in Outputs/Audio/Engine diagnostics. Clicking a route or protocol tile opens its settings; it does not activate that output. Use the audio icon to open Audio routing.
+7. Save show writes a schema-4 .mizinshow with every applied Program playlist, stable identities and route sources. Schema-1/2/3 shows still open; legacy shared lists migrate to independent copies. Duplicate cue reuses a file with separate trim settings.
 
-## Outputs for each event
+## Programs, copies and mirrors
 
-Every launch starts with **one Program and one display route**, with no display window or digital sender automatically started. **Outputs → Displays → + Add display output** adds a mirror of the main Program. Select B in a route for different content after using **+ Add Program** in MAIN or **+ Add independent Program** in Outputs. Current capacity is two independent Programs and three display routes.
+Every launch starts with one Program and one display route. **+ Add Program** creates another independent channel and an empty playlist. Add/drop files or folders to that selected Program; the shared Library can reference the same original file in several lists. Apply/reset editor drafts before changing Program. Preview readiness is cleared on a Program change; cue the selected list before a manual take. Running Programs are not stopped.
 
-Use **Close output** (or Escape) before removing the last display route. To remove B, Black it and close its display outputs / stop its NDI and OMT senders first; loaded or paused media also blocks removal. A keeps playing. The last Program and first display route cannot be removed.
+**Copy A playlist** fills an empty selected list with copies of A's applied cues. Changes and playback are independent afterwards. Existing items are preserved; use a new/empty Program for a fresh copy. For live mirroring, use **Outputs → Displays → + Add display output** and choose A as the source. Mirrors follow A's current playback and do not allocate another decoder. Choose another Program for independent content.
 
-Save the show to retain Program count, display count and source mapping for this event. Reopening restores these choices without opening displays or starting senders. Physical display endpoints and local audio/scaling preferences are separate.
+Add/remove routes as needed. Close the last display before removing it. Black an extra Program and close/stop its displays and NDI/OMT senders before removing that Program; loaded/paused media or an ongoing import also blocks removal. A cannot be removed. Select the Program in MAIN before using **Remove selected Program** in Outputs. Surviving identities/audio preferences are retained; closed routes pointing to a removed Program return to A.
+
+Save show stores all applied playlists, stable Program IDs and route sources (schema 4). Legacy schema 1/2 open as one Program; schema 3's shared running order becomes an independent copy for each legacy Program. Loading never starts displays/senders. Three Programs and five floating display routes are the functional proof, not a hardware capacity rating. Defensive allocation guards are 64 Programs / 128 routes; actual usable concurrency depends on the machine/media and must be measured for the event.
 
 ## Live operation
 

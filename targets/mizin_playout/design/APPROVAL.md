@@ -14,3 +14,6 @@ Reference: [approved A concept](proposals/2026-10-20-layout-r1/A-live-desk.png).
 
 
 On 2026-10-20 the user requested one output by default, enabling more for events that need them. This supersedes the persistent-B aspect above: the native revision keeps the approved A layout with a single PROGRAM by default and exposes B only after + Add Program. See ADR-009 and REVIEW.md for implementation evidence; the new captures remain available for visual assessment.
+
+
+On 2026-10-20 the user explicitly requested dynamic Programs/outputs and independent playlists or copies of A. The implementation retains the Live Desk direction with a Program selector, main A plus the selected extra monitor, independent running orders and aggregate route/network tiles. In the same session the user approved logo proposal A (cyan M/play monogram); proposal B/C and all original boards/prompts remain in design/branding/proposals/2026-10-20-r1/. The SVG/native redraw follows this direction; it is separate from maximum-concurrency or physical-output approval.

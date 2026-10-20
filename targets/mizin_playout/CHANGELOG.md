@@ -1,5 +1,33 @@
 # CHANGELOG — Mizin Playout
 
+## v0.10.1 (build 0028) - 2026-10-20
+
+### 💥 Breaking Changes
+- None.
+
+### ✨ Features
+- None.
+
+### 🐛 Fixes
+- fix: corrige tipo do progresso no painel dinamico (fe641f91021ed5bd755a3a369fe4bb8e1d42dcba)
+
+### ⚡ Improvements
+- None.
+
+## v0.10.0 (build 0027) - 2026-10-20
+
+### 💥 Breaking Changes
+- None.
+
+### ✨ Features
+- feat: adiciona Programs dinamicos playlists independentes e identidade aprovada (b5e9ea73a9f4eacf653b38d4d46f1c0f0097a631)
+
+### 🐛 Fixes
+- None.
+
+### ⚡ Improvements
+- improve: registra saida unica capturas e pendencia de timestamps NDI (07eb1fd0c4b4bbdcead2f594bb3ac9291cf63b30)
+
 ## v0.9.1 (build 0026) - 2026-10-20
 
 ### 💥 Breaking Changes

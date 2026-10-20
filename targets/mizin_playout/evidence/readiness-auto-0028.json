@@ -1,0 +1,215 @@
+{
+    "mode": "auto",
+    "result": "PASS",
+    "scope": "Real local media, muted source/trim preflight and measured Qt callbacks/CPU composition. READY is not an armed Program or physical signal certification.",
+    "tests": [
+        {
+            "name": "readiness_starts_empty",
+            "pass": true
+        },
+        {
+            "cue": {
+                "enter_ms": 0,
+                "exit_ms": 0,
+                "in_ms": 0,
+                "out_ms": 2500,
+                "source": "D:/REA - ENGENHARIA REVERSA/targets/mizin_playout/binaries/fixtures/01-h264.mp4",
+                "transition": 0,
+                "transition_ms": 300
+            },
+            "elapsed_ms": 378,
+            "error": "",
+            "first_verified_video_pts_us": 0,
+            "generation": 2,
+            "name": "video_ready_requires_decoded_frame_and_duration",
+            "pass": true,
+            "scope": "Muted Preview source/trim verification; Program decks still prepare on TAKE. Audio-only checks use backend readiness, not decoded PCM proof.",
+            "state": "ready"
+        },
+        {
+            "name": "ready_preview_stays_paused",
+            "pass": true
+        },
+        {
+            "name": "ready_is_tied_to_applied_trim",
+            "pass": true
+        },
+        {
+            "name": "source_check_does_not_start_program",
+            "pass": true
+        },
+        {
+            "cue": {
+                "enter_ms": 0,
+                "exit_ms": 0,
+                "in_ms": 400,
+                "out_ms": 1600,
+                "source": "D:/REA - ENGENHARIA REVERSA/targets/mizin_playout/binaries/fixtures/01-h264.mp4",
+                "transition": 0,
+                "transition_ms": 300
+            },
+            "elapsed_ms": 377,
+            "error": "",
+            "first_verified_video_pts_us": 400000,
+            "generation": 4,
+            "name": "nonzero_in_is_verified_by_video_timestamp",
+            "pass": true,
+            "scope": "Muted Preview source/trim verification; Program decks still prepare on TAKE. Audio-only checks use backend readiness, not decoded PCM proof.",
+            "state": "ready"
+        },
+        {
+            "name": "edit_can_scrub_outside_applied_trim",
+            "pass": true
+        },
+        {
+            "name": "transition_change_reuses_source_range_proof",
+            "pass": true
+        },
+        {
+            "name": "ready_file_recheck_succeeds",
+            "pass": true
+        },
+        {
+            "name": "out_beyond_duration_never_ready",
+            "pass": true
+        },
+        {
+            "name": "invalid_range_rejected",
+            "pass": true
+        },
+        {
+            "name": "missing_file_rejected_without_stale_ready",
+            "pass": true
+        },
+        {
+            "cue": {
+                "enter_ms": 0,
+                "exit_ms": 0,
+                "in_ms": 0,
+                "out_ms": -1,
+                "source": "C:/Users/Avell Mizin/AppData/Local/Temp/Mizin Playout-jMewiG/corrupt.mp4",
+                "transition": 0,
+                "transition_ms": 300
+            },
+            "elapsed_ms": 8,
+            "error": "Could not open file",
+            "first_verified_video_pts_us": -1,
+            "generation": 10,
+            "name": "corrupt_source_never_ready",
+            "pass": true,
+            "scope": "Muted Preview source/trim verification; Program decks still prepare on TAKE. Audio-only checks use backend readiness, not decoded PCM proof.",
+            "state": "error"
+        },
+        {
+            "name": "rapid_recues_accept_only_latest_source",
+            "pass": true
+        },
+        {
+            "name": "cleared_request_cannot_become_ready_later",
+            "pass": true
+        },
+        {
+            "name": "external_preview_load_invalidates_proof",
+            "pass": true
+        },
+        {
+            "name": "modified_source_invalidates_ready",
+            "pass": true
+        },
+        {
+            "name": "audio_only_ready_is_explicit_backend_check",
+            "pass": true
+        },
+        {
+            "name": "failed_preview_preserves_running_program",
+            "pass": true
+        },
+        {
+            "active_generation": 1,
+            "audio_buffers_tapped": 12,
+            "audio_codec": "AAC",
+            "backend_buffer_progress": 1,
+            "cpu_composed_frames": 0,
+            "cpu_composition_last_ms": null,
+            "cpu_composition_mean_ms": null,
+            "cpu_composition_peak_ms": null,
+            "decode_time_ms": null,
+            "decoder_adapter": null,
+            "decoder_dropped_frames": null,
+            "decoder_packet_queue": null,
+            "duration_ms": 3000,
+            "has_audio": true,
+            "has_video": true,
+            "height": 360,
+            "last_error": "",
+            "name": "diagnostics_include_observed_frames_and_size",
+            "nominal_fps": 30,
+            "pass": true,
+            "playback": "playing",
+            "position_ms": 320,
+            "preparation_error": "",
+            "preparation_ms": 124,
+            "preparation_source": "D:/REA - ENGENHARIA REVERSA/targets/mizin_playout/binaries/fixtures/01-h264.mp4",
+            "preparation_state": "ready",
+            "preroll_frames_filtered": 0,
+            "published_frames": 10,
+            "received_video_callbacks": 10,
+            "request_generation": 1,
+            "seekable": true,
+            "source": "D:/REA - ENGENHARIA REVERSA/targets/mizin_playout/binaries/fixtures/01-h264.mp4",
+            "video_codec": "H264",
+            "video_frames_last_second": 10,
+            "width": 640
+        },
+        {
+            "name": "unsupported_decoder_metrics_remain_null",
+            "pass": true
+        },
+        {
+            "name": "backend_buffer_is_bounded",
+            "pass": true
+        },
+        {
+            "active_generation": 2,
+            "audio_buffers_tapped": 24,
+            "audio_codec": "AAC",
+            "backend_buffer_progress": 1,
+            "cpu_composed_frames": 4,
+            "cpu_composition_last_ms": 3.2858,
+            "cpu_composition_mean_ms": 15.7339,
+            "cpu_composition_peak_ms": 54.0458,
+            "decode_time_ms": null,
+            "decoder_adapter": null,
+            "decoder_dropped_frames": null,
+            "decoder_packet_queue": null,
+            "duration_ms": 3021,
+            "has_audio": true,
+            "has_video": true,
+            "height": 360,
+            "last_error": "",
+            "name": "cpu_composition_timing_comes_from_real_transition",
+            "nominal_fps": 30,
+            "pass": true,
+            "playback": "playing",
+            "position_ms": 170,
+            "preparation_error": "",
+            "preparation_ms": 141,
+            "preparation_source": "D:/REA - ENGENHARIA REVERSA/targets/mizin_playout/binaries/fixtures/03-h264.mkv",
+            "preparation_state": "ready",
+            "preroll_frames_filtered": 0,
+            "published_frames": 18,
+            "received_video_callbacks": 20,
+            "request_generation": 2,
+            "seekable": true,
+            "source": "D:/REA - ENGENHARIA REVERSA/targets/mizin_playout/binaries/fixtures/03-h264.mkv",
+            "video_codec": "H264",
+            "video_frames_last_second": 18,
+            "width": 640
+        },
+        {
+            "name": "black_clears_media_and_active_generation",
+            "pass": true
+        }
+    ],
+    "version": "v0.10.1 (build 0028)"
+}

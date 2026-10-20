@@ -7,23 +7,23 @@ Original C++20 desktop application under active development. English is the defa
 ## Current slice
 
 - Native Qt 6.10.2 / FFmpeg playback, without browser video or mandatory conversion.
-- Paused, muted Preview and one Program by default. Add a second independent Program only when the event needs it.
-- MAIN follows the approved **A — Live Desk** direction: proportional monitors, optional A/B destination and Manual/Sequential controls, a shared running order and a live audio/output dashboard. CUT / FADE remain explicit; FADE defaults to 300 ms and remembers its duration.
+- Paused, muted Preview and one Program by default. Additional Programs allocate native channels on demand, each with its own applied playlist and transport.
+- MAIN follows approved **A — Live Desk**: Program selector, main A plus the selected extra monitor, per-Program running order and aggregate audio/output dashboard. CUT / FADE remain explicit; FADE defaults to 300 ms.
 - EDIT: shared muted Preview, In/Out, per-item sequence transitions and explicit Apply / Reset controls.
 - Source READY: file/readability, duration, applied In/Out and a decoded Preview frame in range are verified before manual takes. Changed sources and stale requests invalidate the proof; Preview remains muted and EDIT can scrub the full file. Programs still prepare their own decks on TAKE.
 - Settings → Engine diagnostics: live channel/preparation states, frame publications, Qt buffer progress, CPU composition timing, NDI/OMT counters and local JSON export. Unavailable decoder/GPU metrics remain explicitly unavailable.
 - Two decks per Program: muted preroll at In before switching; preserve current Program if incoming media fails.
-- One configured display route by default; add up to three mirrors or independent routes, with explicit fullscreen screen selection, current-mode/DPI sizing and aspect-preserving fit.
+- Dynamic display routes: mirror A or choose another Program, with fullscreen screen selection, current-mode/DPI sizing and aspect-preserving fit.
 - Native live scaling by default; optional GPU Lanczos SDR and experimental CPU Lanczos profiles.
 - Screen menu refresh and output close on display disconnection; reopening replaces only that route.
 - Independent Program audio: master gain, mute, local monitor enable, detected output-device routing and L/R peak meters.
 - Digital / IP outputs: manually started NDI® and OMT senders for each Program, including stereo 48 kHz audio. Both protocols can run together alongside display outputs. [About NDI](https://ndi.video/).
-- Mirror the same Program or select another Program for independent video.
+- Mirror live Program playback, or copy A into an empty independent playlist. Copying never overwrites an existing list.
 - Native file/folder import and OS drag/drop; background recursive folder discovery.
 - Per-item In/Out with millisecond fields, scrub/Mark In/Mark Out, duplication and reordering.
 - Cut, Dissolve and Fade through black between clips; entry/exit fades for a standalone clip.
 - Manual or sequential playback, repeat order, current-range loop and black per selected Program.
-- Schema-3 show persistence for cues plus Program/display counts and route sources; schema-1/2 migration. Busy Program/open-route removal is blocked.
+- Schema-4 show persistence for stable Program IDs/names, independent playlists and route sources; schema-1/2/3 migration. Busy Program/open-route removal is blocked.
 - English and PT-BR catalogs, language switching without rebuilding the playback engine.
 - Native F1 help and [English quick start](docs/quick-start.en.md) / [Início rápido PT-BR](docs/quick-start.pt-BR.md).
 
@@ -67,7 +67,7 @@ PowerShell commands from this target:
 
 - scripts/build.ps1 — commit-driven version, CMake/MSVC build and local Qt deployment.
 - scripts/run.ps1 — native application; optional -Language pt-BR, -Cpu or -Board.
-- scripts/capture-boards.ps1 — twelve full-size native layout PNGs, including Engine diagnostics; -MultiOutput exports the optional dual-Program configuration to an alternate -Directory. Compact MAIN can be captured separately.
+- scripts/capture-boards.ps1 — twelve full-size native layout PNGs, including Engine diagnostics; -MultiOutput exports the three-Program / five-route sample configuration to an alternate -Directory. Compact MAIN can be captured separately.
 - scripts/make-fixtures.ps1 -FFmpeg <QA-tool-path> — generated test clips.
 
 The build requires MSVC/CMake, the target-private Qt SDK and Python for build orchestration. The executable itself does not require Python or Node.js. SDK/QA tools live in ignored binaries/; compiled outputs live in ignored build/ and dist/. Dependencies and source obligations are tracked in [THIRD_PARTY.md](docs/THIRD_PARTY.md).
@@ -78,7 +78,7 @@ scripts/version.py reads actual target Git commits since the recorded source com
 
 ## Estado Atual e Próximos Passos
 
-Windows native **v0.9.1 (build 0026)** starts with **one Program and one configured display route**. Add B only for independent content; add display routes to mirror an enabled Program. Schema-3 shows preserve Program/display counts and route sources, with schema-1/2 migration. Busy Programs and open routes cannot be removed. Current testing passed **365/366 functional checks**, including all 92 native UI checks in automatic/CPU modes. The remaining strict NDI receiver timestamp test failed and remains open as [ISSUE-001](notes/ISSUE-001-ndi-receiver-timestamps.md); this is not an all-green engine qualification. Four version-policy tests, 272 matching EN/PT-BR keys and 26 native layout samples were also checked. See [current validation](evidence/validation.json), [event outputs stage record](evidence/output-configuration-0026.md), and [output configuration design](notes/ADR-009-event-output-configuration.md). This is bounded local validation; physical AV sync, AMD hardware and production operation remain unqualified.
+Windows native **v0.10.1 (build 0028)** adds dynamic Programs/output routes and **independent playlists** while retaining one Program / one route at startup. Copy A into an empty list for independent editing; route multiple screens from A for live mirroring. The user-approved cyan M logo is implemented as an original SVG/native vector mark and window icon. **84 UI checks passed** in automatic/CPU modes; overall **362/364 checks passed**. The two remaining failures reproduce the open NDI receiver timestamp issue, not a resolved network qualification. Catalogs share 284 keys; 26 native sample boards and all three original logo proposals were checked. See [current validation](evidence/validation.json), [dynamic stage record](evidence/dynamic-programs-0028.md), [architecture](notes/ADR-010-dynamic-programs-and-playlists.md) and [approved logo/proposals](design/branding/proposals/2026-10-20-r1/README.md).
 
 Each manual CUT/FADE starts a snapshot of the current running order for that Program. CUT bypasses the entry fade for that launch. FADE uses its manual duration (300 ms by default) and also fades from black. Saved cue transitions remain intact for automatic/repeated playback. Editing fields are applied explicitly in EDIT; manual buttons use the applied model. Switching pages does not recreate or stop the channels. Ctrl+Enter triggers CUT and Ctrl+Space triggers FADE in MAIN only. Further applied edits affect the next launch. Manual playback holds at Out (or ends on black with an exit fade). Sequential playback prepares the next item and uses its transition, with an optional repeat order. A next item that is late waits at the boundary; a failed item reports an error and stops advance. Fades are clamped on short segments. Trim is not a destructive file operation; backend seeking and timing have not been qualified as broadcast frame/sample accuracy.
 
@@ -88,9 +88,9 @@ Historical **build 0020** four-second automatic-decoder runs measured **1.66 ms 
 
 The in-process native widget checks passed. The MAIN layout uses native widgets, original vector icons, aspect-fitting media views and filename elision/tooltips. Its audio/output dashboard observes actual channel/route/publisher state; clicking a status tile opens settings without starting a sender. Previous native boards and the build-0020 executable were preserved. The A concept direction was approved; final native visual review remains with the user. Earlier Windows accessibility and fullscreen-geometry checks are historical; OS pointer/drag-drop interaction, hotplug and physical-output visual/signal validation remain unverified for this build. Native layout samples do not prove physical playback.
 
-The **Audio** page provides master volume/mute for enabled Programs, independently, local monitor enable, device routing and peak meters. Local monitoring can be off while network audio continues. Missing selected endpoints mute the local path. **Outputs → Digital / IP** provides named, manually started NDI/OMT publishers per Program; both protocols can run together. Network audio is stereo 48 kHz; source size/cadence is preserved on Black. NDI uses the installed official runtime and OMT native libraries are included in the development package. No active sender is restored automatically. See [audio/network design and validation](notes/ADR-006-audio-network-outputs.md) and the [Portuguese operator guide](docs/quick-start.pt-BR.md).
+The **Audio** page provides independent master volume/mute for enabled Programs, local monitor enable, device routing and peak meters. Local monitoring can be off while network audio continues. Missing selected endpoints mute the local path. **Outputs → Digital / IP** provides named, manually started NDI/OMT publishers per Program; both protocols can run together. Network audio is stereo 48 kHz; source size/cadence is preserved on Black. NDI uses the installed official runtime and OMT native libraries are included in the development package. No active sender is restored automatically. See [audio/network design and validation](notes/ADR-006-audio-network-outputs.md) and the [Portuguese operator guide](docs/quick-start.pt-BR.md).
 
-Windows is the first validation platform. macOS/Linux builds, authenticated remote control, scheduling/24-hour operation, relink/autosave and production qualification remain future work. Current capacity is two independent Programs and three display routes; every launch defaults to one of each until a saved show is opened.
+Windows is the first validation platform. macOS/Linux builds, authenticated remote control, scheduling/24-hour operation, relink/autosave and production qualification remain future work. Programs/routes are now dynamic. Defensive allocation guards are 64 Programs / 128 routes; the current functional proof is three Programs and five floating windows, not a concurrency or physical-output rating. Every launch defaults to one of each until a saved show is opened.
 
 Architecture decision: [ADR-001](notes/ADR-001-native-engine.md). This is a native application; a later web surface is for remote operation.
 

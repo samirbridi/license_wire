@@ -16,3 +16,6 @@ The existing network test instantiates channels/buses directly, without MainWind
 Next investigation: record bounded sender/receiver frame IDs and timecode pairs; establish whether timestamps repeat, regress or are synthesized by the receiver; compare against OMT and source publications; qualify behavior on an independent receiving computer. Do not relax the strict check or claim frame-order/AV-sync qualification without evidence.
 
 One-output defaults, B activation, mirror routes, removal guards and show persistence passed their native UI/model checks. Overall network regression is not fully green. Physical AV sync and event/production use of NDI still require qualification.
+
+
+Build 0028 reproduced the strict receiver timestamp failure in both automatic and CPU modes, despite receiving video/audio. Raw evidence is in evidence/network-auto-0028.json and network-cpu-0028.json; no final-stage retry replaced those FAIL results. Dynamic Program/playlist, model, media and GPU/output suites passed. The issue remains OPEN.
