@@ -1,37 +1,51 @@
 {
   "result": "PASS_NATIVE_FUNCTIONAL_PROTOTYPE",
-  "version": "v0.3.3 (build 0009)",
-  "source_commit": "ee5c2882f78cf3d755de7886d943c98bb3b0daea",
-  "recorded_utc": "2026-10-19T17:52:02.611516+00:00",
-  "functional_checks_passed": 50,
+  "version": "v0.4.0 (build 0010)",
+  "source_commit": "3b7d64b223bfb647c5a9e27a3a219fb5adcd4de1",
+  "recorded_utc": "2026-10-20T11:55:40.178829+00:00",
+  "functional_checks_passed": 76,
   "suites": [
     {
       "suite": "smoke",
       "mode": "cpu",
       "checks": 7,
       "result": "PASS",
-      "file": "evidence/smoke-cpu-0009.json"
+      "file": "evidence/smoke-cpu-0010.json"
     },
     {
       "suite": "transport",
       "mode": "cpu",
-      "checks": 18,
+      "checks": 23,
       "result": "PASS",
-      "file": "evidence/transport-cpu-0009.json"
+      "file": "evidence/transport-cpu-0010.json"
+    },
+    {
+      "suite": "ui",
+      "mode": "cpu",
+      "checks": 8,
+      "result": "PASS",
+      "file": "evidence/ui-cpu-0010.json"
     },
     {
       "suite": "smoke",
       "mode": "auto",
       "checks": 7,
       "result": "PASS",
-      "file": "evidence/smoke-auto-0009.json"
+      "file": "evidence/smoke-auto-0010.json"
     },
     {
       "suite": "transport",
       "mode": "auto",
-      "checks": 18,
+      "checks": 23,
       "result": "PASS",
-      "file": "evidence/transport-auto-0009.json"
+      "file": "evidence/transport-auto-0010.json"
+    },
+    {
+      "suite": "ui",
+      "mode": "auto",
+      "checks": 8,
+      "result": "PASS",
+      "file": "evidence/ui-auto-0010.json"
     }
   ],
   "fixtures": {
@@ -47,12 +61,12 @@
       "ProRes MOV"
     ]
   },
-  "catalog_keys": 112,
+  "catalog_keys": 131,
   "version_policy_tests": 4,
   "boards": [
     {
-      "file": "design/boards/01-show-en.png",
-      "sha256": "77a03a1a9a8f9f47793c53ad5e203d8d34e1dbc22166c549a5b523d20a880cfb",
+      "file": "design/boards/01-main-en.png",
+      "sha256": "568df59ec0b9aa5fbac933a7f298ec70c2edf77c39ca00ac974c30f182f9e219",
       "width": 1600,
       "height": 1000,
       "brand_bright_pixels": 469,
@@ -60,7 +74,7 @@
     },
     {
       "file": "design/boards/02-outputs-en.png",
-      "sha256": "7a01b99a3a4a10817e1ba583251ffd76f279ec36b6111d0201b2e1c0e5f11ad0",
+      "sha256": "e53e37ee245bc3bb8007300ede6ea85be8888860c8dc263d43814a63f4ae4b02",
       "width": 1600,
       "height": 1000,
       "brand_bright_pixels": 469,
@@ -68,15 +82,31 @@
     },
     {
       "file": "design/boards/03-library-en.png",
-      "sha256": "900680fe74868ab95a5e1bb64a70139303a8a681d25837f692dcbe91d8b678ad",
+      "sha256": "22ec5567437e9c20e805e47dab4ed2b28f830071eccf697e5a95d5492a11feeb",
       "width": 1600,
       "height": 1000,
       "brand_bright_pixels": 469,
       "header_bright_pixels": 1258
     },
     {
-      "file": "design/boards/04-show-pt-BR.png",
-      "sha256": "ccaba29b5386695c7e744d46dce2dc4b957689d1349a7e07372bf00f1adfc467",
+      "file": "design/boards/04-main-pt-BR.png",
+      "sha256": "dcecaea773125720a436970f1be07ebcba531acd1622884b166a58217fcd4e0f",
+      "width": 1600,
+      "height": 1000,
+      "brand_bright_pixels": 469,
+      "header_bright_pixels": 1439
+    },
+    {
+      "file": "design/boards/05-edit-en.png",
+      "sha256": "b74c5707c17b2c9ff45efcc4bcc20fdfcda24e6772aaf2935ccb4cffefcb0312",
+      "width": 1600,
+      "height": 1000,
+      "brand_bright_pixels": 469,
+      "header_bright_pixels": 1258
+    },
+    {
+      "file": "design/boards/06-edit-pt-BR.png",
+      "sha256": "bc8a5947c24f9be3fc920c839eac1274c41c4cad6fdb9d44795f2d648742db52",
       "width": 1600,
       "height": 1000,
       "brand_bright_pixels": 469,
@@ -84,9 +114,30 @@
     }
   ],
   "package": {
-    "executable_sha256": "97fe9ea555da11e4665ed157cadde449499c3117988616b41ded967d71de5d6a",
+    "executable_sha256": "11e1b4c50f427deed928afa0ac8bba979969cdaf78a72ebeca40a4c280db6f73",
     "files": 25,
-    "bytes": 56359632
+    "bytes": 56399056
+  },
+  "manual_controls": {
+    "pages": [
+      "MAIN",
+      "EDIT",
+      "Library",
+      "Outputs",
+      "Settings"
+    ],
+    "fade_default_ms": 300,
+    "fade_range_ms": [
+      1,
+      10000
+    ],
+    "shortcuts": {
+      "CUT": "Ctrl+Enter",
+      "FADE": "Ctrl+Space"
+    },
+    "preferences": "manualFadeMs",
+    "applied_cue_required": true,
+    "manual_override_preserves_sequence": true
   },
   "composition": "Shared CPU image compositor during transitions; normal cuts forward native frames. Hardware decode auto selection and forced CPU modes tested.",
   "not_validated": [
@@ -96,7 +147,7 @@
     "GPU transition composition",
     "Audio sample/frame synchronization and listening",
     "HDR/alpha/color accuracy",
-    "Manual OS drag/drop and pointer interactions",
+    "Manual OS pointer/drag-drop interactions",
     "macOS/Linux builds",
     "Remote operation",
     "24/72-hour endurance",

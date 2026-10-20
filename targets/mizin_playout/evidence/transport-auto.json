@@ -86,8 +86,28 @@
       "name": "single_item_sequence_repeat",
       "pass": true,
       "starts": 3
+    },
+    {
+      "name": "manual_cut_bypasses_saved_entry_fade",
+      "pass": true
+    },
+    {
+      "name": "manual_override_preserves_sequence_settings",
+      "pass": true
+    },
+    {
+      "name": "manual_fade_defaults_300_from_black",
+      "pass": true
+    },
+    {
+      "name": "manual_fade_configured_between_clips",
+      "pass": true
+    },
+    {
+      "name": "invalid_manual_fade_does_not_replace_program",
+      "pass": true
     }
   ],
-  "version": "v0.3.3 (build 0009)",
-  "source_commit": "ee5c2882f78cf3d755de7886d943c98bb3b0daea"
+  "version": "v0.4.0 (build 0010)",
+  "source_commit": "3b7d64b223bfb647c5a9e27a3a219fb5adcd4de1"
 }

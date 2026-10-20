@@ -1,5 +1,19 @@
 # CHANGELOG — Mizin Playout
 
+## v0.4.0 (build 0010) - 2026-10-20
+
+### 💥 Breaking Changes
+- None.
+
+### ✨ Features
+- feat: organiza MAIN e EDIT com CUT e FADE manual de 300 ms (3b7d64b223bfb647c5a9e27a3a219fb5adcd4de1)
+
+### 🐛 Fixes
+- None.
+
+### ⚡ Improvements
+- improve: registra pranchetas manuais e cinquenta verificacoes do playout (21e3dc3e5aab6d39f860134a1ee73211e92c4401)
+
 ## v0.3.3 (build 0009) - 2026-10-19
 
 ### 💥 Breaking Changes

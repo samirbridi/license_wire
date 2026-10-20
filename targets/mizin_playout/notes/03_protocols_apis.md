@@ -4,4 +4,6 @@ Schema 2 .mizinshow: JSON with library/folders string arrays and playlist cue ob
 
 Save uses QSaveFile for an atomic commit. Open parses into a temporary Show and replaces the model only after all entries validate. Originals are referenced, never modified or deleted. Playback modes are session controls; cue settings persist in the show. Each Program retains the snapshot taken at its latest TAKE.
 
+MAIN CUT/FADE use a temporary cue for the launch, preserving original per-cue transitions in the running-order snapshot. EDIT draft fields require Apply cue before they enter the model/schema-2 save. Manual fade timing is a computer preference (manualFadeMs, default 300), not a change to the show schema. Existing schema-2 transition durations are preserved; new cues default to 300 ms.
+
 No HTTP/WebSocket/OSC listener is implemented or opened. Remote operator/observer authentication and a command/state protocol are future work; do not represent settings-page roadmap text as a working remote service.
