@@ -4,7 +4,7 @@
 #include <cmath>
 
 // Small native vector icons; no screenshot textures or external icon runtime.
-enum class DeskIcon { Play, Pause, Stop, Restart, Main, Edit, Folder, Display, Audio, Settings, Cut, Fade, Add, Save };
+enum class DeskIcon { Play, Pause, Stop, Restart, Main, Edit, Folder, Display, Audio, Settings, Cut, Fade, Add, Save, Up, Down };
 inline QIcon deskIcon(DeskIcon icon, QColor color=QColor("#afc2d5")) {
     QPixmap pix(48,48); pix.fill(Qt::transparent);
     QPainter p(&pix); p.setRenderHint(QPainter::Antialiasing); p.scale(2,2);
@@ -24,6 +24,8 @@ inline QIcon deskIcon(DeskIcon icon, QColor color=QColor("#afc2d5")) {
     case DeskIcon::Fade: p.setBrush(color);p.drawPolygon(QPolygonF{QPointF(4,5),QPointF(12,12),QPointF(4,19)});p.drawPolygon(QPolygonF{QPointF(20,5),QPointF(12,12),QPointF(20,19)});break;
     case DeskIcon::Add: p.drawLine(12,5,12,19);p.drawLine(5,12,19,12);break;
     case DeskIcon::Save: p.drawRoundedRect(QRectF(4,3,16,18),1,1);p.drawRect(QRectF(8,3,8,6));p.drawRect(QRectF(8,14,8,7));break;
+    case DeskIcon::Up: p.drawLine(12,19,12,5);p.drawPolyline(QPolygonF{QPointF(6,11),QPointF(12,5),QPointF(18,11)});break;
+    case DeskIcon::Down: p.drawLine(12,5,12,19);p.drawPolyline(QPolygonF{QPointF(6,13),QPointF(12,19),QPointF(18,13)});break;
     }
     return QIcon(pix);
 }

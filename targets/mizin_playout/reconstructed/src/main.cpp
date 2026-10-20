@@ -290,7 +290,7 @@ private:
         connect(playlistTable_,&QTableWidget::itemSelectionChanged,this,[this]{syncEditor(playlistTable_->currentRow());});connect(playlistTable_,&QTableWidget::cellDoubleClicked,this,[this](int row,int){cueRow(row);});
         auto* bottom=new QHBoxLayout;auto* cue=button("Cue selected");bottom->addWidget(cue);connect(cue,&QPushButton::clicked,this,[this]{cueRow(playlistTable_->currentRow());});
         auto* edit=button("Edit cue");edit->setIcon(deskIcon(DeskIcon::Edit));bottom->addWidget(edit);connect(edit,&QPushButton::clicked,this,[this]{editSelected();});bottom->addWidget(copyPlaylist_);bottom->addStretch();
-        for(int direction:{-1,1}){auto* move=iconButton(direction<0?"Move up":"Move down",DeskIcon::Restart);move->setIcon(style()->standardIcon(direction<0?QStyle::SP_ArrowUp:QStyle::SP_ArrowDown));bottom->addWidget(move);connect(move,&QPushButton::clicked,this,[this,direction]{moveCue(direction);});}
+        for(int direction:{-1,1}){auto* move=iconButton(direction<0?"Move up":"Move down",direction<0?DeskIcon::Up:DeskIcon::Down);bottom->addWidget(move);connect(move,&QPushButton::clicked,this,[this,direction]{moveCue(direction);});}
         auto* more=button("More");cueMenu_=new QMenu(more);more->setMenu(cueMenu_);bottom->addWidget(more);
         auto* duplicate=cueMenu_->addAction(tx("Duplicate cue"));duplicate->setProperty("textKey","Duplicate cue");connect(duplicate,&QAction::triggered,this,[this]{int row=playlistTable_->currentRow();if(row>=0){playlist_.insert(row+1,playlist_[row]);cuedRow_=-1;dirty_=true;refreshTables();playlistTable_->selectRow(row+1);}});
         auto* remove=cueMenu_->addAction(tx("Remove cue"));remove->setProperty("textKey","Remove cue");connect(remove,&QAction::triggered,this,[this]{int row=playlistTable_->currentRow();if(row>=0){cuedRow_=-1;editing_=-1;playlist_.removeAt(row);dirty_=true;refreshTables();}});orderLayout->addLayout(bottom);layout->addWidget(order,4);
@@ -581,7 +581,7 @@ QLabel#deckState[health='error'] {color:#ffb2a6;background:#492a2b;}
 QLabel#deckState[health='pending'] {color:#f3cf87;background:#3c3425;}
 QLabel#muted,QLabel#footer {color:#94a9be;font-size:11px;}
 QFrame#usageBar {border-top:1px solid #24374b;}
-QLabel#processUsage {font-family:Consolas;font-size:11px;color:#a8bfce;}
+QLabel#processUsage {font-family:Consolas;font-size:12px;color:#b8cfdf;}
 QLabel#footer {font-size:11px;}
 QLabel#mediaTitle {font-size:13px;font-weight:600;}
 QLabel#timecode {font-family:'Consolas';font-size:19px;color:#d7e7f5;}
