@@ -5,7 +5,7 @@
 #include <functional>
 
 using Translate=std::function<QString(const QString&)>;
-class AudioPanel final:public QWidget {
+class AudioPanel final:public QFrame {
 public:
     AudioPanel(NativeChannel* channel,QSettings* settings,QString id,Translate translate,bool demo,QWidget* parent=nullptr);
     void retranslate();
@@ -23,7 +23,7 @@ private:
     float leftPeak_=0,rightPeak_=0;
     void refreshDevices();
 };
-class DigitalPanel final:public QWidget {
+class DigitalPanel final:public QFrame {
 public:
     DigitalPanel(NetworkBus* bus,QSettings* settings,QString id,Translate translate,bool demo,QWidget* parent=nullptr);
     void retranslate();

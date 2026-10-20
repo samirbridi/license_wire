@@ -167,7 +167,7 @@ qint64 NativeChannel::duration() const {return decks_[active_].player->duration(
 bool NativeChannel::playing() const {return decks_[active_].player->playbackState()==QMediaPlayer::PlayingState;}
 int NativeChannel::frames() const {return decks_[active_].frames;}
 void NativeChannel::setMasterVolume(float value){volume_=std::isfinite(value)?qBound(0.0f,value,1.0f):0;applyLocalAudio();emit changed();}
-void NativeChannel::setAudioMuted(bool value){muted_=value;applyLocalAudio();emit changed();}
+void NativeChannel::setAudioMuted(bool value){if(value && !muted_)emit audioReset();muted_=value;applyLocalAudio();emit changed();}
 void NativeChannel::setLocalAudioEnabled(bool value){localAudio_=value;applyLocalAudio();emit changed();}
 void NativeChannel::setAudioDevice(const QByteArray& id){
     deviceId_=id;QAudioDevice selected;

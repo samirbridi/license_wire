@@ -33,7 +33,7 @@ QString NetworkSender::error()const{std::lock_guard lock(mutex_);return error_;}
 QString NetworkSender::address()const{std::lock_guard lock(mutex_);return address_;}
 void NetworkSender::video(const QImage& image,qint64 time,qreal fps){if(!running_)return;std::lock_guard lock(mutex_);while(videoQueue_.size()>=6){videoQueue_.pop_front();++droppedVideo_;}videoQueue_.push_back({image,time,fps>0 && std::isfinite(fps)?qBound(1.0,double(fps),60.0):30});wake_.notify_one();}
 void NetworkSender::audio(const AudioPacket& packet){if(!running_ || !audioEnabled_)return;std::lock_guard lock(mutex_);while(audio_.size()>=20){audio_.pop_front();++droppedAudio_;}audio_.push_back(packet);wake_.notify_one();}
-void NetworkSender::reset(){std::lock_guard lock(mutex_);audio_.clear();videoQueue_.clear();}
+void NetworkSender::reset(){std::lock_guard lock(mutex_);audio_.clear();}
 QJsonObject NetworkSender::statistics()const{return {{"running",bool(running_)},{"connections",int(connections_)},{"video_frames",int(videos_)},{"audio_packets",int(audios_)},{"superseded_video",int(droppedVideo_)},{"dropped_audio",int(droppedAudio_)},{"source",address()},{"error",error()}};}
 void NetworkSender::work(){
     QElapsedTimer timer;timer.start();qint64 sentVideoAt=-1000000,lastPts=-1;
@@ -71,7 +71,7 @@ void NetworkBus::frame(const QVideoFrame& frame){
         else note="Network frame exceeds tested pixel budget; sending black";
     }
     if(note!=lastWarning_){lastWarning_=note;if(!note.isEmpty())emit warning(note);}
-    if(image.isNull()){image=QImage(1280,720,QImage::Format_ARGB32);image.fill(Qt::black);}
-    const qreal fps=frame.streamFrameRate()>0?frame.streamFrameRate():frame.surfaceFormat().frameRate();
+    if(image.isNull()){image=QImage(lastSize_,QImage::Format_ARGB32);image.fill(Qt::black);}else lastSize_=image.size();
+    const qreal fps=frame.streamFrameRate()>0?frame.streamFrameRate():frame.surfaceFormat().streamFrameRate();
     const qint64 time=frame.isValid()?channel_->videoTimeUs():channel_->programTimeUs();for(auto& sender:senders_)sender.video(image,time,fps);
 }

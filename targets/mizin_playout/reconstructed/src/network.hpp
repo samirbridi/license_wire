@@ -58,5 +58,6 @@ private:
     std::array<NetworkSender,2> senders_;
     bool audioEnabled_=true;
     QString lastWarning_;
+    QSize lastSize_{1280,720};
     void frame(const QVideoFrame& frame);
 };
