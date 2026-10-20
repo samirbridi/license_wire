@@ -512,7 +512,13 @@ private:
     }
     QJsonObject resourceSnapshot()const{
         auto snapshot=resourceUsage_;const bool stale=snapshot.isEmpty()||QDateTime::currentMSecsSinceEpoch()-qint64(snapshot["sampled_unix_ms"].toDouble())>3500;
-        snapshot["stale"]=stale;if(stale)for(const auto& key:{"cpu_percent","working_set_bytes","gpu_percent","gpu_engine"})snapshot[key]=QJsonValue(QJsonValue::Null);return snapshot;
+        snapshot["stale"]=stale;if(stale){for(const auto& key:{"cpu_percent","working_set_bytes","gpu_percent","gpu_engine","gpu_memory_bytes","gpu_memory_local_bytes","gpu_memory_nonlocal_bytes","gpu_memory_adapters"})snapshot[key]=QJsonValue(QJsonValue::Null);snapshot["gpu_memory_complete"]=false;}return snapshot;
+    }
+    QString memoryText(const QJsonValue& value)const{
+        if(!value.isDouble()||!std::isfinite(value.toDouble())||value.toDouble()<0)return "—";
+        const double bytes=value.toDouble();if(bytes==0)return "0 MB";
+        const bool gigabytes=bytes>=1000000000.0;QLocale locale(language_=="pt-BR"?"pt_BR":"en_US");locale.setNumberOptions(QLocale::OmitGroupSeparator);
+        return locale.toString(bytes/(gigabytes?1000000000.0:1000000.0),'f',gigabytes?2:1)+(gigabytes?" GB":" MB");
     }
     void refreshUsage(){
         if(!usageLabel_)return;const auto sample=resourceSnapshot();
@@ -520,8 +526,8 @@ private:
         const auto channel=channelAt(selectedProgram_)->diagnostics();const auto mix=channel["cpu_composition_last_ms"];
         const QString fps=demo_?QString("—"):QString::number(channel["video_frames_last_second"].toInt());
         const QString mixText=demo_||!mix.isDouble()?QString("—"):QString::number(mix.toDouble(),'f',1)+" ms";
-        usageLabel_->setText(QString("CPU %1   RAM %2   GPU %3   FPS %4   Mix %5").arg(number("cpu_percent",1,"%"),number("working_set_bytes",0," MiB",1048576.0),number("gpu_percent",1,"%"),fps,mixText));
-        usageLabel_->setToolTip(tx("Process CPU is normalized across logical processors. RAM is this app's working set. GPU is its busiest observed Windows GPU engine; unavailable counters show a dash.")+"\n"+programLabel(selectedProgram_)+" · "+tx("FPS counts published video frames in the last second, not physical output FPS. Mix is the last CPU transition composition time.")+"\n"+QString(MizinVersion));
+        usageLabel_->setText(QString("CPU %1   RAM %2   GPU %3 / %4   FPS %5   %6 %7").arg(number("cpu_percent",1,"%"),memoryText(sample["working_set_bytes"]),number("gpu_percent",1,"%"),memoryText(sample["gpu_memory_bytes"]),fps,tx("Composition"),mixText));
+        usageLabel_->setToolTip(tx("CPU and RAM measure this app. GPU shows activity (%) and application memory (MB/GB) separately. Memory units are decimal: 1 MB = 1000000 bytes; 1 GB = 1000000000 bytes.")+"\n"+tx("GPU memory is current process LOCAL + NON_LOCAL usage across queried hardware adapters (node 0), not total VRAM capacity. Missing or partial queries show a dash.")+"\n"+tx("Local GPU memory")+": "+memoryText(sample["gpu_memory_local_bytes"])+" · "+tx("Non-local GPU memory")+": "+memoryText(sample["gpu_memory_nonlocal_bytes"])+"\n"+programLabel(selectedProgram_)+" · "+tx("FPS counts published video frames in the last second. Composition is the last CPU frame blend time for a transition, not total rendering latency or the configured fade duration.")+"\n"+QString(MizinVersion));
         usageLabel_->setAccessibleName(usageLabel_->toolTip()+"\n"+usageLabel_->text());
     }
     void retranslate(){

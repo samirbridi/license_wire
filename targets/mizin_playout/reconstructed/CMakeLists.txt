@@ -15,7 +15,7 @@ target_include_directories(MizinPlayout PRIVATE "${CMAKE_CURRENT_BINARY_DIR}/gen
 target_link_libraries(MizinPlayout PRIVATE Qt6::Widgets Qt6::Multimedia Qt6::MultimediaWidgets Qt6::Concurrent Qt6::OpenGL Qt6::OpenGLWidgets)
 target_sources(MizinPlayout PRIVATE src/process_usage.cpp src/process_usage.hpp)
 if(WIN32)
-  target_link_libraries(MizinPlayout PRIVATE pdh psapi)
+  target_link_libraries(MizinPlayout PRIVATE pdh psapi dxgi)
 endif()
 if(MSVC)
   target_compile_options(MizinPlayout PRIVATE /utf-8 /W4)

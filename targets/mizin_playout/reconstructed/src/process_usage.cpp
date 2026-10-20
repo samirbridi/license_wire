@@ -1,5 +1,6 @@
 #include "process_usage.hpp"
 #include <QDateTime>
+#include <QJsonArray>
 #include <QString>
 #include <QStringList>
 #include <algorithm>
@@ -12,6 +13,8 @@
 #include <pdh.h>
 #include <pdhmsg.h>
 #include <map>
+#include <dxgi1_4.h>
+#include <wrl/client.h>
 
 struct ProcessUsage::Platform {
     PDH_HQUERY query=nullptr;
@@ -19,7 +22,37 @@ struct ProcessUsage::Platform {
     struct Engine {PDH_HCOUNTER counter=nullptr;bool primed=false;};
     std::map<QString,Engine> engines;
     qint64 refreshAt=-1;
+    Microsoft::WRL::ComPtr<IDXGIFactory1> factory;
+    struct Adapter {QString name,luid;Microsoft::WRL::ComPtr<IDXGIAdapter3> query;};
+    std::vector<Adapter> adapters;
+    bool adaptersComplete=false;
     ~Platform(){if(query)PdhCloseQuery(query);}
+    void memory(QJsonObject& result){
+        if(!factory||!factory->IsCurrent()){
+            adapters.clear();adaptersComplete=false;factory.Reset();
+            if(FAILED(CreateDXGIFactory1(IID_PPV_ARGS(factory.GetAddressOf()))))return;
+            for(UINT index=0;index<64;++index){
+                Microsoft::WRL::ComPtr<IDXGIAdapter1> adapter;
+                const auto status=factory->EnumAdapters1(index,adapter.GetAddressOf());
+                if(status==DXGI_ERROR_NOT_FOUND){adaptersComplete=true;break;}
+                if(FAILED(status))break;
+                DXGI_ADAPTER_DESC1 desc{};if(FAILED(adapter->GetDesc1(&desc)))break;
+                if(desc.Flags&DXGI_ADAPTER_FLAG_SOFTWARE)continue;
+                Microsoft::WRL::ComPtr<IDXGIAdapter3> info;adapter.As(&info);
+                adapters.push_back({QString::fromWCharArray(desc.Description),QString("%1:%2").arg(quint32(desc.AdapterLuid.HighPart),8,16,QChar('0')).arg(quint32(desc.AdapterLuid.LowPart),8,16,QChar('0')),info});
+            }
+        }
+        bool complete=adaptersComplete&&!adapters.empty();double localTotal=0,nonlocalTotal=0;QJsonArray details;
+        for(const auto& adapter:adapters){
+            DXGI_QUERY_VIDEO_MEMORY_INFO local{},nonlocal{};
+            const bool known=adapter.query&&SUCCEEDED(adapter.query->QueryVideoMemoryInfo(0,DXGI_MEMORY_SEGMENT_GROUP_LOCAL,&local))&&SUCCEEDED(adapter.query->QueryVideoMemoryInfo(0,DXGI_MEMORY_SEGMENT_GROUP_NON_LOCAL,&nonlocal));
+            QJsonObject detail{{"name",adapter.name},{"luid",adapter.luid},{"node",0},{"available",known},{"local_bytes",QJsonValue(QJsonValue::Null)},{"nonlocal_bytes",QJsonValue(QJsonValue::Null)}};
+            if(known){detail["local_bytes"]=double(local.CurrentUsage);detail["nonlocal_bytes"]=double(nonlocal.CurrentUsage);localTotal+=double(local.CurrentUsage);nonlocalTotal+=double(nonlocal.CurrentUsage);}else complete=false;
+            details.append(detail);
+        }
+        result["gpu_memory_adapters"]=details;result["gpu_memory_complete"]=complete;
+        if(complete){result["gpu_memory_local_bytes"]=localTotal;result["gpu_memory_nonlocal_bytes"]=nonlocalTotal;result["gpu_memory_bytes"]=localTotal+nonlocalTotal;}
+    }
     void discover(qint64 now){
         if(now<refreshAt)return;refreshAt=now+5000;
         if(!query&&PdhOpenQueryW(nullptr,0,&query)!=ERROR_SUCCESS){query=nullptr;return;}
@@ -67,10 +100,12 @@ ProcessUsage::~ProcessUsage()=default;
 QJsonObject ProcessUsage::sample(){
     const auto now=clock_.nsecsElapsed();const QJsonValue unknown(QJsonValue::Null);
     QJsonObject result{{"cpu_percent",unknown},{"working_set_bytes",unknown},{"gpu_percent",unknown},{"gpu_engine",unknown},
+        {"gpu_memory_bytes",unknown},{"gpu_memory_local_bytes",unknown},{"gpu_memory_nonlocal_bytes",unknown},{"gpu_memory_adapters",QJsonArray{}},{"gpu_memory_complete",false},
+        {"gpu_memory_scope","Current process DXGI LOCAL + NON_LOCAL usage, node 0 on each hardware adapter; not physical VRAM capacity. Partial queries remain unavailable."},
         {"sampled_unix_ms",double(QDateTime::currentMSecsSinceEpoch())},{"interval_ms",cpuPrimed_?double(now-previousTime_)/1000000:0.0},
         {"scope","Current process; CPU normalized by logical processors, RAM working set, busiest observed process GPU engine. Not decoder identification or whole-system load."}};
 #ifdef Q_OS_WIN
-    result["provider"]="Windows GetProcessTimes / GetProcessMemoryInfo / PDH GPU Engine";result["pid"]=int(GetCurrentProcessId());
+    result["provider"]="Windows GetProcessTimes / GetProcessMemoryInfo / PDH GPU Engine / DXGI QueryVideoMemoryInfo";result["pid"]=int(GetCurrentProcessId());
     const auto process=GetCurrentProcess();FILETIME created{},exited{},kernel{},user{};
     if(GetProcessTimes(process,&created,&exited,&kernel,&user)){
         const auto ticks=[](FILETIME time){return (quint64(time.dwHighDateTime)<<32)|time.dwLowDateTime;};
@@ -81,6 +116,7 @@ QJsonObject ProcessUsage::sample(){
     PROCESS_MEMORY_COUNTERS memory{};memory.cb=sizeof(memory);
     if(GetProcessMemoryInfo(process,&memory,sizeof(memory)))result["working_set_bytes"]=double(memory.WorkingSetSize);
     platform_->gpu(result,now/1000000);
+    platform_->memory(result);
 #else
     result["provider"]="unavailable on this platform";
 #endif
