@@ -60,9 +60,9 @@ int runGpuTests(const QString& directory,const QString& resultPath){
     QImage small(320,180,QImage::Format_RGB32);small.fill(Qt::red);QVideoFrame red(small);red.setStartTime(123000);
     cache->image(red);cache->image(red);record("mirrors_share_input_readback",router.gpuCache(&injected)==cache && cache->conversions()==1);
     NativeChannel other(false);record("independent_programs_have_independent_caches",router.gpuCache(&other)!=cache);
-    auto* output=new OutputWindow(&injected,&router,OutputScaling::GpuLanczos);output->openOn(nullptr);emit injected.frameReady(red);
+    auto* output=new OutputWindow(&injected,&router,OutputScaling::GpuLanczos);output->openOn(nullptr);pump(250);emit injected.frameReady(red);
     const bool painted=waitFor([&]{return output->gpu() && output->gpu()->frames()>0;});
-    record("gpu_output_presents_frame",painted && output->gpuActive());
+    record("gpu_output_presents_frame",painted && output->gpuActive(),{{"valid",output->gpu() && output->gpu()->isValid()},{"error",output->gpu()?output->gpu()->error():"no surface"},{"frames",output->gpu()?output->gpu()->frames():0}});
     if(painted){
         for(int i=0;i<40;++i){QVideoFrame f(small);f.setStartTime(1000000+i*33333);emit injected.frameReady(f);}
         const auto last=1000000+39*33333;const bool latest=waitFor([&]{return output->gpu()->timestamp()==last;});
@@ -77,10 +77,10 @@ int runGpuTests(const QString& directory,const QString& resultPath){
     record("unavailable_gpu_uses_native",!fallback->gpu() && fallback->video()->videoSink()->videoFrame()==red);fallback->close();QCoreApplication::sendPostedEvents(nullptr,QEvent::DeferredDelete);qunsetenv("MIZIN_DISABLE_GPU_SCALER");
     for(int i=0;i<2;++i){
         NativeChannel channel(false);channel.setLoop(true);auto inputCache=router.gpuCache(&channel);
-        GpuSurface surface(inputCache);const QSize target=i==0?QSize(1920,1080):QSize(3840,2160);surface.resize(target);surface.show();
+        GpuSurface surface(inputCache);const QSize target=i==0?QSize(1920,1080):QSize(3840,2160);surface.setFixedSize(target);surface.show();
         QObject::connect(&channel,&NativeChannel::frameReady,&surface,[&](const QVideoFrame& f){surface.submit(f);});
         channel.load(QDir(directory).absoluteFilePath(i==0?"h264-3840x2160.mp4":"h264-1920x1080.mp4"));
-        const bool ready=waitFor([&]{return surface.frames()>=8;});QList<double> service,gpuTimes;int previous=surface.frames();const int startFrames=previous;const qint64 startSource=channel.frames();
+        const bool ready=waitFor([&]{return surface.frames()>=8;});const auto actualFramebuffer=surface.grabFramebuffer().size();record(i==0?"stream_1080_framebuffer_size":"stream_4k_framebuffer_size",actualFramebuffer==target,{{"actual_w",actualFramebuffer.width()},{"actual_h",actualFramebuffer.height()}});QList<double> service,gpuTimes;int previous=surface.frames();const int startFrames=previous;const qint64 startSource=channel.frames();
         auto monitor=QObject::connect(&surface,&QOpenGLWidget::frameSwapped,&surface,[&]{if(surface.frames()!=previous){previous=surface.frames();service<<surface.serviceMs();if(surface.gpuMs()>=0)gpuTimes<<surface.gpuMs();}});
         QElapsedTimer clock;clock.start();pump(4000);const auto elapsed=clock.elapsed();QObject::disconnect(monitor);
         const QJsonObject stats{{"direction",i==0?"4K to 1080p":"1080p to 4K"},{"output_w",target.width()},{"output_h",target.height()},{"elapsed_ms",elapsed},{"rendered_unique_frames",surface.frames()-startFrames},{"source_frames",channel.frames()-startSource},{"render_fps",(surface.frames()-startFrames)*1000.0/elapsed},{"service_cpu_median_ms",percentile(service,.5)},{"service_cpu_p95_ms",percentile(service,.95)},{"gpu_filter_median_ms",percentile(gpuTimes,.5)},{"gpu_filter_p95_ms",percentile(gpuTimes,.95)},{"superseded_frames",surface.superseded()},{"device",surface.device()},{"framebuffer_pixels",QString::number(qRound(surface.width()*surface.devicePixelRatioF()))+"x"+QString::number(qRound(surface.height()*surface.devicePixelRatioF()))},{"scope","4-second native stream; CPU service includes input readback/upload/submission; async GPU queries cover filter passes only; excludes scanout and AV sync"}};
