@@ -62,17 +62,28 @@ QualityFeed* OutputRouter::feed(NativeChannel* channel,QSize pixels){
     for(const auto& item:feeds_)if(item.channel==channel && item.pixels==pixels && item.feed)return item.feed;
     auto* feed=new QualityFeed(channel,pixels,this);feeds_.append({channel,pixels,feed});return feed;
 }
+QSharedPointer<GpuFrameCache> OutputRouter::gpuCache(NativeChannel* channel){
+    for(qsizetype i=gpuCaches_.size();i>0;--i)if(!gpuCaches_[i-1].channel || gpuCaches_[i-1].cache.isNull())gpuCaches_.removeAt(i-1);
+    for(const auto& item:gpuCaches_)if(item.channel==channel)if(auto cache=item.cache.toStrongRef())return cache;
+    auto cache=QSharedPointer<GpuFrameCache>::create(channel);gpuCaches_.append({channel,cache.toWeakRef()});return cache;
+}
 void OutputRouter::prune(){
     for(qsizetype i=feeds_.size();i>0;--i){auto& item=feeds_[i-1];if(!item.feed || !item.feed->inUse()){if(item.feed)item.feed->deleteLater();feeds_.removeAt(i-1);}}
 }
 
-OutputWindow::OutputWindow(NativeChannel* channel,OutputRouter* router,bool lanczos,QWidget* parent):QWidget(parent),channel_(channel),router_(router),lanczos_(lanczos){
+OutputWindow::OutputWindow(NativeChannel* channel,OutputRouter* router,bool lanczos,QWidget* parent):OutputWindow(channel,router,lanczos?OutputScaling::CpuLanczos:OutputScaling::Native,parent){}
+OutputWindow::OutputWindow(NativeChannel* channel,OutputRouter* router,OutputScaling scaling,QWidget* parent):QWidget(parent),channel_(channel),router_(router),scaling_(scaling){
     setAttribute(Qt::WA_DeleteOnClose);setStyleSheet("background:black");
-    auto* layout=new QVBoxLayout(this);layout->setContentsMargins(0,0,0,0);layout->setSpacing(0);video_=new QVideoWidget(this);video_->setAspectRatioMode(Qt::KeepAspectRatio);layout->addWidget(video_);
+    stack_=new QStackedLayout(this);stack_->setContentsMargins(0,0,0,0);stack_->setSpacing(0);video_=new QVideoWidget(this);video_->setAspectRatioMode(Qt::KeepAspectRatio);stack_->addWidget(video_);
+    if(scaling_==OutputScaling::GpuLanczos && !qEnvironmentVariableIsSet("MIZIN_DISABLE_GPU_SCALER")){
+        gpu_=new GpuSurface(router->gpuCache(channel),this);stack_->addWidget(gpu_);stack_->setCurrentWidget(gpu_);
+        connect(gpu_,&GpuSurface::failed,this,[this](const QString& message){gpuFailed_=true;stack_->setCurrentWidget(video_);present(channel_?channel_->lastFrame():QVideoFrame{});emit warning(message);});
+    }
     resizeTimer_.setSingleShot(true);resizeTimer_.setInterval(80);connect(&resizeTimer_,&QTimer::timeout,this,[this]{updateFeed();});
     auto* escape=new QShortcut(QKeySequence(Qt::Key_Escape),this);connect(escape,&QShortcut::activated,this,&QWidget::close);
     connect(qGuiApp,&QGuiApplication::screenRemoved,this,[this](QScreen* screen){if(target_==screen){emit warning("Output display disconnected; output closed");close();}});
-    if(!lanczos_)connect(channel,&NativeChannel::frameReady,this,[this](const QVideoFrame& f){present(f);});
+    if(scaling_==OutputScaling::Native)connect(channel,&NativeChannel::frameReady,this,[this](const QVideoFrame& f){present(f);});
+    if(scaling_==OutputScaling::GpuLanczos)connect(channel,&NativeChannel::frameReady,this,[this](const QVideoFrame& f){presentGpu(f);});
     resize(720,405);
 }
 OutputWindow::~OutputWindow(){disconnect(framesConnection_);disconnect(warningConnection_);if(router_)router_->prune();}
@@ -85,12 +96,23 @@ void OutputWindow::openOn(QScreen* screen){
     }else show();
     if(windowHandle())connect(windowHandle(),&QWindow::screenChanged,this,[this]{resizeTimer_.start();});
     updateFeed();
+    if(gpu_)QTimer::singleShot(1000,this,[this]{if(!gpu_->isValid()){gpuFailed_=true;stack_->setCurrentWidget(video_);present(channel_?channel_->lastFrame():QVideoFrame{});emit warning("GPU context unavailable; using Native scaling");}});
+    else if(scaling_==OutputScaling::GpuLanczos)emit warning("GPU context unavailable; using Native scaling");
 }
-QSize OutputWindow::targetPixels()const{return displayPixels(video_->size(),video_->devicePixelRatioF());}
+QSize OutputWindow::targetPixels()const{auto* widget=stack_->currentWidget();return displayPixels(widget->size(),widget->devicePixelRatioF());}
 void OutputWindow::present(const QVideoFrame& frame){video_->videoSink()->setVideoFrame(frame);if(frame.isValid())++frames_;}
+void OutputWindow::presentGpu(const QVideoFrame& frame){
+    const QString note=frame.isValid()?gpuFrameUnsupported(frame):QString{};
+    if(!gpu_ || gpuFailed_ || !note.isEmpty()){
+        if(gpu_)gpu_->submit({});stack_->setCurrentWidget(video_);present(frame);
+        if(!note.isEmpty() && gpuWarning_!=note){gpuWarning_=note;emit warning(note);}return;
+    }
+    stack_->setCurrentWidget(gpu_);gpu_->submit(frame);if(frame.isValid())++frames_;
+}
 void OutputWindow::updateFeed(){
     if(!channel_ || !router_)return;
-    if(!lanczos_){present(channel_->lastFrame());return;}
+    if(scaling_==OutputScaling::GpuLanczos){presentGpu(channel_->lastFrame());return;}
+    if(scaling_==OutputScaling::Native){present(channel_->lastFrame());return;}
     if(!feed_ || feed_->pixels()!=targetPixels()){
         disconnect(framesConnection_);disconnect(warningConnection_);feed_=nullptr;router_->prune();
         auto* feed=router_->feed(channel_,targetPixels());feed_=feed;

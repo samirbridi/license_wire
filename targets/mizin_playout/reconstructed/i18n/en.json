@@ -149,5 +149,12 @@
   "High-depth, HDR or transformed frame: using Native scaling": "High-depth, HDR or transformed frame: using Native scaling",
   "Lanczos · experimental (CPU)": "Lanczos · experimental (CPU)",
   "Native is recommended for live playback. Lanczos is experimental CPU scaling.": "Native is recommended for live playback. Lanczos is experimental CPU scaling.",
-  "Lanczos exceeds the frame budget; use Native for live playback": "Lanczos exceeds the frame budget; use Native for live playback"
+  "Lanczos exceeds the frame budget; use Native for live playback": "Lanczos exceeds the frame budget; use Native for live playback",
+  "Lanczos · GPU (SDR)": "Lanczos · GPU (SDR)",
+  "Native is recommended for live playback. GPU Lanczos improves SDR scaling; test it on your system.": "Native is recommended for live playback. GPU Lanczos improves SDR scaling; test it on your system.",
+  "GPU context unavailable; using Native scaling": "GPU context unavailable; using Native scaling",
+  "GPU Lanczos requires OpenGL 3.3; using Native scaling": "GPU Lanczos requires OpenGL 3.3; using Native scaling",
+  "GPU scaling exceeds tested size or ratio; using Native scaling": "GPU scaling exceeds tested size or ratio; using Native scaling",
+  "GPU framebuffer allocation failed; using Native scaling": "GPU framebuffer allocation failed; using Native scaling",
+  "GPU rendering failed; using Native scaling": "GPU rendering failed; using Native scaling"
 }

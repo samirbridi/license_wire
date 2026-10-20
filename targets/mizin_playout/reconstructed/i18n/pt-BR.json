@@ -149,5 +149,12 @@
   "High-depth, HDR or transformed frame: using Native scaling": "Quadro de alta profundidade, HDR ou transformado: usando Native",
   "Lanczos · experimental (CPU)": "Lanczos · experimental (CPU)",
   "Native is recommended for live playback. Lanczos is experimental CPU scaling.": "Native é recomendado para uso ao vivo. Lanczos é um scaler experimental em CPU.",
-  "Lanczos exceeds the frame budget; use Native for live playback": "Lanczos excedeu o tempo por quadro; use Native para reprodução ao vivo"
+  "Lanczos exceeds the frame budget; use Native for live playback": "Lanczos excedeu o tempo por quadro; use Native para reprodução ao vivo",
+  "Lanczos · GPU (SDR)": "Lanczos · GPU (SDR)",
+  "Native is recommended for live playback. GPU Lanczos improves SDR scaling; test it on your system.": "Native é recomendado para uso ao vivo. GPU Lanczos melhora o redimensionamento SDR; teste nesta máquina.",
+  "GPU context unavailable; using Native scaling": "Contexto GPU indisponível; usando redimensionamento Native",
+  "GPU Lanczos requires OpenGL 3.3; using Native scaling": "GPU Lanczos requer OpenGL 3.3; usando redimensionamento Native",
+  "GPU scaling exceeds tested size or ratio; using Native scaling": "A saída excede o tamanho ou proporção testados na GPU; usando Native",
+  "GPU framebuffer allocation failed; using Native scaling": "Falha ao alocar o quadro na GPU; usando Native",
+  "GPU rendering failed; using Native scaling": "Falha na renderização GPU; usando Native"
 }

@@ -1,11 +1,15 @@
 #pragma once
 #include "channel.hpp"
 #include "scaler.hpp"
+#include "gpu_scaler.hpp"
 #include <QFutureWatcher>
 #include <QPointer>
 #include <QScreen>
 #include <QVideoWidget>
 #include <QWidget>
+#include <QStackedLayout>
+
+enum class OutputScaling {Native,CpuLanczos,GpuLanczos};
 
 class QualityFeed final:public QObject {
     Q_OBJECT
@@ -45,23 +49,29 @@ class OutputRouter final:public QObject {
 public:
     using QObject::QObject;
     QualityFeed* feed(NativeChannel* channel,QSize pixels);
+    QSharedPointer<GpuFrameCache> gpuCache(NativeChannel* channel);
     void prune();
 private:
     struct Entry {QPointer<NativeChannel> channel;QSize pixels;QPointer<QualityFeed> feed;};
     QList<Entry> feeds_;
+    struct GpuEntry {QPointer<NativeChannel> channel;QWeakPointer<GpuFrameCache> cache;};
+    QList<GpuEntry> gpuCaches_;
 };
 
 class OutputWindow final:public QWidget {
     Q_OBJECT
 public:
     OutputWindow(NativeChannel* channel,OutputRouter* router,bool lanczos,QWidget* parent=nullptr);
+    OutputWindow(NativeChannel* channel,OutputRouter* router,OutputScaling scaling,QWidget* parent=nullptr);
     ~OutputWindow() override;
     void openOn(QScreen* screen);
     QSize targetPixels()const;
     QSize sourcePixels()const{return channel_?channel_->lastFrame().size():QSize{};}
     QVideoWidget* video()const{return video_;}
+    GpuSurface* gpu()const{return gpu_;}
+    bool gpuActive()const{return gpu_ && !gpuFailed_ && stack_->currentWidget()==gpu_;}
     int frames()const{return frames_;}
-    bool highQuality()const{return lanczos_;}
+    bool highQuality()const{return scaling_!=OutputScaling::Native;}
 signals:
     void warning(const QString& message);
 protected:
@@ -71,7 +81,11 @@ private:
     QPointer<NativeChannel> channel_;
     QPointer<OutputRouter> router_;
     QVideoWidget* video_;
-    bool lanczos_;
+    OutputScaling scaling_;
+    QStackedLayout* stack_;
+    GpuSurface* gpu_=nullptr;
+    bool gpuFailed_=false;
+    QString gpuWarning_;
     QPointer<QScreen> target_;
     QPointer<QualityFeed> feed_;
     QMetaObject::Connection framesConnection_,warningConnection_;
@@ -79,4 +93,5 @@ private:
     int frames_=0;
     void updateFeed();
     void present(const QVideoFrame& frame);
+    void presentGpu(const QVideoFrame& frame);
 };
