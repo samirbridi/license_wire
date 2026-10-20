@@ -20,7 +20,14 @@ English is default; Português (Brasil) can be selected during playback. Automat
 
 Displays open fullscreen at their current system mode; this application does not switch the desktop resolution. Video is fitted without distortion or cropping, with black bars for differing aspect ratios. A 4K source on a 1080p display is reduced; 1080p on 4K is enlarged. Scaling never restores missing source detail.
 
-Each route offers Native (performance) or Lanczos (higher-quality SDR scaling on CPU). Native remains the default. Lanczos runs one worker and keeps only the newest pending frame, sharing a result for mirrored outputs at the same pixel size. Under load, frames may be superseded. High-depth/HDR/transformed frames and sizes above the bounded Lanczos output budget use Native instead. This is spatial resampling, not AI reconstruction. High-resolution throughput, AV sync and vendor-specific quality remain to be qualified. Reopen/update a route to apply a changed source, screen or profile; Escape closes only that output. Displays added/removed are refreshed automatically.
+Each route offers three profiles:
 
+- **Native · performance** — default and recommended for live operation. Native frames go straight to the Qt output surface.
+- **Lanczos · GPU (SDR)** — optional Lanczos-3 scaling using a desktop OpenGL GPU. This first path shares input readback per Program, then filters/presents textures on the GPU. Test it with the actual media and output count before a show.
+- **Lanczos · experimental (CPU)** — CPU reference scaler. Current 4K measurements exceed the 30 fps frame budget.
 
-Lanczos CPU is experimental: current 4K measurements exceed the 30 fps frame budget. Native is the recommended live profile; GPU high-quality scaling remains future work. Increasing CPU thread counts did not resolve the measured cost.
+Select the source, display and profile in Outputs, then Open output. Reopen the route to apply changes. Escape closes only that output; Programs continue. Displays added/removed refresh automatically.
+
+The GPU path is currently for 8-bit SDR, with bounded sizes/reduction ratios. High-depth/HDR/transformed/subtitle frames use Native; GPU context/resource failures also return to Native and report a warning. A machine without supported hardware decoding can still decode on CPU. CPU decoding and GPU output scaling are separate settings. No pre-conversion is required for supported media, and original files are never rewritten.
+
+Lanczos is spatial resampling, not AI reconstruction. It cannot recover missing detail. The current GPU path still reads hardware frames back before upload; it is not zero-copy. See [current measured scope](compatibility-and-performance.md) for the tested GPU, actual framebuffers and remaining performance/AV-sync limits.

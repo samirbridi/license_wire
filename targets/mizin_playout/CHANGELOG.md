@@ -1,5 +1,61 @@
 # CHANGELOG — Mizin Playout
 
+## v0.6.3 (build 0016) - 2026-10-20
+
+### 💥 Breaking Changes
+- None.
+
+### ✨ Features
+- None.
+
+### 🐛 Fixes
+- fix: renderiza explicitamente o framebuffer no teste de janela oculta (cf843e850dbd266a100ac7734b16fea9d7ac0e05)
+
+### ⚡ Improvements
+- None.
+
+## v0.6.2 (build 0015) - 2026-10-20
+
+### 💥 Breaking Changes
+- None.
+
+### ✨ Features
+- None.
+
+### 🐛 Fixes
+- fix: verifica tamanho real do framebuffer e estabiliza injecao do teste GPU (11e097f7393a4dedb5f5511bbcd7cfec6291ed4b)
+
+### ⚡ Improvements
+- None.
+
+## v0.6.1 (build 0014) - 2026-10-20
+
+### 💥 Breaking Changes
+- None.
+
+### ✨ Features
+- None.
+
+### 🐛 Fixes
+- fix: libera consultas GPU no contexto ativo e rejeita renderizadores de software (e926ece6115a05d5cb58ffe010603e9afbd6720a)
+
+### ⚡ Improvements
+- None.
+
+## v0.6.0 (build 0013) - 2026-10-20
+
+### 💥 Breaking Changes
+- None.
+
+### ✨ Features
+- feat: adiciona scaler Lanczos GPU com fallback Native e medicao grafica (0ea4f94d677b3eeb954cefc2dacabbb63c7d015c)
+
+### 🐛 Fixes
+- None.
+
+### ⚡ Improvements
+- improve: documenta GPU formatos e limites medidos das saidas 4K (4f8fbc057d77473684bbc57cc867d4883f392ce4)
+
 ## v0.5.1 (build 0012) - 2026-10-20
 
 ### 💥 Breaking Changes

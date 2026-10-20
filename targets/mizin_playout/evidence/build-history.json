@@ -167,5 +167,66 @@
     ],
     "date": "2026-10-20",
     "build_status": "PASS"
+  },
+  {
+    "display": "v0.6.0 (build 0013)",
+    "previous": "v0.5.1 (build 0012)",
+    "source_commit": "0ea4f94d677b3eeb954cefc2dacabbb63c7d015c",
+    "commits": [
+      {
+        "sha": "4f8fbc057d77473684bbc57cc867d4883f392ce4",
+        "subject": "improve: documenta GPU formatos e limites medidos das saidas 4K",
+        "kind": "improve"
+      },
+      {
+        "sha": "0ea4f94d677b3eeb954cefc2dacabbb63c7d015c",
+        "subject": "feat: adiciona scaler Lanczos GPU com fallback Native e medicao grafica",
+        "kind": "feat"
+      }
+    ],
+    "date": "2026-10-20",
+    "build_status": "PASS"
+  },
+  {
+    "display": "v0.6.1 (build 0014)",
+    "previous": "v0.6.0 (build 0013)",
+    "source_commit": "e926ece6115a05d5cb58ffe010603e9afbd6720a",
+    "commits": [
+      {
+        "sha": "e926ece6115a05d5cb58ffe010603e9afbd6720a",
+        "subject": "fix: libera consultas GPU no contexto ativo e rejeita renderizadores de software",
+        "kind": "fix"
+      }
+    ],
+    "date": "2026-10-20",
+    "build_status": "PASS"
+  },
+  {
+    "display": "v0.6.2 (build 0015)",
+    "previous": "v0.6.1 (build 0014)",
+    "source_commit": "11e097f7393a4dedb5f5511bbcd7cfec6291ed4b",
+    "commits": [
+      {
+        "sha": "11e097f7393a4dedb5f5511bbcd7cfec6291ed4b",
+        "subject": "fix: verifica tamanho real do framebuffer e estabiliza injecao do teste GPU",
+        "kind": "fix"
+      }
+    ],
+    "date": "2026-10-20",
+    "build_status": "PASS"
+  },
+  {
+    "display": "v0.6.3 (build 0016)",
+    "previous": "v0.6.2 (build 0015)",
+    "source_commit": "cf843e850dbd266a100ac7734b16fea9d7ac0e05",
+    "commits": [
+      {
+        "sha": "cf843e850dbd266a100ac7734b16fea9d7ac0e05",
+        "subject": "fix: renderiza explicitamente o framebuffer no teste de janela oculta",
+        "kind": "fix"
+      }
+    ],
+    "date": "2026-10-20",
+    "build_status": "PASS"
   }
 ]

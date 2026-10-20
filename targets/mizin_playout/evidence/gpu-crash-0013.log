@@ -1,0 +1,190 @@
+
+************* Preparing the environment for Debugger Extensions Gallery repositories **************
+   ExtensionRepository : Implicit
+   UseExperimentalFeatureForNugetShare : true
+   AllowNugetExeUpdate : true
+   NonInteractiveNuget : true
+   AllowNugetMSCredentialProviderInstall : true
+   AllowParallelInitializationOfLocalRepositories : true
+   EnableRedirectToChakraJsProvider : false
+
+   -- Configuring repositories
+      ----> Repository : LocalInstalled, Enabled: true
+      ----> Repository : UserExtensions, Enabled: true
+
+>>>>>>>>>>>>> Preparing the environment for Debugger Extensions Gallery repositories completed, duration 0.000 seconds
+
+************* Waiting for Debugger Extensions Gallery to Initialize **************
+
+>>>>>>>>>>>>> Waiting for Debugger Extensions Gallery to Initialize completed, duration 0.265 seconds
+   ----> Repository : UserExtensions, Enabled: true, Packages count: 0
+   ----> Repository : LocalInstalled, Enabled: true, Packages count: 30
+
+Microsoft (R) Windows Debugger Version 10.0.28000.1839 AMD64
+Copyright (c) Microsoft Corporation. All rights reserved.
+
+CommandLine: "D:\REA - ENGENHARIA REVERSA\targets\mizin_playout\dist\MizinPlayout.exe" --gpu-test --fixtures "D:\REA - ENGENHARIA REVERSA\targets\mizin_playout\binaries\resolution-fixtures" --result "D:\REA - ENGENHARIA REVERSA\targets\mizin_playout\evidence\gpu-debug-0013.json"
+
+************* Path validation summary **************
+Response                         Time (ms)     Location
+Deferred                                       srv*
+Symbol search path is: srv*
+Executable search path is: 
+ModLoad: 00007ff6`76c20000 00007ff6`76c9a000   image00007ff6`76c20000
+ModLoad: 00007ffe`c1c90000 00007ffe`c1e88000   ntdll.dll
+ModLoad: 00007ffe`c0280000 00007ffe`c0342000   C:\Windows\System32\KERNEL32.DLL
+ModLoad: 00007ffe`bf6a0000 00007ffe`bf996000   C:\Windows\System32\KERNELBASE.dll
+ModLoad: 00007ffe`aafc0000 00007ffe`aafd0000   D:\REA - ENGENHARIA REVERSA\targets\mizin_playout\dist\Qt6MultimediaWidgets.dll
+ModLoad: 00007ffe`bf320000 00007ffe`bf420000   C:\Windows\System32\ucrtbase.dll
+ModLoad: 00007ffe`7a6f0000 00007ffe`7a701000   D:\REA - ENGENHARIA REVERSA\targets\mizin_playout\dist\Qt6OpenGLWidgets.dll
+ModLoad: 00007ffe`c08b0000 00007ffe`c1020000   C:\Windows\System32\SHELL32.dll
+ModLoad: 00007ffe`5eff0000 00007ffe`5f121000   D:\REA - ENGENHARIA REVERSA\targets\mizin_playout\dist\Qt6Multimedia.dll
+ModLoad: 00007ffe`bfc10000 00007ffe`bfcad000   C:\Windows\System32\msvcp_win.dll
+ModLoad: 00007ffe`c0550000 00007ffe`c06f1000   C:\Windows\System32\USER32.dll
+ModLoad: 00007ffe`bf4d0000 00007ffe`bf4f2000   C:\Windows\System32\win32u.dll
+ModLoad: 00007ffe`c1a80000 00007ffe`c1aab000   C:\Windows\System32\GDI32.dll
+ModLoad: 00007ffe`c0770000 00007ffe`c089b000   C:\Windows\System32\ole32.dll
+ModLoad: 00007ffe`bf580000 00007ffe`bf699000   C:\Windows\System32\gdi32full.dll
+ModLoad: 00007ffe`47ed0000 00007ffe`48517000   D:\REA - ENGENHARIA REVERSA\targets\mizin_playout\dist\Qt6Widgets.dll
+ModLoad: 00007ffe`c0350000 00007ffe`c0470000   C:\Windows\System32\RPCRT4.dll
+ModLoad: 00007ffe`55d20000 00007ffe`55f04000   D:\REA - ENGENHARIA REVERSA\targets\mizin_playout\dist\Qt6OpenGL.dll
+ModLoad: 00007ffe`c1020000 00007ffe`c1374000   C:\Windows\System32\combase.dll
+ModLoad: 00007ffe`a27b0000 00007ffe`a27dc000   C:\Windows\SYSTEM32\VCRUNTIME140.dll
+ModLoad: 00007ffe`39a40000 00007ffe`3a40a000   D:\REA - ENGENHARIA REVERSA\targets\mizin_playout\dist\Qt6Core.dll
+ModLoad: 00007ffe`a2710000 00007ffe`a27ac000   C:\Windows\SYSTEM32\MSVCP140.dll
+ModLoad: 00007ffe`3f490000 00007ffe`3fdb3000   D:\REA - ENGENHARIA REVERSA\targets\mizin_playout\dist\Qt6Gui.dll
+ModLoad: 00007ffe`a2700000 00007ffe`a270c000   C:\Windows\SYSTEM32\VCRUNTIME140_1.dll
+ModLoad: 00007ffe`c00a0000 00007ffe`c0151000   C:\Windows\System32\ADVAPI32.dll
+ModLoad: 00007ffe`c1940000 00007ffe`c19de000   C:\Windows\System32\msvcrt.dll
+ModLoad: 00007ffe`5b120000 00007ffe`5b2d2000   D:\REA - ENGENHARIA REVERSA\targets\mizin_playout\dist\Qt6Network.dll
+ModLoad: 00007ffe`c19e0000 00007ffe`c1a7f000   C:\Windows\System32\sechost.dll
+ModLoad: 00007ffe`bdaa0000 00007ffe`bdaaa000   C:\Windows\SYSTEM32\AVRT.dll
+ModLoad: 00007ffe`b8600000 00007ffe`b86f4000   C:\Windows\SYSTEM32\PROPSYS.dll
+ModLoad: 00007ffe`bf9a0000 00007ffe`bf9c7000   C:\Windows\System32\bcrypt.dll
+ModLoad: 00007ffe`c0700000 00007ffe`c076b000   C:\Windows\System32\WS2_32.dll
+ModLoad: 00007ffe`c1ab0000 00007ffe`c1b7d000   C:\Windows\System32\OLEAUT32.dll
+ModLoad: 00007ffe`bc030000 00007ffe`bc05e000   C:\Windows\SYSTEM32\dwmapi.dll
+ModLoad: 00007ffe`b8d00000 00007ffe`b8d9e000   C:\Windows\SYSTEM32\UxTheme.dll
+ModLoad: 00007ffe`82030000 00007ffe`82039000   C:\Windows\SYSTEM32\MSVCP140_1.dll
+ModLoad: 00000213`291f0000 00000213`291f9000   C:\Windows\SYSTEM32\MSVCP140_1.dll
+ModLoad: 00007ffe`bf210000 00007ffe`bf23e000   C:\Windows\SYSTEM32\USERENV.dll
+ModLoad: 00007ffe`b0450000 00007ffe`b046d000   C:\Windows\SYSTEM32\MPR.dll
+ModLoad: 00007ffe`bd830000 00007ffe`bda94000   C:\Windows\SYSTEM32\d3d11.dll
+ModLoad: 00007ffe`74330000 00007ffe`74355000   C:\Windows\SYSTEM32\d3d12.dll
+ModLoad: 00007ffe`bdb60000 00007ffe`bdc56000   C:\Windows\SYSTEM32\dxgi.dll
+ModLoad: 00007ffe`bcad0000 00007ffe`bcd4f000   C:\Windows\SYSTEM32\DWrite.dll
+ModLoad: 00007ffe`74270000 00007ffe`742b3000   C:\Windows\SYSTEM32\MSVCP140_2.dll
+ModLoad: 00007ffe`be750000 00007ffe`be81a000   C:\Windows\SYSTEM32\DNSAPI.dll
+ModLoad: 00007ffe`9ead0000 00007ffe`9eadc000   C:\Windows\SYSTEM32\Secur32.dll
+ModLoad: 00007ffe`be700000 00007ffe`be73b000   C:\Windows\SYSTEM32\IPHLPAPI.DLL
+ModLoad: 00007ffe`b5450000 00007ffe`b555a000   C:\Windows\SYSTEM32\WINHTTP.dll
+ModLoad: 00007ffe`be040000 00007ffe`be08f000   C:\Windows\SYSTEM32\AUTHZ.dll
+ModLoad: 00007ffe`9f5b0000 00007ffe`9f5c9000   C:\Windows\SYSTEM32\NETAPI32.dll
+ModLoad: 00007ffe`a71f0000 00007ffe`a7217000   C:\Windows\SYSTEM32\WINMM.dll
+ModLoad: 00000213`291f0000 00000213`291f9000   D:\REA - ENGENHARIA REVERSA\targets\mizin_playout\dist\icuuc.dll
+ModLoad: 00007ffe`ab420000 00007ffe`ab42a000   C:\Windows\SYSTEM32\VERSION.dll
+ModLoad: 00007ffe`bdb20000 00007ffe`bdb32000   C:\Windows\SYSTEM32\kernel.appcore.dll
+ModLoad: 00007ffe`bf1d0000 00007ffe`bf202000   C:\Windows\SYSTEM32\SSPICLI.DLL
+ModLoad: 00000213`291f0000 00000213`291f9000   D:\REA - ENGENHARIA REVERSA\targets\mizin_playout\dist\icuuc.dll
+ModLoad: 00007ffe`bebe0000 00007ffe`bebec000   C:\Windows\SYSTEM32\CRYPTBASE.DLL
+ModLoad: 00007ffe`be740000 00007ffe`be74c000   C:\Windows\SYSTEM32\NETUTILS.DLL
+ModLoad: 00007ffe`b0420000 00007ffe`b0448000   C:\Windows\SYSTEM32\SRVCLI.DLL
+ModLoad: 00007ffe`a0a20000 00007ffe`a0c4e000   C:\Windows\SYSTEM32\icu.DLL
+ModLoad: 00007ffe`bfcb0000 00007ffe`bfcdf000   C:\Windows\System32\IMM32.DLL
+ModLoad: 00007ffe`bfa20000 00007ffe`bfaa2000   C:\Windows\System32\bcryptPrimitives.dll
+ModLoad: 00007ffe`c1930000 00007ffe`c1938000   C:\Windows\System32\NSI.dll
+ModLoad: 00007ffe`bce60000 00007ffe`bd605000   C:\Windows\SYSTEM32\windows.storage.dll
+ModLoad: 00007ffe`bec70000 00007ffe`bec9b000   C:\Windows\SYSTEM32\Wldp.dll
+ModLoad: 00007ffe`bfdd0000 00007ffe`bfe7d000   C:\Windows\System32\SHCORE.dll
+ModLoad: 00007ffe`bfce0000 00007ffe`bfd3b000   C:\Windows\System32\shlwapi.dll
+ModLoad: 00007ffe`bf250000 00007ffe`bf274000   C:\Windows\SYSTEM32\profapi.dll
+ModLoad: 00007ffe`5eef0000 00007ffe`5efe7000   D:\REA - ENGENHARIA REVERSA\targets\mizin_playout\dist\platforms\qwindows.dll
+ModLoad: 00007ffe`c1460000 00007ffe`c18d0000   C:\Windows\System32\SETUPAPI.dll
+ModLoad: 00007ffe`bf9d0000 00007ffe`bfa1e000   C:\Windows\System32\cfgmgr32.dll
+ModLoad: 00007ffe`c1380000 00007ffe`c145a000   C:\Windows\System32\COMDLG32.dll
+ModLoad: 00007ffe`b5780000 00007ffe`b5794000   C:\Windows\SYSTEM32\WTSAPI32.dll
+ModLoad: 00007ffe`a4e10000 00007ffe`a4ec0000   C:\Windows\WinSxS\amd64_microsoft.windows.common-controls_6595b64144ccf1df_5.82.19041.6280_none_792d7c952443c49a\COMCTL32.dll
+ModLoad: 00007ffe`7ef10000 00007ffe`7f0e1000   C:\Windows\SYSTEM32\d3d9.dll
+ModLoad: 00007ffe`80590000 00007ffe`80884000   C:\Windows\SYSTEM32\UIAutomationCore.DLL
+ModLoad: 00007ffe`be820000 00007ffe`be86b000   C:\Windows\SYSTEM32\powrprof.dll
+ModLoad: 00007ffe`be6e0000 00007ffe`be6f2000   C:\Windows\SYSTEM32\UMPDC.dll
+ModLoad: 00007ffe`c0160000 00007ffe`c0275000   C:\Windows\System32\MSCTF.dll
+ModLoad: 00007ffe`bf0b0000 00007ffe`bf0e3000   C:\Windows\SYSTEM32\DEVOBJ.dll
+ModLoad: 00007ffe`bf500000 00007ffe`bf573000   C:\Windows\System32\WINTRUST.dll
+ModLoad: 00007ffe`bfab0000 00007ffe`bfc0d000   C:\Windows\System32\CRYPT32.dll
+ModLoad: 00007ffe`beee0000 00007ffe`beef2000   C:\Windows\SYSTEM32\MSASN1.dll
+ModLoad: 00007ffe`c1b80000 00007ffe`c1c29000   C:\Windows\System32\clbcatq.dll
+ModLoad: 00007ffe`aa040000 00007ffe`aa17f000   C:\Windows\System32\Windows.UI.dll
+ModLoad: 00007ffe`a9cc0000 00007ffe`a9db9000   C:\Windows\System32\TextInputFramework.dll
+ModLoad: 00007ffe`b2ef0000 00007ffe`b2f91000   C:\Windows\System32\WindowManagementAPI.dll
+ModLoad: 00007ffe`a9b60000 00007ffe`a9cb2000   C:\Windows\System32\InputHost.dll
+ModLoad: 00007ffe`b6cf0000 00007ffe`b6de2000   C:\Windows\System32\CoreMessaging.dll
+ModLoad: 00007ffe`b6990000 00007ffe`b6ceb000   C:\Windows\System32\CoreUIComponents.dll
+ModLoad: 00007ffe`b7d00000 00007ffe`b7e57000   C:\Windows\SYSTEM32\wintypes.dll
+ModLoad: 00007ffe`b3240000 00007ffe`b3443000   C:\Windows\SYSTEM32\twinapi.appcore.dll
+ModLoad: 00000213`2bb30000 00000213`2bd33000   C:\Windows\System32\twinapi.appcore.dll
+ModLoad: 00007ffe`be570000 00007ffe`be5a3000   C:\Windows\SYSTEM32\ntmarta.dll
+ModLoad: 00007ffe`a8140000 00007ffe`a8278000   C:\Windows\System32\Windows.UI.Immersive.dll
+ModLoad: 00007ffe`70170000 00007ffe`701a8000   D:\REA - ENGENHARIA REVERSA\targets\mizin_playout\dist\styles\qmodernwindowsstyle.dll
+ModLoad: 00007ffe`a5910000 00007ffe`a59d4000   C:\Windows\System32\DriverStore\FileRepository\nvtfsi.inf_amd64_7928261975a052ef\nvldumdx.dll
+ModLoad: 00007ffe`ab3e0000 00007ffe`ab411000   C:\Windows\SYSTEM32\cryptnet.dll
+ModLoad: 00007ffe`b1cf0000 00007ffe`b1e37000   C:\Windows\SYSTEM32\drvstore.dll
+ModLoad: 00007ffe`c1c30000 00007ffe`c1c4d000   C:\Windows\System32\imagehlp.dll
+ModLoad: 00007ffe`becb0000 00007ffe`becc8000   C:\Windows\SYSTEM32\CRYPTSP.dll
+ModLoad: 00007ffe`be320000 00007ffe`be358000   C:\Windows\system32\rsaenh.dll
+ModLoad: 00007ffe`994a0000 00007ffe`9e19f000   C:\Windows\System32\DriverStore\FileRepository\nvtfsi.inf_amd64_7928261975a052ef\nvgpucomp64.dll
+ModLoad: 00007ffe`a4a40000 00007ffe`a4b70000   C:\Windows\System32\DriverStore\FileRepository\nvtfsi.inf_amd64_7928261975a052ef\NvMemMapStoragex.dll
+ModLoad: 00007ffe`61270000 00007ffe`63593000   C:\Windows\System32\DriverStore\FileRepository\nvtfsi.inf_amd64_7928261975a052ef\nvd3dumx.dll
+ModLoad: 00007ffe`7e600000 00007ffe`7e728000   C:\Windows\SYSTEM32\opengl32.DLL
+ModLoad: 00007ffe`7e5d0000 00007ffe`7e5fc000   C:\Windows\SYSTEM32\GLU32.dll
+ModLoad: 00007ffe`b4f40000 00007ffe`b5046000   C:\Windows\System32\AppXDeploymentClient.dll
+ModLoad: 00007ffe`09f30000 00007ffe`0c855000   C:\Windows\System32\DriverStore\FileRepository\nvtfsi.inf_amd64_7928261975a052ef\nvoglv64.dll
+ModLoad: 00007ffe`b1cf0000 00007ffe`b1e37000   C:\Windows\SYSTEM32\drvstore.dll
+ModLoad: 00007ffe`994a0000 00007ffe`9e19f000   C:\Windows\System32\DriverStore\FileRepository\nvtfsi.inf_amd64_7928261975a052ef\nvgpucomp64.dll
+ModLoad: 00007ffe`b0680000 00007ffe`b06bb000   C:\Windows\SYSTEM32\dxcore.dll
+ModLoad: 00007ffe`bfe80000 00007ffe`bfe88000   C:\Windows\System32\PSAPI.DLL
+ModLoad: 00007ffe`bd610000 00007ffe`bd811000   C:\Windows\SYSTEM32\dbghelp.dll
+ModLoad: 00007ffe`bdfd0000 00007ffe`be033000   C:\Windows\SYSTEM32\WINSTA.dll
+ModLoad: 00007ffe`a5910000 00007ffe`a59d4000   C:\Windows\System32\DriverStore\FileRepository\nvtfsi.inf_amd64_7928261975a052ef\nvldumdx.dll
+ModLoad: 00007ffe`a4a40000 00007ffe`a4b70000   C:\Windows\System32\DriverStore\FileRepository\nvtfsi.inf_amd64_7928261975a052ef\NvMemMapStoragex.dll
+ModLoad: 00007ffe`61270000 00007ffe`63593000   C:\Windows\System32\DriverStore\FileRepository\nvtfsi.inf_amd64_7928261975a052ef\nvd3dumx.dll
+ModLoad: 00007ffe`82f70000 00007ffe`82fae000   C:\Windows\system32\dataexchange.dll
+ModLoad: 00007ffe`b6320000 00007ffe`b6504000   C:\Windows\system32\dcomp.dll
+(a384.ae80): Access violation - code c0000005 (first chance)
+First chance exceptions are reported before any exception handling.
+This exception may be expected and handled.
+Qt6Gui!QOpenGLContext::makeCurrent+0x1e:
+00007ffe`3f829e6e 4c8b7908        mov     r15,qword ptr [rcx+8] ds:00000000`00000008=????????????????
+0:000> cdb: Reading initial command '.exr -1; .ecxr; k; q'
+ExceptionAddress: 00007ffe3f829e6e (Qt6Gui!QOpenGLContext::makeCurrent+0x000000000000001e)
+   ExceptionCode: c0000005 (Access violation)
+  ExceptionFlags: 00000000
+NumberParameters: 2
+   Parameter[0]: 0000000000000000
+   Parameter[1]: 0000000000000008
+Attempt to read from address 0000000000000008
+Unable to get exception context, HRESULT 0x8000FFFF
+Child-SP          RetAddr               Call Site
+000000d6`eadee380 00007ffe`55db214f     Qt6Gui!QOpenGLContext::makeCurrent+0x1e
+*** WARNING: Unable to verify checksum for D:\REA - ENGENHARIA REVERSA\targets\mizin_playout\dist\MizinPlayout.exe
+000000d6`eadee4b0 00007ff6`76c52e85     Qt6OpenGL!QOpenGLTimerQuery::~QOpenGLTimerQuery+0x4f
+000000d6`eadee500 00007ff6`76c53e6e     MizinPlayout+0x32e85
+000000d6`eadee530 00007ff6`76c567d9     MizinPlayout+0x33e6e
+000000d6`eadee580 00007ff6`76c3f94b     MizinPlayout+0x367d9
+000000d6`eadef340 00007ff6`76c5a460     MizinPlayout+0x1f94b
+000000d6`eadefc50 00007ff6`76c59c09     MizinPlayout+0x3a460
+000000d6`eadefce0 00007ffe`c0297374     MizinPlayout+0x39c09
+000000d6`eadefd20 00007ffe`c1cdcc91     KERNEL32!BaseThreadInitThunk+0x14
+000000d6`eadefd50 00000000`00000000     ntdll!RtlUserThreadStart+0x21
+quit:
+NatVis script unloaded from 'C:\Program Files (x86)\Windows Kits\10\Debuggers\x64\Visualizers\atlmfc.natvis'
+NatVis script unloaded from 'C:\Program Files (x86)\Windows Kits\10\Debuggers\x64\Visualizers\concurrency.natvis'
+NatVis script unloaded from 'C:\Program Files (x86)\Windows Kits\10\Debuggers\x64\Visualizers\cpp_rest.natvis'
+NatVis script unloaded from 'C:\Program Files (x86)\Windows Kits\10\Debuggers\x64\Visualizers\ObjectiveC.natvis'
+NatVis script unloaded from 'C:\Program Files (x86)\Windows Kits\10\Debuggers\x64\Visualizers\stl.natvis'
+NatVis script unloaded from 'C:\Program Files (x86)\Windows Kits\10\Debuggers\x64\Visualizers\Windows.Data.Json.natvis'
+NatVis script unloaded from 'C:\Program Files (x86)\Windows Kits\10\Debuggers\x64\Visualizers\Windows.Devices.Geolocation.natvis'
+NatVis script unloaded from 'C:\Program Files (x86)\Windows Kits\10\Debuggers\x64\Visualizers\Windows.Devices.Sensors.natvis'
+NatVis script unloaded from 'C:\Program Files (x86)\Windows Kits\10\Debuggers\x64\Visualizers\Windows.Media.natvis'
+NatVis script unloaded from 'C:\Program Files (x86)\Windows Kits\10\Debuggers\x64\Visualizers\windows.natvis'
+NatVis script unloaded from 'C:\Program Files (x86)\Windows Kits\10\Debuggers\x64\Visualizers\winrt.natvis'

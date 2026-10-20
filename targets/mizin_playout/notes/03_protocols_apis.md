@@ -6,6 +6,6 @@ Save uses QSaveFile for an atomic commit. Open parses into a temporary Show and 
 
 MAIN CUT/FADE use a temporary cue for the launch, preserving original per-cue transitions in the running-order snapshot. EDIT draft fields require Apply cue before they enter the model/schema-2 save. Manual fade timing is a computer preference (manualFadeMs, default 300), not a change to the show schema. Existing schema-2 transition durations are preserved; new cues default to 300 ms.
 
-Output scaler profiles are computer preferences outputScaler0/1/2 (native or lanczos), applied when opening/updating a route. Screen identities are session-local references to currently detected QScreens; disconnected screens are removed instead of silently redirecting a route. The application does not change the system display mode. No new network API is exposed.
+Output scaler profiles are computer preferences outputScaler0/1/2 (native, lanczos for CPU, or gpu for SDR GPU Lanczos), applied when opening/updating a route. Screen identities are session-local references to currently detected QScreens; disconnected screens are removed instead of silently redirecting a route. The application does not change the system display mode. No new network API is exposed.
 
 No HTTP/WebSocket/OSC listener is implemented or opened. Remote operator/observer authentication and a command/state protocol are future work; do not represent settings-page roadmap text as a working remote service.

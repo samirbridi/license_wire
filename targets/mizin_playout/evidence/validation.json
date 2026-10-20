@@ -1,72 +1,97 @@
 {
-  "result": "PASS_NATIVE_FUNCTIONAL_PROTOTYPE",
-  "version": "v0.5.1 (build 0012)",
-  "source_commit": "75a10a6536357b4ebab21e54fa52bf7c62be172a",
-  "recorded_utc": "2026-10-20T12:28:14.388451+00:00",
-  "functional_checks_passed": 114,
+  "result": "PASS_NATIVE_GPU_SDR_PROTOTYPE",
+  "version": "v0.6.3 (build 0016)",
+  "source_commit": "cf843e850dbd266a100ac7734b16fea9d7ac0e05",
+  "recorded_utc": "2026-10-20T12:55:24.010895+00:00",
+  "functional_checks_passed": 160,
   "suites": [
     {
       "suite": "smoke",
       "mode": "cpu",
       "checks": 7,
       "result": "PASS",
-      "file": "evidence/smoke-cpu-0012.json"
+      "file": "evidence/smoke-cpu-0016.json",
+      "sha256": "d8cc75359fff611e3d812824ade42d0d5fc3834260fb1314fb02820ef0fcdb7e"
     },
     {
       "suite": "transport",
       "mode": "cpu",
       "checks": 23,
       "result": "PASS",
-      "file": "evidence/transport-cpu-0012.json"
+      "file": "evidence/transport-cpu-0016.json",
+      "sha256": "1bb18d0d95ce9cdb4e0a0d8f00fac3c92f60b0a4baef54c6c13311a29199d792"
     },
     {
       "suite": "ui",
       "mode": "cpu",
-      "checks": 8,
+      "checks": 10,
       "result": "PASS",
-      "file": "evidence/ui-cpu-0012.json"
+      "file": "evidence/ui-cpu-0016.json",
+      "sha256": "de90fab1a81fc6fe9f08406fb61c0eb17a02da791060c7e957ed29bc98919cc2"
     },
     {
       "suite": "output",
       "mode": "cpu",
       "checks": 19,
       "result": "PASS",
-      "file": "evidence/output-cpu-0012.json"
+      "file": "evidence/output-cpu-0016.json",
+      "sha256": "f97be0d6a62899643fae405f11e5940d2a7846f8072873eb7f9c8754789d9f89"
+    },
+    {
+      "suite": "gpu",
+      "mode": "cpu",
+      "checks": 21,
+      "result": "PASS",
+      "file": "evidence/gpu-cpu-0016.json",
+      "sha256": "387034421a0908e623ac5b6ea47e2a4c62e9c623b016ea8cefa65ea8cab3a179"
     },
     {
       "suite": "smoke",
       "mode": "auto",
       "checks": 7,
       "result": "PASS",
-      "file": "evidence/smoke-auto-0012.json"
+      "file": "evidence/smoke-auto-0016.json",
+      "sha256": "5045e9e432bf4408636d5f22bdafcb105fbf3a8c7376b5bfbac2aa0ade73e699"
     },
     {
       "suite": "transport",
       "mode": "auto",
       "checks": 23,
       "result": "PASS",
-      "file": "evidence/transport-auto-0012.json"
+      "file": "evidence/transport-auto-0016.json",
+      "sha256": "807dcf696253dafbc59f9410f878f12ccb703309c06ad205c3749a25efa4ca31"
     },
     {
       "suite": "ui",
       "mode": "auto",
-      "checks": 8,
+      "checks": 10,
       "result": "PASS",
-      "file": "evidence/ui-auto-0012.json"
+      "file": "evidence/ui-auto-0016.json",
+      "sha256": "d8ddb83a28d21fe73ae1eeb22ba41416b99cb6ee5d74a2ce9bcc573638e90782"
     },
     {
       "suite": "output",
       "mode": "auto",
       "checks": 19,
       "result": "PASS",
-      "file": "evidence/output-auto-0012.json"
+      "file": "evidence/output-auto-0016.json",
+      "sha256": "e99ebdf37b31b77030f834fea18263820dd990f234bc015f09d5a73bcef291bf"
+    },
+    {
+      "suite": "gpu",
+      "mode": "auto",
+      "checks": 21,
+      "result": "PASS",
+      "file": "evidence/gpu-auto-0016.json",
+      "sha256": "545f65c3009beb68aa6eee9069955649004c572dd8c1b11d0a5e66995c04ddf1"
     }
   ],
   "fixtures": {
     "baseline": "Five synthetic 640x360/30 fps clips: H.264 MP4/MKV, H.265 MP4, MJPEG AVI, ProRes MOV",
     "resolution": "Two synthetic 2s H.264/30 fps clips: 1920x1080 and 3840x2160"
   },
-  "catalog_keys": 151,
+  "fixture_hashes_verified": 7,
+  "catalog_keys": 158,
   "version_policy_tests": 4,
   "boards": [
     {
@@ -74,54 +99,54 @@
       "sha256": "568df59ec0b9aa5fbac933a7f298ec70c2edf77c39ca00ac974c30f182f9e219",
       "width": 1600,
       "height": 1000,
-      "brand_bright_pixels": 469,
-      "header_bright_pixels": 1258
+      "brand_bright_pixels": 548,
+      "header_bright_pixels": 1392
     },
     {
       "file": "design/boards/02-outputs-en.png",
-      "sha256": "ce3b2c9d9c40d9aa0b0d6a9252575f61491dccfb0a413d465f8ba350a0407e91",
+      "sha256": "f77f0033f5c47298fa15c9976cecfa7edcffdec65b071d7518d617fa67cf6c6e",
       "width": 1600,
       "height": 1000,
-      "brand_bright_pixels": 469,
-      "header_bright_pixels": 1258
+      "brand_bright_pixels": 548,
+      "header_bright_pixels": 1392
     },
     {
       "file": "design/boards/03-library-en.png",
       "sha256": "22ec5567437e9c20e805e47dab4ed2b28f830071eccf697e5a95d5492a11feeb",
       "width": 1600,
       "height": 1000,
-      "brand_bright_pixels": 469,
-      "header_bright_pixels": 1258
+      "brand_bright_pixels": 548,
+      "header_bright_pixels": 1392
     },
     {
       "file": "design/boards/04-main-pt-BR.png",
       "sha256": "dcecaea773125720a436970f1be07ebcba531acd1622884b166a58217fcd4e0f",
       "width": 1600,
       "height": 1000,
-      "brand_bright_pixels": 469,
-      "header_bright_pixels": 1439
+      "brand_bright_pixels": 548,
+      "header_bright_pixels": 1591
     },
     {
       "file": "design/boards/05-edit-en.png",
       "sha256": "b74c5707c17b2c9ff45efcc4bcc20fdfcda24e6772aaf2935ccb4cffefcb0312",
       "width": 1600,
       "height": 1000,
-      "brand_bright_pixels": 469,
-      "header_bright_pixels": 1258
+      "brand_bright_pixels": 548,
+      "header_bright_pixels": 1392
     },
     {
       "file": "design/boards/06-edit-pt-BR.png",
       "sha256": "bc8a5947c24f9be3fc920c839eac1274c41c4cad6fdb9d44795f2d648742db52",
       "width": 1600,
       "height": 1000,
-      "brand_bright_pixels": 469,
-      "header_bright_pixels": 1439
+      "brand_bright_pixels": 548,
+      "header_bright_pixels": 1591
     }
   ],
   "package": {
-    "executable_sha256": "89e10631e44f295831839bfefea22e9a5a3d23a53dddb1cfa63cabb4e45d93e1",
-    "files": 25,
-    "bytes": 56471760
+    "executable_sha256": "0e70cab153f11aae598062ab49ebb5d1c62302fb192ce6a142bca9bc86da6a21",
+    "files": 27,
+    "bytes": 58579264
   },
   "hardware_decode_observation": {
     "version": "v0.5.1 (build 0012)",
@@ -134,12 +159,18 @@
   },
   "output_scaling": {
     "default": "Native",
-    "optional": "Lanczos CPU experimental (SDR 8-bit)",
-    "queue_bound": "One in-flight worker and one newest pending frame per Program/pixel-size pair",
-    "lanczos_output_pixel_cap": 8847360,
-    "fallback": "Native for high-depth, HDR, transformed/cropped or oversized frames",
-    "live_4k_lanczos_qualified": false,
-    "performance_note": "Current CPU service times exceed 30 fps; thread-count experiment did not resolve cost. GPU HQ scaling remains open.",
+    "optional": [
+      "Lanczos GPU SDR 8-bit",
+      "Lanczos CPU experimental SDR 8-bit"
+    ],
+    "gpu_queue_bound": "One latest pending surface frame; input conversion cache shared per Program; textures/passes per output",
+    "cpu_queue_bound": "One worker and one newest pending frame per Program/pixel-size pair",
+    "gpu_output_pixel_cap": 8847360,
+    "gpu_axis_dimension_cap": 4096,
+    "gpu_max_downscale_ratio_per_axis": 4,
+    "zero_copy": false,
+    "gpu_scaled_output_readback_in_production": false,
+    "fallback": "Native for unsupported high-depth/HDR/transformed/cropped/subtitle frames and unavailable/failed graphics resources",
     "detected_screens": [
       {
         "dpr": 1,
@@ -151,17 +182,121 @@
         "refresh_hz": 60
       }
     ],
-    "measurements": {
-      "cpu": [
+    "live_4k_lanczos_qualified": false,
+    "performance_note": "Local four-second native streams, not AV-sync or long-show qualification. GPU filter is fast, input readback/upload remains a cost; auto 4K downscale still supersedes frames.",
+    "gpu_measurements": {
+      "auto": [
         {
-          "down_ms": 117.0111,
-          "scope": "single constant-image resample, not playback throughput",
-          "up_ms": 204.2548
+          "device": {
+            "renderer": "NVIDIA GeForce GTX 1660 Ti/PCIe/SSE2",
+            "vendor": "NVIDIA Corporation",
+            "version": "3.3.0 NVIDIA 591.74"
+          },
+          "direction": "4K to 1080p",
+          "elapsed_ms": 4000,
+          "framebuffer_pixels": "1920x1080",
+          "gpu_filter_median_ms": 1.66032,
+          "gpu_filter_p95_ms": 2.22976,
+          "output_h": 1080,
+          "output_w": 1920,
+          "render_fps": 27.75,
+          "rendered_unique_frames": 111,
+          "scope": "4-second native stream; CPU service includes input readback/upload/submission; async GPU queries cover filter passes only; excludes scanout and AV sync",
+          "service_cpu_median_ms": 25.3788,
+          "service_cpu_p95_ms": 34.2263,
+          "source_frames": 120,
+          "superseded_frames": 21
         },
         {
-          "elapsed_ms": 1278,
+          "device": {
+            "renderer": "NVIDIA GeForce GTX 1660 Ti/PCIe/SSE2",
+            "vendor": "NVIDIA Corporation",
+            "version": "3.3.0 NVIDIA 591.74"
+          },
+          "direction": "1080p to 4K",
+          "elapsed_ms": 4001,
+          "framebuffer_pixels": "3840x2160",
+          "gpu_filter_median_ms": 2.360832,
+          "gpu_filter_p95_ms": 2.622432,
+          "output_h": 2160,
+          "output_w": 3840,
+          "render_fps": 29.742564358910272,
+          "rendered_unique_frames": 119,
+          "scope": "4-second native stream; CPU service includes input readback/upload/submission; async GPU queries cover filter passes only; excludes scanout and AV sync",
+          "service_cpu_median_ms": 7.1348,
+          "service_cpu_p95_ms": 9.9888,
+          "source_frames": 120,
+          "superseded_frames": 3
+        }
+      ],
+      "cpu": [
+        {
+          "device": {
+            "renderer": "NVIDIA GeForce GTX 1660 Ti/PCIe/SSE2",
+            "vendor": "NVIDIA Corporation",
+            "version": "3.3.0 NVIDIA 591.74"
+          },
+          "direction": "4K to 1080p",
+          "elapsed_ms": 4000,
+          "framebuffer_pixels": "1920x1080",
+          "gpu_filter_median_ms": 1.684032,
+          "gpu_filter_p95_ms": 2.087008,
+          "output_h": 1080,
+          "output_w": 1920,
+          "render_fps": 28.75,
+          "rendered_unique_frames": 115,
+          "scope": "4-second native stream; CPU service includes input readback/upload/submission; async GPU queries cover filter passes only; excludes scanout and AV sync",
+          "service_cpu_median_ms": 20.5653,
+          "service_cpu_p95_ms": 23.5783,
+          "source_frames": 119,
+          "superseded_frames": 15
+        },
+        {
+          "device": {
+            "renderer": "NVIDIA GeForce GTX 1660 Ti/PCIe/SSE2",
+            "vendor": "NVIDIA Corporation",
+            "version": "3.3.0 NVIDIA 591.74"
+          },
+          "direction": "1080p to 4K",
+          "elapsed_ms": 4000,
+          "framebuffer_pixels": "3840x2160",
+          "gpu_filter_median_ms": 2.31056,
+          "gpu_filter_p95_ms": 4.538464,
+          "output_h": 2160,
+          "output_w": 3840,
+          "render_fps": 29.75,
+          "rendered_unique_frames": 119,
+          "scope": "4-second native stream; CPU service includes input readback/upload/submission; async GPU queries cover filter passes only; excludes scanout and AV sync",
+          "service_cpu_median_ms": 5.9215,
+          "service_cpu_p95_ms": 7.4571,
+          "source_frames": 119,
+          "superseded_frames": 1
+        }
+      ]
+    },
+    "gpu_quality": {
+      "checkerboard_max_error": 1,
+      "gpu_wave_mse": 0.22054061036816372,
+      "identity_max_error": 0,
+      "qt_smooth_wave_mse": 5.46294012392911,
+      "sdr_gamma_encoded_rgb": true,
+      "timer_query_supported": true
+    },
+    "quality_board": {
+      "file": "evidence/gpu-quality-proof.png",
+      "sha256": "e083e5a95dbde5938c4be7225c058bb2905490f0517044b9e34e8d6a2ae5289b"
+    },
+    "cpu_measurements": {
+      "auto": [
+        {
+          "down_ms": 128.3909,
+          "scope": "single constant-image resample, not playback throughput",
+          "up_ms": 218.4778
+        },
+        {
+          "elapsed_ms": 1505,
           "frames": 8,
-          "last_service_ms": 143.0754,
+          "last_service_ms": 176.9152,
           "output_h": 1080,
           "output_w": 1920,
           "scope": "short functional stream; not sustained performance or AV sync qualification",
@@ -169,9 +304,9 @@
           "source_w": 3840
         },
         {
-          "elapsed_ms": 1703,
+          "elapsed_ms": 1954,
           "frames": 8,
-          "last_service_ms": 189.93449999999999,
+          "last_service_ms": 217.9375,
           "output_h": 2160,
           "output_w": 3840,
           "scope": "short functional stream; not sustained performance or AV sync qualification",
@@ -179,16 +314,16 @@
           "source_w": 1920
         }
       ],
-      "auto": [
+      "cpu": [
         {
-          "down_ms": 122.3637,
+          "down_ms": 118.3728,
           "scope": "single constant-image resample, not playback throughput",
-          "up_ms": 201.0613
+          "up_ms": 218.1893
         },
         {
-          "elapsed_ms": 1481,
+          "elapsed_ms": 1406,
           "frames": 8,
-          "last_service_ms": 162.99460000000002,
+          "last_service_ms": 160.56980000000001,
           "output_h": 1080,
           "output_w": 1920,
           "scope": "short functional stream; not sustained performance or AV sync qualification",
@@ -196,9 +331,9 @@
           "source_w": 3840
         },
         {
-          "elapsed_ms": 1904,
+          "elapsed_ms": 1807,
           "frames": 8,
-          "last_service_ms": 219.0925,
+          "last_service_ms": 223.7279,
           "output_h": 2160,
           "output_w": 3840,
           "scope": "short functional stream; not sustained performance or AV sync qualification",
@@ -208,15 +343,43 @@
       ]
     }
   },
+  "iterations": [
+    {
+      "build": 13,
+      "compilation": "PASS",
+      "gpu_suite": "CRASH",
+      "evidence": "evidence/gpu-crash-0013.log"
+    },
+    {
+      "build": 14,
+      "compilation": "PASS",
+      "gpu_suite": "FAIL",
+      "evidence": "evidence/gpu-auto-0014.json",
+      "note": "Smaller desktop-constrained QA surfaces; not 4K-output throughput"
+    },
+    {
+      "build": 15,
+      "compilation": "PASS",
+      "gpu_suite": "FAIL",
+      "evidence": "evidence/gpu-auto-0015.json",
+      "note": "Exact framebuffer sizes; first hidden output sample required explicit repaint"
+    },
+    {
+      "build": 16,
+      "compilation": "PASS",
+      "gpu_suite": "PASS",
+      "note": "All 160 functional checks passed"
+    }
+  ],
   "not_validated": [
-    "NVIDIA/AMD vendor-specific codec qualification",
-    "High-quality GPU scaling/compositing",
-    "Sustained 1080p/4K throughput, multi-output load and AV sync",
-    "Physical signal integrity, hotplug and visual approval",
-    "HDR/alpha/color accuracy",
-    "OS pointer/drag-drop interactions",
+    "AMD/Intel GPU rendering and vendor-specific decoder profile certification",
     "macOS/Linux builds",
-    "Remote operation",
-    "24/72-hour endurance"
+    "Zero-copy hardware-frame interop",
+    "GPU transition composition",
+    "HDR/alpha/color-management qualification",
+    "Physical 4K output, display hotplug and synchronized multi-monitor scanout",
+    "AV sync, 24/72-hour stability and live 4K throughput qualification",
+    "OS pointer/drag-drop human interaction; human visual approval",
+    "Authenticated remote control and scheduling"
   ]
 }

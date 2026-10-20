@@ -20,7 +20,14 @@ Inglês é o padrão; Português (Brasil) pode ser escolhido durante a reproduç
 
 As telas abrem em fullscreen no modo atual do sistema; o aplicativo não muda a resolução do desktop. O vídeo é ajustado sem distorção nem corte, com barras pretas se as proporções forem diferentes. Uma fonte 4K em tela 1080p é reduzida; 1080p em tela 4K é ampliado. A ampliação não recupera detalhes ausentes no original.
 
-Cada rota oferece Native (desempenho) ou Lanczos (redimensionamento SDR de maior qualidade em CPU). Native continua sendo o padrão. Lanczos usa um worker e mantém somente o quadro pendente mais recente; saídas espelhadas com o mesmo tamanho em pixels compartilham o resultado. Sob carga, quadros podem ser substituídos. Quadros de alta profundidade/HDR/transformados e tamanhos acima do limite do Lanczos usam Native. É reamostragem espacial, sem reconstrução por IA. Vazão em alta resolução, sincronismo AV e qualidade por GPU ainda precisam ser qualificados. Reabra/atualize a rota para aplicar mudanças de fonte, tela ou perfil; Escape fecha somente aquela saída. Telas conectadas/desconectadas são atualizadas automaticamente.
+Cada rota oferece três perfis:
 
+- **Native · desempenho** — padrão e recomendado para uso ao vivo. Encaminha quadros nativos diretamente à superfície de saída Qt.
+- **Lanczos · GPU (SDR)** — redimensionamento Lanczos-3 opcional em GPU OpenGL. Esta primeira implementação compartilha a leitura do quadro por Program e depois filtra/apresenta texturas na GPU. Teste com as mídias e a quantidade real de saídas antes do show.
+- **Lanczos · experimental (CPU)** — scaler de referência em CPU. As medições atuais de 4K excedem o orçamento de 30 fps.
 
-Lanczos em CPU é experimental: as medições atuais de 4K excedem o orçamento de tempo para 30 fps. Native é o perfil recomendado ao vivo; escala de alta qualidade em GPU segue como próxima etapa. Aumentar as threads de CPU não resolveu o custo medido.
+Em Saídas, escolha fonte, tela e perfil; depois clique em Abrir saída. Reabra a rota para aplicar alterações. Escape fecha somente aquela saída; os Programs continuam. Telas conectadas/desconectadas são atualizadas automaticamente.
+
+O caminho GPU atual atende SDR de 8 bits, dentro dos limites de tamanho e redução. Quadros de alta profundidade/HDR/transformados/com legendas usam Native; falhas de contexto ou recursos gráficos também retornam ao Native com aviso. Uma máquina sem decodificação por hardware compatível pode decodificar na CPU. Decodificação em CPU e escala na GPU são configurações independentes. Mídias compatíveis não exigem conversão prévia e os originais nunca são regravados.
+
+Lanczos faz reamostragem espacial, sem reconstrução por IA. Ele não recupera detalhes ausentes. O caminho GPU atual ainda lê quadros de hardware antes do envio da textura; não é zero-copy. Veja o [escopo medido](compatibility-and-performance.md) para a GPU testada, os framebuffers reais e os limites de desempenho/sincronismo ainda abertos.
