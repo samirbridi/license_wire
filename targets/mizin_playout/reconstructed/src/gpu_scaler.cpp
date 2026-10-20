@@ -41,17 +41,18 @@ void main(){vec4 p=texture(source,vec2(uv.x,1.0-uv.y));color=vec4(p.rgb,1.0);}
 bool GpuLanczos::initialize(){
     if(!initializeOpenGLFunctions()){error_="GPU Lanczos requires OpenGL 3.3; using Native scaling";return false;}
     device_={{"vendor",QString::fromLatin1(reinterpret_cast<const char*>(glGetString(GL_VENDOR)))},{"renderer",QString::fromLatin1(reinterpret_cast<const char*>(glGetString(GL_RENDERER)))},{"version",QString::fromLatin1(reinterpret_cast<const char*>(glGetString(GL_VERSION)))}};
+    const auto renderer=device_["renderer"].toString().toLower();
+    if(renderer.contains("llvmpipe") || renderer.contains("softpipe") || renderer.contains("software") || renderer.contains("gdi generic") || renderer.contains("basic render")){error_="GPU context unavailable; using Native scaling";return false;}
     auto program=[&](const char* fragment){auto p=std::make_unique<QOpenGLShaderProgram>();if(!p->addShaderFromSourceCode(QOpenGLShader::Vertex,vertex) || !p->addShaderFromSourceCode(QOpenGLShader::Fragment,fragment) || !p->link()){error_=p->log();return std::unique_ptr<QOpenGLShaderProgram>{};}return p;};
     filter_=program(resample);copy_=program(presentFragment);if(!filter_ || !copy_)return false;
     glGenVertexArrays(1,&vao_);glGenTextures(1,&input_);glBindTexture(GL_TEXTURE_2D,input_);
     glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
     glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_WRAP_S,GL_CLAMP_TO_EDGE);glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_WRAP_T,GL_CLAMP_TO_EDGE);
-    const auto f=QOpenGLContext::currentContext()->format();
-    if(f.majorVersion()>3 || (f.majorVersion()==3 && f.minorVersion()>=3)){timer_=std::make_unique<QOpenGLTimerQuery>();if(!timer_->create())timer_.reset();}
+    glGenQueries(1,&query_);
     ready_=true;return true;
 }
 void GpuLanczos::release(){
-    if(timer_){timer_->destroy();timer_.reset();}horizontal_.reset();output_.reset();filter_.reset();copy_.reset();
+    if(query_)glDeleteQueries(1,&query_);query_=0;horizontal_.reset();output_.reset();filter_.reset();copy_.reset();
     if(input_)glDeleteTextures(1,&input_);if(vao_)glDeleteVertexArrays(1,&vao_);input_=vao_=0;inputSize_={};queryPending_=ready_=false;
 }
 void GpuLanczos::draw(QOpenGLShaderProgram& program,GLuint texture){
@@ -74,14 +75,15 @@ bool GpuLanczos::scale(const QImage& image,QSize target){
     if(inputSize_!=rgba.size()){glTexImage2D(GL_TEXTURE_2D,0,GL_RGBA8,rgba.width(),rgba.height(),0,GL_RGBA,GL_UNSIGNED_BYTE,rgba.constBits());inputSize_=rgba.size();}
     else glTexSubImage2D(GL_TEXTURE_2D,0,0,0,rgba.width(),rgba.height(),GL_RGBA,GL_UNSIGNED_BYTE,rgba.constBits());
     glPixelStorei(GL_UNPACK_ROW_LENGTH,0);
-    if(queryPending_ && timer_->isResultAvailable()){gpuMs_=double(timer_->waitForResult())/1e6;queryPending_=false;}
-    const bool query=timer_ && !queryPending_;if(query)timer_->begin();
+    GLint available=0;if(queryPending_)glGetQueryObjectiv(query_,GL_QUERY_RESULT_AVAILABLE,&available);
+    if(available){GLuint64 ns=0;glGetQueryObjectui64v(query_,GL_QUERY_RESULT,&ns);gpuMs_=double(ns)/1e6;queryPending_=false;}
+    const bool measure=query_ && !queryPending_;if(measure)glBeginQuery(GL_TIME_ELAPSED,query_);
     auto pass=[&](QOpenGLFramebufferObject& fbo,GLuint texture,QSize source,int axis){
         fbo.bind();glViewport(0,0,fbo.width(),fbo.height());filter_->bind();
         glUniform2i(filter_->uniformLocation("sourceSize"),source.width(),source.height());glUniform2i(filter_->uniformLocation("targetSize"),fbo.width(),fbo.height());filter_->setUniformValue("axis",axis);draw(*filter_,texture);
     };
     pass(*horizontal_,input_,image.size(),0);pass(*output_,horizontal_->texture(),middle,1);
-    if(query){timer_->end();queryPending_=true;}
+    if(measure){glEndQuery(GL_TIME_ELAPSED);queryPending_=true;}
     if(glGetError()!=GL_NO_ERROR){error_="GPU rendering failed; using Native scaling";return false;}return true;
 }
 void GpuLanczos::present(GLuint framebuffer,QSize viewport){

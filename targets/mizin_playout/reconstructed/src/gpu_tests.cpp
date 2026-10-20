@@ -19,7 +19,7 @@ static void pump(int ms){QElapsedTimer t;t.start();waitFor([&]{return t.elapsed(
 static double percentile(QList<double> values,double p){if(values.isEmpty())return -1;std::sort(values.begin(),values.end());return values[qMin(values.size()-1,qsizetype(p*(values.size()-1)))];}
 int runGpuTests(const QString& directory,const QString& resultPath){
     qApp->setQuitOnLastWindowClosed(false);QJsonArray tests,streams;QJsonObject device,quality;bool success=true;
-    auto record=[&](const QString& name,bool pass,QJsonObject details=QJsonObject{}){details["name"]=name;details["pass"]=pass;tests.append(details);success&=pass;};
+    auto record=[&](const QString& name,bool pass,QJsonObject details=QJsonObject{}){details["name"]=name;details["pass"]=pass;tests.append(details);success&=pass;qInfo().noquote()<<name<<(pass?"PASS":"FAIL")<<QJsonDocument(details).toJson(QJsonDocument::Compact);};
     QSurfaceFormat format;format.setVersion(3,3);format.setProfile(QSurfaceFormat::CoreProfile);
     QOpenGLContext context;context.setFormat(format);bool created=context.create();QOffscreenSurface offscreen;offscreen.setFormat(context.format());offscreen.create();
     const bool current=created && context.makeCurrent(&offscreen);record("opengl_context",current);

@@ -5,7 +5,6 @@
 #include <QOpenGLFunctions_3_3_Core>
 #include <QOpenGLFramebufferObject>
 #include <QOpenGLShaderProgram>
-#include <QOpenGLTimerQuery>
 #include <QOpenGLWidget>
 #include <QPointer>
 #include <memory>
@@ -21,11 +20,11 @@ public:
     QString error()const{return error_;}
     QJsonObject device()const{return device_;}
     double gpuMs()const{return gpuMs_;}
-    bool timerAvailable()const{return timer_ && timer_->isCreated();}
+    bool timerAvailable()const{return query_!=0;}
 private:
     std::unique_ptr<QOpenGLShaderProgram> filter_,copy_;
     std::unique_ptr<QOpenGLFramebufferObject> horizontal_,output_;
-    std::unique_ptr<QOpenGLTimerQuery> timer_;
+    GLuint query_=0;
     GLuint input_=0,vao_=0;
     QSize inputSize_;
     bool queryPending_=false,ready_=false;
