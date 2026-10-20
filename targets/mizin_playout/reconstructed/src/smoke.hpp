@@ -2,3 +2,4 @@
 #include <QString>
 int runSmoke(const QString& directory, const QString& resultPath);
 int runTransportTests(const QString& directory, const QString& resultPath);
+int runOutputTests(const QString& directory, const QString& resultPath);

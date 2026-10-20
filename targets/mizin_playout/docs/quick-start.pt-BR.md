@@ -15,3 +15,9 @@ Cada CUT ou FADE manual inicia uma cópia da lista atual naquele Program. Altera
 ## Idioma e desempenho
 
 Inglês é o padrão; Português (Brasil) pode ser escolhido durante a reprodução. As opções de decodificação automática por hardware e por CPU ficam em Configurações e exigem reinício. O suporte depende de codec, perfil e driver. Cortes encaminham quadros nativos compartilhados; transições convertem e compõem em CPU uma vez por Program. Composição em GPU, controle remoto, agendamento e validação de desempenho/sincronismo para produção seguem como próximas etapas. Pranchetas demonstram a interface, não reprodução em saídas físicas.
+
+## Resolução e redimensionamento das saídas
+
+As telas abrem em fullscreen no modo atual do sistema; o aplicativo não muda a resolução do desktop. O vídeo é ajustado sem distorção nem corte, com barras pretas se as proporções forem diferentes. Uma fonte 4K em tela 1080p é reduzida; 1080p em tela 4K é ampliado. A ampliação não recupera detalhes ausentes no original.
+
+Cada rota oferece Native (desempenho) ou Lanczos (redimensionamento SDR de maior qualidade em CPU). Native continua sendo o padrão. Lanczos usa um worker e mantém somente o quadro pendente mais recente; saídas espelhadas com o mesmo tamanho em pixels compartilham o resultado. Sob carga, quadros podem ser substituídos. Quadros de alta profundidade/HDR/transformados e tamanhos acima do limite do Lanczos usam Native. É reamostragem espacial, sem reconstrução por IA. Vazão em alta resolução, sincronismo AV e qualidade por GPU ainda precisam ser qualificados. Reabra/atualize a rota para aplicar mudanças de fonte, tela ou perfil; Escape fecha somente aquela saída. Telas conectadas/desconectadas são atualizadas automaticamente.
