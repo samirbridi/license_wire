@@ -1,0 +1,457 @@
+{
+  "version": "v0.14.1 (build 0035)",
+  "source_commit": "18df4d67f50848be0c59f5b6cddd531d2a9125e1",
+  "result": "PASS",
+  "checks": [
+    {
+      "name": "artifact hash MizinPlayout-0.14.1-build0035-windows-x64-preview-setup.exe",
+      "pass": true,
+      "detail": "3531d42f940e869be0aa674ae2326c35235f2c1bdf26173d2d131a7aa5424c15"
+    },
+    {
+      "name": "artifact hash MizinPlayout-0.14.1-build0035-windows-x64-preview-portable.zip",
+      "pass": true,
+      "detail": "8343dfa2cf2e2cfd50e98aa6c20773b61e6cf781cfab0b1a25f58663eedca9af"
+    },
+    {
+      "name": "all portable payload hashes match",
+      "pass": true,
+      "detail": 52
+    },
+    {
+      "name": "no development state SDK fixtures or NDI runtime shipped",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "EXE resource version matches build",
+      "pass": true,
+      "detail": "v0.14.1 (build 0035)"
+    },
+    {
+      "name": "metadata-default exits successfully",
+      "pass": true,
+      "detail": 0
+    },
+    {
+      "name": "default profile path is correct",
+      "pass": true,
+      "detail": {
+        "default_language": "en",
+        "portable": false,
+        "source_commit": "18df4d67f50848be0c59f5b6cddd531d2a9125e1",
+        "state_dir": "C:/Users/Avell Mizin/AppData/Local/Mizin/Mizin Playout",
+        "state_override": false,
+        "version": "v0.14.1 (build 0035)"
+      }
+    },
+    {
+      "name": "default metadata matches compiled version and source",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "metadata-portable exits successfully",
+      "pass": true,
+      "detail": 0
+    },
+    {
+      "name": "portable profile path is correct",
+      "pass": true,
+      "detail": {
+        "default_language": "en",
+        "portable": true,
+        "source_commit": "18df4d67f50848be0c59f5b6cddd531d2a9125e1",
+        "state_dir": "D:/REA - ENGENHARIA REVERSA/targets/mizin_playout/binaries/package-qa/31468269ff8040eb957eb0aeb4613c01/ZIP com espacos/MizinPlayout-0.14.1-build0035-windows-x64-preview/state",
+        "state_override": false,
+        "version": "v0.14.1 (build 0035)"
+      }
+    },
+    {
+      "name": "portable metadata matches compiled version and source",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "metadata-override exits successfully",
+      "pass": true,
+      "detail": 0
+    },
+    {
+      "name": "override profile path is correct",
+      "pass": true,
+      "detail": {
+        "default_language": "en",
+        "portable": true,
+        "source_commit": "18df4d67f50848be0c59f5b6cddd531d2a9125e1",
+        "state_dir": "D:/REA - ENGENHARIA REVERSA/targets/mizin_playout/binaries/package-qa/31468269ff8040eb957eb0aeb4613c01/explicit state",
+        "state_override": true,
+        "version": "v0.14.1 (build 0035)"
+      }
+    },
+    {
+      "name": "override metadata matches compiled version and source",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "runtime-info creates no user preferences",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "portable-ui exits successfully",
+      "pass": true,
+      "detail": 0
+    },
+    {
+      "name": "portable ui native checks pass",
+      "pass": true,
+      "detail": {
+        "file": "D:\\REA - ENGENHARIA REVERSA\\targets\\mizin_playout\\binaries\\package-qa\\31468269ff8040eb957eb0aeb4613c01\\ui.json",
+        "checks": 83
+      }
+    },
+    {
+      "name": "relocated runtime loads own Qt6Core.dll",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "relocated runtime loads own Qt6Widgets.dll",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "relocated runtime loads own qwindows.dll",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "no Qt DLL loaded from developer SDK",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "portable-readiness exits successfully",
+      "pass": true,
+      "detail": 0
+    },
+    {
+      "name": "portable readiness native checks pass",
+      "pass": true,
+      "detail": {
+        "file": "D:\\REA - ENGENHARIA REVERSA\\targets\\mizin_playout\\binaries\\package-qa\\31468269ff8040eb957eb0aeb4613c01\\readiness.json",
+        "checks": 24
+      }
+    },
+    {
+      "name": "portable-smoke exits successfully",
+      "pass": true,
+      "detail": 0
+    },
+    {
+      "name": "portable smoke native checks pass",
+      "pass": true,
+      "detail": {
+        "file": "D:\\REA - ENGENHARIA REVERSA\\targets\\mizin_playout\\binaries\\package-qa\\31468269ff8040eb957eb0aeb4613c01\\smoke.json",
+        "checks": 7
+      }
+    },
+    {
+      "name": "install exits successfully",
+      "pass": true,
+      "detail": 0
+    },
+    {
+      "name": "installer writes EXE and uninstaller",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "reinstall exits successfully",
+      "pass": true,
+      "detail": 0
+    },
+    {
+      "name": "reinstall preserves preferences and operator files",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "installed-startup exits successfully",
+      "pass": true,
+      "detail": 0
+    },
+    {
+      "name": "uninstall exits successfully",
+      "pass": true,
+      "detail": 0
+    },
+    {
+      "name": "uninstall removes owned application files",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "uninstall preserves user preferences and media",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "normal shell test has no preexisting installation to touch",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "normal-install exits successfully",
+      "pass": true,
+      "detail": 0
+    },
+    {
+      "name": "normal uninstall registry version and quotes are correct",
+      "pass": true,
+      "detail": {
+        "display_version": "v0.14.1 (build 0035)",
+        "uninstall": "\"D:\\REA - ENGENHARIA REVERSA\\targets\\mizin_playout\\binaries\\package-qa\\31468269ff8040eb957eb0aeb4613c01\\Normal shell installation\\Uninstall.exe\"",
+        "quiet_uninstall": "\"D:\\REA - ENGENHARIA REVERSA\\targets\\mizin_playout\\binaries\\package-qa\\31468269ff8040eb957eb0aeb4613c01\\Normal shell installation\\Uninstall.exe\" /S"
+      }
+    },
+    {
+      "name": "Start menu shortcut targets installed native EXE",
+      "pass": true,
+      "detail": "D:\\REA - ENGENHARIA REVERSA\\targets\\mizin_playout\\binaries\\package-qa\\31468269ff8040eb957eb0aeb4613c01\\Normal shell installation\\MizinPlayout.exe"
+    },
+    {
+      "name": "normal-uninstall exits successfully",
+      "pass": true,
+      "detail": 0
+    },
+    {
+      "name": "normal uninstall removes own registry and shortcuts",
+      "pass": true,
+      "detail": null
+    }
+  ],
+  "runs": [
+    {
+      "name": "metadata-default",
+      "exe": "D:\\REA - ENGENHARIA REVERSA\\targets\\mizin_playout\\binaries\\package-qa\\31468269ff8040eb957eb0aeb4613c01\\ZIP com espacos\\MizinPlayout-0.14.1-build0035-windows-x64-preview\\MizinPlayout.exe",
+      "arguments": "--runtime-info \"D:\\REA - ENGENHARIA REVERSA\\targets\\mizin_playout\\binaries\\package-qa\\31468269ff8040eb957eb0aeb4613c01\\default.json\"",
+      "exit": 0,
+      "loaded_modules": [],
+      "log": "D:\\REA - ENGENHARIA REVERSA\\targets\\mizin_playout\\binaries\\package-qa\\31468269ff8040eb957eb0aeb4613c01\\metadata-default.log"
+    },
+    {
+      "name": "metadata-portable",
+      "exe": "D:\\REA - ENGENHARIA REVERSA\\targets\\mizin_playout\\binaries\\package-qa\\31468269ff8040eb957eb0aeb4613c01\\ZIP com espacos\\MizinPlayout-0.14.1-build0035-windows-x64-preview\\MizinPlayout.exe",
+      "arguments": "--runtime-info \"D:\\REA - ENGENHARIA REVERSA\\targets\\mizin_playout\\binaries\\package-qa\\31468269ff8040eb957eb0aeb4613c01\\portable.json\" --portable",
+      "exit": 0,
+      "loaded_modules": [],
+      "log": "D:\\REA - ENGENHARIA REVERSA\\targets\\mizin_playout\\binaries\\package-qa\\31468269ff8040eb957eb0aeb4613c01\\metadata-portable.log"
+    },
+    {
+      "name": "metadata-override",
+      "exe": "D:\\REA - ENGENHARIA REVERSA\\targets\\mizin_playout\\binaries\\package-qa\\31468269ff8040eb957eb0aeb4613c01\\ZIP com espacos\\MizinPlayout-0.14.1-build0035-windows-x64-preview\\MizinPlayout.exe",
+      "arguments": "--runtime-info \"D:\\REA - ENGENHARIA REVERSA\\targets\\mizin_playout\\binaries\\package-qa\\31468269ff8040eb957eb0aeb4613c01\\override.json\" --portable --state-dir \"D:\\REA - ENGENHARIA REVERSA\\targets\\mizin_playout\\binaries\\package-qa\\31468269ff8040eb957eb0aeb4613c01\\explicit state\"",
+      "exit": 0,
+      "loaded_modules": [],
+      "log": "D:\\REA - ENGENHARIA REVERSA\\targets\\mizin_playout\\binaries\\package-qa\\31468269ff8040eb957eb0aeb4613c01\\metadata-override.log"
+    },
+    {
+      "name": "portable-ui",
+      "exe": "D:\\REA - ENGENHARIA REVERSA\\targets\\mizin_playout\\binaries\\package-qa\\31468269ff8040eb957eb0aeb4613c01\\ZIP com espacos\\MizinPlayout-0.14.1-build0035-windows-x64-preview\\MizinPlayout.exe",
+      "arguments": "--ui-test --fixtures \"D:\\REA - ENGENHARIA REVERSA\\targets\\mizin_playout\\binaries\\fixtures\" --result \"D:\\REA - ENGENHARIA REVERSA\\targets\\mizin_playout\\binaries\\package-qa\\31468269ff8040eb957eb0aeb4613c01\\ui.json\" --state-dir \"D:\\REA - ENGENHARIA REVERSA\\targets\\mizin_playout\\binaries\\package-qa\\31468269ff8040eb957eb0aeb4613c01\\ui-state\"",
+      "exit": 0,
+      "loaded_modules": [
+        "D:\\REA - ENGENHARIA REVERSA\\targets\\mizin_playout\\binaries\\package-qa\\31468269ff8040eb957eb0aeb4613c01\\ZIP com espacos\\MizinPlayout-0.14.1-build0035-windows-x64-preview\\MizinPlayout.exe",
+        "C:\\Windows\\SYSTEM32\\ntdll.dll",
+        "C:\\Windows\\System32\\KERNEL32.DLL",
+        "C:\\Windows\\System32\\KERNELBASE.dll",
+        "C:\\Windows\\System32\\ucrtbase.dll",
+        "D:\\REA - ENGENHARIA REVERSA\\targets\\mizin_playout\\binaries\\package-qa\\31468269ff8040eb957eb0aeb4613c01\\ZIP com espacos\\MizinPlayout-0.14.1-build0035-windows-x64-preview\\Qt6MultimediaWidgets.dll",
+        "D:\\REA - ENGENHARIA REVERSA\\targets\\mizin_playout\\binaries\\package-qa\\31468269ff8040eb957eb0aeb4613c01\\ZIP com espacos\\MizinPlayout-0.14.1-build0035-windows-x64-preview\\Qt6OpenGLWidgets.dll",
+        "C:\\Windows\\System32\\SHELL32.dll",
+        "C:\\Windows\\SYSTEM32\\pdh.dll",
+        "C:\\Windows\\System32\\msvcp_win.dll",
+        "C:\\Windows\\System32\\advapi32.dll",
+        "C:\\Windows\\System32\\USER32.dll",
+        "C:\\Windows\\System32\\msvcrt.dll",
+        "C:\\Windows\\System32\\win32u.dll",
+        "C:\\Windows\\System32\\sechost.dll",
+        "C:\\Windows\\System32\\GDI32.dll",
+        "C:\\Windows\\System32\\RPCRT4.dll",
+        "C:\\Windows\\System32\\gdi32full.dll",
+        "C:\\Windows\\System32\\bcrypt.dll",
+        "C:\\Windows\\SYSTEM32\\dxgi.dll",
+        "D:\\REA - ENGENHARIA REVERSA\\targets\\mizin_playout\\binaries\\package-qa\\31468269ff8040eb957eb0aeb4613c01\\ZIP com espacos\\MizinPlayout-0.14.1-build0035-windows-x64-preview\\Qt6Multimedia.dll",
+        "D:\\REA - ENGENHARIA REVERSA\\targets\\mizin_playout\\binaries\\package-qa\\31468269ff8040eb957eb0aeb4613c01\\ZIP com espacos\\MizinPlayout-0.14.1-build0035-windows-x64-preview\\Qt6OpenGL.dll",
+        "D:\\REA - ENGENHARIA REVERSA\\targets\\mizin_playout\\binaries\\package-qa\\31468269ff8040eb957eb0aeb4613c01\\ZIP com espacos\\MizinPlayout-0.14.1-build0035-windows-x64-preview\\Qt6Widgets.dll",
+        "C:\\Windows\\System32\\ole32.dll",
+        "D:\\REA - ENGENHARIA REVERSA\\targets\\mizin_playout\\binaries\\package-qa\\31468269ff8040eb957eb0aeb4613c01\\ZIP com espacos\\MizinPlayout-0.14.1-build0035-windows-x64-preview\\Qt6Gui.dll",
+        "C:\\Windows\\System32\\combase.dll",
+        "C:\\Windows\\SYSTEM32\\MSVCP140.dll",
+        "C:\\Windows\\SYSTEM32\\VCRUNTIME140.dll",
+        "C:\\Windows\\SYSTEM32\\VCRUNTIME140_1.dll",
+        "D:\\REA - ENGENHARIA REVERSA\\targets\\mizin_playout\\binaries\\package-qa\\31468269ff8040eb957eb0aeb4613c01\\ZIP com espacos\\MizinPlayout-0.14.1-build0035-windows-x64-preview\\Qt6Core.dll",
+        "C:\\Windows\\System32\\WS2_32.dll",
+        "C:\\Windows\\System32\\OLEAUT32.dll",
+        "C:\\Windows\\SYSTEM32\\AVRT.dll",
+        "C:\\Windows\\SYSTEM32\\PROPSYS.dll",
+        "D:\\REA - ENGENHARIA REVERSA\\targets\\mizin_playout\\binaries\\package-qa\\31468269ff8040eb957eb0aeb4613c01\\ZIP com espacos\\MizinPlayout-0.14.1-build0035-windows-x64-preview\\Qt6Network.dll",
+        "C:\\Windows\\SYSTEM32\\UxTheme.dll",
+        "C:\\Windows\\SYSTEM32\\dwmapi.dll",
+        "C:\\Windows\\SYSTEM32\\MSVCP140_1.dll",
+        "C:\\Windows\\SYSTEM32\\d3d12.dll",
+        "C:\\Windows\\SYSTEM32\\d3d11.dll",
+        "C:\\Windows\\SYSTEM32\\DWrite.dll",
+        "C:\\Windows\\SYSTEM32\\MSVCP140_2.dll",
+        "C:\\Windows\\SYSTEM32\\MPR.dll",
+        "C:\\Windows\\SYSTEM32\\USERENV.dll",
+        "C:\\Windows\\SYSTEM32\\AUTHZ.dll",
+        "C:\\Windows\\SYSTEM32\\NETAPI32.dll",
+        "C:\\Windows\\SYSTEM32\\VERSION.dll",
+        "C:\\Windows\\SYSTEM32\\WINMM.dll",
+        "C:\\Windows\\SYSTEM32\\IPHLPAPI.DLL",
+        "C:\\Windows\\SYSTEM32\\DNSAPI.dll",
+        "C:\\Windows\\SYSTEM32\\Secur32.dll",
+        "C:\\Windows\\SYSTEM32\\WINHTTP.dll",
+        "C:\\Windows\\SYSTEM32\\kernel.appcore.dll",
+        "C:\\Windows\\SYSTEM32\\SSPICLI.DLL",
+        "D:\\REA - ENGENHARIA REVERSA\\targets\\mizin_playout\\binaries\\package-qa\\31468269ff8040eb957eb0aeb4613c01\\ZIP com espacos\\MizinPlayout-0.14.1-build0035-windows-x64-preview\\icuuc.dll",
+        "C:\\Windows\\SYSTEM32\\CRYPTBASE.DLL",
+        "C:\\Windows\\SYSTEM32\\NETUTILS.DLL",
+        "C:\\Windows\\SYSTEM32\\SRVCLI.DLL",
+        "C:\\Windows\\SYSTEM32\\icu.DLL",
+        "C:\\Windows\\System32\\IMM32.DLL",
+        "C:\\Windows\\System32\\bcryptPrimitives.dll",
+        "C:\\Windows\\System32\\NSI.dll",
+        "C:\\Windows\\SYSTEM32\\windows.storage.dll",
+        "C:\\Windows\\SYSTEM32\\Wldp.dll",
+        "C:\\Windows\\System32\\SHCORE.dll",
+        "C:\\Windows\\System32\\shlwapi.dll",
+        "C:\\Windows\\SYSTEM32\\profapi.dll",
+        "D:\\REA - ENGENHARIA REVERSA\\targets\\mizin_playout\\binaries\\package-qa\\31468269ff8040eb957eb0aeb4613c01\\ZIP com espacos\\MizinPlayout-0.14.1-build0035-windows-x64-preview\\platforms\\qwindows.dll",
+        "C:\\Windows\\System32\\SETUPAPI.dll",
+        "C:\\Windows\\System32\\cfgmgr32.dll",
+        "C:\\Windows\\System32\\COMDLG32.dll",
+        "C:\\Windows\\SYSTEM32\\WTSAPI32.dll",
+        "C:\\Windows\\WinSxS\\amd64_microsoft.windows.common-controls_6595b64144ccf1df_5.82.19041.6280_none_792d7c952443c49a\\COMCTL32.dll",
+        "C:\\Windows\\SYSTEM32\\d3d9.dll",
+        "C:\\Windows\\SYSTEM32\\UIAutomationCore.DLL",
+        "C:\\Windows\\SYSTEM32\\powrprof.dll",
+        "C:\\Windows\\SYSTEM32\\UMPDC.dll",
+        "C:\\Windows\\System32\\MSCTF.dll",
+        "C:\\Windows\\SYSTEM32\\DEVOBJ.dll",
+        "C:\\Windows\\System32\\WINTRUST.dll",
+        "C:\\Windows\\System32\\CRYPT32.dll",
+        "C:\\Windows\\SYSTEM32\\MSASN1.dll",
+        "C:\\Windows\\System32\\clbcatq.dll",
+        "C:\\Windows\\System32\\Windows.UI.dll",
+        "C:\\Windows\\System32\\WindowManagementAPI.dll",
+        "C:\\Windows\\System32\\TextInputFramework.dll",
+        "C:\\Windows\\System32\\InputHost.dll",
+        "C:\\Windows\\SYSTEM32\\wintypes.dll",
+        "C:\\Windows\\SYSTEM32\\twinapi.appcore.dll",
+        "C:\\Windows\\System32\\CoreMessaging.dll",
+        "C:\\Windows\\System32\\CoreUIComponents.dll",
+        "C:\\Windows\\SYSTEM32\\ntmarta.dll",
+        "C:\\Windows\\System32\\Windows.UI.Immersive.dll",
+        "D:\\REA - ENGENHARIA REVERSA\\targets\\mizin_playout\\binaries\\package-qa\\31468269ff8040eb957eb0aeb4613c01\\ZIP com espacos\\MizinPlayout-0.14.1-build0035-windows-x64-preview\\styles\\qmodernwindowsstyle.dll",
+        "D:\\REA - ENGENHARIA REVERSA\\targets\\mizin_playout\\binaries\\package-qa\\31468269ff8040eb957eb0aeb4613c01\\ZIP com espacos\\MizinPlayout-0.14.1-build0035-windows-x64-preview\\multimedia\\ffmpegmediaplugin.dll",
+        "C:\\Windows\\SYSTEM32\\MF.dll",
+        "C:\\Windows\\SYSTEM32\\MFReadWrite.dll",
+        "C:\\Windows\\SYSTEM32\\MFPlat.DLL",
+        "C:\\Windows\\SYSTEM32\\dxva2.dll",
+        "D:\\REA - ENGENHARIA REVERSA\\targets\\mizin_playout\\binaries\\package-qa\\31468269ff8040eb957eb0aeb4613c01\\ZIP com espacos\\MizinPlayout-0.14.1-build0035-windows-x64-preview\\swresample-5.dll",
+        "D:\\REA - ENGENHARIA REVERSA\\targets\\mizin_playout\\binaries\\package-qa\\31468269ff8040eb957eb0aeb4613c01\\ZIP com espacos\\MizinPlayout-0.14.1-build0035-windows-x64-preview\\swscale-8.dll",
+        "D:\\REA - ENGENHARIA REVERSA\\targets\\mizin_playout\\binaries\\package-qa\\31468269ff8040eb957eb0aeb4613c01\\ZIP com espacos\\MizinPlayout-0.14.1-build0035-windows-x64-preview\\avformat-61.dll",
+        "D:\\REA - ENGENHARIA REVERSA\\targets\\mizin_playout\\binaries\\package-qa\\31468269ff8040eb957eb0aeb4613c01\\ZIP com espacos\\MizinPlayout-0.14.1-build0035-windows-x64-preview\\avutil-59.dll",
+        "D:\\REA - ENGENHARIA REVERSA\\targets\\mizin_playout\\binaries\\package-qa\\31468269ff8040eb957eb0aeb4613c01\\ZIP com espacos\\MizinPlayout-0.14.1-build0035-windows-x64-preview\\avcodec-61.dll",
+        "C:\\Windows\\SYSTEM32\\MFCORE.DLL",
+        "C:\\Windows\\SYSTEM32\\ksuser.dll",
+        "C:\\Windows\\SYSTEM32\\RTWorkQ.DLL",
+        "C:\\Windows\\System32\\MMDevApi.dll",
+        "C:\\Windows\\SYSTEM32\\AUDIOSES.DLL",
+        "C:\\Windows\\SYSTEM32\\resourcepolicyclient.dll",
+        "C:\\Windows\\system32\\IconCodecService.dll",
+        "C:\\Windows\\SYSTEM32\\WindowsCodecs.dll",
+        "C:\\Windows\\SYSTEM32\\cryptnet.dll",
+        "C:\\Windows\\System32\\imagehlp.dll",
+        "C:\\Windows\\SYSTEM32\\CRYPTSP.dll",
+        "C:\\Windows\\system32\\rsaenh.dll",
+        "C:\\Windows\\system32\\dataexchange.dll",
+        "C:\\Windows\\system32\\dcomp.dll"
+      ],
+      "log": "D:\\REA - ENGENHARIA REVERSA\\targets\\mizin_playout\\binaries\\package-qa\\31468269ff8040eb957eb0aeb4613c01\\portable-ui.log"
+    },
+    {
+      "name": "portable-readiness",
+      "exe": "D:\\REA - ENGENHARIA REVERSA\\targets\\mizin_playout\\binaries\\package-qa\\31468269ff8040eb957eb0aeb4613c01\\ZIP com espacos\\MizinPlayout-0.14.1-build0035-windows-x64-preview\\MizinPlayout.exe",
+      "arguments": "--readiness-test --fixtures \"D:\\REA - ENGENHARIA REVERSA\\targets\\mizin_playout\\binaries\" --result \"D:\\REA - ENGENHARIA REVERSA\\targets\\mizin_playout\\binaries\\package-qa\\31468269ff8040eb957eb0aeb4613c01\\readiness.json\" --state-dir \"D:\\REA - ENGENHARIA REVERSA\\targets\\mizin_playout\\binaries\\package-qa\\31468269ff8040eb957eb0aeb4613c01\\readiness-state\"",
+      "exit": 0,
+      "loaded_modules": [],
+      "log": "D:\\REA - ENGENHARIA REVERSA\\targets\\mizin_playout\\binaries\\package-qa\\31468269ff8040eb957eb0aeb4613c01\\portable-readiness.log"
+    },
+    {
+      "name": "portable-smoke",
+      "exe": "D:\\REA - ENGENHARIA REVERSA\\targets\\mizin_playout\\binaries\\package-qa\\31468269ff8040eb957eb0aeb4613c01\\ZIP com espacos\\MizinPlayout-0.14.1-build0035-windows-x64-preview\\MizinPlayout.exe",
+      "arguments": "--smoke-test --fixtures \"D:\\REA - ENGENHARIA REVERSA\\targets\\mizin_playout\\binaries\\fixtures\" --result \"D:\\REA - ENGENHARIA REVERSA\\targets\\mizin_playout\\binaries\\package-qa\\31468269ff8040eb957eb0aeb4613c01\\smoke.json\" --state-dir \"D:\\REA - ENGENHARIA REVERSA\\targets\\mizin_playout\\binaries\\package-qa\\31468269ff8040eb957eb0aeb4613c01\\smoke-state\" --cpu",
+      "exit": 0,
+      "loaded_modules": [],
+      "log": "D:\\REA - ENGENHARIA REVERSA\\targets\\mizin_playout\\binaries\\package-qa\\31468269ff8040eb957eb0aeb4613c01\\portable-smoke.log"
+    },
+    {
+      "name": "install",
+      "exe": "D:\\REA - ENGENHARIA REVERSA\\targets\\mizin_playout\\releases\\MizinPlayout-0.14.1-build0035-windows-x64-preview\\MizinPlayout-0.14.1-build0035-windows-x64-preview-setup.exe",
+      "arguments": "/S /QA /D=D:\\REA - ENGENHARIA REVERSA\\targets\\mizin_playout\\binaries\\package-qa\\31468269ff8040eb957eb0aeb4613c01\\Instalacao teste",
+      "exit": 0,
+      "loaded_modules": [],
+      "log": "D:\\REA - ENGENHARIA REVERSA\\targets\\mizin_playout\\binaries\\package-qa\\31468269ff8040eb957eb0aeb4613c01\\install.log"
+    },
+    {
+      "name": "reinstall",
+      "exe": "D:\\REA - ENGENHARIA REVERSA\\targets\\mizin_playout\\releases\\MizinPlayout-0.14.1-build0035-windows-x64-preview\\MizinPlayout-0.14.1-build0035-windows-x64-preview-setup.exe",
+      "arguments": "/S /QA /D=D:\\REA - ENGENHARIA REVERSA\\targets\\mizin_playout\\binaries\\package-qa\\31468269ff8040eb957eb0aeb4613c01\\Instalacao teste",
+      "exit": 0,
+      "loaded_modules": [],
+      "log": "D:\\REA - ENGENHARIA REVERSA\\targets\\mizin_playout\\binaries\\package-qa\\31468269ff8040eb957eb0aeb4613c01\\reinstall.log"
+    },
+    {
+      "name": "installed-startup",
+      "exe": "D:\\REA - ENGENHARIA REVERSA\\targets\\mizin_playout\\binaries\\package-qa\\31468269ff8040eb957eb0aeb4613c01\\Instalacao teste\\MizinPlayout.exe",
+      "arguments": "--portable --runtime-info \"D:\\REA - ENGENHARIA REVERSA\\targets\\mizin_playout\\binaries\\package-qa\\31468269ff8040eb957eb0aeb4613c01\\installed.json\"",
+      "exit": 0,
+      "loaded_modules": [],
+      "log": "D:\\REA - ENGENHARIA REVERSA\\targets\\mizin_playout\\binaries\\package-qa\\31468269ff8040eb957eb0aeb4613c01\\installed-startup.log"
+    },
+    {
+      "name": "uninstall",
+      "exe": "D:\\REA - ENGENHARIA REVERSA\\targets\\mizin_playout\\binaries\\package-qa\\31468269ff8040eb957eb0aeb4613c01\\Instalacao teste\\Uninstall.exe",
+      "arguments": "/S _?=D:\\REA - ENGENHARIA REVERSA\\targets\\mizin_playout\\binaries\\package-qa\\31468269ff8040eb957eb0aeb4613c01\\Instalacao teste",
+      "exit": 0,
+      "loaded_modules": [],
+      "log": "D:\\REA - ENGENHARIA REVERSA\\targets\\mizin_playout\\binaries\\package-qa\\31468269ff8040eb957eb0aeb4613c01\\uninstall.log"
+    },
+    {
+      "name": "normal-install",
+      "exe": "D:\\REA - ENGENHARIA REVERSA\\targets\\mizin_playout\\releases\\MizinPlayout-0.14.1-build0035-windows-x64-preview\\MizinPlayout-0.14.1-build0035-windows-x64-preview-setup.exe",
+      "arguments": "/S /D=D:\\REA - ENGENHARIA REVERSA\\targets\\mizin_playout\\binaries\\package-qa\\31468269ff8040eb957eb0aeb4613c01\\Normal shell installation",
+      "exit": 0,
+      "loaded_modules": [],
+      "log": "D:\\REA - ENGENHARIA REVERSA\\targets\\mizin_playout\\binaries\\package-qa\\31468269ff8040eb957eb0aeb4613c01\\normal-install.log"
+    },
+    {
+      "name": "normal-uninstall",
+      "exe": "D:\\REA - ENGENHARIA REVERSA\\targets\\mizin_playout\\binaries\\package-qa\\31468269ff8040eb957eb0aeb4613c01\\Normal shell installation\\Uninstall.exe",
+      "arguments": "/S _?=D:\\REA - ENGENHARIA REVERSA\\targets\\mizin_playout\\binaries\\package-qa\\31468269ff8040eb957eb0aeb4613c01\\Normal shell installation",
+      "exit": 0,
+      "loaded_modules": [],
+      "log": "D:\\REA - ENGENHARIA REVERSA\\targets\\mizin_playout\\binaries\\package-qa\\31468269ff8040eb957eb0aeb4613c01\\normal-uninstall.log"
+    }
+  ],
+  "work": "D:\\REA - ENGENHARIA REVERSA\\targets\\mizin_playout\\binaries\\package-qa\\31468269ff8040eb957eb0aeb4613c01",
+  "shell_registration_tested": true,
+  "scope": "Local relocated package, isolated /QA install/reinstall/uninstall and optional normal per-user shell registration. Existing Windows runtime. No clean VM, prerequisite installation, signing or physical-output qualification.",
+  "runner_sha256": "9dcedc7c80564f1f10a24328dbeacb30b3440ad7bb136ed7564283c545e3df0f"
+}

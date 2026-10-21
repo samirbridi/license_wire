@@ -1,5 +1,33 @@
 # CHANGELOG — Mizin Playout
 
+## v0.14.1 (build 0035) - 2026-10-20
+
+### 💥 Breaking Changes
+- None.
+
+### ✨ Features
+- None.
+
+### 🐛 Fixes
+- fix: corrige comando de desinstalacao e valida registro e atalhos Windows (18df4d67f50848be0c59f5b6cddd531d2a9125e1)
+
+### ⚡ Improvements
+- None.
+
+## v0.14.0 (build 0034) - 2026-10-20
+
+### 💥 Breaking Changes
+- None.
+
+### ✨ Features
+- feat: cria instalador Windows e pacote portatil com perfis e versao nativa (5275b328ca5b3242eb34a6c30b90d3916cc5d883)
+
+### 🐛 Fixes
+- None.
+
+### ⚡ Improvements
+- improve: registra unidades decimais memoria GPU e validacao do build 0033 (9d668f78aeccb4428185ae1cdbf3f13e8e2fd980)
+
 ## v0.13.0 (build 0033) - 2026-10-20
 
 ### 💥 Breaking Changes

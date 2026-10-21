@@ -1,0 +1,31 @@
+{
+  "version": "v0.14.1 (build 0035)",
+  "source_commit": "18df4d67f50848be0c59f5b6cddd531d2a9125e1",
+  "executable_sha256": "9f1bed8f3c750e9a9e06fb59d41c94ca1845121e43a1f6bc064599848f6e2019",
+  "architecture": "x64",
+  "channel": "private-preview",
+  "public_release_ready": false,
+  "remaining": [
+    "signed release",
+    "complete corresponding dependency source archive/rebuild qualification",
+    "clean Windows machine",
+    "physical display/audio/AV sync",
+    "ISSUE-001 NDI receiver timestamps"
+  ],
+  "optional_ndi": "Official NDI runtime must be installed separately; no NDI DLL is bundled.",
+  "settings": "Default per-user AppLocalDataLocation; --portable uses adjacent state/; --state-dir has precedence.",
+  "artifacts": [
+    {
+      "file": "MizinPlayout-0.14.1-build0035-windows-x64-preview-setup.exe",
+      "bytes": 47377789,
+      "sha256": "3531d42f940e869be0aa674ae2326c35235f2c1bdf26173d2d131a7aa5424c15"
+    },
+    {
+      "file": "MizinPlayout-0.14.1-build0035-windows-x64-preview-portable.zip",
+      "bytes": 47204361,
+      "sha256": "8343dfa2cf2e2cfd50e98aa6c20773b61e6cf781cfab0b1a25f58663eedca9af"
+    }
+  ],
+  "release": "releases/MizinPlayout-0.14.1-build0035-windows-x64-preview",
+  "payload_files": 53
+}

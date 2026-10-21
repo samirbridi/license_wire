@@ -11,4 +11,8 @@ This target contains original application code. No Azimuth implementation or art
 - BtbN FFmpeg GPL shared build is a **QA-only tool**, downloaded into ignored binaries/qa to generate synthetic fixtures. It is not copied to the application package.
 - The bundled Python runtime is used for build orchestration and validation, not required by the compiled application at runtime.
 
-This is a local development package, not a published/signed installer. Production distribution requires the complete dependency/source notice set and packaging validation. No commercial subscription was purchased.
+Windows private previews use a target-private, SHA-256-pinned NSIS 3.13 compiler (zlib compressor). Its original COPYING notice is included; the compiler is free for any use and is not installed machine-wide. The official Microsoft VC++ x64 redistributable is bundled in prerequisites/ only after validating its Microsoft Authenticode signature; developer/debug CRT DLLs are not copied. Setup can offer the official runtime if required. The original app icon/Windows version resource contains no third-party artwork.
+
+Packages include original Qt LGPL/GPL/exception and FFmpeg LGPL texts, supplied Qt SDK SPDX SBOMs, OMT and NDI-header notices, exact deployed FFmpeg configuration/license, original application source for the recorded commit, and hashes of shipped files. The NDI runtime remains separate and optional. Source/notices provenance is described in packaging/notices/README.txt.
+
+These are unsigned private previews, not public/signed releases. Public distribution still requires complete matching dependency-source archives, rebuild/relink qualification and final binary-notice audit, plus packaging/clean-machine validation. No commercial subscription was purchased. See [release gates](release-roadmap.md) and [packaging architecture](../notes/ADR-014-windows-preview-packaging.md).

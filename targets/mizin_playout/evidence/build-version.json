@@ -1,17 +1,12 @@
 {
-  "display": "v0.13.0 (build 0033)",
-  "previous": "v0.12.1 (build 0032)",
-  "source_commit": "97949546b898d8eb697496cf89a3983842208be7",
+  "display": "v0.14.1 (build 0035)",
+  "previous": "v0.14.0 (build 0034)",
+  "source_commit": "18df4d67f50848be0c59f5b6cddd531d2a9125e1",
   "commits": [
     {
-      "sha": "d3ed5e053c2dd4c7d308d2ee8cfbfa490693d343",
-      "subject": "improve: registra layout minimalista metricas e validacao do build 0032",
-      "kind": "improve"
-    },
-    {
-      "sha": "97949546b898d8eb697496cf89a3983842208be7",
-      "subject": "feat: mostra memoria em MB GB e adiciona uso de memoria GPU por DXGI",
-      "kind": "feat"
+      "sha": "18df4d67f50848be0c59f5b6cddd531d2a9125e1",
+      "subject": "fix: corrige comando de desinstalacao e valida registro e atalhos Windows",
+      "kind": "fix"
     }
   ],
   "date": "2026-10-20",

@@ -1,0 +1,10 @@
+{
+  "nsis_version": "3.13",
+  "nsis_url": "https://sourceforge.net/projects/nsis/files/NSIS%203/3.13/nsis-3.13.zip/download",
+  "nsis_archive_sha256": "ba63dffc4410ee89193e1cb5a41989991bd77c61068da17e3156d136b7b0b3d8",
+  "vc_redist_version": "14.51.36231.0",
+  "vc_redist_sha256": "90e48ade404e4576d023abfa374f323555f233982a8805ea9ac63dca9491a16b",
+  "vc_redist_signature": "Valid",
+  "vc_redist_publisher": "CN=Microsoft Corporation, O=Microsoft Corporation, L=Redmond, S=Washington, C=US",
+  "scope": "Target-private compiler; official signed VC redistributable bundled, not executed on this host by packaging."
+}

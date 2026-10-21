@@ -1,0 +1,35 @@
+{
+  "version": "v0.14.1 (build 0035)",
+  "result": "ABORTED_REPORT_SERIALIZATION",
+  "exit": 1,
+  "validator_commit": "18df4d6",
+  "work": "D:\\REA - ENGENHARIA REVERSA\\targets\\mizin_playout\\binaries\\package-qa\\ff34ed65dd864da298baf2e4303dcec8",
+  "log": "binaries/qa/package-test-0035-attempt1.log",
+  "reason": "Interrupted with Ctrl+C after ConvertTo-Json recursively serialized a PowerShell registry-provider object, emitted a depth warning and consumed about 2.36 GB. No complete package report was produced. This attempt is not counted as a package PASS.",
+  "native_reports": [
+    {
+      "suite": "ui",
+      "file": "D:\\REA - ENGENHARIA REVERSA\\targets\\mizin_playout\\binaries\\package-qa\\ff34ed65dd864da298baf2e4303dcec8\\ui.json",
+      "result": "PASS",
+      "checks": 83,
+      "sha256": "1af33ced652b8690f36d22ba1d758f1f4a68c45ae4cbae72fbfed03db231ed3e"
+    },
+    {
+      "suite": "readiness",
+      "file": "D:\\REA - ENGENHARIA REVERSA\\targets\\mizin_playout\\binaries\\package-qa\\ff34ed65dd864da298baf2e4303dcec8\\readiness.json",
+      "result": "PASS",
+      "checks": 24,
+      "sha256": "65eefcb434725b70f4afdf784fb5adc4ab9e8b761cc1de0cad08b41370a526b7"
+    },
+    {
+      "suite": "smoke",
+      "file": "D:\\REA - ENGENHARIA REVERSA\\targets\\mizin_playout\\binaries\\package-qa\\ff34ed65dd864da298baf2e4303dcec8\\smoke.json",
+      "result": "PASS",
+      "checks": 7,
+      "sha256": "7c1de97bbedbc4542c4586c2f4bf229242d80b0f22bce4035661e82c2c7614f1"
+    }
+  ],
+  "observed_cleanup": "Own registry key and Start-menu folder were absent before interruption.",
+  "fixed_by": "31f4372",
+  "final_report": "evidence/package-validation-0035.json"
+}

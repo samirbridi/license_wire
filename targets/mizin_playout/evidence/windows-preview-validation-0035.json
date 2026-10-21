@@ -1,0 +1,138 @@
+{
+  "result": "PASS_WINDOWS_PRIVATE_PREVIEW_PUBLIC_QUALIFICATION_PENDING",
+  "version": "v0.14.1 (build 0035)",
+  "source_commit": "18df4d67f50848be0c59f5b6cddd531d2a9125e1",
+  "recorded_utc": "2026-10-21T00:15:31.782678+00:00",
+  "package": {
+    "version": "v0.14.1 (build 0035)",
+    "source_commit": "18df4d67f50848be0c59f5b6cddd531d2a9125e1",
+    "executable_sha256": "9f1bed8f3c750e9a9e06fb59d41c94ca1845121e43a1f6bc064599848f6e2019",
+    "architecture": "x64",
+    "channel": "private-preview",
+    "public_release_ready": false,
+    "remaining": [
+      "signed release",
+      "complete corresponding dependency source archive/rebuild qualification",
+      "clean Windows machine",
+      "physical display/audio/AV sync",
+      "ISSUE-001 NDI receiver timestamps"
+    ],
+    "optional_ndi": "Official NDI runtime must be installed separately; no NDI DLL is bundled.",
+    "settings": "Default per-user AppLocalDataLocation; --portable uses adjacent state/; --state-dir has precedence.",
+    "artifacts": [
+      {
+        "file": "MizinPlayout-0.14.1-build0035-windows-x64-preview-setup.exe",
+        "bytes": 47377789,
+        "sha256": "3531d42f940e869be0aa674ae2326c35235f2c1bdf26173d2d131a7aa5424c15"
+      },
+      {
+        "file": "MizinPlayout-0.14.1-build0035-windows-x64-preview-portable.zip",
+        "bytes": 47204361,
+        "sha256": "8343dfa2cf2e2cfd50e98aa6c20773b61e6cf781cfab0b1a25f58663eedca9af"
+      }
+    ],
+    "release": "releases/MizinPlayout-0.14.1-build0035-windows-x64-preview",
+    "payload_files": 53
+  },
+  "package_checks_passed": 39,
+  "native_checks_passed": 114,
+  "suites": [
+    {
+      "suite": "ui",
+      "mode": "auto",
+      "checks": 83,
+      "result": "PASS",
+      "file": "evidence/package-ui-auto-0035.json",
+      "sha256": "1af33ced652b8690f36d22ba1d758f1f4a68c45ae4cbae72fbfed03db231ed3e"
+    },
+    {
+      "suite": "readiness",
+      "mode": "auto",
+      "checks": 24,
+      "result": "PASS",
+      "file": "evidence/package-readiness-auto-0035.json",
+      "sha256": "70f1278f2211b733fae020e5d4ee26dcb616c6b52d2afccaa5eb141aef2a955a"
+    },
+    {
+      "suite": "smoke",
+      "mode": "cpu",
+      "checks": 7,
+      "result": "PASS",
+      "file": "evidence/package-smoke-cpu-0035.json",
+      "sha256": "1855ec1c8c2ba18f5c4d063f4659fd0c2145c090fce7f9bef50bc0482b1551c0"
+    }
+  ],
+  "native_widget_captures": [
+    {
+      "file": "evidence/package-0035-dynamic-ui.mizinshow",
+      "sha256": "e744712b1ec4954090ba529c85ca25139da740b66950c5088d450f5738bb177f"
+    },
+    {
+      "file": "evidence/package-0035-dynamic-ui.png",
+      "sha256": "35ff215189c070cf2e72457452865efbe5f5ad69da629418444b668317367d9a"
+    },
+    {
+      "file": "evidence/package-0035-engine-ui.json",
+      "sha256": "4d491752c4019440f6579dbed44f40fae3126d7a478bae979f97511afcc69eb8"
+    },
+    {
+      "file": "evidence/package-0035-engine-ui.png",
+      "sha256": "badbe2a65bc46b96e41a3a8eec6c5022198d5b8f6d6e91e962dbcc87dfd88357"
+    },
+    {
+      "file": "evidence/package-0035-five-ui.png",
+      "sha256": "54d81648d8698f1761fd902ba5bc1247b10a34e202a7742caa593d3e033924de"
+    },
+    {
+      "file": "evidence/package-0035-outputs-five-ui.png",
+      "sha256": "a920140353844e245f6e8e77590cb186a627202ff44911cf363bfcf8c40fcaa3"
+    },
+    {
+      "file": "evidence/package-0035-single-engine-ui.json",
+      "sha256": "ea87591209b671faefe861dfc68f95842ad4e216ecc1cdff9070a691069d826e"
+    },
+    {
+      "file": "evidence/package-0035-single-engine-ui.png",
+      "sha256": "c1f75454be8ec58af885ef6a46a48ffb51b964fca669271c06ed7af5e1514ebe"
+    },
+    {
+      "file": "evidence/package-0035-single-ui.png",
+      "sha256": "319c69c34109a2a055239fe575bed606dfe6f150867ae212ae9b95d2bbdd7e47"
+    }
+  ],
+  "package_test_report": "evidence/package-validation-0035.json",
+  "version_policy_checks_passed": 4,
+  "full_historical_regression": {
+    "version": "v0.13.0 (build 0033)",
+    "checks": 446,
+    "file": "evidence/validation-build-0033.json",
+    "scope": "Historical full playback/network/output matrix; not rerun or attributed to this package."
+  },
+  "known_issues": [
+    {
+      "id": "ISSUE-001",
+      "status": "OPEN",
+      "file": "notes/ISSUE-001-ndi-receiver-timestamps.md"
+    }
+  ],
+  "qualification": {
+    "relocated_zip": "PASS; Windows-only PATH, own Qt DLLs, real media",
+    "profiles": "PASS default/portable/override metadata",
+    "isolated_install_reinstall_uninstall": "PASS; preferences and unknown files preserved",
+    "normal_per_user_shell_registration": "PASS; shortcut and quoted registry commands; removed afterwards",
+    "clean_windows": "NOT_RUN",
+    "missing_vc_prerequisite_uac": "NOT_RUN; current host already has required signed runtime",
+    "signing": "UNSIGNED_PRIVATE_PREVIEW",
+    "physical_output_av_sync": "NOT_QUALIFIED",
+    "external_lan": "NOT_QUALIFIED",
+    "amd_other_os": "NOT_QUALIFIED",
+    "dependency_corresponding_source_rebuild": "PENDING_PUBLIC_DISTRIBUTION"
+  },
+  "scope": "Windows x64 private preview. Native tests use generated fixtures; hardware video panes may be absent from widget captures. Not a production or maximum-load qualification.",
+  "package_validator": {
+    "commit": "31f4372",
+    "sha256": "9dcedc7c80564f1f10a24328dbeacb30b3440ad7bb136ed7564283c545e3df0f",
+    "script": "scripts/test-package.ps1"
+  },
+  "retained_report_attempt": "evidence/package-test-0035-attempt1.json"
+}

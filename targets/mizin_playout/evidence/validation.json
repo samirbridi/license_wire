@@ -1,750 +1,138 @@
 {
-  "result": "PASS_DECIMAL_GPU_MEMORY_KNOWN_NDI_ISSUE_OPEN",
-  "version": "v0.13.0 (build 0033)",
-  "source_commit": "97949546b898d8eb697496cf89a3983842208be7",
-  "recorded_utc": "2026-10-20T23:45:43.336267+00:00",
-  "functional_checks_passed": 446,
-  "functional_checks_attempted": 446,
-  "native_ui_checks_passed": 166,
+  "result": "PASS_WINDOWS_PRIVATE_PREVIEW_PUBLIC_QUALIFICATION_PENDING",
+  "version": "v0.14.1 (build 0035)",
+  "source_commit": "18df4d67f50848be0c59f5b6cddd531d2a9125e1",
+  "recorded_utc": "2026-10-21T00:15:31.782678+00:00",
+  "package": {
+    "version": "v0.14.1 (build 0035)",
+    "source_commit": "18df4d67f50848be0c59f5b6cddd531d2a9125e1",
+    "executable_sha256": "9f1bed8f3c750e9a9e06fb59d41c94ca1845121e43a1f6bc064599848f6e2019",
+    "architecture": "x64",
+    "channel": "private-preview",
+    "public_release_ready": false,
+    "remaining": [
+      "signed release",
+      "complete corresponding dependency source archive/rebuild qualification",
+      "clean Windows machine",
+      "physical display/audio/AV sync",
+      "ISSUE-001 NDI receiver timestamps"
+    ],
+    "optional_ndi": "Official NDI runtime must be installed separately; no NDI DLL is bundled.",
+    "settings": "Default per-user AppLocalDataLocation; --portable uses adjacent state/; --state-dir has precedence.",
+    "artifacts": [
+      {
+        "file": "MizinPlayout-0.14.1-build0035-windows-x64-preview-setup.exe",
+        "bytes": 47377789,
+        "sha256": "3531d42f940e869be0aa674ae2326c35235f2c1bdf26173d2d131a7aa5424c15"
+      },
+      {
+        "file": "MizinPlayout-0.14.1-build0035-windows-x64-preview-portable.zip",
+        "bytes": 47204361,
+        "sha256": "8343dfa2cf2e2cfd50e98aa6c20773b61e6cf781cfab0b1a25f58663eedca9af"
+      }
+    ],
+    "release": "releases/MizinPlayout-0.14.1-build0035-windows-x64-preview",
+    "payload_files": 53
+  },
+  "package_checks_passed": 39,
+  "native_checks_passed": 114,
   "suites": [
     {
       "suite": "ui",
       "mode": "auto",
       "checks": 83,
-      "passed": 83,
       "result": "PASS",
-      "failed_checks": [],
-      "file": "evidence/ui-auto-0033.json",
-      "sha256": "2a58cf3ea57987372c879898a349e1690de5fbd6e8349f958c67905420595784"
+      "file": "evidence/package-ui-auto-0035.json",
+      "sha256": "1af33ced652b8690f36d22ba1d758f1f4a68c45ae4cbae72fbfed03db231ed3e"
     },
     {
       "suite": "readiness",
       "mode": "auto",
       "checks": 24,
-      "passed": 24,
       "result": "PASS",
-      "failed_checks": [],
-      "file": "evidence/readiness-auto-0033.json",
-      "sha256": "e42f0ba4410975846fb151e76e5d48b6181718c292b69aea3e0940df29f00b58"
-    },
-    {
-      "suite": "smoke",
-      "mode": "auto",
-      "checks": 7,
-      "passed": 7,
-      "result": "PASS",
-      "failed_checks": [],
-      "file": "evidence/smoke-auto-0033.json",
-      "sha256": "ace10d1f570d9e36e772bc50557b90144e080f6dd31266b258d682e1f1aeb8ee"
-    },
-    {
-      "suite": "transport",
-      "mode": "auto",
-      "checks": 31,
-      "passed": 31,
-      "result": "PASS",
-      "failed_checks": [],
-      "file": "evidence/transport-auto-0033.json",
-      "sha256": "cbfc1f99a742a5a412dc89ee7d8cdce232439ecdc083a7093ac43fa2584e27e5"
-    },
-    {
-      "suite": "network",
-      "mode": "auto",
-      "checks": 38,
-      "passed": 38,
-      "result": "PASS",
-      "failed_checks": [],
-      "file": "evidence/network-auto-0033.json",
-      "sha256": "256825ed96235838188709646478b667a9e24f9d2ac542cf9d05d458180d9807"
-    },
-    {
-      "suite": "output",
-      "mode": "auto",
-      "checks": 19,
-      "passed": 19,
-      "result": "PASS",
-      "failed_checks": [],
-      "file": "evidence/output-auto-0033.json",
-      "sha256": "ce1d81a43a897df460cb68aaf01b08028c97dee9e83fcce4a9b03995ace9c6b8"
-    },
-    {
-      "suite": "gpu",
-      "mode": "auto",
-      "checks": 21,
-      "passed": 21,
-      "result": "PASS",
-      "failed_checks": [],
-      "file": "evidence/gpu-auto-0033.json",
-      "sha256": "abfcc2cbacfef68a24edf255c5daad24f999479e0dfeb4681d5a5ed276c11f6c"
-    },
-    {
-      "suite": "readiness",
-      "mode": "cpu",
-      "checks": 24,
-      "passed": 24,
-      "result": "PASS",
-      "failed_checks": [],
-      "file": "evidence/readiness-cpu-0033.json",
-      "sha256": "fdda1d974697fa4ce74addda21d83bf5e226ab85ade5a1bb33b916f1d34306d6"
-    },
-    {
-      "suite": "ui",
-      "mode": "cpu",
-      "checks": 83,
-      "passed": 83,
-      "result": "PASS",
-      "failed_checks": [],
-      "file": "evidence/ui-cpu-0033.json",
-      "sha256": "2dd52866cee2d11c43be2044e0c8d9ac3da419fca0bc200d9f715f1ebc7e6fb5"
+      "file": "evidence/package-readiness-auto-0035.json",
+      "sha256": "70f1278f2211b733fae020e5d4ee26dcb616c6b52d2afccaa5eb141aef2a955a"
     },
     {
       "suite": "smoke",
       "mode": "cpu",
       "checks": 7,
-      "passed": 7,
       "result": "PASS",
-      "failed_checks": [],
-      "file": "evidence/smoke-cpu-0033.json",
-      "sha256": "61c9cdbd4d2bca3e9d77002c21c3678c4c627a445fc3b644e8afa85bf3ac7221"
-    },
-    {
-      "suite": "transport",
-      "mode": "cpu",
-      "checks": 31,
-      "passed": 31,
-      "result": "PASS",
-      "failed_checks": [],
-      "file": "evidence/transport-cpu-0033.json",
-      "sha256": "6fb582cba54e15f0e1c83ce4b7c43127cc2b1f5fa631ccf15c2cf335147833c9"
-    },
-    {
-      "suite": "network",
-      "mode": "cpu",
-      "checks": 38,
-      "passed": 38,
-      "result": "PASS",
-      "failed_checks": [],
-      "file": "evidence/network-cpu-0033.json",
-      "sha256": "198d5990fd9594d492acad6e1ba934821e1567da564908889ad5b5b843ed73a1"
-    },
-    {
-      "suite": "output",
-      "mode": "cpu",
-      "checks": 19,
-      "passed": 19,
-      "result": "PASS",
-      "failed_checks": [],
-      "file": "evidence/output-cpu-0033.json",
-      "sha256": "53ff54f1ca24c029847a144861e7ff27a6d607f541202232f3c4105a80c0925e"
-    },
-    {
-      "suite": "gpu",
-      "mode": "cpu",
-      "checks": 21,
-      "passed": 21,
-      "result": "PASS",
-      "failed_checks": [],
-      "file": "evidence/gpu-cpu-0033.json",
-      "sha256": "0a0d9f9314f2b0bfb3aefe9a187d6b6019a1ce06af108097910ca1964331a4db"
+      "file": "evidence/package-smoke-cpu-0035.json",
+      "sha256": "1855ec1c8c2ba18f5c4d063f4659fd0c2145c090fce7f9bef50bc0482b1551c0"
     }
   ],
-  "network_failures": [],
+  "native_widget_captures": [
+    {
+      "file": "evidence/package-0035-dynamic-ui.mizinshow",
+      "sha256": "e744712b1ec4954090ba529c85ca25139da740b66950c5088d450f5738bb177f"
+    },
+    {
+      "file": "evidence/package-0035-dynamic-ui.png",
+      "sha256": "35ff215189c070cf2e72457452865efbe5f5ad69da629418444b668317367d9a"
+    },
+    {
+      "file": "evidence/package-0035-engine-ui.json",
+      "sha256": "4d491752c4019440f6579dbed44f40fae3126d7a478bae979f97511afcc69eb8"
+    },
+    {
+      "file": "evidence/package-0035-engine-ui.png",
+      "sha256": "badbe2a65bc46b96e41a3a8eec6c5022198d5b8f6d6e91e962dbcc87dfd88357"
+    },
+    {
+      "file": "evidence/package-0035-five-ui.png",
+      "sha256": "54d81648d8698f1761fd902ba5bc1247b10a34e202a7742caa593d3e033924de"
+    },
+    {
+      "file": "evidence/package-0035-outputs-five-ui.png",
+      "sha256": "a920140353844e245f6e8e77590cb186a627202ff44911cf363bfcf8c40fcaa3"
+    },
+    {
+      "file": "evidence/package-0035-single-engine-ui.json",
+      "sha256": "ea87591209b671faefe861dfc68f95842ad4e216ecc1cdff9070a691069d826e"
+    },
+    {
+      "file": "evidence/package-0035-single-engine-ui.png",
+      "sha256": "c1f75454be8ec58af885ef6a46a48ffb51b964fca669271c06ed7af5e1514ebe"
+    },
+    {
+      "file": "evidence/package-0035-single-ui.png",
+      "sha256": "319c69c34109a2a055239fe575bed606dfe6f150867ae212ae9b95d2bbdd7e47"
+    }
+  ],
+  "package_test_report": "evidence/package-validation-0035.json",
+  "version_policy_checks_passed": 4,
+  "full_historical_regression": {
+    "version": "v0.13.0 (build 0033)",
+    "checks": 446,
+    "file": "evidence/validation-build-0033.json",
+    "scope": "Historical full playback/network/output matrix; not rerun or attributed to this package."
+  },
   "known_issues": [
     {
       "id": "ISSUE-001",
-      "file": "notes/ISSUE-001-ndi-receiver-timestamps.md",
-      "status": "OPEN; no network implementation fix in this stage"
+      "status": "OPEN",
+      "file": "notes/ISSUE-001-ndi-receiver-timestamps.md"
     }
   ],
-  "catalog_keys": 303,
-  "matched_en_pt_catalogs": true,
-  "version_policy_tests_passed": 4,
-  "native_boards": [
-    {
-      "file": "design/boards/01-main-en.png",
-      "width": 1600,
-      "height": 1000,
-      "sha256": "c0e27ab9c1ae28472d94855b0b419e8060df28e251f282ec872ee595ba3d5c5c",
-      "brand_pixels_match": true
-    },
-    {
-      "file": "design/boards/02-outputs-en.png",
-      "width": 1600,
-      "height": 1000,
-      "sha256": "96816c769b11b29fb0ad74cc28bfdefaa77bd01423ee85ff0b7ea8b97288916d",
-      "brand_pixels_match": true
-    },
-    {
-      "file": "design/boards/03-library-en.png",
-      "width": 1600,
-      "height": 1000,
-      "sha256": "216f39c13b8b47970f222c0b3e23ae9d3188df4a693c6b1a107430cf217c2a97",
-      "brand_pixels_match": true
-    },
-    {
-      "file": "design/boards/04-main-pt-BR.png",
-      "width": 1600,
-      "height": 1000,
-      "sha256": "0b010b14a432c68c3169569bcd77fb629db00789094d5ca1a1cdbf06567ddb75",
-      "brand_pixels_match": true
-    },
-    {
-      "file": "design/boards/05-edit-en.png",
-      "width": 1600,
-      "height": 1000,
-      "sha256": "d29869c82848a70ab7a4eb442785fca2f8f062a1471bb02f2c69d2f2dffa7bec",
-      "brand_pixels_match": true
-    },
-    {
-      "file": "design/boards/06-edit-pt-BR.png",
-      "width": 1600,
-      "height": 1000,
-      "sha256": "68411a042acbc26307e7a063f995032d6ea6859c4af464f540438c5b9811398e",
-      "brand_pixels_match": true
-    },
-    {
-      "file": "design/boards/07-audio-en.png",
-      "width": 1600,
-      "height": 1000,
-      "sha256": "b35847a02788be4851d3500fce774c55ef19ce76fa3ea5306f4973aa09b30129",
-      "brand_pixels_match": true
-    },
-    {
-      "file": "design/boards/08-audio-pt-BR.png",
-      "width": 1600,
-      "height": 1000,
-      "sha256": "903ced552338f8bcf70868722652333f6e45d7db4a9a180aae026cc7c9bae15e",
-      "brand_pixels_match": true
-    },
-    {
-      "file": "design/boards/09-network-en.png",
-      "width": 1600,
-      "height": 1000,
-      "sha256": "1a2de1b83aa1a7f522dc125cd868cee9e55d480d5092f29563b209df21371fae",
-      "brand_pixels_match": true
-    },
-    {
-      "file": "design/boards/10-network-pt-BR.png",
-      "width": 1600,
-      "height": 1000,
-      "sha256": "ad7f0eb8e80e5f01ebbe3173532e2ef82c3bfb1262fd3e6bdd624f68903da711",
-      "brand_pixels_match": true
-    },
-    {
-      "file": "design/boards/11-engine-en.png",
-      "width": 1600,
-      "height": 1000,
-      "sha256": "ba8ac19de396ac61f8847903557cd8c2831dbee9ab14a61fd490f70f644be57c",
-      "brand_pixels_match": true
-    },
-    {
-      "file": "design/boards/12-engine-pt-BR.png",
-      "width": 1600,
-      "height": 1000,
-      "sha256": "688522862ee114b054b6eeddaa34432c3f78df9a6f39a412d55d977a14b15456",
-      "brand_pixels_match": true
-    },
-    {
-      "file": "design/boards/compact/01-main-en.png",
-      "width": 1280,
-      "height": 800,
-      "sha256": "328a06164b5688770dea955936173d27926e82e632af506684f03d87ffa888df",
-      "brand_pixels_match": true
-    },
-    {
-      "file": "design/boards/compact/04-main-pt-BR.png",
-      "width": 1280,
-      "height": 800,
-      "sha256": "520d2d91dc9b6869e51f2ff8cce44aee4bc00fce44be259ac196dd6ad36be9ad",
-      "brand_pixels_match": true
-    },
-    {
-      "file": "design/boards/five-programs/01-main-en.png",
-      "width": 1600,
-      "height": 1000,
-      "sha256": "ceb77a04a48fdbcd8acdfd9f88c4bab7693a79b5144617a09f4d337dce4caeac",
-      "brand_pixels_match": true
-    },
-    {
-      "file": "design/boards/five-programs/02-outputs-en.png",
-      "width": 1600,
-      "height": 1000,
-      "sha256": "8c941e84861a17d9b237a9c50cff0138084e49e52a548c34463710c5795506ea",
-      "brand_pixels_match": true
-    },
-    {
-      "file": "design/boards/five-programs/04-main-pt-BR.png",
-      "width": 1600,
-      "height": 1000,
-      "sha256": "bd1e6ff5bfb36cad0512d0981836bd9ec2394398698e9fbc11d9c2756610f6b0",
-      "brand_pixels_match": true
-    },
-    {
-      "file": "design/boards/five-programs/compact/01-main-en.png",
-      "width": 1280,
-      "height": 800,
-      "sha256": "869065b10624c751106819c28c8b293450cd89364e06ba460c3731beff0fa36a",
-      "brand_pixels_match": true
-    },
-    {
-      "file": "design/boards/five-programs/compact/04-main-pt-BR.png",
-      "width": 1280,
-      "height": 800,
-      "sha256": "a831176d0b94f68a0e8c9b75c50566b887fcb0d7f2fdda9fc9e0e397c3e7e08f",
-      "brand_pixels_match": true
-    },
-    {
-      "file": "design/boards/five-programs/sequential/01-main-en.png",
-      "width": 1600,
-      "height": 1000,
-      "sha256": "69c4a000339fbea70c886121dc43aa95bd6ef059e4bb39c264ab689a9bf2b4b8",
-      "brand_pixels_match": true
-    },
-    {
-      "file": "design/boards/five-programs/sequential/04-main-pt-BR.png",
-      "width": 1600,
-      "height": 1000,
-      "sha256": "6ee07533896883a6047abb1923cde67e264870fdec30821eeec16d050a8f92d2",
-      "brand_pixels_match": true
-    },
-    {
-      "file": "design/boards/five-programs/sequential/compact/01-main-en.png",
-      "width": 1280,
-      "height": 800,
-      "sha256": "2b81c3d71d0ea021ae7c466e12bd0f2ed1f789ea3e81afe4e26b223303223753",
-      "brand_pixels_match": true
-    },
-    {
-      "file": "design/boards/five-programs/sequential/compact/04-main-pt-BR.png",
-      "width": 1280,
-      "height": 800,
-      "sha256": "408eadf23e72b6d65d9ba90af3164c841c4be6a72ccd588b791aa63a993b15ae",
-      "brand_pixels_match": true
-    },
-    {
-      "file": "design/boards/multi-output/01-main-en.png",
-      "width": 1600,
-      "height": 1000,
-      "sha256": "fa8a51cbb30ca21bb5aa34a0d039b15281dd278336f79488904af711298d259a",
-      "brand_pixels_match": true
-    },
-    {
-      "file": "design/boards/multi-output/02-outputs-en.png",
-      "width": 1600,
-      "height": 1000,
-      "sha256": "802e85b3bf6bb4bef3525ec8f4828acc8d0348663371f9257c1eb0c206b0a390",
-      "brand_pixels_match": true
-    },
-    {
-      "file": "design/boards/multi-output/03-library-en.png",
-      "width": 1600,
-      "height": 1000,
-      "sha256": "07c174909351f076e4c138fb37b74d739f5df1e95eb2a43356ae5aebcf3b974a",
-      "brand_pixels_match": true
-    },
-    {
-      "file": "design/boards/multi-output/04-main-pt-BR.png",
-      "width": 1600,
-      "height": 1000,
-      "sha256": "66a311aa351d20fa48b5472c542fead389de317d391ddf720c70fc298561f6b7",
-      "brand_pixels_match": true
-    },
-    {
-      "file": "design/boards/multi-output/05-edit-en.png",
-      "width": 1600,
-      "height": 1000,
-      "sha256": "85da177733e0a296477caf5037a07630601e9ae73a93978cd54458e101dda2ff",
-      "brand_pixels_match": true
-    },
-    {
-      "file": "design/boards/multi-output/06-edit-pt-BR.png",
-      "width": 1600,
-      "height": 1000,
-      "sha256": "c7c0cda554db46c526a6c48f9f6468d62ede404fd3288758d30fc0d3001cf8e6",
-      "brand_pixels_match": true
-    },
-    {
-      "file": "design/boards/multi-output/07-audio-en.png",
-      "width": 1600,
-      "height": 1000,
-      "sha256": "1865a171dae3757ef342adf8d49695b4892819bfb7b391398d925aa2c2c0f17a",
-      "brand_pixels_match": true
-    },
-    {
-      "file": "design/boards/multi-output/08-audio-pt-BR.png",
-      "width": 1600,
-      "height": 1000,
-      "sha256": "49ebcd87257ebb5e09329298041503ac251ef8b927f055930127e22a8e854a23",
-      "brand_pixels_match": true
-    },
-    {
-      "file": "design/boards/multi-output/09-network-en.png",
-      "width": 1600,
-      "height": 1000,
-      "sha256": "6bafdb73a3ebf06e0c3d0390df76d4a5a1e0c657bcc9432be422f0f362fb26df",
-      "brand_pixels_match": true
-    },
-    {
-      "file": "design/boards/multi-output/10-network-pt-BR.png",
-      "width": 1600,
-      "height": 1000,
-      "sha256": "2ad12b55aeb79397b884054aecb5ca96e7d1955df2d3429136f568195fb9450b",
-      "brand_pixels_match": true
-    },
-    {
-      "file": "design/boards/multi-output/11-engine-en.png",
-      "width": 1600,
-      "height": 1000,
-      "sha256": "7c5021ae1925628ca1eebede99c671dc1852ef4457aef74f79b94702e66434fb",
-      "brand_pixels_match": true
-    },
-    {
-      "file": "design/boards/multi-output/12-engine-pt-BR.png",
-      "width": 1600,
-      "height": 1000,
-      "sha256": "c9d4af867214b2b3a0792d715a74cc7b16dc621cbc6114ae4201a755092282ba",
-      "brand_pixels_match": true
-    },
-    {
-      "file": "design/boards/sequential/01-main-en.png",
-      "width": 1600,
-      "height": 1000,
-      "sha256": "93b5c435c671a2b4ff6d9546f16c2db58e4579216b49e5f28ece44f75d239f9e",
-      "brand_pixels_match": true
-    },
-    {
-      "file": "design/boards/sequential/04-main-pt-BR.png",
-      "width": 1600,
-      "height": 1000,
-      "sha256": "a809a4a92888242d505284a550e1713909be4ee4da662ba296c69499da881847",
-      "brand_pixels_match": true
-    },
-    {
-      "file": "design/boards/sequential/compact/01-main-en.png",
-      "width": 1280,
-      "height": 800,
-      "sha256": "c9318cd92a212564bd848da168d4e8679ce93a8bcdc06222c10bee2cbd3c48ea",
-      "brand_pixels_match": true
-    },
-    {
-      "file": "design/boards/sequential/compact/04-main-pt-BR.png",
-      "width": 1280,
-      "height": 800,
-      "sha256": "21859e63ac6363836943793082cbfa99e8f42f7e35a4733fbfb37682691733db",
-      "brand_pixels_match": true
-    }
-  ],
-  "live_widget_artifacts": [
-    {
-      "file": "evidence/single-ui-auto-0033.png",
-      "sha256": "2bbef92528e420f8fc34c03b3aa3c95b6dd566fb49be40b4aff971cc501a9ade",
-      "scope": "Native widget state; hardware video surfaces can be omitted, not physical-output proof."
-    },
-    {
-      "file": "evidence/single-engine-ui-auto-0033.png",
-      "sha256": "3695267b3ec836cceb302e407716173b472b419489f635ff52a0ac65d3b26f9a",
-      "scope": "Native widget state; hardware video surfaces can be omitted, not physical-output proof."
-    },
-    {
-      "file": "evidence/engine-ui-auto-0033.png",
-      "sha256": "92654a0c8e52eb338340c18221e22a8a9cf9d6b12b0f877db29f8fc6a018db11",
-      "scope": "Native widget state; hardware video surfaces can be omitted, not physical-output proof."
-    },
-    {
-      "file": "evidence/dynamic-ui-auto-0033.png",
-      "sha256": "fe3a5bc231c523178cc4e61b0902569814c92c72830a17975f90352ed3b56aac",
-      "scope": "Native widget state; hardware video surfaces can be omitted, not physical-output proof."
-    },
-    {
-      "file": "evidence/five-ui-auto-0033.png",
-      "sha256": "3e398fb2df2e9a2cd3bc2fae0dfb9512017fa78415798437a14b49cfca0c6362",
-      "scope": "Native widget state; hardware video surfaces can be omitted, not physical-output proof."
-    },
-    {
-      "file": "evidence/outputs-five-ui-auto-0033.png",
-      "sha256": "4b8213c181f021c4ea789f1fcca6c26b9dcaff38db2ba60d4b02acb7707e6bfb",
-      "scope": "Native widget state; hardware video surfaces can be omitted, not physical-output proof."
-    },
-    {
-      "file": "evidence/single-engine-ui-auto-0033.json",
-      "sha256": "0ce916970d3ae5d65311e60a703be8f0c6f8bf0a119ca670f53a36b8ff826ce8"
-    },
-    {
-      "file": "evidence/engine-ui-auto-0033.json",
-      "sha256": "01f875050cc043fadd4da7935a9d018e937681dd9df7720dda008c84ca9ab62c"
-    },
-    {
-      "file": "evidence/dynamic-ui-auto-0033.mizinshow",
-      "sha256": "e744712b1ec4954090ba529c85ca25139da740b66950c5088d450f5738bb177f"
-    },
-    {
-      "file": "evidence/single-ui-cpu-0033.png",
-      "sha256": "a6c20e5ef4c977022122c5838a0c78f5ef3f1134133bde34061d7735ef8bc760",
-      "scope": "Native widget state; hardware video surfaces can be omitted, not physical-output proof."
-    },
-    {
-      "file": "evidence/single-engine-ui-cpu-0033.png",
-      "sha256": "04b9ad33ccaf6902e09bee11bf46beb745130ecbe04d2c32f60ef462956959c2",
-      "scope": "Native widget state; hardware video surfaces can be omitted, not physical-output proof."
-    },
-    {
-      "file": "evidence/engine-ui-cpu-0033.png",
-      "sha256": "16263bf698b65d1cc5cccd9dc31a2b0f4b9ac26ef81b12f026090aae7fcf5e33",
-      "scope": "Native widget state; hardware video surfaces can be omitted, not physical-output proof."
-    },
-    {
-      "file": "evidence/dynamic-ui-cpu-0033.png",
-      "sha256": "d8759c1bb1cbed162028110ba5fdd83a4fa189135548734a73407912f47633c6",
-      "scope": "Native widget state; hardware video surfaces can be omitted, not physical-output proof."
-    },
-    {
-      "file": "evidence/five-ui-cpu-0033.png",
-      "sha256": "675c8b671db9149c6ea0eb8b72d41058ab09006e482c76921b08050dc52908fa",
-      "scope": "Native widget state; hardware video surfaces can be omitted, not physical-output proof."
-    },
-    {
-      "file": "evidence/outputs-five-ui-cpu-0033.png",
-      "sha256": "940f030d3f64f023198f7afd1133578e7f8bb1f2f680c9c766800a87a3de91f9",
-      "scope": "Native widget state; hardware video surfaces can be omitted, not physical-output proof."
-    },
-    {
-      "file": "evidence/single-engine-ui-cpu-0033.json",
-      "sha256": "e9e230264c76665303719f879266e815c7466b2cb5ac9741db21050df064c679"
-    },
-    {
-      "file": "evidence/engine-ui-cpu-0033.json",
-      "sha256": "73798daba1b17c0c8404dcb7199df39174852a8de89b02af0d5ba16b85716a67"
-    },
-    {
-      "file": "evidence/dynamic-ui-cpu-0033.mizinshow",
-      "sha256": "e744712b1ec4954090ba529c85ca25139da740b66950c5088d450f5738bb177f"
-    }
-  ],
-  "fixture_hashes": [
-    {
-      "file": "binaries/fixtures/01-h264.mp4",
-      "sha256": "2ae852d3eb029e42bef5b13aa9d9d9657f5884c8b7daf44f46da1d741dddc81f"
-    },
-    {
-      "file": "binaries/fixtures/02-hevc.mp4",
-      "sha256": "852d3c11953caafcbf5edcaf95a2bc33d2a7ee06f15a35e7f6f69023be6d3efc"
-    },
-    {
-      "file": "binaries/fixtures/03-h264.mkv",
-      "sha256": "34a8e75533571cebd041a36abb53aaef6c4065c5b9734924c25689b554f4e545"
-    },
-    {
-      "file": "binaries/fixtures/04-mjpeg.avi",
-      "sha256": "67047463b54c7b250874a9c5f2ceccf7368e29c16e3ba5ef48a7b53100bf5cd0"
-    },
-    {
-      "file": "binaries/fixtures/05-prores.mov",
-      "sha256": "6cc4b3f2d5bdca282ea5a5081ca31c3dd62fb096164c9dc0d4557a5fa77551d2"
-    },
-    {
-      "file": "binaries/resolution-fixtures/h264-1920x1080.mp4",
-      "sha256": "0f5588143dd898140579bc54fcb8244f59645c9723d92b831bade5fb0a1885f2"
-    },
-    {
-      "file": "binaries/resolution-fixtures/h264-3840x2160.mp4",
-      "sha256": "6ec6d00773bfea150620791e9e398b2dffd1df8a85102f85b1b042172c68ac57"
-    },
-    {
-      "file": "binaries/network-fixtures/01-h264.mp4",
-      "sha256": "d07831a4d796164fdcd8f883efb372a8c025419e2682375defdaa472b43b0bbd"
-    }
-  ],
-  "package": {
-    "executable_sha256": "f69a0c1c575f5c893294ebe2aae2d1eeb0e83b9a29b64c406a33c69ef26f0fb4",
-    "file_count": 30,
-    "bytes": 66495895,
-    "files": [
-      {
-        "file": "avcodec-61.dll",
-        "bytes": 13921592,
-        "sha256": "e419ac581dd7317dc49b54349827db26e479bc71a71fe7af7529086aa6fa7f60"
-      },
-      {
-        "file": "avformat-61.dll",
-        "bytes": 2642232,
-        "sha256": "570fe624961878fa08611335fe7f92b7ab898013e16ddb000e63dc7be1d6cd1b"
-      },
-      {
-        "file": "avutil-59.dll",
-        "bytes": 1198392,
-        "sha256": "c53a43cc7f15cf36e2143240302f2dcf0c10c9236e41ef6aba488d3986e90c96"
-      },
-      {
-        "file": "D3Dcompiler_47.dll",
-        "bytes": 4517376,
-        "sha256": "f642940ffb5dca7e548ba2270686798cf6b4c74b60e88bbb22f0991868cae3e5"
-      },
-      {
-        "file": "generic/qtuiotouchplugin.dll",
-        "bytes": 102712,
-        "sha256": "bf4efd69f22ad7b3f3bb79979e9fdef4182ef782e7ab2c4b80e6656bbe33e363"
-      },
-      {
-        "file": "icuuc.dll",
-        "bytes": 29696,
-        "sha256": "e76201d65fc58d1db0ec99bc8e875f47d692bcaa16bb6448b197bc86c08d1816"
-      },
-      {
-        "file": "imageformats/qgif.dll",
-        "bytes": 47928,
-        "sha256": "4fe24916a961587173c846055a34735b904900fb75716de4fa458c203da3e7ef"
-      },
-      {
-        "file": "imageformats/qico.dll",
-        "bytes": 45880,
-        "sha256": "0d79934047e06591b74201d826af72f6ab595f5df4705ad7f0c234c0e2cf3a32"
-      },
-      {
-        "file": "imageformats/qjpeg.dll",
-        "bytes": 577848,
-        "sha256": "004f456d513a6bfc58320652c326a023fa8fea905d26b642a561f7081442aff0"
-      },
-      {
-        "file": "libomt.dll",
-        "bytes": 6950400,
-        "sha256": "673b1d33222295f1c9190c54cefc89d5e322301702532e2c8fe78a16e8aa28da"
-      },
-      {
-        "file": "libvmx.dll",
-        "bytes": 540160,
-        "sha256": "effd2eb33a85689da940ab6744cf8931448445144c5d7991ac50908800af19be"
-      },
-      {
-        "file": "licenses/omt/LICENSE.txt",
-        "bytes": 1111,
-        "sha256": "616e62811c0395c0719bd77b2c2c4276a797e803f73d412e87c3834f2af8bda2"
-      },
-      {
-        "file": "MizinPlayout.exe",
-        "bytes": 912384,
-        "sha256": "f69a0c1c575f5c893294ebe2aae2d1eeb0e83b9a29b64c406a33c69ef26f0fb4"
-      },
-      {
-        "file": "multimedia/ffmpegmediaplugin.dll",
-        "bytes": 635704,
-        "sha256": "f9b77081dbe6557a89057735a0c7d8ed7268b6d60d9794b2890db55703a98fe1"
-      },
-      {
-        "file": "multimedia/windowsmediaplugin.dll",
-        "bytes": 291640,
-        "sha256": "049dbe8d45cdc3dcff82a6705da61fccf1022f162bd982224bcb81144bf02b13"
-      },
-      {
-        "file": "networkinformation/qnetworklistmanager.dll",
-        "bytes": 70968,
-        "sha256": "2f76ab1699bf9a1ef89404d054dc7325c4e18d4d27f52cd3ca3b5088d944eb18"
-      },
-      {
-        "file": "platforms/qwindows.dll",
-        "bytes": 997688,
-        "sha256": "540211565db496024246cb8a44437212e6b967f3ee7b899e888f41cc556bf041"
-      },
-      {
-        "file": "Qt6Core.dll",
-        "bytes": 10242360,
-        "sha256": "b98eea394a95563879b614dbd4432ce074b0fceeb154c3bae252f4e7a9376a40"
-      },
-      {
-        "file": "Qt6Gui.dll",
-        "bytes": 9494840,
-        "sha256": "28ca8b9e7d3d1c4e3cfafd6fe63877a05cf10202a240134a11f98384f01c9e37"
-      },
-      {
-        "file": "Qt6Multimedia.dll",
-        "bytes": 1241400,
-        "sha256": "97dbc2efc2dcc84ac8d6af1e7e6c4fcb23f8280af888a59d8667668c6b163416"
-      },
-      {
-        "file": "Qt6MultimediaWidgets.dll",
-        "bytes": 62264,
-        "sha256": "09fc6bd1dab4bd48fece8603ab0143e6e2af5af839b5b1af26970e3b35cf57ff"
-      },
-      {
-        "file": "Qt6Network.dll",
-        "bytes": 1766712,
-        "sha256": "905e1ce3947fadaad566b6deffe345daf7f6efbc57207ea7fcdbfa77669e3de6"
-      },
-      {
-        "file": "Qt6OpenGL.dll",
-        "bytes": 1977144,
-        "sha256": "a41b71127d07924ddda67e787e8765ebf60f217817199f1becdd63f3db88847e"
-      },
-      {
-        "file": "Qt6OpenGLWidgets.dll",
-        "bytes": 64312,
-        "sha256": "55e11e28c82b69ac67725ebdf05f0c703a2ea3b1443b141d37d537a34ac45e18"
-      },
-      {
-        "file": "Qt6Widgets.dll",
-        "bytes": 6576952,
-        "sha256": "f383fb6b3f6996efe23327ff607e7298fc47ee76e8b8ef8a65f8d2e0a91707e4"
-      },
-      {
-        "file": "styles/qmodernwindowsstyle.dll",
-        "bytes": 220984,
-        "sha256": "f9ddcd6f6319be76ec8ea1b95e6829cdc0f9600242b6bdd07babb0185e9762ab"
-      },
-      {
-        "file": "swresample-5.dll",
-        "bytes": 247096,
-        "sha256": "b516d8e9428e5afc8304e7087a673ed0289e87aba5e00f78e52af2d6b54c655e"
-      },
-      {
-        "file": "swscale-8.dll",
-        "bytes": 751928,
-        "sha256": "e9a7f5342fa2b157c20ba2483397f6fecca0d46f6453d651c8f76dc7cd72fe7a"
-      },
-      {
-        "file": "tls/qcertonlybackend.dll",
-        "bytes": 103224,
-        "sha256": "584392e25d46b6edc255e4c5849920da3e52c01172199def876284525587bb05"
-      },
-      {
-        "file": "tls/qschannelbackend.dll",
-        "bytes": 262968,
-        "sha256": "4632404cb87f860e7bb811f525685509127da8d05f398aada5b2b88318e4a621"
-      }
-    ]
+  "qualification": {
+    "relocated_zip": "PASS; Windows-only PATH, own Qt DLLs, real media",
+    "profiles": "PASS default/portable/override metadata",
+    "isolated_install_reinstall_uninstall": "PASS; preferences and unknown files preserved",
+    "normal_per_user_shell_registration": "PASS; shortcut and quoted registry commands; removed afterwards",
+    "clean_windows": "NOT_RUN",
+    "missing_vc_prerequisite_uac": "NOT_RUN; current host already has required signed runtime",
+    "signing": "UNSIGNED_PRIVATE_PREVIEW",
+    "physical_output_av_sync": "NOT_QUALIFIED",
+    "external_lan": "NOT_QUALIFIED",
+    "amd_other_os": "NOT_QUALIFIED",
+    "dependency_corresponding_source_rebuild": "PENDING_PUBLIC_DISTRIBUTION"
   },
-  "branding": {
-    "approved": "A",
-    "tool": "built-in image_gen.imagegen",
-    "boards": [
-      {
-        "file": "design/branding/proposals/2026-10-20-r1/A-monogram.png",
-        "sha256": "9e87eebcfa5289924f9ad78853ee2fb9cdd0f6ca923f8fd12896b8a3cc0c0f07"
-      },
-      {
-        "file": "design/branding/proposals/2026-10-20-r1/B-screens.png",
-        "sha256": "28c76ea3d4d7b92036d8366f0bb8d2cc9e701634eb08cc81ae63c3e9b90a2d6d"
-      },
-      {
-        "file": "design/branding/proposals/2026-10-20-r1/C-flow.png",
-        "sha256": "ce82121e80e5738a5b9d9f1a3b295d4beb70aaf586e5ea5fcc42bfb84c359e14"
-      }
-    ],
-    "vector_file": "design/branding/mizin-playout-symbol.svg",
-    "vector_sha256": "93a2de0a29629226f4bf4c542afb4022de26453053e545354cc15637775636e0",
-    "native_window_icon": true,
-    "executable_resource_icon_packaged": false
+  "scope": "Windows x64 private preview. Native tests use generated fixtures; hardware video panes may be absent from widget captures. Not a production or maximum-load qualification.",
+  "package_validator": {
+    "commit": "31f4372",
+    "sha256": "9dcedc7c80564f1f10a24328dbeacb30b3440ad7bb136ed7564283c545e3df0f",
+    "script": "scripts/test-package.ps1"
   },
-  "allocation_guards": {
-    "programs": 64,
-    "display_routes": 128
-  },
-  "functional_scenario": {
-    "programs": 3,
-    "multiview_programs": 5,
-    "floating_routes": 5,
-    "selected_sequential_boards": 8,
-    "process_usage": true,
-    "decimal_memory_units": true,
-    "dxgi_memory": true
-  },
-  "scope": "Local synthetic fixtures and in-process widgets. Not maximum concurrency, physical display/AV-sync, AMD, external LAN or production qualification. Transitions remain CPU; optional GPU scaling is separate."
+  "retained_report_attempt": "evidence/package-test-0035-attempt1.json"
 }

@@ -59,3 +59,15 @@ not a public or production-qualified release. ISSUE-001 remains open.
 
 Qt/FFmpeg source/license texts and SDK SBOM provenance are retained in the package;
 this record is technical scope, not a claim that public distribution review passed.
+
+## Executed checkpoint
+
+Build 0035 passed 39 package and 114 relocated UI/readiness/codec checks, including
+normal current-user shortcut/uninstall registration and cleanup. See
+evidence/windows-preview-0035.md. The native/package source is 18df4d6; the
+test-only logging correction 31f4372 bounds registry details to plain strings and
+records the validator hash. It does not rebuild or alter shipped binaries. The
+source ZIP represents the actual compilation commit; use the current repository
+test runner for shell-registration report generation. The first reporting attempt
+was interrupted during recursive PowerShell-provider serialization and retained
+separately; its functional outcomes were not substituted for the final passing run.
