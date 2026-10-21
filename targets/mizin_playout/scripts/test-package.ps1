@@ -100,7 +100,7 @@ try{
         try{
             $null=RunNative $setup ('/S /D='+$normal) 'normal-install'
             $entry=Get-ItemProperty -LiteralPath $key
-            Check 'normal uninstall registry version and quotes are correct' ($entry.DisplayVersion -eq $record.version -and $entry.UninstallString -eq ('"'+$normal+'\Uninstall.exe"') -and $entry.QuietUninstallString -eq ('"'+$normal+'\Uninstall.exe" /S')) $entry
+            Check 'normal uninstall registry version and quotes are correct' ($entry.DisplayVersion -eq $record.version -and $entry.UninstallString -eq ('"'+$normal+'\Uninstall.exe"') -and $entry.QuietUninstallString -eq ('"'+$normal+'\Uninstall.exe" /S')) @{display_version=$entry.DisplayVersion;uninstall=$entry.UninstallString;quiet_uninstall=$entry.QuietUninstallString}
             $shell=New-Object -ComObject WScript.Shell
             $shortcut=$shell.CreateShortcut((Join-Path $menu 'Mizin Playout.lnk'))
             Check 'Start menu shortcut targets installed native EXE' ($shortcut.TargetPath -eq (Join-Path $normal 'MizinPlayout.exe')) $shortcut.TargetPath
@@ -116,6 +116,7 @@ try{
     foreach($key in $saved.Keys){[Environment]::SetEnvironmentVariable($key,$saved[$key],'Process')}
     $report=[ordered]@{version=$record.version;source_commit=$record.source_commit;result=if($completed -and @($script:checks | Where-Object {-not $_.pass}).Count -eq 0 -and $script:checks.Count -ge 30){'PASS'}else{'FAIL'};checks=$script:checks;runs=$script:runs;work=$work;shell_registration_tested=[bool]$ShellRegistration;scope='Local relocated package, isolated /QA install/reinstall/uninstall and optional normal per-user shell registration. Existing Windows runtime. No clean VM, prerequisite installation, signing or physical-output qualification.'}
     $id=[regex]::Match($record.version,'build (\d+)').Groups[1].Value
+    $report['runner_sha256']=(Get-FileHash -LiteralPath $PSCommandPath -Algorithm SHA256).Hash.ToLowerInvariant()
     $report | ConvertTo-Json -Depth 12 | Set-Content -LiteralPath (Join-Path $playoutRoot "evidence/package-validation-$id.json") -Encoding utf8
 }
 [pscustomobject]$report | Select-Object version,result,@{n='checks';e={$_.checks.Count}},work | ConvertTo-Json
