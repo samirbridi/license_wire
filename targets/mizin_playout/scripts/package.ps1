@@ -13,7 +13,7 @@ if($signature.Status -ne 'Valid' -or $signature.SignerCertificate.Subject -notma
 $release=& $Python (Join-Path $PSScriptRoot 'package.py') stage --qt-root $QtRoot --vc-redist $VcRedist --nsis-root $compilerRoot
 if($LASTEXITCODE -ne 0){throw 'Package staging failed.'}
 $release=([string]$release).Trim()
-& (Join-Path $compilerRoot 'makensis.exe') /V3 "/DGENERATED=$release\payload.nsh" (Join-Path $playoutRoot 'packaging/windows.nsi')
+& (Join-Path $compilerRoot 'makensis.exe') /WX /V3 "/DGENERATED=$release\payload.nsh" (Join-Path $playoutRoot 'packaging/windows.nsi')
 if($LASTEXITCODE -ne 0){throw 'NSIS compilation failed; staged files retained.'}
 & $Python (Join-Path $PSScriptRoot 'package.py') finish --release $release
 if($LASTEXITCODE -ne 0){throw 'Package inventory validation failed.'}

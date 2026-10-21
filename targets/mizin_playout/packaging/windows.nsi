@@ -106,8 +106,8 @@ runtime_ready:
     WriteRegStr HKCU "Software\Microsoft\Windows\CurrentVersion\Uninstall\MizinPlayoutPreview" "DisplayName" "Mizin Playout (Preview)"
     WriteRegStr HKCU "Software\Microsoft\Windows\CurrentVersion\Uninstall\MizinPlayoutPreview" "DisplayVersion" "${APP_VERSION}"
     WriteRegStr HKCU "Software\Microsoft\Windows\CurrentVersion\Uninstall\MizinPlayoutPreview" "Publisher" "Mizin"
-    WriteRegStr HKCU "Software\Microsoft\Windows\CurrentVersion\Uninstall\MizinPlayoutPreview" "UninstallString" '$"$INSTDIR\Uninstall.exe$"'
-    WriteRegStr HKCU "Software\Microsoft\Windows\CurrentVersion\Uninstall\MizinPlayoutPreview" "QuietUninstallString" '$"$INSTDIR\Uninstall.exe$" /S'
+    WriteRegStr HKCU "Software\Microsoft\Windows\CurrentVersion\Uninstall\MizinPlayoutPreview" "UninstallString" '"$INSTDIR\Uninstall.exe"'
+    WriteRegStr HKCU "Software\Microsoft\Windows\CurrentVersion\Uninstall\MizinPlayoutPreview" "QuietUninstallString" '"$INSTDIR\Uninstall.exe" /S'
     WriteRegStr HKCU "Software\Microsoft\Windows\CurrentVersion\Uninstall\MizinPlayoutPreview" "DisplayIcon" "$INSTDIR\MizinPlayout.exe"
     WriteRegDWORD HKCU "Software\Microsoft\Windows\CurrentVersion\Uninstall\MizinPlayoutPreview" "NoModify" 1
     WriteRegDWORD HKCU "Software\Microsoft\Windows\CurrentVersion\Uninstall\MizinPlayoutPreview" "NoRepair" 1
