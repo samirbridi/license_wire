@@ -5,8 +5,7 @@ param([switch]$SkipPublish)
 $ErrorActionPreference='Stop'
 $root=Split-Path $PSScriptRoot -Parent
 $python='C:\Users\Avell Mizin\.cache\codex-runtimes\codex-primary-runtime\dependencies\python\python.exe'
-$wrangler=Get-Item -Path (Join-Path $env:LOCALAPPDATA 'npm-cache\_npx\*
-ode_modules\wranglerin\wrangler.js') -ErrorAction SilentlyContinue | Sort-Object LastWriteTime -Descending | Select-Object -First 1
+$wrangler=Get-Item -Path (Join-Path $env:LOCALAPPDATA 'npm-cache\_npx\*\node_modules\wrangler\bin\wrangler.js') -ErrorAction SilentlyContinue | Sort-Object LastWriteTime -Descending | Select-Object -First 1
 if(-not $wrangler){throw 'wrangler not found: run "npx wrangler --version" once.'}
 foreach($step in 'build','package','test-package','test-update-install'){
   & powershell -NoProfile -ExecutionPolicy Bypass -File (Join-Path $PSScriptRoot "$step.ps1")
