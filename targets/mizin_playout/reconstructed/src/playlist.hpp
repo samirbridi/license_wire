@@ -30,6 +30,8 @@ public:
         incoming.enterMs=mode==ManualTake::Cut?0:milliseconds;
         startCue(items,index,incoming);return true;
     }
+    // Synchronized Link take: the caller prepares the cue and starts it at a scheduled instant.
+    void adoptTake(const QList<Cue>& items,int index){items_=items;current_=-1;queuedIndex_=index;queued_=false;blocked_=false;}
 private:
     void startCue(const QList<Cue>& items,int index,const Cue& incoming) {
         items_=items;current_=-1;queuedIndex_=index;queued_=false;blocked_=false;

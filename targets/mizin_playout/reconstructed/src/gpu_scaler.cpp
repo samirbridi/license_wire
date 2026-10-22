@@ -116,7 +116,7 @@ void GpuSurface::initializeGL(){
 void GpuSurface::submit(const QVideoFrame& frame){if(dirty_ && pending_!=frame)++superseded_;pending_=frame;dirty_=true;update();}
 void GpuSurface::paintGL(){
     if(!ready_)return;
-    const QSize pixels=displayPixels(size(),devicePixelRatioF()),target=fittedPixels(pending_.size(),pixels);
+    const QSize pixels=displayPixels(size(),devicePixelRatioF()),target=stretch_?pixels:fittedPixels(pending_.size(),pixels);
     if(dirty_ || scaledSize_!=target){
         dirty_=false;
         if(pending_.isValid()){

@@ -140,7 +140,7 @@ void LinkNode::handle(const std::shared_ptr<Session>& session,const QString& typ
         if(type=="auth"){session->authenticated=true;session->peerId=body["id"].toString().left(64);session->peerName=body["name"].toString().left(80);session->peerVersion=body["version"].toString().left(40);
             send(session,"welcome",{{"name",name_},{"filePort",int(filePort())}});if(revision_>0)send(session,"show",manifest_);emit changed();}
         else if(type=="ping")send(session,"pong",{{"t1",body["t1"]},{"t2",double(localTimeUs())}});
-        else if(type=="status"){session->offsetMs=body["offsetMs"].toDouble();session->rttMs=body["rttMs"].toDouble();session->mediaReady=body["mediaReady"].toInt();session->mediaTotal=body["mediaTotal"].toInt();emit changed();}
+        else if(type=="status"){session->offsetMs=body["offsetMs"].toDouble();session->rttMs=body["rttMs"].toDouble();session->mediaReady=body["mediaReady"].toInt();session->mediaTotal=body["mediaTotal"].toInt();session->syncMs=body.contains("syncMs")?body["syncMs"].toDouble():-1;emit changed();}
         return;
     }
     if(type=="hello")send(session,"auth",{{"id",id_},{"name",name_},{"version",QString(MizinVersion)}});
@@ -152,6 +152,7 @@ void LinkNode::handle(const std::shared_ptr<Session>& session,const QString& typ
     }
     else if(type=="show")receiveManifest(body);
     else if(type=="state"){lastStateMs_=clock_.elapsed();emit stateReceived(body);}
+    else if(type=="take")emit takeReceived(body);
 }
 void LinkNode::dropSession(const std::shared_ptr<Session>& session){
     if(!session)return;if(session->socket){session->socket->disconnect(this);session->socket->abort();session->socket->deleteLater();session->socket=nullptr;}
@@ -159,7 +160,7 @@ void LinkNode::dropSession(const std::shared_ptr<Session>& session){
 }
 QList<LinkPeer> LinkNode::peers()const{
     QList<LinkPeer> list;
-    if(role_==Role::Master){for(const auto& session:sessions_)if(session->authenticated)list.append({session->peerId,session->peerName,"follower",session->peerVersion,session->address,manifest_.value("name").toString(),{},0,0,session->offsetMs,session->rttMs,session->mediaReady,session->mediaTotal});}
+    if(role_==Role::Master){for(const auto& session:sessions_)if(session->authenticated)list.append({session->peerId,session->peerName,"follower",session->peerVersion,session->address,manifest_.value("name").toString(),{},0,0,session->offsetMs,session->rttMs,session->mediaReady,session->mediaTotal,session->syncMs});}
     else for(const auto& peer:discovered_)list.append(peer);
     return list;
 }
@@ -187,6 +188,7 @@ void LinkNode::publishShow(const Show& show,const QString& showName){
             items.append(QJsonObject{{"relative",it.value()},{"size",double(info.size())},{"sha256",sha},{"source",it.key()}});}
         return qMakePair(QJsonObject{{"name",name},{"show",showJson},{"media",items}},hashes);}));
 }
+void LinkNode::broadcastTake(const QJsonObject& take){if(role_!=Role::Master)return;for(const auto& session:sessions_)if(session->authenticated)send(session,"take",take);}
 void LinkNode::broadcastState(const QJsonObject& state){if(role_!=Role::Master)return;for(const auto& session:sessions_)if(session->authenticated)send(session,"state",state);}
 void LinkNode::finishManifest(const QJsonObject& manifest,const QHash<QString,QString>& sources,const QHash<QString,QString>& cache){
     hashing_=false;if(role_!=Role::Master){emit changed();return;}
@@ -229,7 +231,7 @@ void LinkNode::receiveManifest(const QJsonObject& manifest){
         if(!present){queue_.append(media);bytesTotal_+=media.size;}}
     mediaReady_=mediaTotal_-queue_.size();reportMedia();emit changed();downloadNext();
 }
-void LinkNode::reportMedia(){if(sessionReady_)send(master_,"status",{{"offsetMs",clockOffsetMs()},{"rttMs",rttMs()},{"mediaReady",mediaReady_},{"mediaTotal",mediaTotal_}});}
+void LinkNode::reportMedia(){if(sessionReady_)send(master_,"status",{{"offsetMs",clockOffsetMs()},{"rttMs",rttMs()},{"mediaReady",mediaReady_},{"mediaTotal",mediaTotal_},{"syncMs",syncErrorMs_}});}
 void LinkNode::downloadNext(){
     if(reply_||!network_)return;const QString folder=QDir(mediaRoot()).filePath(safeName(pendingManifest_["name"].toString()));
     if(queue_.isEmpty()){

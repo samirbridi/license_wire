@@ -25,6 +25,23 @@ int MainWindow::runLinkMirrorTests(const QString& directory,const QString& resul
     const bool faded=wait([&]{return QFileInfo(backup->programA_.path()).fileName()=="03-h264.mkv"&&backup->programA_.playing();},10000);
     record("backup_repeats_the_fade_to_the_next_item",faded,{{"backup_path",backup->programA_.path()}});
     main->controllerA_.stop();const bool black=wait([&]{return backup->programA_.path().isEmpty();},5000);record("backup_goes_to_black_with_the_master",black);
+    // Phase 3: synchronized take. Both machines prepare now and switch at the same master-clock instant.
+    main->linkSync_->setChecked(true);main->cuedRow_=0;const bool armed=main->syncMode();QElapsedTimer switchClock;switchClock.start();qint64 mainAt=-1,backupAt=-1;
+    auto started=[](MainWindow* w){return w->programA_.playing()&&QFileInfo(w->programA_.path()).fileName()=="01-h264.mp4";};
+    const bool synced=armed&&main->syncTake(PlaylistController::ManualTake::Cut)&&wait([&]{if(mainAt<0&&started(main))mainAt=switchClock.elapsed();if(backupAt<0&&started(backup))backupAt=switchClock.elapsed();return mainAt>=0&&backupAt>=0;},10000);
+    wait([]{return false;},250);const qint64 startGap=std::llabs(backup->programA_.position()-main->programA_.position());
+    // On time both must switch within 50 ms; a late preparation (overloaded host) is reported and must converge below.
+    const bool latePrepare=qMax(mainAt,backupAt)>SyncLeadMs+50;
+    record("synchronized_take_switches_both_machines_together",synced&&(std::llabs(mainAt-backupAt)<=50||latePrepare),{{"main_ms",double(mainAt)},{"backup_ms",double(backupAt)},{"lead_ms",SyncLeadMs},{"late_prepare",latePrepare},{"position_gap_ms",double(startGap)}});
+    wait([]{return false;},1500);QList<qint64> diffs;for(int k=0;k<25;++k){const qint64 span=main->programA_.cue().end(main->programA_.duration())-main->programA_.cue().in;qint64 d=backup->programA_.position()-main->programA_.position();if(span>0)d=((d%span)+span+span/2)%span-span/2;diffs.append(std::llabs(d));wait([]{return false;},100);}
+    std::sort(diffs.begin(),diffs.end());const qint64 median=diffs[diffs.size()/2];
+    record("synchronized_playback_holds_within_two_frames",synced&&median<=67,{{"median_ms",double(median)},{"max_ms",double(diffs.last())},{"backup_rate",backup->programA_.playbackRate()},{"corrections",backup->mirrorCorrections_}});
+    const bool reported=wait([&]{const auto peers=main->link_->peers();return !peers.isEmpty()&&peers.first().syncMs>=0;},5000);
+    record("master_sees_the_follower_sync_error",reported,{{"sync_ms",reported?main->link_->peers().first().syncMs:-1.0}});
+    main->linkSync_->setChecked(false);
+    {OutputWindow crop(&main->programA_,&main->outputRouter_,OutputScaling::Native);crop.resize(400,300);crop.setRegion({.5,0,.5,1});const QRect g=crop.canvasGeometry();
+     main->areaBoxes_[0]->setCurrentIndex(2);const QRectF preset=main->routeRegion(0);main->areaBoxes_[0]->setCurrentIndex(0);
+     record("output_area_shows_only_its_part_of_the_video",g==QRect(-400,0,800,300)&&crop.video()->aspectRatioMode()==Qt::IgnoreAspectRatio&&preset==QRectF(.5,0,.5,1)&&main->routeRegion(0)==QRectF(0,0,1,1),{{"canvas",QString("%1,%2 %3x%4").arg(g.x()).arg(g.y()).arg(g.width()).arg(g.height())}});}
     main->controllerA_.takeManual(main->playlist_,0,PlaylistController::ManualTake::Cut);wait([&]{return backup->programA_.playing();},10000);
     record("backup_shows_no_alarm_while_the_master_is_alive",!backup->masterLost_&&!backup->masterLostBanner_->isHidden()==false);
     main->link_->stop();const bool alarmed=wait([&]{return backup->masterLost_&&!backup->masterLostBanner_->isHidden();},6000);

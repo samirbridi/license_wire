@@ -72,6 +72,12 @@ On the backup machine (Follower), after **Load received show**, tick **Mirror th
 
 If the main machine fails or stops answering for 1.5 s, the red **MASTER LOST** bar appears: the backup keeps playing on its own, you switch the screens to it (on your switcher/matrix) and, if you want, click **Take over as master** so it commands the other machines.
 
+### Several PCs playing together (split LED wall)
+
+On the master, tick **Synchronized takes**. From then on every CUT and FADE is prepared on all machines and fired at the same instant (the take waits 0.4 s). On the followers tick **Mirror the master** as on a backup: they hold position by nudging playback speed (up to 5%), without jumps, and only seek when the drift exceeds 250 ms. The master's machine table shows each follower's drift.
+
+To split a wall across outputs or PCs, in **Outputs → Displays** choose each output's **AREA**: halves, thirds, quarters or **Custom area** (X, Y, width and height in % of the video). Each screen shows only its part, stretched to fill the screen.
+
 ## Language and performance
 
 English is default; Português (Brasil) can be selected during playback. Automatic hardware decoding and CPU decoding are available in Settings after restart. Codec/profile/driver support varies. Cuts forward shared native frames; transitions currently convert and compose in CPU once per Program. GPU composition, remote control, scheduling and production AV-sync/performance qualification remain future work. Layout samples demonstrate the interface, not physical-output playback.

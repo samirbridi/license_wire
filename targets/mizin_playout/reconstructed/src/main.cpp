@@ -342,6 +342,7 @@ private:
 #include "main_show_package.inc"
 #include "main_link.inc"
 #include "main_link_mirror.inc"
+#include "main_link_sync.inc"
     void refreshDashboard(){
         if(!manualMode_||!playlistTable_)return;
         for(auto* name:{previewName_,programName_,secondaryName_})if(name){name->setToolTip(name->text());name->setAccessibleName(name->text());}
@@ -379,9 +380,9 @@ private:
         auto* screen=new QComboBox;screen->setMinimumWidth(130);screen->setSizeAdjustPolicy(QComboBox::AdjustToMinimumContentsLengthWithIcon);screen->addItem(tx("Floating test window"),"floating");screenBoxes_.append(screen);auto* screenCol=new QVBoxLayout;screenCol->addWidget(label("DISPLAY","eyebrow"));screenCol->addWidget(screen);row->addLayout(screenCol,2);
         auto* scaling=new QComboBox;scaling->setMinimumWidth(130);scaling->setSizeAdjustPolicy(QComboBox::AdjustToMinimumContentsLengthWithIcon);scaling->addItem(tx("Native · performance"),"native");scaling->addItem(tx("Lanczos · experimental (CPU)"),"lanczos");scaling->addItem(tx("Lanczos · GPU (SDR)"),"gpu");scaling->setCurrentIndex(qMax(0,scaling->findData(settings_->value(QString("outputScaler%1").arg(i),"native").toString())));scalingBoxes_.append(scaling);auto* quality=new QVBoxLayout;quality->addWidget(label("SCALING","eyebrow"));quality->addWidget(scaling);row->addLayout(quality,1);
         connect(source,&QComboBox::currentIndexChanged,this,[this]{if(!demo_)dirty_=true;refreshTransport();});connect(scaling,&QComboBox::currentIndexChanged,this,[this,scaling,i]{if(!demo_)settings_->setValue(QString("outputScaler%1").arg(i),scaling->currentData());});
-        auto* open=button("Open output");row->addWidget(open,0,Qt::AlignBottom);connect(open,&QPushButton::clicked,this,[this,i]{openOutput(i);});auto* close=button("Close output");row->addWidget(close,0,Qt::AlignBottom);connect(close,&QPushButton::clicked,this,[this,i]{if(routeWindows_[i])routeWindows_[i]->close();refreshTransport();});body->addLayout(row);auto* status=new QLabel;status->setObjectName("muted");outputStatus_.append(status);body->addWidget(status);routeLayout_->addWidget(panel);
+        auto* open=button("Open output");row->addWidget(open,0,Qt::AlignBottom);connect(open,&QPushButton::clicked,this,[this,i]{openOutput(i);});auto* close=button("Close output");row->addWidget(close,0,Qt::AlignBottom);connect(close,&QPushButton::clicked,this,[this,i]{if(routeWindows_[i])routeWindows_[i]->close();refreshTransport();});body->addLayout(row);appendRouteArea(body,i);auto* status=new QLabel;status->setObjectName("muted");outputStatus_.append(status);body->addWidget(status);routeLayout_->addWidget(panel);
     }
-    void dropLastRoute(){const int i=sourceBoxes_.size()-1;if(routeWindows_[i])delete routeWindows_[i].data();routeWindows_.removeLast();routePrograms_.removeLast();sourceBoxes_.removeLast();screenBoxes_.removeLast();scalingBoxes_.removeLast();outputStatus_.removeLast();delete routePanels_.takeLast();}
+    void dropLastRoute(){const int i=sourceBoxes_.size()-1;if(routeWindows_[i])delete routeWindows_[i].data();routeWindows_.removeLast();routePrograms_.removeLast();sourceBoxes_.removeLast();screenBoxes_.removeLast();scalingBoxes_.removeLast();areaBoxes_.removeLast();areaValues_.removeLast();outputStatus_.removeLast();delete routePanels_.takeLast();}
     OutputConfiguration currentOutputConfiguration()const{OutputConfiguration config;config.programs=programCount_;config.displays=displayCount_;config.sources.resize(displayCount_);for(int i=0;i<displayCount_;++i)config.sources[i]=sourceBoxes_[i]->currentIndex();return config;}
     bool programBusy(int index)const{
         const auto* channel=channelAt(index);if(!channel->path().isEmpty()||channel->preparing()||channel->transitioning())return true;
@@ -497,7 +498,7 @@ private:
         if(demo_){footer_->setText(tx("Layout preview — sample content"));return;}
         if(pages_->currentIndex()!=0)return;
         if(!canTake()||!readiness_.recheckFile()){footer_->setText(tx("Cue media before taking it to Program."));return;}
-        targetController()->takeManual(playlist_,cuedRow_,mode,manualFadeTime_->value());
+        if(!(syncMode()&&syncTake(mode)))targetController()->takeManual(playlist_,cuedRow_,mode,manualFadeTime_->value());
     }
     void cueRow(int row){if(row<0 || row>=playlist_.size())return;syncEditor(row);cuedRow_=row;if(!demo_)readiness_.prepare(playlist_[row]);refreshTransport();}
     void editSelected(){const int row=playlistTable_->currentRow();if(row>=0){if(cuedRow_!=row || preview_.path()!=playlist_[row].path)cueRow(row);else syncEditor(row);}selectPage(1);}
@@ -598,7 +599,7 @@ private:
     void openOutput(int index){
         if(index<0||index>=displayCount_||sourceBoxes_[index]->currentIndex()<0||sourceBoxes_[index]->currentIndex()>=programCount_){footer_->setText(tx("Add this output before opening it."));return;}
         if(demo_){footer_->setText(tx("Layout preview — sample content"));return;}auto* screen=selectedScreen(index);if(screenBoxes_[index]->currentData().toString()!="floating"&&!screen){footer_->setText(tx("Selected display is unavailable"));return;}
-        if(routeWindows_[index])routeWindows_[index]->close();const int source=sourceBoxes_[index]->currentIndex();const auto profile=scalingBoxes_[index]->currentData().toString();auto* window=new OutputWindow(channelAt(source),&outputRouter_,profile=="gpu"?OutputScaling::GpuLanczos:profile=="lanczos"?OutputScaling::CpuLanczos:OutputScaling::Native);window->setWindowTitle(QString("Mizin Playout — Output %1").arg(index+1));connect(window,&OutputWindow::warning,this,[this](const QString& text){footer_->setText(tx(text));});routePrograms_[index]=source;routeWindows_[index]=window;outputWindows_.append(window);window->openOn(screen);
+        if(routeWindows_[index])routeWindows_[index]->close();const int source=sourceBoxes_[index]->currentIndex();const auto profile=scalingBoxes_[index]->currentData().toString();auto* window=new OutputWindow(channelAt(source),&outputRouter_,profile=="gpu"?OutputScaling::GpuLanczos:profile=="lanczos"?OutputScaling::CpuLanczos:OutputScaling::Native);window->setWindowTitle(QString("Mizin Playout — Output %1").arg(index+1));connect(window,&OutputWindow::warning,this,[this](const QString& text){footer_->setText(tx(text));});routePrograms_[index]=source;routeWindows_[index]=window;outputWindows_.append(window);window->setRegion(routeRegion(index));window->openOn(screen);
     }
     Show currentShow(){storeActivePlaylist();return {library_,folders_,programDefinitions_[0].cues,currentOutputConfiguration(),programDefinitions_};}
     void saveProject(bool){

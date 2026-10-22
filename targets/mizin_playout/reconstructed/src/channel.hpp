@@ -74,6 +74,9 @@ public:
     bool localEngine()const{return localEngine_;}
     bool qtSinksMuted()const{return decks_[0].audio->isMuted()&&decks_[1].audio->isMuted();}
     qint64 videoLagUs()const{return videoLagUs_.load();}
+    // ADR-019 phase 3: fine sync nudges the active deck's speed (followers only, about ±5%).
+    void setPlaybackRate(double rate);
+    double playbackRate()const{return rate_;}
 signals:
     void frameReady(const QVideoFrame& frame);
     void changed();
@@ -114,6 +117,7 @@ private:
     qint64 audioCursor_=0,pausedAtUs_=-1;
     float volume_=1;
     bool muted_=false,localAudio_=true,deviceAvailable_=true,localEngine_=false;
+    double rate_=1.0;
     std::atomic<float> engineGain_{1};
     std::atomic<bool> engineSilent_{false};
     std::atomic<qint64> videoLagUs_{-1};

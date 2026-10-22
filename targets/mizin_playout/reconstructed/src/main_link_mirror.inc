@@ -28,7 +28,7 @@
             else p["media"]=QString();
             programs.append(p);
         }
-        return {{"revision",link_->revision()},{"sampleUs",double(link_->localTimeUs())},{"programs",programs}};
+        return {{"revision",link_->revision()},{"sampleUs",double(link_->localTimeUs())},{"sync",syncMode()},{"programs",programs}};
     }
     void applyLinkState(const QJsonObject& state){
         if(!mirroring())return;if(!mirrorClock_.isValid())mirrorClock_.start();
@@ -37,6 +37,7 @@
         mirrorNote_.clear();const QDir base=QFileInfo(showPath).absoluteDir();const qint64 elapsedUs=link_->masterTimeUs()-qint64(state["sampleUs"].toDouble());
         for(const auto& value:state["programs"].toArray()){
             const auto p=value.toObject();const int id=p["id"].toInt(),index=programIndexById(id);if(index<0)continue;auto* c=channelAt(index);auto* controller=controllerAt(index);
+            if(mirrorClock_.elapsed()<pendingTakeUntil_.value(id,-1))continue; // a synchronized take is scheduled
             if(controller->sequential())controller->setSequential(false); // every take comes from the master
             if(c->loop()!=p["loop"].toBool())c->setLoop(p["loop"].toBool());
             const QString media=p["media"].toString();
@@ -47,9 +48,14 @@
             const QString local=QDir::cleanPath(base.absoluteFilePath(media));const quint64 serial=quint64(p["serial"].toDouble());
             if(mirroredSerial_.value(id)!=serial){Cue cue;if(!Cue::read(p["cue"],cue))continue;cue.path=local;mirroredSerial_[id]=serial;mirrorSeekAt_[id]=mirrorClock_.elapsed();c->cancelPrepared();c->loadCue(cue,true);continue;}
             if(c->pending()||p["pending"].toBool())continue;
-            const bool playing=p["playing"].toBool();if(c->playing()!=playing){c->togglePause();continue;}
-            const qint64 expected=qint64(p["positionMs"].toDouble())+(playing?elapsedUs/1000:0);const qint64 error=c->position()-expected;mirrorErrorMs_=double(error);
-            if(std::llabs(error)>MirrorToleranceMs&&mirrorClock_.elapsed()-mirrorSeekAt_.value(id,-100000)>MirrorSeekCooldownMs){c->seek(qMax<qint64>(0,expected));mirrorSeekAt_[id]=mirrorClock_.elapsed();++mirrorCorrections_;}
+            const bool playing=p["playing"].toBool();if(c->playing()!=playing){c->setPlaybackRate(1.0);c->togglePause();continue;}
+            const qint64 expected=qint64(p["positionMs"].toDouble())+(playing?elapsedUs/1000:0);qint64 error=c->position()-expected;
+            // Looping: compare on the loop circle, so one side wrapping a moment earlier is not a 3 s error.
+            if(const qint64 span=c->cue().end(c->duration())-c->cue().in;c->loop()&&span>0)error=((error%span)+span+span/2)%span-span/2;
+            mirrorErrorMs_=double(error);link_->setSyncError(std::abs(double(error)));
+            if(state["sync"].toBool()&&playing&&syncCorrect(c,id,error))continue;
+            if(c->playbackRate()!=1.0)c->setPlaybackRate(1.0);
+            if(std::llabs(error)>MirrorToleranceMs&&mirrorClock_.elapsed()-mirrorSeekAt_.value(id,-100000)>MirrorSeekCooldownMs){c->seek(qMax<qint64>(0,c->position()-error));mirrorSeekAt_[id]=mirrorClock_.elapsed();++mirrorCorrections_;}
         }
     }
     void watchMaster(){
@@ -71,6 +77,9 @@
             watchMaster();});
         linkStateTimer_->start();
         connect(link_.get(),&LinkNode::stateReceived,this,[this](const QJsonObject& state){applyLinkState(state);});
+        connect(link_.get(),&LinkNode::takeReceived,this,[this](const QJsonObject& take){applyLinkTake(take);});
+        linkSync_=new QCheckBox;linkSync_->setObjectName("linkSync");bindings_.append({linkSync_,"Synchronized takes (several PCs playing together): every machine switches at the same instant; CUT/FADE wait 0.4 s"});linkSync_->setChecked(settings_->value("link/sync",false).toBool());body->addWidget(linkSync_);
+        connect(linkSync_,&QCheckBox::toggled,this,[this](bool on){if(!demo_)settings_->setValue("link/sync",on);refreshLink();});
     }
     QString mirrorStatus()const{
         if(!mirroring())return {};if(!mirrorNote_.isEmpty())return tx(mirrorNote_);

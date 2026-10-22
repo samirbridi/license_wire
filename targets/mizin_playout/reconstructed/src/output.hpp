@@ -71,6 +71,11 @@ public:
     GpuSurface* gpu()const{return gpu_;}
     bool gpuActive()const{return gpu_ && !gpuFailed_ && stack_->currentWidget()==gpu_;}
     int frames()const{return frames_;}
+    // LED-wall split: show only this normalized part of the source (0..1). The video surface is enlarged and
+    // offset inside the window, so the GPU does the crop with no extra copy.
+    void setRegion(const QRectF& region);
+    QRectF region()const{return region_;}
+    QRect canvasGeometry()const;
     bool highQuality()const{return scaling_!=OutputScaling::Native;}
 signals:
     void warning(const QString& message);
@@ -82,6 +87,9 @@ private:
     QPointer<OutputRouter> router_;
     QVideoWidget* video_;
     OutputScaling scaling_;
+    QWidget* canvas_=nullptr;
+    QRectF region_{0,0,1,1};
+    void layoutCanvas();
     QStackedLayout* stack_;
     GpuSurface* gpu_=nullptr;
     bool gpuFailed_=false;

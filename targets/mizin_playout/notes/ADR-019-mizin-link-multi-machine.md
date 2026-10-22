@@ -1,7 +1,7 @@
 # ADR-019 — Mizin Link: several playout machines working as one
 
 Date: 2026-10-22. Status: accepted by the owner (all four scenarios, events with 5+ machines);
-phase 1 shipped in build 0054; phase 2 shipped next (see notes below).
+phase 1 shipped in build 0054, phase 2 in 0055, phase 3 next (see notes below).
 
 ## Scenarios (owner request)
 1. **Main + backup**: a backup follows everything the main does (show, playlists, takes, position) so
@@ -63,3 +63,18 @@ clock offset, manifest/download/verification and resume; then real LAN with the 
   incomplete ones.
 - Measured (two MainWindows, one computer, loopback): position drift 43–64 ms after correction; all mirroring and
   failover checks pass (`--link-mirror-test`). Multi-computer LAN measurement pending.
+
+## Phase 3 notes (several PCs playing together)
+- "Synchronized takes" (master option, active when followers are connected and a show was published): CUT/FADE
+  prepare the cue locally and broadcast a `take` message {Program id, cue with manifest-relative path, serial,
+  atUs = master clock + 400 ms}. Every mirroring follower prepares the same cue and calls takePrepared() at
+  atUs converted to its own clock; if preparation is late it fires as soon as it is ready. State-driven mirroring
+  for that Program is held back until the take ran, so the 10 Hz state cannot race the scheduled take.
+- Fine sync while the master is in sync mode: |error| <= 8 ms -> speed 1.0; up to 250 ms -> speed
+  1 - clamp(error/500, ±5%); beyond 250 ms -> seek (1 s cooldown). Speed returns to 1.0 on every take and pause.
+  Followers report their absolute drift in the Link status; the master's table shows it.
+- Per-display AREA (output crop): the output window enlarges and offsets its video surface so only the normalized
+  region is visible (no extra copy; Native and GPU Lanczos fill the region without letterbox). Presets for halves,
+  thirds and quarters plus custom X/Y/W/H in %. Stored per route in settings (outputArea/outputRegion).
+- Validation: `--link-mirror-test` adds synchronized-take, drift-hold, follower-drift-report and crop checks
+  (two MainWindows, loopback). Real multi-PC LAN measurement still pending.

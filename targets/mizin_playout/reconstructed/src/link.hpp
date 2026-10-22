@@ -18,7 +18,7 @@ class QCryptographicHash;
 
 // ADR-019 Mizin Link, phase 1: discovery, pairing, authenticated sessions, shared clock and verified
 // show + media distribution from one master to many followers on the LAN.
-struct LinkPeer {QString id,name,role,version,address,show,keyId;quint16 port=0;qint64 lastSeenMs=0;double offsetMs=0,rttMs=0;int mediaReady=0,mediaTotal=0;};
+struct LinkPeer {QString id,name,role,version,address,show,keyId;quint16 port=0;qint64 lastSeenMs=0;double offsetMs=0,rttMs=0;int mediaReady=0,mediaTotal=0;double syncMs=-1;};
 struct LinkMedia {QString relative,sha256,source;qint64 size=0;};
 
 class LinkNode final : public QObject {
@@ -50,6 +50,9 @@ public:
     QJsonObject manifest()const{return manifest_;}
     // Phase 2: playback state for mirroring followers (sent ~10x/s). Media paths are the manifest's relative ones.
     void broadcastState(const QJsonObject& state);
+    // Phase 3: a take every node executes at the same master-clock instant.
+    void broadcastTake(const QJsonObject& take);
+    void setSyncError(double ms){syncErrorMs_=ms;}
     QString relativeFor(const QString& absolutePath)const{return relative_.value(absolutePath);}
     int revision()const{return revision_;}
     bool hashing()const{return hashing_;}
@@ -73,8 +76,9 @@ signals:
     void changed();
     void showReady(const QString& showPath);
     void stateReceived(const QJsonObject& state);
+    void takeReceived(const QJsonObject& take);
 private:
-    struct Session {QPointer<QTcpSocket> socket;QByteArray nonce,buffer;QString peerId,peerName,peerVersion,address;bool authenticated=false;quint64 sendSeq=0,recvSeq=0;double offsetMs=0,rttMs=0;int mediaReady=0,mediaTotal=0;};
+    struct Session {QPointer<QTcpSocket> socket;QByteArray nonce,buffer;QString peerId,peerName,peerVersion,address;bool authenticated=false;quint64 sendSeq=0,recvSeq=0;double offsetMs=0,rttMs=0;int mediaReady=0,mediaTotal=0;double syncMs=-1;};
     QString name_,stateDirectory_,id_,error_,code_;
     Role role_=Role::Off;
     QByteArray key_;
@@ -107,6 +111,7 @@ private:
     std::unique_ptr<QCryptographicHash> partHash_;
     int mediaReady_=0,mediaTotal_=0,downloads_=0,receivedRevision_=0;
     qint64 lastStateMs_=-1;
+    double syncErrorMs_=-1;
     qint64 bytesDone_=0,bytesTotal_=0;
     void announce();
     void readDiscovery();

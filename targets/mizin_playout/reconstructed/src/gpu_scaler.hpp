@@ -56,6 +56,8 @@ public:
     explicit GpuSurface(QSharedPointer<GpuFrameCache> cache,QWidget* parent=nullptr);
     ~GpuSurface()override;
     void submit(const QVideoFrame& frame);
+    // Output crop: fill the whole surface (the window shows only part of it), no letterbox.
+    void setStretch(bool on){stretch_=on;update();}
     int frames()const{return frames_;}
     int superseded()const{return superseded_;}
     double serviceMs()const{return serviceMs_;}
@@ -72,6 +74,7 @@ private:
     QSharedPointer<GpuFrameCache> cache_;
     GpuLanczos renderer_;
     QVideoFrame pending_,rendered_;
+    bool stretch_=false;
     QSize scaledSize_;
     QString error_;
     int frames_=0,superseded_=0;

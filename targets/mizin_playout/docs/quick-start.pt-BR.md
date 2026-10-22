@@ -72,6 +72,12 @@ Na máquina reserva (Seguidor), depois de **Carregar show recebido**, marque **E
 
 Se o principal cair ou parar de responder por 1,5 s, aparece a faixa vermelha **MESTRE PERDIDO**: a reserva continua tocando sozinha, você passa as telas para ela (no seu switcher/matriz) e, se quiser, clica em **Assumir como mestre** para ela passar a comandar as outras máquinas.
 
+### Vários PCs tocando juntos (telão dividido)
+
+No mestre, marque **Disparo sincronizado**. A partir daí, cada CUT e FADE é preparado em todas as máquinas e disparado no mesmo instante (o disparo espera 0,4 s). Nos seguidores, marque **Espelhar o mestre** como na reserva: eles acompanham a posição ajustando levemente a velocidade (até 5%), sem saltos; só pulam se o desvio passar de 250 ms. A tabela de máquinas do mestre mostra o desvio de cada seguidor.
+
+Para dividir um telão entre saídas ou PCs, em **Saídas → Telas** escolha a **ÁREA** de cada saída: metades, terços, quartos ou **Área personalizada** (X, Y, largura e altura em % do vídeo). Cada tela mostra só o seu pedaço, esticado para preencher a tela.
+
 ## Idioma e desempenho
 
 Inglês é o padrão; Português (Brasil) pode ser escolhido durante a reprodução. As opções de decodificação automática por hardware e por CPU ficam em Configurações e exigem reinício. O suporte depende de codec, perfil e driver. Cortes encaminham quadros nativos compartilhados; transições convertem e compõem em CPU uma vez por Program. Composição em GPU, controle remoto, agendamento e validação de desempenho/sincronismo para produção seguem como próximas etapas. Pranchetas demonstram a interface, não reprodução em saídas físicas.

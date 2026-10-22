@@ -52,7 +52,7 @@
         if(!linkStatus_)return;const auto role=link_->role();const bool on=role!=LinkNode::Role::Off;
         linkStart_->setEnabled(!on);linkStop_->setEnabled(on);linkRole_->setEnabled(!on);linkName_->setEnabled(!on);linkCode_->setEnabled(!on);linkNewCode_->setEnabled(!on);
         const bool master=on?role==LinkNode::Role::Master:linkRole_->currentData().toInt()==int(LinkNode::Role::Master);
-        linkAddress_->setVisible(!master);linkAddress_->setEnabled(!on);linkSend_->setVisible(master);linkSend_->setEnabled(on&&!link_->hashing());linkLoad_->setVisible(!master);linkMirror_->setVisible(!master);linkLoad_->setEnabled(!link_->receivedShowPath().isEmpty());
+        linkAddress_->setVisible(!master);linkAddress_->setEnabled(!on);linkSend_->setVisible(master);linkSend_->setEnabled(on&&!link_->hashing());linkLoad_->setVisible(!master);linkMirror_->setVisible(!master);if(linkSync_)linkSync_->setVisible(master);linkLoad_->setEnabled(!link_->receivedShowPath().isEmpty());
         const QLocale locale(language_=="pt-BR"?"pt_BR":"en_US");QString status;
         if(!on)status=link_->error().isEmpty()?tx("Off. Nothing is listening on the network."):tx("Mizin Link could not start")+": "+link_->error();
         else if(master){const auto peers=link_->peers();status=tx("Master · %1 machines connected").arg(peers.size());if(link_->hashing())status+=" · "+tx("preparing media list…");
@@ -64,7 +64,7 @@
             if(link_->bytesTotal()>0&&link_->mediaReady()<link_->mediaTotal())status+=QString(" · %1 / %2").arg(memoryText(QJsonValue(double(link_->bytesDone()))),memoryText(QJsonValue(double(link_->bytesTotal()))));}
         linkStatus_->setText(status);
         const auto peers=link_->peers();linkPeers_->setHorizontalHeaderLabels({tx("Machine"),tx("Address"),tx("Status"),tx("Clock"),tx("Media")});linkPeers_->setRowCount(peers.size());
-        for(int i=0;i<peers.size();++i){const auto& p=peers[i];const QStringList values{p.name,p.address,p.role=="master"?tx("Master on the network")+(p.show.isEmpty()?QString():" · "+p.show):tx("Connected"),
+        for(int i=0;i<peers.size();++i){const auto& p=peers[i];const QStringList values{p.name,p.address,p.role=="master"?tx("Master on the network")+(p.show.isEmpty()?QString():" · "+p.show):p.syncMs>=0?tx("Mirroring · ±%1 ms").arg(qRound(p.syncMs)):tx("Connected"),
                 p.role=="master"?QString("—"):tx("%1 ms (round trip %2 ms)").arg(locale.toString(p.offsetMs,'f',2),locale.toString(p.rttMs,'f',2)),p.mediaTotal>0?QString("%1 / %2").arg(p.mediaReady).arg(p.mediaTotal):QString("—")};
             for(int c=0;c<5;++c){auto* item=linkPeers_->item(i,c);if(!item){item=new QTableWidgetItem;linkPeers_->setItem(i,c,item);}item->setText(values[c]);}}
     }

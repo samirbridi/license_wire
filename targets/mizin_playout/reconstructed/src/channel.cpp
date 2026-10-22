@@ -80,6 +80,7 @@ void NativeChannel::beginPrepare(const Cue& cue, bool autoTake, bool play) {
 }
 void NativeChannel::loadCue(const Cue& cue, bool play) {beginPrepare(cue,true,play);}
 void NativeChannel::prepareCue(const Cue& cue) {beginPrepare(cue,false,true);}
+void NativeChannel::setPlaybackRate(double rate){rate=std::clamp(rate,0.5,1.5);if(std::abs(rate-rate_)<0.0005)return;rate_=rate;decks_[active_].player->setPlaybackRate(rate);}
 void NativeChannel::cancelPrepared() {
     if (pending_ || ready_) {pending_=ready_=false;preparationState_="cancelled";timeout_.stop();decks_[incoming_].audio->setMuted(true);decks_[incoming_].player->stop();}
 }
@@ -92,6 +93,7 @@ void NativeChannel::takePrepared() {
     if (!ready_) return;
     const int previous=active_; const bool hadProgram=!path().isEmpty() && output_.isValid();
     active_=incoming_; incoming_=previous;activeGeneration_=requestGeneration_;ready_=false;ended_=false;pausedAtUs_=-1;
+    rate_=1.0;decks_[active_].player->setPlaybackRate(1.0);
     const auto c=cue(); const qint64 length=rangeEnd()-c.in;
     blendMs_=preview_?0:qMin<qint64>(hadProgram && c.transition!=Transition::Cut ? c.transitionMs : c.enterMs,qMax<qint64>(0,length/2));
     blendType_=hadProgram && c.transition!=Transition::Cut ? c.transition : Transition::Dissolve;

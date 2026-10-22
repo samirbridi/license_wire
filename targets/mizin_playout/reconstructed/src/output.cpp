@@ -74,9 +74,9 @@ void OutputRouter::prune(){
 OutputWindow::OutputWindow(NativeChannel* channel,OutputRouter* router,bool lanczos,QWidget* parent):OutputWindow(channel,router,lanczos?OutputScaling::CpuLanczos:OutputScaling::Native,parent){}
 OutputWindow::OutputWindow(NativeChannel* channel,OutputRouter* router,OutputScaling scaling,QWidget* parent):QWidget(parent),channel_(channel),router_(router),scaling_(scaling){
     setAttribute(Qt::WA_DeleteOnClose);setStyleSheet("background:black");
-    stack_=new QStackedLayout(this);stack_->setContentsMargins(0,0,0,0);stack_->setSpacing(0);video_=new QVideoWidget(this);video_->setAspectRatioMode(Qt::KeepAspectRatio);stack_->addWidget(video_);
+    canvas_=new QWidget(this);canvas_->setStyleSheet("background:black");stack_=new QStackedLayout(canvas_);stack_->setContentsMargins(0,0,0,0);stack_->setSpacing(0);video_=new QVideoWidget(canvas_);video_->setAspectRatioMode(Qt::KeepAspectRatio);stack_->addWidget(video_);
     if(scaling_==OutputScaling::GpuLanczos && !qEnvironmentVariableIsSet("MIZIN_DISABLE_GPU_SCALER")){
-        gpu_=new GpuSurface(router->gpuCache(channel),this);stack_->addWidget(gpu_);stack_->setCurrentWidget(gpu_);
+        gpu_=new GpuSurface(router->gpuCache(channel),canvas_);stack_->addWidget(gpu_);stack_->setCurrentWidget(gpu_);
         connect(gpu_,&GpuSurface::failed,this,[this](const QString& message){gpuFailed_=true;stack_->setCurrentWidget(video_);present(channel_?channel_->lastFrame():QVideoFrame{});emit warning(message);});
     }
     resizeTimer_.setSingleShot(true);resizeTimer_.setInterval(80);connect(&resizeTimer_,&QTimer::timeout,this,[this]{updateFeed();});
@@ -121,5 +121,15 @@ void OutputWindow::updateFeed(){
     auto* feed=feed_.data();
     if(feed->lastFrame().isValid())present(feed->lastFrame());feed->refresh();
 }
-void OutputWindow::resizeEvent(QResizeEvent* event){QWidget::resizeEvent(event);resizeTimer_.start();}
+void OutputWindow::resizeEvent(QResizeEvent* event){QWidget::resizeEvent(event);layoutCanvas();resizeTimer_.start();}
+void OutputWindow::layoutCanvas(){
+    const QRectF r=region_;const double w=width()/r.width(),h=height()/r.height();
+    canvas_->setGeometry(QRect(qRound(-r.x()*w),qRound(-r.y()*h),qRound(w),qRound(h)));
+    const bool full=r==QRectF(0,0,1,1);video_->setAspectRatioMode(full?Qt::KeepAspectRatio:Qt::IgnoreAspectRatio);if(gpu_)gpu_->setStretch(!full);
+}
+void OutputWindow::setRegion(const QRectF& region){
+    QRectF r=region.normalized().intersected(QRectF(0,0,1,1));if(r.width()<0.01||r.height()<0.01)r=QRectF(0,0,1,1);
+    region_=r;layoutCanvas();resizeTimer_.start();
+}
+QRect OutputWindow::canvasGeometry()const{return canvas_->geometry();}
 bool OutputWindow::event(QEvent* event){if(event->type()==QEvent::DevicePixelRatioChange)resizeTimer_.start();return QWidget::event(event);}
