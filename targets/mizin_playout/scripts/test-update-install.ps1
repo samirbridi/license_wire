@@ -44,8 +44,11 @@ try{
  Start-Sleep -Seconds 2
  $restarted=@(Get-Process -Name MizinPlayout -ErrorAction SilentlyContinue | Where-Object {$_.Id -notin $before -and $_.Path -eq $exe})
  Check 'helper restarts exactly the isolated updated app' ($restarted.Count -eq 1)
- Check 'restarted operator window is visible' ($restarted[0].MainWindowHandle -ne [IntPtr]::Zero)
- foreach($p in $restarted){$null=$p.CloseMainWindow();if(-not $p.WaitForExit(15000)){throw 'Restarted QA app did not close normally'}}
+ # Qt/NDI/multimedia startup can take several seconds: poll for the window
+ # instead of sampling once, and close the isolated app before any failure.
+ $deadline=(Get-Date).AddSeconds(20);do{$restarted[0].Refresh();$visible=$restarted[0].MainWindowHandle -ne [IntPtr]::Zero;if(-not $visible){Start-Sleep -Milliseconds 250}}until($visible -or (Get-Date) -gt $deadline)
+ foreach($p in $restarted){if($p.MainWindowHandle -ne [IntPtr]::Zero){$null=$p.CloseMainWindow()}else{$p.Kill()};if(-not $p.WaitForExit(15000)){throw 'Restarted QA app did not close normally'}}
+ Check 'restarted operator window is visible' $visible
  Check 'profile survives actual restart' ((Get-FileHash -LiteralPath $sentinel).Hash -eq $sentinelHash)
  $ok=$true
 } finally {
