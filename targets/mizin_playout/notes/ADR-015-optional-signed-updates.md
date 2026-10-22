@@ -11,3 +11,16 @@ Existing build 0035 has no updater: install the first updater-enabled package ma
 Publishing reuses the authorized P2PMizin R2 bucket (`ezshare-updates`) and custom domain, exclusively below `playout/`. Matching Qt/FFmpeg source archives and configuration, immutable artifacts and history are uploaded and read back in full before changing the signed latest pointer. Existing immutable objects are never overwritten with different bytes. The independent P2P feed hash is checked before/after. No P2P application, Worker, DNS or root release object is modified.
 
 The official signed NDI Windows DLL is bundled privately beside the application, with the vendor agreement, third-party notices and nearby NDI link/trademark. NDI Tools and SDK developer binaries are excluded. OMT storage follows the resolved operator profile. Both network outputs remain opt-in. Native/network/external receiver and update-install validation are separate evidence; physical AV-sync, another LAN machine, AMD and clean Windows remain distinct qualifications.
+
+## Update origin moved (2026-10-22, decision by the user)
+
+Mizin Playout no longer shares P2PMizin infrastructure. The client's fixed origin is now
+`https://playoutmizin.pages.dev/updates/` (feed `preview/latest.json`). The Cloudflare Pages project
+`playoutmizin` serves the presentation site (`site/`) and a read-only Pages Function
+(`functions/updates/[[path]].js`) that streams the dedicated R2 bucket `playoutmizin-updates`
+(Pages static files are limited to 25 MiB; installers are ~55 MB). `scripts/updates.py` uploads to that
+bucket with keys `releases/…`, `history/…`, `sources/…` and finally `preview/latest.json`, reading each
+object back through the public URL. The P2P feed check was removed because the products are separate.
+Builds before 0050 point at the old origin, which was never populated with a feed; they must be updated
+manually once. Earlier Qt/FFmpeg source archives uploaded under `updates.p2pmizin.dev/playout/sources/`
+remain in the P2PMizin bucket until the owner decides to remove them.

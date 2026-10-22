@@ -1,4 +1,4 @@
-"""Sign release metadata locally; publish only under the isolated playout/ prefix.
+"""Sign release metadata locally; publish to the Playout-only R2 bucket served at playoutmizin.pages.dev/updates/.
 
 Signing private material stays in ignored binaries/release-signing, never in R2,
 Git or app packages. The public key is compiled into the native client.
@@ -8,8 +8,8 @@ from cryptography.hazmat.primitives import hashes,serialization
 from cryptography.hazmat.primitives.asymmetric import padding,rsa
 
 ROOT=pathlib.Path(__file__).resolve().parents[1]
-BASE='https://updates.p2pmizin.dev/playout/'
-BUCKET='ezshare-updates'
+BASE='https://playoutmizin.pages.dev/updates/'
+BUCKET='playoutmizin-updates'  # dedicated to Mizin Playout; never the P2PMizin bucket
 KEY_ID='mizin-playout-2026-01'
 # The public domain rejects urllib's generic bot identifier. Use an explicit
 # release-client identity, like the native updater; no access rule is changed.
@@ -61,9 +61,8 @@ def publish(node,wrangler):
  # A current package validation is required before any pointer is announced.
  bid=payload['version'].split('build ')[1][:-1]
  validation=read(ROOT/f'evidence/package-validation-{bid}.json');assert validation['result']=='PASS'
- with urllib.request.urlopen('https://updates.p2pmizin.dev/latest-portable.json',timeout=30) as response:p2p_before=hashlib.sha256(response.read()).hexdigest()
  def upload(relative,file,content_type,cache):
-  assert relative.startswith('playout/') and '..' not in relative.split('/')
+  assert relative.split('/')[0] in ('preview','releases','history','sources') and '..' not in relative.split('/')
   subprocess.run([str(node),str(wrangler),'r2','object','put',BUCKET+'/'+relative,'--file',str(file),'--content-type',content_type,'--cache-control',cache,'--remote'],cwd=ROOT,check=True)
  def public_hash(relative):
   # Probe a unique cache key: a pre-upload 404 for .zip/.exe must not seed the
@@ -78,7 +77,7 @@ def publish(node,wrangler):
   except urllib.error.HTTPError as error:
    if error.code!=404:raise
    existing=None
-  if existing is None:upload('playout/'+relative,file,content_type,'public, max-age=31536000, immutable')
+  if existing is None:upload(relative,file,content_type,'public, max-age=31536000, immutable')
   else:assert existing==(size,digest),'Refusing to replace an immutable published object: '+relative
   assert public_hash(relative)==(size,digest),'Public object differs: '+relative
  sources=read(ROOT/'packaging/dependency-sources.json');source_root='sources/qt-6.10.2-ffmpeg-7.1.2/'
@@ -90,11 +89,9 @@ def publish(node,wrangler):
   immutable(a['file'],release/pathlib.PurePosixPath(a['file']).name,a['size'],a['sha256'])
  immutable('history/'+release.name+'.json',release/'update-manifest.json',(release/'update-manifest.json').stat().st_size,sha(release/'update-manifest.json'),'application/json')
  # Last: clients only learn about a version after its artifacts are public/verified.
- upload('playout/preview/latest.json',release/'update-manifest.json','application/json','no-store')
+ upload('preview/latest.json',release/'update-manifest.json','application/json','no-store')
  with urllib.request.urlopen(BASE+'preview/latest.json',timeout=30) as response:assert json.load(response)==read(release/'update-manifest.json')
- with urllib.request.urlopen('https://updates.p2pmizin.dev/latest-portable.json',timeout=30) as response:p2p_after=hashlib.sha256(response.read()).hexdigest()
- assert p2p_before==p2p_after,'P2P feed changed during publication; inspect before continuing'
- write(ROOT/f'evidence/update-publication-{bid}.json',dict(result='PASS',version=payload['version'],feed=BASE+'preview/latest.json',artifacts=payload['artifacts'],sources=sources['url']+'index.json',manifest_sha256=sha(release/'update-manifest.json'),p2p_feed_before=p2p_before,p2p_feed_after=p2p_after,scope='Live Cloudflare R2 readback, artifacts and corresponding source archives before signed latest pointer; P2P feed hash unchanged.'))
+ write(ROOT/f'evidence/update-publication-{bid}.json',dict(result='PASS',version=payload['version'],feed=BASE+'preview/latest.json',artifacts=payload['artifacts'],sources=sources['url']+'index.json',manifest_sha256=sha(release/'update-manifest.json'),scope='Live readback through playoutmizin.pages.dev/updates (Pages Function over the playoutmizin-updates R2 bucket): artifacts and corresponding source archives before the signed latest pointer.'))
  print('Published and read back '+BASE+'preview/latest.json')
 if __name__=='__main__':
  ap=argparse.ArgumentParser();ap.add_argument('action',choices=['init-key','prepare','publish']);ap.add_argument('--node',type=pathlib.Path);ap.add_argument('--wrangler',type=pathlib.Path);args=ap.parse_args()

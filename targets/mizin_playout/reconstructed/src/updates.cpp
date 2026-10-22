@@ -7,7 +7,8 @@
 #include <bcrypt.h>
 #endif
 
-static const QUrl updateRoot("https://updates.p2pmizin.dev/playout/");
+// Mizin Playout has its own update origin (Cloudflare Pages + R2), separate from P2PMizin.
+static const QUrl updateRoot("https://playoutmizin.pages.dev/updates/");
 static constexpr qint64 maximumDownload=512LL*1024*1024;
 static QList<quint64> versionParts(const QString& version){
     const auto m=QRegularExpression("^v([0-9]{1,5})\\.([0-9]{1,5})\\.([0-9]{1,5}) \\(build ([0-9]{4,9})\\)$").match(version);
@@ -47,7 +48,7 @@ bool UpdateRelease::readSigned(const QByteArray& bytes,UpdateRelease& release,QS
     const auto version=data["version"].toString();if(versionParts(version).isEmpty())return invalid("Invalid update version");
     const auto setup=data["artifacts"].toObject()["setup"].toObject();const auto file=setup["file"].toString(),sha=setup["sha256"].toString();const double size=setup["size"].toDouble(-1);
     if(!file.startsWith("releases/MizinPlayout-")||!file.endsWith("-setup.exe")||file.contains("..")||!QRegularExpression("^[A-Za-z0-9_./-]+$").match(file).hasMatch())return invalid("Invalid update download path");
-    const auto url=updateRoot.resolved(QUrl(file));if(url.scheme()!="https"||url.host()!=updateRoot.host()||!url.path().startsWith("/playout/")||!url.userInfo().isEmpty()||url.hasQuery()||url.hasFragment())return invalid("Invalid update download path");
+    const auto url=updateRoot.resolved(QUrl(file));if(url.scheme()!="https"||url.host()!=updateRoot.host()||!url.path().startsWith("/updates/")||!url.userInfo().isEmpty()||url.hasQuery()||url.hasFragment())return invalid("Invalid update download path");
     if(!QRegularExpression("^[0-9a-f]{64}$").match(sha).hasMatch()||!std::isfinite(size)||size<=0||size>maximumDownload||std::floor(size)!=size)return invalid("Invalid update file size or hash");
     const auto notes=data["notes"].toObject();for(const auto& lang:{"en","pt-BR"}){
         const auto lines=notes[lang].toArray();if(lines.isEmpty()||lines.size()>80)return invalid("Update notes are unavailable");

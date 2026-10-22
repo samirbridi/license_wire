@@ -1,6 +1,6 @@
 {
   "schema": 1,
-  "url": "https://updates.p2pmizin.dev/playout/sources/qt-6.10.2-ffmpeg-7.1.2/",
+  "url": "https://playoutmizin.pages.dev/updates/sources/qt-6.10.2-ffmpeg-7.1.2/",
   "archives": [
     {
       "file": "qtbase-everywhere-src-6.10.2.tar.xz",

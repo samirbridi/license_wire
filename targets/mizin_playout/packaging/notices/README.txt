@@ -25,7 +25,7 @@ or replaced. No restriction on debugging such modifications is imposed here.
 
 Matching Qt 6.10.2/FFmpeg 7.1.2 upstream archives, SDK build configuration and
 source SPDX are indexed with SHA-256 in dependency-sources.json and made available
-alongside the preview at https://updates.p2pmizin.dev/playout/sources/qt-6.10.2-ffmpeg-7.1.2/.
+alongside the preview at https://playoutmizin.pages.dev/updates/sources/qt-6.10.2-ffmpeg-7.1.2/.
 Original third-party license/notice and attribution files from those archives are
 retained in licenses/upstream/. A bit-identical rebuild is not asserted. The
 original application source for the recorded commit is bundled in source/.

@@ -30,7 +30,7 @@ def main():
      if not parts or '..' in parts:continue
      target=ROOT/'packaging/notices/upstream'/entry['file'].removesuffix('.tar.xz')/pathlib.Path(*parts)
      target.parent.mkdir(parents=True,exist_ok=True);target.write_bytes(archive.extractfile(member).read())
- manifest=dict(schema=1,url='https://updates.p2pmizin.dev/playout/sources/qt-6.10.2-ffmpeg-7.1.2/',archives=entries,scope='Unmodified official release sources matching deployed versions. Supplied SDK configuration and deployed FFmpeg configuration retained; bit-identical rebuild not qualified.')
+ manifest=dict(schema=1,url='https://playoutmizin.pages.dev/updates/sources/qt-6.10.2-ffmpeg-7.1.2/',archives=entries,scope='Unmodified official release sources matching deployed versions. Supplied SDK configuration and deployed FFmpeg configuration retained; bit-identical rebuild not qualified.')
  (ROOT/'packaging/dependency-sources.json').write_text(json.dumps(manifest,indent=2)+'\n',encoding='utf-8')
  config=DEST/'build-configuration.zip'
  with zipfile.ZipFile(config,'w',zipfile.ZIP_DEFLATED) as bundle:

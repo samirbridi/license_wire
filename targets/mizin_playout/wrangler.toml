@@ -1,0 +1,9 @@
+# Cloudflare Pages project for Mizin Playout (site + update feed). Separate from P2PMizin.
+# Deploy from this folder: npx wrangler pages deploy
+name = "playoutmizin"
+pages_build_output_dir = "site"
+compatibility_date = "2026-10-01"
+
+[[r2_buckets]]
+binding = "UPDATES"
+bucket_name = "playoutmizin-updates"
