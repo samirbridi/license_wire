@@ -1,10 +1,10 @@
 {
   "en": [
-    "Export show package (top bar): one folder with the show and all its media, with relative paths, ready to copy to another computer, drive or USB stick. Checks free space, shows progress and verifies every copy.",
-    "Shows whose media lives inside their own folder keep relative paths when saved, so the folder can be moved freely."
+    "Mizin Link (Outputs → Mizin Link), phase 1: pair several machines on the network with a Link code. The master sends the show and all its media to the followers, verified file by file; resending only transfers what changed. Followers load the received show in one click.",
+    "Backup mirroring and synchronized playback across PCs are the next Link phases."
   ],
   "pt-BR": [
-    "Exportar pacote do show (no topo): uma pasta com o show e todas as mídias, com caminhos relativos, pronta para copiar para outro computador, HD ou pendrive. Confere o espaço livre, mostra o progresso e verifica cada cópia.",
-    "Shows com as mídias dentro da própria pasta mantêm os caminhos relativos ao salvar, então a pasta pode ser movida à vontade."
+    "Mizin Link (Saídas → Mizin Link), fase 1: pareie várias máquinas na rede com um código do Link. O mestre envia o show e todas as mídias para os seguidores, conferidos arquivo por arquivo; um reenvio só transfere o que mudou. Os seguidores carregam o show recebido com um clique.",
+    "O espelhamento de reserva e a reprodução sincronizada entre PCs são as próximas fases do Link."
   ]
 }

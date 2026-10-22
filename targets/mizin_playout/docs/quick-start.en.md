@@ -60,6 +60,12 @@ If a show is opened on another computer or with the drive on another letter, the
 
 **Export show package** (top bar, next to Save show) creates a folder with the show file and a `media/` subfolder holding every media file used by all Programs. Paths are relative to the show folder: copy the whole folder to another computer, drive or USB stick and open the `.mizinshow` from there. Files with the same name from different folders get "(2)", "(3)"… The app checks free space first, shows progress with Cancel and verifies each copy's size; missing media is left out and listed at the end. Saving a show whose media lives inside its folder keeps those paths relative.
 
+## Mizin Link: several machines on the network
+
+In **Outputs → Mizin Link**, choose each computer's role: **Master** (sends the show) or **Follower** (receives). Use the same **Link code** on every machine (New code generates one) and click **Start Link**. Followers find the master on the network by themselves (or type its address). The table shows each machine, the measured clock offset and how many media files it already has.
+
+On the master, **Send show to machines** sends the current show and all its media; every file is verified with SHA-256 and, when sending again, only what changed or is missing is downloaded. On a follower, **Load received show** opens the show with the copied media. Messages without the right code are refused. This is phase 1; backup mirroring (the backup repeats the main and can take over) and synchronized playback across PCs come in the next versions.
+
 ## Language and performance
 
 English is default; Português (Brasil) can be selected during playback. Automatic hardware decoding and CPU decoding are available in Settings after restart. Codec/profile/driver support varies. Cuts forward shared native frames; transitions currently convert and compose in CPU once per Program. GPU composition, remote control, scheduling and production AV-sync/performance qualification remain future work. Layout samples demonstrate the interface, not physical-output playback.

@@ -60,6 +60,12 @@ Se um show for aberto em outro computador ou com o HD em outra letra, o aplicati
 
 **Exportar pacote do show** (no topo, ao lado de Salvar show) cria uma pasta com o arquivo do show e a subpasta `media/` com todas as mídias usadas por todos os Programs. Os caminhos ficam relativos à pasta do show: copie a pasta inteira para outro computador, HD ou pendrive e abra o `.mizinshow` de lá. Arquivos com o mesmo nome vindos de pastas diferentes recebem "(2)", "(3)"… O aplicativo confere o espaço livre antes, mostra o progresso com Cancelar e confere o tamanho de cada cópia; mídias ausentes ficam de fora e são listadas no fim. Ao salvar um show cujas mídias estão dentro da pasta dele, os caminhos continuam relativos.
 
+## Mizin Link: várias máquinas na rede
+
+Em **Saídas → Mizin Link**, escolha a função de cada computador: **Mestre** (envia o show) ou **Seguidor** (recebe). Use o mesmo **código do Link** em todas as máquinas (o botão Novo código gera um) e clique em **Iniciar Link**. Os seguidores encontram o mestre sozinhos na rede (ou digite o endereço dele). A tabela mostra cada máquina, a diferença de relógio medida e quantas mídias ela já tem.
+
+No mestre, **Enviar show para as máquinas** manda o show atual e todas as mídias; cada arquivo é conferido por SHA-256 e, num reenvio, só o que mudou ou faltou é baixado. No seguidor, **Carregar show recebido** abre o show com as mídias copiadas. Mensagens sem o código certo são recusadas. Esta é a fase 1; o espelhamento de reserva (o reserva repete o principal e pode assumir) e a reprodução sincronizada entre PCs vêm nas próximas versões.
+
 ## Idioma e desempenho
 
 Inglês é o padrão; Português (Brasil) pode ser escolhido durante a reprodução. As opções de decodificação automática por hardware e por CPU ficam em Configurações e exigem reinício. O suporte depende de codec, perfil e driver. Cortes encaminham quadros nativos compartilhados; transições convertem e compõem em CPU uma vez por Program. Composição em GPU, controle remoto, agendamento e validação de desempenho/sincronismo para produção seguem como próximas etapas. Pranchetas demonstram a interface, não reprodução em saídas físicas.

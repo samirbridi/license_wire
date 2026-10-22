@@ -13,6 +13,7 @@
 #include "updates.hpp"
 #include "web_monitor.hpp"
 #include "local_audio.hpp"
+#include "link.hpp"
 #include <QtWidgets>
 #include <QtConcurrent>
 #include <QVideoWidget>
@@ -219,6 +220,7 @@ public:
     }
     void selectPage(int page){pages_->setCurrentIndex(page);if(navigation_->button(page))navigation_->button(page)->setChecked(true);}
     void selectDigital(){selectPage(3);outputsTabs_->setCurrentIndex(1);}
+    void selectLink(){selectPage(3);outputsTabs_->setCurrentIndex(3);}
     void selectDiagnostics(){selectPage(5);settingsTabs_->setCurrentIndex(1);}
     void configureBoardSequential(){if(demo_)sequentialMode_->click();}
     void configureBoardPrograms(int count){if(demo_)while(programCount_<qBound(1,count,64))addProgram(true);}
@@ -246,7 +248,7 @@ protected:
     void dropEvent(QDropEvent* event) override {QStringList paths;for(const auto& url:event->mimeData()->urls())if(url.isLocalFile())paths<<url.toLocalFile();importExternal(paths);event->acceptProposedAction();}
     void closeEvent(QCloseEvent* event) override {
         if(!demo_ && dirty_ && QMessageBox::question(this,tx("Unsaved show"),tx("Close without saving the show?"),QMessageBox::Yes|QMessageBox::No,QMessageBox::No)!=QMessageBox::Yes){event->ignore();return;}
-        for(auto& output:outputWindows_)if(output)output->close();closeDeckWindows();if(web_)web_->stop();if(engine_)engine_->stop();if(!demo_)clearRecovery();event->accept();
+        for(auto& output:outputWindows_)if(output)output->close();closeDeckWindows();if(web_)web_->stop();if(engine_)engine_->stop();if(link_)link_->stop();if(!demo_)clearRecovery();event->accept();
     }
 private:
     QString tx(const QString& key)const{const QString resolved=programCount_==1&&key=="Program A"?"Program":programCount_==1&&key=="PROGRAM A"?"PROGRAM":key;if(dictionary_.contains(resolved))return dictionary_.value(resolved).toString();if(resolved.startsWith("Program "))return dictionary_.value("Program %1").toString("Program %1").arg(resolved.mid(8));if(resolved.startsWith("PROGRAM "))return dictionary_.value("PROGRAM %1").toString("PROGRAM %1").arg(resolved.mid(8));return resolved;}
@@ -338,6 +340,7 @@ private:
 #include "main_audio_engine.inc"
 #include "main_show_reliability.inc"
 #include "main_show_package.inc"
+#include "main_link.inc"
     void refreshDashboard(){
         if(!manualMode_||!playlistTable_)return;
         for(auto* name:{previewName_,programName_,secondaryName_})if(name){name->setToolTip(name->text());name->setAccessibleName(name->text());}
@@ -423,7 +426,7 @@ private:
         auto* audio=new AudioPanel(channelAt(index),settings_.get(),preferencesId(index),[this](const QString& key){return tx(key);},demo_);audio->setProperty("programName",programDefinitions_[index].name);audioPanels_.append(audio);audioLayout_->addWidget(audio);
     }
     QWidget* outputsPage(){
-        outputsTabs_=new QTabWidget;outputsTabs_->addTab(scrollPage(physicalOutputsPage()),tx("Displays"));auto* digital=new QWidget;auto* l=new QVBoxLayout(digital);l->setContentsMargins(16,16,16,16);l->setSpacing(16);l->addWidget(label("Digital outputs","heading"));auto* panels=new QWidget;digitalLayout_=new QVBoxLayout(panels);digitalLayout_->setContentsMargins(0,0,0,0);l->addWidget(panels);auto* attribution=new QLabel("<a href=\"https://ndi.video/\">NDI® · ndi.video</a><br>NDI® is a registered trademark of Vizrt NDI AB.");attribution->setOpenExternalLinks(true);l->addWidget(attribution);l->addWidget(label("Network output starts only when requested. No remote control service is started.","muted"));l->addStretch();outputsTabs_->addTab(scrollPage(digital),tx("NDI / OMT"));outputsTabs_->addTab(scrollPage(webMonitorPage()),tx("Web monitor"));return outputsTabs_;
+        outputsTabs_=new QTabWidget;outputsTabs_->addTab(scrollPage(physicalOutputsPage()),tx("Displays"));auto* digital=new QWidget;auto* l=new QVBoxLayout(digital);l->setContentsMargins(16,16,16,16);l->setSpacing(16);l->addWidget(label("Digital outputs","heading"));auto* panels=new QWidget;digitalLayout_=new QVBoxLayout(panels);digitalLayout_->setContentsMargins(0,0,0,0);l->addWidget(panels);auto* attribution=new QLabel("<a href=\"https://ndi.video/\">NDI® · ndi.video</a><br>NDI® is a registered trademark of Vizrt NDI AB.");attribution->setOpenExternalLinks(true);l->addWidget(attribution);l->addWidget(label("Network output starts only when requested. No remote control service is started.","muted"));l->addStretch();outputsTabs_->addTab(scrollPage(digital),tx("NDI / OMT"));outputsTabs_->addTab(scrollPage(webMonitorPage()),tx("Web monitor"));outputsTabs_->addTab(scrollPage(linkPage()),tx("Mizin Link"));return outputsTabs_;
     }
     QWidget* audioPage(){auto* page=new QWidget;auto* l=new QVBoxLayout(page);l->setContentsMargins(0,0,0,0);l->setSpacing(16);l->addWidget(label("Audio routing","heading"));l->addWidget(localEnginePanel());auto* panels=new QWidget;audioLayout_=new QVBoxLayout(panels);audioLayout_->setContentsMargins(0,0,0,0);l->addWidget(panels);appendProgramPanels(0);l->addWidget(label("Preview stays muted. Mirrored video outputs do not duplicate local audio.","muted"));l->addStretch();return page;}
     QWidget* settingsPage(){settingsTabs_=new QTabWidget;settingsTabs_->addTab(playbackSettingsPage(),tx("Playback"));diagnosticsPanel_=new DiagnosticsPanel([this](const QString& key){return tx(key);},[this]{return diagnosticsReport();},demo_);settingsTabs_->addTab(diagnosticsPanel_,tx("Engine diagnostics"));updatePanel_=new UpdatePanel(updates_.get(),[this](const QString& key){return tx(key);},[this]{installUpdate();});settingsTabs_->addTab(updatePanel_,tx("Updates"));return settingsTabs_;}
@@ -579,7 +582,7 @@ private:
     void retranslate(){
         bindings_.removeIf([](const Binding& binding){return binding.widget.isNull();});
         for(auto* action:findChildren<QAction*>()){const auto key=action->property("textKey").toString();if(!key.isEmpty())action->setText(tx(key));}
-        if(settingsTabs_){settingsTabs_->setTabText(0,tx("Playback"));settingsTabs_->setTabText(1,tx("Engine diagnostics"));settingsTabs_->setTabText(2,tx("Updates"));}if(updatePanel_)updatePanel_->retranslate();if(updateBannerText_)updateBannerText_->setText(tx("Update available")+" · "+updates_->release().version);if(outputsTabs_){outputsTabs_->setTabText(0,tx("Displays"));outputsTabs_->setTabText(1,tx("NDI / OMT"));outputsTabs_->setTabText(2,tx("Web monitor"));}
+        if(settingsTabs_){settingsTabs_->setTabText(0,tx("Playback"));settingsTabs_->setTabText(1,tx("Engine diagnostics"));settingsTabs_->setTabText(2,tx("Updates"));}if(updatePanel_)updatePanel_->retranslate();if(updateBannerText_)updateBannerText_->setText(tx("Update available")+" · "+updates_->release().version);if(outputsTabs_){outputsTabs_->setTabText(0,tx("Displays"));outputsTabs_->setTabText(1,tx("NDI / OMT"));outputsTabs_->setTabText(2,tx("Web monitor"));outputsTabs_->setTabText(3,tx("Mizin Link"));}
         for(auto* widget:findChildren<QWidget*>()){const auto key=widget->property("tipKey").toString();if(!key.isEmpty()){widget->setToolTip(tx(key));widget->setAccessibleName(tx(key));}}
         for(int i=0;i<audioPanels_.size();++i){audioPanels_[i]->setProperty("programName",programDefinitions_[i].name);audioPanels_[i]->retranslate();digitalPanels_[i]->setProperty("programName",programDefinitions_[i].name);digitalPanels_[i]->retranslate();}
         for(const auto& binding:bindings_){if(auto* l=qobject_cast<QLabel*>(binding.widget.data()))l->setText(tx(binding.key));else if(auto* b=qobject_cast<QPushButton*>(binding.widget.data()))b->setText(tx(binding.key));else if(auto* c=qobject_cast<QCheckBox*>(binding.widget.data()))c->setText(tx(binding.key));else if(auto* e=qobject_cast<QLineEdit*>(binding.widget.data()))e->setPlaceholderText(tx(binding.key));}
@@ -724,9 +727,11 @@ int main(int argc,char** argv){
     parser.addOption(QCommandLineOption(QStringLiteral("capture-size"),QStringLiteral("Native board viewport, e.g. 1280x800"),QStringLiteral("widthxheight"),QStringLiteral("1600x1000")));
     parser.addOption(QCommandLineOption(QStringLiteral("state-dir"),QStringLiteral("Portable settings directory"),QStringLiteral("directory")));
     parser.addOption(QCommandLineOption(QStringLiteral("cpu"),QStringLiteral("Force software decoding")));
+    parser.addOption(QCommandLineOption(QStringLiteral("link-test"),QStringLiteral("Test Mizin Link discovery, pairing and distribution")));
     parser.addOption(QCommandLineOption(QStringLiteral("audio-engine-test"),QStringLiteral("Test the low-latency local audio engine")));
     parser.addOption(QCommandLineOption(QStringLiteral("web-test"),QStringLiteral("Test the local WebRTC web monitor")));
     parser.addOption(QCommandLineOption(QStringLiteral("network-test"),QStringLiteral("Test audio mixing and native NDI/OMT loopback")));
+    parser.addOption(QCommandLineOption(QStringLiteral("capture-link"),QStringLiteral("Capture the Mizin Link tab")));
     parser.addOption(QCommandLineOption(QStringLiteral("capture-digital"),QStringLiteral("Capture the Digital/IP outputs tab")));
     parser.addOption(QCommandLineOption(QStringLiteral("capture-diagnostics"),QStringLiteral("Capture Settings / Engine diagnostics")));
     parser.addOption(QCommandLineOption(QStringLiteral("readiness-test"),QStringLiteral("Test real source readiness and engine metrics")));
@@ -746,6 +751,7 @@ int main(int argc,char** argv){
     if(parser.isSet("network-test"))return runNetworkTests(parser.value("fixtures"),parser.value("result"));
     if(parser.isSet("web-test"))return runWebTests(parser.value("fixtures"),parser.value("result"));
     if(parser.isSet("audio-engine-test"))return runAudioEngineTests(parser.value("fixtures"),parser.value("result"));
+    if(parser.isSet("link-test"))return runLinkTests(parser.value("fixtures"),parser.value("result"));
     if(parser.isSet("gpu-test"))return runGpuTests(parser.value("fixtures"),parser.value("result"));
     if(parser.isSet("output-test"))return runOutputTests(parser.value("fixtures"),parser.value("result"));
     if(parser.isSet("transport-test"))return runTransportTests(parser.value("fixtures"),parser.value("result"));
@@ -771,9 +777,9 @@ int main(int argc,char** argv){
    window.importExternal(parser.positionalArguments());if(!parser.isSet("capture-dir"))window.startUpdateChecks(parser.isSet("portable"));
     if(parser.isSet("capture-dir")){
         const QString dir=parser.value("capture-dir");QDir().mkpath(dir);
-        const int page=qBound(0,parser.value("capture-page").toInt(),4);window.selectPage(page);if(parser.isSet("capture-digital"))window.selectDigital();if(parser.isSet("capture-diagnostics"))window.selectDiagnostics();
+        const int page=qBound(0,parser.value("capture-page").toInt(),4);window.selectPage(page);if(parser.isSet("capture-digital"))window.selectDigital();if(parser.isSet("capture-link"))window.selectLink();if(parser.isSet("capture-diagnostics"))window.selectDiagnostics();
         const bool portuguese=parser.value("lang")=="pt-BR";
-        const QString name=parser.isSet("capture-diagnostics")?(portuguese?"12-engine-pt-BR.png":"11-engine-en.png"):parser.isSet("capture-digital")?(portuguese?"10-network-pt-BR.png":"09-network-en.png"):page==4?(portuguese?"08-audio-pt-BR.png":"07-audio-en.png"):page==3?"02-outputs-en.png":page==2?"03-library-en.png":page==1?(portuguese?"06-edit-pt-BR.png":"05-edit-en.png"):portuguese?"04-main-pt-BR.png":"01-main-en.png";
+        const QString name=parser.isSet("capture-link")?(portuguese?"14-link-pt-BR.png":"13-link-en.png"):parser.isSet("capture-diagnostics")?(portuguese?"12-engine-pt-BR.png":"11-engine-en.png"):parser.isSet("capture-digital")?(portuguese?"10-network-pt-BR.png":"09-network-en.png"):page==4?(portuguese?"08-audio-pt-BR.png":"07-audio-en.png"):page==3?"02-outputs-en.png":page==2?"03-library-en.png":page==1?(portuguese?"06-edit-pt-BR.png":"05-edit-en.png"):portuguese?"04-main-pt-BR.png":"01-main-en.png";
         QTimer::singleShot(2100,&window,[&window,dir,name]{window.capture(dir+"/"+name);QCoreApplication::quit();});
     }
     return app.exec();

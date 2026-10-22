@@ -30,6 +30,8 @@ if(WIN32)
 endif()
 # ADR-018 low-latency local audio (WASAPI always; ASIO only with the Steinberg SDK and its licence).
 target_sources(MizinPlayout PRIVATE src/local_audio.hpp src/local_audio.cpp src/local_audio_asio.cpp src/local_audio_tests.cpp)
+# ADR-019 Mizin Link (multi-machine).
+target_sources(MizinPlayout PRIVATE src/link.hpp src/link.cpp src/link_tests.cpp)
 if(WIN32)
   target_link_libraries(MizinPlayout PRIVATE avrt)
 endif()

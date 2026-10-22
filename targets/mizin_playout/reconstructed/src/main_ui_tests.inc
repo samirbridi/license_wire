@@ -7,12 +7,15 @@ int MainWindow::runUiTests(const QString& directory,const QString& resultPath){
     const QString base=QFileInfo(resultPath).absolutePath()+"/",stem=QFileInfo(resultPath).completeBaseName();
     pump(80);record("default_allocates_only_main_program_and_one_route",programCount_==1&&displayCount_==1&&extraPrograms_.empty()&&sourceBoxes_.size()==1&&targetBox_->count()==1&&programViews_->currentIndex()==0);
     record("update_install_guard_allows_idle",!updatePlaybackBusy());record("updater_starts_idle_without_download",updates_->state()=="idle"&&updates_->downloadedFile().isEmpty()&&!updateBanner_->isVisible());record("updates_page_is_available",settingsTabs_->count()==3&&updatePanel_);
-    record("web_monitor_is_off_by_default",web_&&!web_->running()&&web_->urls().isEmpty()&&outputsTabs_->count()==3&&webStart_->isEnabled()&&!webStop_->isEnabled()&&webCodeValue_.size()>=6);
+    record("web_monitor_is_off_by_default",web_&&!web_->running()&&web_->urls().isEmpty()&&outputsTabs_->count()==4&&webStart_->isEnabled()&&!webStop_->isEnabled()&&webCodeValue_.size()>=6);
     webAccess_->setCurrentIndex(1);webPort_->setValue(20000+int(QRandomGenerator::global()->bounded(20000)));webStart_->click();pump(50);
     const bool webOn=web_->running()&&web_->urls().size()==1&&web_->urls()[0].contains("127.0.0.1:"+QString::number(webPort_->value()))&&webUrls_->text().contains(webCodeValue_)&&!webPort_->isEnabled();
     const QString oldCode=webCodeValue_;webNewCode_->click();const bool newCode=webCodeValue_!=oldCode&&web_->code()==webCodeValue_&&settings_->value("webMonitorCode").toString()==webCodeValue_;webStop_->click();pump(30);
     record("web_monitor_starts_on_request_and_stops",webOn&&newCode&&!web_->running()&&webStatus_->text()==tx("Stopped. Nothing is listening on the network."));
     record("low_latency_output_is_off_by_default",engine_&&!engine_->running()&&!programA_.localEngine()&&!programA_.qtSinksMuted()&&engineStart_->isVisible()==false&&enginePairs_.size()==1&&engineStatus_->text()==tx("Off. Programs play through their normal output (Audio routing below)."));
+    record("mizin_link_is_off_by_default",link_&&link_->role()==LinkNode::Role::Off&&linkStart_->isEnabled()&&!linkStop_->isEnabled()&&linkStatus_->text()==tx("Off. Nothing is listening on the network."));
+    {const bool master=link_->startMaster("ui-link-code",0);refreshLink();const bool shown=linkStatus_->text().startsWith(tx("Master · %1 machines connected").arg(0))&&!linkStart_->isEnabled()&&!linkSend_->isHidden()&&linkLoad_->isHidden();
+     link_->stop();refreshLink();record("mizin_link_master_starts_and_stops_from_the_page",master&&shown&&link_->role()==LinkNode::Role::Off&&linkStart_->isEnabled());}
     record("approved_brand_icon_is_present",!windowIcon().isNull()&&findChild<QWidget*>("brandMark"));
     auto report=diagnosticsReport();record("single_diagnostics_has_no_inactive_placeholders",report["channels"].toArray().size()==2&&report["network"].toArray().size()==2&&report["outputs"].toArray().size()==1);
     for(const auto& locale:{QString("en"),QString("pt-BR")})for(const auto& size:{QSize(1600,1000),QSize(1280,800)}){
