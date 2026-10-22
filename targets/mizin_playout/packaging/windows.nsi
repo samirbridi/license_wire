@@ -33,76 +33,13 @@ VIAddVersionKey /LANG=1033 "LegalCopyright" "Mizin"
 !insertmacro MUI_LANGUAGE "PortugueseBR"
 Var QaMode
 Var PortableMode
-Var RuntimeInstalled
-Var RuntimeMajor
-Var RuntimeMinor
-Var RuntimeBuild
 
 Function .onInit
   SetShellVarContext current
-  SetRegView 64
-  StrCpy $QaMode 0
-  StrCpy $PortableMode 0
-  ${GetParameters} $0
-  ClearErrors
-  ${GetOptions} $0 "/QA" $1
-  ${IfNot} ${Errors}
-    StrCpy $QaMode 1
-  ${EndIf}
-  ClearErrors
-  ${GetOptions} $0 "/PORTABLE" $1
-  ${IfNot} ${Errors}
-    StrCpy $PortableMode 1
-  ${EndIf}
-  ${IfNot} ${RunningX64}
-    MessageBox MB_OK|MB_ICONSTOP "Mizin Playout requires Windows x64."
-    Abort
-  ${EndIf}
-  ${IfNot} ${AtLeastWin10}
-    MessageBox MB_OK|MB_ICONSTOP "Mizin Playout requires Windows 10 or later."
-    Abort
-  ${EndIf}
-  IfSilent language_ready
-  !insertmacro MUI_LANGDLL_DISPLAY
-language_ready:
-FunctionEnd
-
-Section "Mizin Playout" Main
-  !insertmacro InstallPayload
-  IfErrors 0 +3
-    SetErrorLevel 1
-    Abort "Application files could not be installed. Close Mizin Playout and retry."
-  SetRegView 64
-  ReadRegDWORD $RuntimeInstalled HKLM "Software\Microsoft\VisualStudio\14.0\VC\Runtimes\x64" "Installed"
-  ReadRegDWORD $RuntimeMajor HKLM "Software\Microsoft\VisualStudio\14.0\VC\Runtimes\x64" "Major"
-  ReadRegDWORD $RuntimeMinor HKLM "Software\Microsoft\VisualStudio\14.0\VC\Runtimes\x64" "Minor"
-  ReadRegDWORD $RuntimeBuild HKLM "Software\Microsoft\VisualStudio\14.0\VC\Runtimes\x64" "Bld"
-  ${If} $RuntimeInstalled != 1
-  ${OrIf} $RuntimeMajor < ${RUNTIME_MAJOR}
-    Goto install_runtime
-  ${EndIf}
-  ${If} $RuntimeMajor == ${RUNTIME_MAJOR}
-    ${If} $RuntimeMinor < ${RUNTIME_MINOR}
-      Goto install_runtime
-    ${EndIf}
-    ${If} $RuntimeMinor == ${RUNTIME_MINOR}
-    ${AndIf} $RuntimeBuild < ${RUNTIME_BUILD}
-      Goto install_runtime
-    ${EndIf}
-  ${EndIf}
-  Goto runtime_ready
-install_runtime:
-    IfSilent runtime_missing
-    MessageBox MB_YESNO|MB_ICONQUESTION "Microsoft Visual C++ x64 runtime is required. Install the included official Microsoft runtime now? Windows may request administrator permission." IDNO runtime_missing
-    ExecShellWait "runas" "$INSTDIR\prerequisites\vc_redist.x64.exe" "/install /quiet /norestart" SW_HIDE $0
-    ${If} $0 != 0
-    ${AndIf} $0 != 3010
-      Goto runtime_missing
-    ${EndIf}
-    ${If} $0 == 3010
-      SetRebootFlag true
-    ${EndIf}
-runtime_ready:
+  ; The Microsoft C/C++ runtime DLLs ship beside the app (app-local deployment), so Setup never needs
+  ; the machine-wide runtime or administrator rights. A beta tester's Setup aborted here when the
+  ; elevated runtime install was refused/failed while the portable ZIP ran fine on the same PC.
+  ; prerequisites\vc_redist.x64.exe stays available for a manual machine-wide install.
   ${If} $PortableMode == 0
     WriteUninstaller "$INSTDIR\Uninstall.exe"
     WriteINIStr "$INSTDIR\installation.ini" "Setup" "QA" "$QaMode"
@@ -124,9 +61,6 @@ runtime_ready:
     WriteRegDWORD HKCU "Software\Microsoft\Windows\CurrentVersion\Uninstall\MizinPlayoutPreview" "NoRepair" 1
   ${EndIf}
   Goto complete
-runtime_missing:
-  SetErrorLevel 1638
-  Abort "Install prerequisites\vc_redist.x64.exe, then run Setup again."
 complete:
 SectionEnd
 

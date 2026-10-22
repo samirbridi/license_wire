@@ -114,6 +114,12 @@ def stage(qt, redist, compiler):
     shutil.copy2(ROOT/'reconstructed/third_party/ndi/Processing.NDI.Lib.h', licenses/'ndi-headers/Processing.NDI.Lib.h')
     (payload/'prerequisites').mkdir()
     shutil.copy2(redist, payload/'prerequisites/vc_redist.x64.exe')
+    # App-local Microsoft C/C++ runtime (redistributable files from the same Visual Studio release):
+    # the app then starts without a machine-wide runtime install or administrator rights.
+    crt=sorted((redist.parent/'x64').glob('Microsoft.VC*.CRT'))
+    if not crt:raise ValueError('Microsoft CRT redistributable folder not found beside vc_redist.x64.exe')
+    for dll in crt[-1].glob('*.dll'):shutil.copy2(dll,payload/dll.name)
+    if not (payload/'vcruntime140.dll').exists() or not (payload/'msvcp140.dll').exists():raise ValueError('App-local CRT incomplete')
     (payload/'source').mkdir()
     subprocess.run(['git', '-C', str(ROOT.parents[1]), 'archive', '--format=zip',
         '--output='+str(payload/'source/mizin-playout-source.zip'), build['source_commit'], '--',

@@ -4,10 +4,11 @@ Run MizinPlayout.exe for per-user settings. English is the default; choose
 Portugues (Brasil) in the app. Use Start portable.cmd for settings in state/.
 Videos remain in their original folders; save your show with Save show.
 
-Windows 10 22H2 / Windows 11 x64 and Microsoft Visual C++ v14 x64 runtime are
-required. The official signed installer is in prerequisites/vc_redist.x64.exe.
-The setup offers it if the installed runtime is too old. It may request Windows
-administrator permission; Mizin Playout itself runs as the current user.
+Windows 10 22H2 / Windows 11 x64 is required. The Microsoft Visual C++ runtime
+files are included beside the app, so Setup and the portable ZIP need no
+administrator permission. The official machine-wide installer remains in
+prerequisites/vc_redist.x64.exe if you prefer it. If Setup is blocked on a
+computer, use the portable ZIP: it is the same application.
 
 The official NDI runtime is included privately beside the app. No separate NDI
 installation is needed. Its vendor license/third-party notices are in licenses/ndi.

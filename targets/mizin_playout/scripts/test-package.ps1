@@ -62,8 +62,8 @@ try{
         Check "$mode metadata matches compiled version and source" ($data.version -eq $record.version -and $data.source_commit -eq $record.source_commit -and $data.default_language -eq 'en') $null
     }
     Check 'runtime-info creates no user preferences' (-not(Test-Path -LiteralPath (Join-Path $appDir 'state'))) $null
-    foreach($suite in @('ui','readiness','smoke','web')){
-        $fixtures=Join-Path $playoutRoot $(if($suite -eq 'readiness'){'binaries'}elseif($suite -eq 'web'){'binaries/network-fixtures'}else{'binaries/fixtures'})
+    foreach($suite in @('ui','readiness','smoke','web','audio-engine')){
+        $fixtures=Join-Path $playoutRoot $(if($suite -eq 'readiness'){'binaries'}elseif($suite -in @('web','audio-engine')){'binaries/network-fixtures'}else{'binaries/fixtures'})
         $result=Join-Path $work "$suite.json"
         $args='--'+$suite+'-test --fixtures "'+$fixtures+'" --result "'+$result+'" --state-dir "'+(Join-Path $work "$suite-state")+'"'
         if($suite -eq 'smoke'){$args+=' --cpu'}
@@ -71,7 +71,7 @@ try{
         $data=Get-Content -LiteralPath $result -Raw | ConvertFrom-Json
         Check "portable $suite native checks pass" ($data.result -eq 'PASS' -and @($data.tests | Where-Object {-not $_.pass}).Count -eq 0) @{checks=$data.tests.Count;file=$result}
         if($suite -eq 'ui'){
-            $required=@('Qt6Core.dll','Qt6Widgets.dll','qwindows.dll')
+            $required=@('Qt6Core.dll','Qt6Widgets.dll','qwindows.dll','vcruntime140.dll','msvcp140.dll')
             foreach($dll in $required){Check ("relocated runtime loads own "+$dll) (@($loaded | Where-Object {([IO.Path]::GetFileName($_) -ieq $dll) -and $_.StartsWith($appDir,[StringComparison]::OrdinalIgnoreCase)}).Count -eq 1) $null}
             Check 'no Qt DLL loaded from developer SDK' (@($loaded | Where-Object {$_ -match '\\binaries\\qt\\'}).Count -eq 0) $null
         }

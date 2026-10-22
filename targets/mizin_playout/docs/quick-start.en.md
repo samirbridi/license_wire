@@ -1,6 +1,6 @@
 # Your first show
 
-For the Windows private preview, run the Setup EXE to install for your account, or extract the ZIP and run MizinPlayout.exe. Microsoft Visual C++ x64 runtime is required; its official signed installer is in prerequisites/. The official NDI and OMT runtimes are included privately beside the app. Normal startup keeps settings under %LOCALAPPDATA%/Mizin/Mizin Playout. Start portable.cmd (or --portable) uses adjacent state/; --state-dir overrides either mode. Reinstallation/uninstallation preserves user settings and media. Existing development launcher paths remain valid. Save shows explicitly; media files stay in their original folders.
+For the Windows private preview, run the Setup EXE to install for your account, or extract the ZIP and run MizinPlayout.exe. The Microsoft Visual C++ runtime files are included beside the app (no administrator permission needed); the official machine-wide installer stays in prerequisites/. If Setup is blocked on a computer, the portable ZIP is the same application. The official NDI and OMT runtimes are included privately beside the app. Normal startup keeps settings under %LOCALAPPDATA%/Mizin/Mizin Playout. Start portable.cmd (or --portable) uses adjacent state/; --state-dir overrides either mode. Reinstallation/uninstallation preserves user settings and media. Existing development launcher paths remain valid. Save shows explicitly; media files stay in their original folders.
 
 The Live Desk starts with muted Preview and one **PROGRAM**. **+ Add Program** creates an independent Program with an empty running order. Select the Program in MAIN to edit its playlist and operate CUT/FADE, Manual/Sequential, Loop and Repeat. With additional Programs, MAIN builds a multiview of all Programs beside muted Preview. Click a Program name in the grid or use the destination menu to select its playlist and TAKE controls. Selection does not interrupt playback. Each tile has play/pause and Black controls for that tile's Program. Larger configurations scroll inside the multiview.
 
@@ -43,6 +43,12 @@ A Program with media on air (playing or paused) gets the red bar and the **ON AI
 In **Outputs → Web monitor**, choose **Local network (LAN)** or **This computer only**, the port (default 8787) and click **Start web monitor**. The addresses with the access code appear (e.g. `http://192.168.1.30:8787/?k=code`): open one on a phone, tablet or another computer on the same network. The page lists the Programs with the **ON AIR** badge; **Watch** opens a Program live (1280×720, up to 30 fps, stereo audio). Audio starts muted by browser rule: tap **Sound**. It is view only — nothing in the browser controls playout.
 
 The web monitor never starts by itself at launch. **New code** replaces the code and disconnects everyone. Each watched Program uses a single Windows H.264 encoder shared by all its viewers. Windows may ask to allow network access the first time; video uses UDP ports 50200–50399. Do not expose the port to the internet.
+
+## Low-latency audio output
+
+In **Audio → Low-latency output**, choose the engine and device and click **Start low-latency output**. **WASAPI exclusive** talks directly to the driver (lowest delay; the device is reserved for Mizin). **WASAPI shared low-latency** lets other apps keep using the device. **ASIO** (Dante Virtual Soundcard, Behringer UMC, Blackmagic) is only available in the Steinberg-licensed build. In **Buffer**, "Device minimum" is the lowest delay; raise it if you hear clicks.
+
+Pick each Program's output pair (e.g. A on 1–2, B on 3–4) — useful on multi-output interfaces such as Dante. Each Program's volume, mute and Local monitoring still apply. **Sync with the video automatically** measures how late video frames are published and delays the audio only as needed; use **Fine adjust** (ms) for projector/LED processor delay. If the device fails or is unplugged, every Program falls back to its normal output automatically. NDI, OMT and the web monitor are not affected.
 
 ## Language and performance
 
