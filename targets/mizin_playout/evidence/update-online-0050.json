@@ -1,0 +1,119 @@
+{
+    "live": {
+        "bytes": 54511673,
+        "error": "",
+        "sha256": "06b407c510ecad13708c8ddb9ea9d941fc8324354915af8252530b889b4d0e7f",
+        "state": "ready",
+        "version": "v0.19.0 (build 0050)"
+    },
+    "online": true,
+    "result": "PASS",
+    "scope": "Native CNG signature/product/platform/path validation, optional actual Cloudflare check/cancel/verified download. No installer launch from these metadata tests. v999 fixtures are test-only, never releases.",
+    "tests": [
+        {
+            "name": "signed_manifest_from_compiled_key_is_accepted",
+            "pass": true
+        },
+        {
+            "name": "signed_wrong_product_is_rejected",
+            "pass": true
+        },
+        {
+            "name": "signed_wrong_platform_is_rejected",
+            "pass": true
+        },
+        {
+            "name": "signed_wrong_channel_is_rejected",
+            "pass": true
+        },
+        {
+            "name": "signed_wrong_version_is_rejected",
+            "pass": true
+        },
+        {
+            "name": "signed_wrong_path_is_rejected",
+            "pass": true
+        },
+        {
+            "name": "signed_wrong_url_is_rejected",
+            "pass": true
+        },
+        {
+            "name": "signed_wrong_size_is_rejected",
+            "pass": true
+        },
+        {
+            "name": "signed_wrong_hash_is_rejected",
+            "pass": true
+        },
+        {
+            "name": "signed_wrong_notes_is_rejected",
+            "pass": true
+        },
+        {
+            "name": "tampered_signature_is_rejected",
+            "pass": true
+        },
+        {
+            "name": "tampered_payload_is_rejected",
+            "pass": true
+        },
+        {
+            "name": "malformed_json_is_rejected",
+            "pass": true
+        },
+        {
+            "name": "oversized_metadata_is_rejected",
+            "pass": true
+        },
+        {
+            "name": "version_comparison_is_numeric",
+            "pass": true
+        },
+        {
+            "name": "build_breaks_equal_semantic_version_ties",
+            "pass": true
+        },
+        {
+            "name": "semantic_version_precedes_build",
+            "pass": true
+        },
+        {
+            "name": "exact_download_bytes_and_size_match",
+            "pass": true
+        },
+        {
+            "name": "wrong_download_hash_rejected",
+            "pass": true
+        },
+        {
+            "name": "truncated_download_size_rejected",
+            "pass": true
+        },
+        {
+            "name": "startup_does_not_download_or_install",
+            "pass": true
+        },
+        {
+            "name": "available_metadata_only_waits_for_user",
+            "pass": true
+        },
+        {
+            "name": "live_cloudflare_feed_signature_and_schema_valid",
+            "pass": true
+        },
+        {
+            "name": "live_check_does_not_start_download",
+            "pass": true
+        },
+        {
+            "name": "user_cancel_leaves_no_installable_partial",
+            "pass": true
+        },
+        {
+            "name": "requested_live_download_is_size_and_hash_verified",
+            "pass": true
+        }
+    ],
+    "version": "v0.19.0 (build 0050)"
+}
