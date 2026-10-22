@@ -1,5 +1,19 @@
 # CHANGELOG — Mizin Playout
 
+## v0.18.3 (build 0048) - 2026-10-22
+
+### 💥 Breaking Changes
+- None.
+
+### ✨ Features
+- None.
+
+### 🐛 Fixes
+- None.
+
+### ⚡ Improvements
+- improve: atualiza notas bilingues da versao com decks, monitor web, audio e instalador (cad7d0e9013f97967c1ee8631787495344f1e221)
+
 ## v0.18.2 (build 0047) - 2026-10-22
 
 ### 💥 Breaking Changes

@@ -735,7 +735,8 @@
       }
     ],
     "date": "2026-10-22",
-    "build_status": "PASS"
+    "build_status": "PASS",
+    "interruption_reason": "Compiled PASS; packaging failed (NSIS: the runtime-step removal cut .onInit). Fixed in build 0046; no package produced."
   },
   {
     "display": "v0.18.1 (build 0046)",
@@ -758,6 +759,21 @@
     "commits": [
       {
         "sha": "0e00df12f1eb4e12c803d56654fe95005e24dce7",
+        "subject": "improve: atualiza notas bilingues da versao com decks, monitor web, audio e instalador",
+        "kind": "improve"
+      }
+    ],
+    "date": "2026-10-22",
+    "build_status": "PASS",
+    "interruption_reason": "Compiled and packaged PASS, but release-notes.json was not updated before the build; superseded by build 0048 and not published."
+  },
+  {
+    "display": "v0.18.3 (build 0048)",
+    "previous": "v0.18.2 (build 0047)",
+    "source_commit": "cad7d0e9013f97967c1ee8631787495344f1e221",
+    "commits": [
+      {
+        "sha": "cad7d0e9013f97967c1ee8631787495344f1e221",
         "subject": "improve: atualiza notas bilingues da versao com decks, monitor web, audio e instalador",
         "kind": "improve"
       }

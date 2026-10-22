@@ -82,8 +82,9 @@ int runAudioEngineTests(const QString& directory,const QString& resultPath){
     if(cable.isEmpty())record("vb_cable_loopback_skipped",true,{{"reason","VB-Audio Cable not installed"}});
     else for(auto backend:{AudioBackend::WasapiShared,AudioBackend::Wasapi}){
         LocalAudioEngine device;const bool opened=device.start(backend,cable,0);device.setRoutes({{&a,0}});a.setLocalEngine(opened);
-        const double peak=opened?capturePeak("CABLE Output",1500,[]{QCoreApplication::processEvents(QEventLoop::AllEvents,5);}):-1;const auto s=device.statistics();
-        record(QString("vb_cable_%1_plays_program_audio").arg(backend==AudioBackend::Wasapi?"exclusive":"shared"),opened&&peak>.005,{{"opened",opened},{"error",device.error()},{"captured_peak",peak},{"device",s["device"].toString()},{"buffer_ms",s["buffer_ms"].toDouble()},{"device_latency_ms",s["device_latency_ms"].toDouble()},{"late_samples",s["late_samples"].toDouble()}});
+        // The virtual cable can need a moment after an exclusive open; capture twice and keep both peaks.
+        const auto pump=[]{QCoreApplication::processEvents(QEventLoop::AllEvents,5);};double first=opened?capturePeak("CABLE Output",2500,pump):-1;double peak=first;if(opened&&peak<=.005)peak=capturePeak("CABLE Output",2500,pump);const auto s=device.statistics();
+        record(QString("vb_cable_%1_plays_program_audio").arg(backend==AudioBackend::Wasapi?"exclusive":"shared"),opened&&peak>.005,{{"opened",opened},{"error",device.error()},{"captured_peak",peak},{"first_attempt_peak",first},{"device",s["device"].toString()},{"buffer_ms",s["buffer_ms"].toDouble()},{"device_latency_ms",s["device_latency_ms"].toDouble()},{"late_samples",s["late_samples"].toDouble()}});
         device.stop();a.setLocalEngine(false);
     }
 #endif

@@ -1,10 +1,10 @@
 {
-  "display": "v0.18.2 (build 0047)",
-  "previous": "v0.18.1 (build 0046)",
-  "source_commit": "0e00df12f1eb4e12c803d56654fe95005e24dce7",
+  "display": "v0.18.3 (build 0048)",
+  "previous": "v0.18.2 (build 0047)",
+  "source_commit": "cad7d0e9013f97967c1ee8631787495344f1e221",
   "commits": [
     {
-      "sha": "0e00df12f1eb4e12c803d56654fe95005e24dce7",
+      "sha": "cad7d0e9013f97967c1ee8631787495344f1e221",
       "subject": "improve: atualiza notas bilingues da versao com decks, monitor web, audio e instalador",
       "kind": "improve"
     }
