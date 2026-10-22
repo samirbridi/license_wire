@@ -56,6 +56,10 @@ While there are unsaved changes, Mizin Playout writes an automatic copy of the s
 
 If a show is opened on another computer or with the drive on another letter, the app tells you how many media files were not found and asks for the folder where they are. It searches by file name, including subfolders; when several files share a name, it picks the one in the most similar folder and leaves ambiguous cases out. You can also do it from **Library → Locate missing media**. Programs on air are not changed; the fix applies to the next takes and marks the show to be saved.
 
+## Portable show package
+
+**Export show package** (top bar, next to Save show) creates a folder with the show file and a `media/` subfolder holding every media file used by all Programs. Paths are relative to the show folder: copy the whole folder to another computer, drive or USB stick and open the `.mizinshow` from there. Files with the same name from different folders get "(2)", "(3)"… The app checks free space first, shows progress with Cancel and verifies each copy's size; missing media is left out and listed at the end. Saving a show whose media lives inside its folder keeps those paths relative.
+
 ## Language and performance
 
 English is default; Português (Brasil) can be selected during playback. Automatic hardware decoding and CPU decoding are available in Settings after restart. Codec/profile/driver support varies. Cuts forward shared native frames; transitions currently convert and compose in CPU once per Program. GPU composition, remote control, scheduling and production AV-sync/performance qualification remain future work. Layout samples demonstrate the interface, not physical-output playback.

@@ -56,6 +56,10 @@ Enquanto houver alterações não salvas, o Mizin Playout grava uma cópia autom
 
 Se um show for aberto em outro computador ou com o HD em outra letra, o aplicativo avisa quantas mídias não foram encontradas e pede a pasta onde elas estão. Ele procura pelos nomes dos arquivos, inclusive em subpastas; quando há arquivos com o mesmo nome, escolhe o que está na pasta mais parecida e deixa de fora os casos ambíguos. Também dá para fazer isso em **Biblioteca → Localizar mídias ausentes**. Os Programs no ar não são alterados; a mudança vale nos próximos disparos e marca o show para salvar.
 
+## Pacote portátil do show
+
+**Exportar pacote do show** (no topo, ao lado de Salvar show) cria uma pasta com o arquivo do show e a subpasta `media/` com todas as mídias usadas por todos os Programs. Os caminhos ficam relativos à pasta do show: copie a pasta inteira para outro computador, HD ou pendrive e abra o `.mizinshow` de lá. Arquivos com o mesmo nome vindos de pastas diferentes recebem "(2)", "(3)"… O aplicativo confere o espaço livre antes, mostra o progresso com Cancelar e confere o tamanho de cada cópia; mídias ausentes ficam de fora e são listadas no fim. Ao salvar um show cujas mídias estão dentro da pasta dele, os caminhos continuam relativos.
+
 ## Idioma e desempenho
 
 Inglês é o padrão; Português (Brasil) pode ser escolhido durante a reprodução. As opções de decodificação automática por hardware e por CPU ficam em Configurações e exigem reinício. O suporte depende de codec, perfil e driver. Cortes encaminham quadros nativos compartilhados; transições convertem e compõem em CPU uma vez por Program. Composição em GPU, controle remoto, agendamento e validação de desempenho/sincronismo para produção seguem como próximas etapas. Pranchetas demonstram a interface, não reprodução em saídas físicas.

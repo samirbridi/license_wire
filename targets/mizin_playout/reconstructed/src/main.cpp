@@ -183,6 +183,7 @@ public:
         languageBox_=new QComboBox;languageBox_->addItem("English","en");languageBox_->addItem("Português (Brasil)","pt-BR");languageBox_->setCurrentIndex(language_=="pt-BR"?1:0);top->addWidget(languageBox_);
         auto* open=button("Open show");open->setIcon(deskIcon(DeskIcon::Folder));top->addWidget(open);connect(open,&QPushButton::clicked,this,[this]{openProject();});
         auto* save=button("Save show");save->setIcon(deskIcon(DeskIcon::Save));top->addWidget(save);connect(save,&QPushButton::clicked,this,[this]{saveProject(false);});
+        auto* package=button("Export show package");package->setObjectName("exportPackage");package->setIcon(deskIcon(DeskIcon::Folder));top->addWidget(package);connect(package,&QPushButton::clicked,this,[this]{exportPackageInteractive();});
         contentLayout->addLayout(top);
         updateBanner_=new QFrame;updateBanner_->setObjectName("panel");auto* updateRow=new QHBoxLayout(updateBanner_);updateRow->setContentsMargins(10,6,10,6);updateBannerText_=new QLabel;updateRow->addWidget(updateBannerText_,1);auto* viewUpdate=button("View update"),*laterUpdate=button("Later");updateRow->addWidget(viewUpdate);updateRow->addWidget(laterUpdate);updateBanner_->hide();contentLayout->addWidget(updateBanner_);
         connect(viewUpdate,&QPushButton::clicked,this,[this]{selectPage(5);settingsTabs_->setCurrentIndex(2);});connect(laterUpdate,&QPushButton::clicked,updateBanner_,&QWidget::hide);
@@ -237,7 +238,7 @@ public:
         if(demo_||qEnvironmentVariableIsSet("MIZIN_DISABLE_UPDATE_CHECK")||!QFileInfo::exists(QCoreApplication::applicationDirPath()+"/build-info.json"))return;
         QTimer::singleShot(8000,this,[this]{updates_->check();});auto* timer=new QTimer(this);timer->setInterval(4*60*60*1000);connect(timer,&QTimer::timeout,updates_.get(),&UpdateController::check);timer->start();
     }
-    bool openShowPath(const QString& path){QFile file(path);if(!file.open(QIODevice::ReadOnly))return false;QJsonParseError error;const auto doc=QJsonDocument::fromJson(file.readAll(),&error);Show loaded;return error.error==QJsonParseError::NoError&&Show::read(doc.object(),loaded)&&applyShow(loaded,path);}
+    bool openShowPath(const QString& path){QFile file(path);if(!file.open(QIODevice::ReadOnly))return false;QJsonParseError error;const auto doc=QJsonDocument::fromJson(file.readAll(),&error);Show loaded;return error.error==QJsonParseError::NoError&&Show::read(doc.object(),loaded)&&(resolveShowPaths(loaded,path),applyShow(loaded,path));}
     void importExternal(const QStringList& paths){for(const auto& p:paths){if(QFileInfo(p).isDir())scanFolder(p);else addPaths({p});}}
 protected:
     void resizeEvent(QResizeEvent* event) override {QMainWindow::resizeEvent(event);if(multiviewGrid_)layoutMultiview();}
@@ -336,6 +337,7 @@ private:
 #include "main_web.inc"
 #include "main_audio_engine.inc"
 #include "main_show_reliability.inc"
+#include "main_show_package.inc"
     void refreshDashboard(){
         if(!manualMode_||!playlistTable_)return;
         for(auto* name:{previewName_,programName_,secondaryName_})if(name){name->setToolTip(name->text());name->setAccessibleName(name->text());}
@@ -599,7 +601,8 @@ private:
         if(demo_)return;QString path=projectPath_;if(path.isEmpty())path=QFileDialog::getSaveFileName(this,tx("Save show"),{},"Mizin show (*.mizinshow)");if(path.isEmpty())return;if(!path.endsWith(".mizinshow",Qt::CaseInsensitive))path+=".mizinshow";
         // Keep the previous version beside the show (one .bak) before replacing it.
         if(QFileInfo::exists(path)){QFile::remove(path+".bak");QFile::copy(path,path+".bak");}
-        QSaveFile file(path);const auto payload=QJsonDocument(currentShow().json()).toJson();if(!file.open(QIODevice::WriteOnly)||file.write(payload)!=payload.size()||!file.commit()){footer_->setText(tx("Could not save show"));return;}projectPath_=path;dirty_=false;clearRecovery();showTitle_->setText(QFileInfo(path).completeBaseName());footer_->setText(tx("Show saved"));
+        // Media inside the show folder (e.g. an exported package) stays relative, so the folder can move.
+        Show saved=currentShow();relativizeShowPaths(saved,path);QSaveFile file(path);const auto payload=QJsonDocument(saved.json()).toJson();if(!file.open(QIODevice::WriteOnly)||file.write(payload)!=payload.size()||!file.commit()){footer_->setText(tx("Could not save show"));return;}projectPath_=path;dirty_=false;clearRecovery();showTitle_->setText(QFileInfo(path).completeBaseName());footer_->setText(tx("Show saved"));
     }
     bool applyShow(const Show& loaded,const QString& path){
         if(scanner_.isRunning()){footer_->setText(tx("Wait for the folder scan before opening another show."));return false;}
@@ -611,7 +614,7 @@ private:
         programDefinitions_=definitions;for(const auto& definition:definitions)nextProgramId_=qMax(nextProgramId_,definition.id+1);if(!demo_)settings_->setValue("nextProgramId",nextProgramId_);library_=loaded.library;folders_=loaded.folders;playlist_=definitions[0].cues;selectedProgram_=0;editing_=cuedRow_=-1;setEditorStatus("Select a cue to edit.");readiness_.clear();preview_.black();rebuildSelectedDeck();applyOutputConfiguration(loaded.outputs,false);projectPath_=path;dirty_=false;refreshTables();refreshTransport();showTitle_->setText(QFileInfo(path).completeBaseName());return true;
     }
     void openProject(){
-        if(demo_)return;if(dirty_&&QMessageBox::question(this,tx("Unsaved show"),tx("Open another show without saving?"),QMessageBox::Yes|QMessageBox::No,QMessageBox::No)!=QMessageBox::Yes)return;const auto path=QFileDialog::getOpenFileName(this,tx("Open show"),{},"Mizin show (*.mizinshow)");if(path.isEmpty())return;QFile file(path);if(!file.open(QIODevice::ReadOnly)){footer_->setText(tx("Could not open show"));return;}QJsonParseError error;const auto doc=QJsonDocument::fromJson(file.readAll(),&error);Show loaded;if(error.error!=QJsonParseError::NoError||!Show::read(doc.object(),loaded)){footer_->setText(tx("Invalid show file"));return;}if(applyShow(loaded,path)){clearRecovery();checkMissingMedia(true);}
+        if(demo_)return;if(dirty_&&QMessageBox::question(this,tx("Unsaved show"),tx("Open another show without saving?"),QMessageBox::Yes|QMessageBox::No,QMessageBox::No)!=QMessageBox::Yes)return;const auto path=QFileDialog::getOpenFileName(this,tx("Open show"),{},"Mizin show (*.mizinshow)");if(path.isEmpty())return;QFile file(path);if(!file.open(QIODevice::ReadOnly)){footer_->setText(tx("Could not open show"));return;}QJsonParseError error;const auto doc=QJsonDocument::fromJson(file.readAll(),&error);Show loaded;if(error.error!=QJsonParseError::NoError||!Show::read(doc.object(),loaded)){footer_->setText(tx("Invalid show file"));return;}resolveShowPaths(loaded,path);if(applyShow(loaded,path)){clearRecovery();checkMissingMedia(true);}
     }
     void helpDialog(){QDialog dialog(this);dialog.setWindowTitle(tx("Quick start"));dialog.resize(700,540);auto* l=new QVBoxLayout(&dialog);auto* browser=new QTextBrowser;browser->setOpenExternalLinks(false);browser->setMarkdown(tx("HELP_MARKDOWN"));l->addWidget(browser);auto* close=button("Close");l->addWidget(close);connect(close,&QPushButton::clicked,&dialog,&QDialog::accept);dialog.exec();}
 };

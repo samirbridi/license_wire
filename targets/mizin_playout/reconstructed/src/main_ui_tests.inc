@@ -165,5 +165,21 @@ int MainWindow::runUiTests(const QString& directory,const QString& resultPath){
         record("relink_updates_playlists_library_and_marks_show_dirty",missingBefore&&changed>=2&&playlist_[0].path==plan.value(oldA)&&library_.contains(plan.value(oldA))&&!missingMedia().contains(oldA)&&dirty_);
         dirty_=false;clearRecovery();
     }
+    // Portable show package: media copied beside the show with relative paths; opens from any folder/drive.
+    {
+        const QString root=base+"package-"+stem;QDir(root).removeRecursively();QDir().mkpath(root+"/src/a");QDir().mkpath(root+"/src/b");
+        QFile::copy(QDir(directory).absoluteFilePath("01-h264.mp4"),root+"/src/a/clip.mp4");QFile::copy(QDir(directory).absoluteFilePath("03-h264.mkv"),root+"/src/b/clip.mp4");
+        switchProgram(0,true);playlist_=QList<Cue>{Cue{root+"/src/a/clip.mp4"},Cue{root+"/src/b/clip.mp4"},Cue{root+"/src/missing.mov"}};programDefinitions_[0].cues=playlist_;library_={root+"/src/a/clip.mp4"};
+        const QString showFile=exportPackage(root+"/Package Show","Package Show",false);QFile file(showFile);Show exported;const bool read=file.open(QIODevice::ReadOnly)&&Show::read(QJsonDocument::fromJson(file.readAll()).object(),exported);file.close();
+        const auto cues=read?exported.definitions()[0].cues:QList<Cue>{};
+        record("package_copies_media_with_relative_paths_and_unique_names",read&&cues.size()==3&&cues[0].path=="media/clip.mp4"&&cues[1].path=="media/clip (2).mp4"&&cues[2].path==root+"/src/missing.mov"
+            &&QFileInfo(root+"/Package Show/media/clip.mp4").size()==QFileInfo(root+"/src/a/clip.mp4").size()&&QFileInfo(root+"/Package Show/media/clip (2).mp4").size()==QFileInfo(root+"/src/b/clip.mp4").size()&&QDir(root+"/Package Show/media").entryList(QDir::Files).size()==2);
+        // Move the whole package elsewhere: relative paths resolve against the new location.
+        QDir().rename(root+"/Package Show",root+"/Moved Package");Show moved=exported;resolveShowPaths(moved,root+"/Moved Package/Package Show.mizinshow");
+        record("moved_package_resolves_media_from_its_new_folder",QFileInfo::exists(moved.definitions()[0].cues[0].path)&&QFileInfo::exists(moved.definitions()[0].cues[1].path)&&moved.definitions()[0].cues[0].path.startsWith(root+"/Moved Package/media/"));
+        Show saved=moved;relativizeShowPaths(saved,root+"/Moved Package/Package Show.mizinshow");
+        record("saving_inside_package_keeps_media_relative",saved.definitions()[0].cues[0].path=="media/clip.mp4"&&saved.definitions()[0].cues[2].path==root+"/src/missing.mov");
+        playlist_.clear();programDefinitions_[0].cues.clear();library_.clear();dirty_=false;
+    }
     QJsonObject result{{"result",all?"PASS":"FAIL"},{"version",QString(MizinVersion)},{"mode",qEnvironmentVariable("MIZIN_DECODE_MODE","auto")},{"scope","Native in-process widgets; stable selected-mode text, aligned TAKE controls, real process counters, decimal MB/GB and DXGI GPU memory, five-Program multiview/inventory and five floating display routes. Not OS-pointer/physical monitor/AV-sync or maximum-capacity qualification."},{"tests",tests}};QFile output(resultPath);if(!output.open(QIODevice::WriteOnly))return 3;output.write(QJsonDocument(result).toJson());return all?0:2;
 }
