@@ -11,6 +11,11 @@ ROOT=pathlib.Path(__file__).resolve().parents[1]
 BASE='https://updates.p2pmizin.dev/playout/'
 BUCKET='ezshare-updates'
 KEY_ID='mizin-playout-2026-01'
+# The public domain rejects urllib's generic bot identifier. Use an explicit
+# release-client identity, like the native updater; no access rule is changed.
+_opener=urllib.request.build_opener()
+_opener.addheaders=[('User-Agent','MizinPlayoutRelease/1.0')]
+urllib.request.install_opener(_opener)
 PRIVATE=ROOT/'binaries/release-signing/private.pem'
 PUBLIC=ROOT/'reconstructed/src/update_key.hpp'
 def read(p):return json.loads(p.read_text(encoding='utf-8-sig'))
