@@ -98,6 +98,10 @@ class MainWindow final : public QMainWindow {
     QGridLayout* multiviewGrid_=nullptr;
     struct ProgramTile {int id; QFrame* panel; QPushButton* select; QLabel *state,*name,*time; QPushButton* play;};
     QList<ProgramTile> programTiles_;
+    struct DeckView {int key; QPointer<DeckWindow> window; QFrame* frame=nullptr; QLabel *title=nullptr,*state=nullptr,*tally=nullptr,*name=nullptr,*time=nullptr; QPushButton* play=nullptr;};
+    QList<DeckView> deckViews_;
+    QList<QPair<int,QPointer<QStackedWidget>>> deckSlots_;
+    QFrame* programDeck_=nullptr;
     QTableWidget* programInventory_=nullptr;
     QList<int> inventoryIds_;
     QVBoxLayout *routeLayout_=nullptr,*audioLayout_=nullptr,*digitalLayout_=nullptr;
@@ -239,7 +243,7 @@ protected:
     void dropEvent(QDropEvent* event) override {QStringList paths;for(const auto& url:event->mimeData()->urls())if(url.isLocalFile())paths<<url.toLocalFile();importExternal(paths);event->acceptProposedAction();}
     void closeEvent(QCloseEvent* event) override {
         if(!demo_ && dirty_ && QMessageBox::question(this,tx("Unsaved show"),tx("Close without saving the show?"),QMessageBox::Yes|QMessageBox::No,QMessageBox::No)!=QMessageBox::Yes){event->ignore();return;}
-        for(auto& output:outputWindows_)if(output)output->close();event->accept();
+        for(auto& output:outputWindows_)if(output)output->close();closeDeckWindows();event->accept();
     }
 private:
     QString tx(const QString& key)const{const QString resolved=programCount_==1&&key=="Program A"?"Program":programCount_==1&&key=="PROGRAM A"?"PROGRAM":key;if(dictionary_.contains(resolved))return dictionary_.value(resolved).toString();if(resolved.startsWith("Program "))return dictionary_.value("Program %1").toString("Program %1").arg(resolved.mid(8));if(resolved.startsWith("PROGRAM "))return dictionary_.value("PROGRAM %1").toString("PROGRAM %1").arg(resolved.mid(8));return resolved;}
@@ -260,8 +264,9 @@ private:
         auto* panel=new QFrame;panel->setObjectName("deck");panel->setProperty("channel",style);auto* l=new QVBoxLayout(panel);l->setContentsMargins(10,10,10,10);l->setSpacing(7);
         auto* header=new QHBoxLayout;auto* heading=label(title,"deckTitle");heading->setProperty("channel",style);header->addWidget(heading);header->addStretch();
         if(dashboard&&index==0)header->addWidget(label("Muted","deckState"));
-        auto* state=new QLabel;state->setObjectName("deckState");header->addWidget(state);if(dashboard)deckState_[index]=state;else state->setText(tx("Muted"));l->addLayout(header);
-        l->addWidget(monitor(channel,sample),1);*name=new ElidedLabel;(*name)->setObjectName("mediaTitle");(*name)->setSizePolicy(QSizePolicy::Ignored,QSizePolicy::Fixed);l->addWidget(*name);
+        auto* state=new QLabel;state->setObjectName("deckState");header->addWidget(state);if(dashboard)deckState_[index]=state;else state->setText(tx("Muted"));
+        if(index<2)header->addWidget(detachButton(index==0?PreviewDeck:1));if(index==1)programDeck_=panel;l->addLayout(header);
+        l->addWidget(index<2?deckSlot(index==0?PreviewDeck:1,monitor(channel,sample)):monitor(channel,sample),1);*name=new ElidedLabel;(*name)->setObjectName("mediaTitle");(*name)->setSizePolicy(QSizePolicy::Ignored,QSizePolicy::Fixed);l->addWidget(*name);
         auto* timeRow=new QHBoxLayout;*timing=new QLabel("00:00:00");(*timing)->setObjectName("timecode");timeRow->addWidget(*timing);timeRow->addStretch();
         auto* timeKind=label(index==0?"Position":"Remaining","muted");timeRow->addWidget(timeKind);l->addLayout(timeRow);
         auto* progress=new QProgressBar;progress->setObjectName("deckProgress");progress->setRange(0,1000);progress->setTextVisible(false);progress->setFixedHeight(3);l->addWidget(progress);if(dashboard)deckProgress_[index]=progress;
@@ -325,10 +330,12 @@ private:
         for(int i=0;i<2;++i){auto* tile=new QPushButton;tile->setObjectName("networkTile");tile->setFixedHeight(30);tile->setSizePolicy(QSizePolicy::Ignored,QSizePolicy::Preferred);networkSummary_[i]=tile;row->addWidget(tile,1);connect(tile,&QPushButton::clicked,this,[this]{selectDigital();});}return strip;
     }
 #include "main_multiview.inc"
+#include "main_decks.inc"
     void refreshDashboard(){
         if(!manualMode_||!playlistTable_)return;
         for(auto* name:{previewName_,programName_,secondaryName_})if(name){name->setToolTip(name->text());name->setAccessibleName(name->text());}
         manualMode_->setChecked(!targetController()->sequential());sequentialMode_->setChecked(targetController()->sequential());
+        setFlag(programDeck_,"onAir",onAir(1));setFlag(deckState_[1],"onAir",onAir(1));
         const std::array<NativeChannel*,3> channels{&preview_,&programA_,targetChannel()};
         for(int i=0;i<3;++i){auto* c=channels[i];if(deckState_[i]&&i>0)deckState_[i]->setText(tx(demo_?"Sample":c->pending()?"Preparing":c->path().isEmpty()?"Empty":c->playing()?"Playing":"Paused"));if(deckPlay_[i])deckPlay_[i]->setIcon(deskIcon(!demo_&&c->playing()?DeskIcon::Pause:DeskIcon::Play));if(deckProgress_[i])deckProgress_[i]->setValue(demo_?(i==1?560:i==2?120:0):c->duration()>0?int(qBound<qint64>(qint64{0},1000*c->position()/c->duration(),qint64{1000})):0);}
         if(deckState_[0]){const bool selected=cuedRow_>=0&&cuedRow_<playlist_.size()&&cuedRow_==playlistTable_->currentRow();const QString key=demo_?"Sample READY":!selected?"Not cued":readiness_.readyFor(playlist_[cuedRow_])?"READY":readiness_.state()==CueReadiness::State::Preparing?"Preparing":readiness_.state()==CueReadiness::State::Error?"Error":"Not cued";auto* badge=deckState_[0];badge->setText(tx(key));badge->setToolTip(key=="Error"?tx(readiness_.error()):tx("READY verifies the source and applied trim in muted Preview. Program prepares on TAKE."));const QString health=key=="READY"?"ready":key=="Error"?"error":key=="Preparing"?"pending":"idle";if(badge->property("health")!=health){badge->setProperty("health",health);badge->style()->unpolish(badge);badge->style()->polish(badge);}}
@@ -453,6 +460,7 @@ private:
         for(auto* source:sourceBoxes_){QSignalBlocker block(source);source->addItem(programLabel(programCount_-1));}switchProgram(programCount_-1);if(!demo_)dirty_=true;return true;
     }
     void dropProgram(int index){
+        dockDeck(programDefinitions_[index].id);
         for(auto* source:sourceBoxes_){QSignalBlocker block(source);const int current=source->currentIndex();source->removeItem(index);source->setCurrentIndex(current==index?0:current>index?current-1:current);}
         for(int i=0;i<displayCount_;++i){if(routePrograms_[i]==index){if(routeWindows_[i])delete routeWindows_[i].data();routePrograms_[i]=-1;}else if(routePrograms_[i]>index)--routePrograms_[i];}
         clearMultiview();delete audioPanels_.takeAt(index);delete digitalPanels_.takeAt(index);channelAt(index)->blockSignals(true);busAt(index)->blockSignals(true);extraPrograms_.erase(extraPrograms_.begin()+index-1);programDefinitions_.removeAt(index);programCount_=programDefinitions_.size();
@@ -538,7 +546,7 @@ private:
         if(editorName_){editorName_->setText(demo_?"03 - Speaker intro.mkv":preview_.path().isEmpty()?tx("No media loaded"):QFileInfo(preview_.path()).fileName());editorTime_->setText(clockText(preview_.position())+QString(".%1").arg(preview_.position()%1000,3,10,QChar('0')));}
         auto name=[this](NativeChannel* c){return demo_?QString("02 - Opening film.mov"):c->pending()?tx("Preparing media…"):c->path().isEmpty()?tx("No media loaded"):QFileInfo(c->path()).fileName();};previewName_->setText(demo_?"03 - Speaker intro.mkv":name(&preview_));programName_->setText(name(&programA_));previewTime_->setText(clockText(preview_.position()));programTime_->setText(demo_?"00:01:24":clockText(qMax<qint64>(0,programA_.rangeEnd()-programA_.position())));
         if(secondaryName_){secondaryName_->setText(demo_?"04 - Sponsor loop.avi":name(targetChannel()));secondaryTime_->setText(demo_?"00:00:18":clockText(qMax<qint64>(0,targetChannel()->rangeEnd()-targetChannel()->position())));}
-        if(scrub_&&!scrub_->isSliderDown()&&preview_.duration()>0)scrub_->setValue(int(1000.0*preview_.position()/preview_.duration()));refreshDashboard();
+        if(scrub_&&!scrub_->isSliderDown()&&preview_.duration()>0)scrub_->setValue(int(1000.0*preview_.position()/preview_.duration()));refreshDashboard();refreshDeckViews();
     }
     QJsonObject resourceSnapshot()const{
         auto snapshot=resourceUsage_;const bool stale=snapshot.isEmpty()||QDateTime::currentMSecsSinceEpoch()-qint64(snapshot["sampled_unix_ms"].toDouble())>3500;
@@ -629,6 +637,11 @@ QFrame#deck[channel='program'] {border-top:2px solid #f5847a;}
 QFrame#deck[channel='secondary'] {border-top:2px solid #b58be9;}
 QFrame#programTile {background:#101c28;border:1px solid #283e52;border-radius:5px;}
 QFrame#programTile[selected="true"] {border:2px solid #55cce3;}
+QFrame#programTile[onAir="true"] {border-top:3px solid #ff4b4b;}
+QFrame#deck[onAir="true"] {border:2px solid #ff4b4b;}
+QLabel#deckState[onAir="true"] {color:#ffd6d1;background:#6a2226;}
+QLabel#onAirBadge {font-size:11px;font-weight:700;letter-spacing:.8px;color:#ffffff;background:#d7343a;border-radius:3px;padding:3px 8px;}
+QPushButton#dockNote {background:#0a121b;border:1px dashed #36516b;color:#8fa6bc;font-size:11px;}
 QPushButton#programTileSelect {text-align:left;padding:2px 5px;font-weight:600;border:none;background:transparent;}
 QPushButton#programTileSelect:checked {color:#64d3e6;}
 QLabel#tileTime {font-family:Consolas;font-size:12px;color:#d7e7f5;}

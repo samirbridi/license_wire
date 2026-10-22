@@ -67,10 +67,32 @@ int MainWindow::runUiTests(const QString& directory,const QString& resultPath){
     resize(1600,1000);setLanguage("en");capture(base+"five-"+stem+".png");selectPage(3);capture(base+"outputs-five-"+stem+".png");selectPage(0);
     programTiles_[0].select->click();const bool tileSelect=selectedProgram_==0&&playlist_.size()==2&&programA_.playing()&&channelAt(1)->playing();
     programTiles_[4].panel->findChildren<QPushButton*>().last()->click();record("tile_controls_target_their_program_without_stopping_selected_a",tileSelect&&selectedProgram_==0&&programA_.playing()&&channelAt(1)->playing());
+    // ADR-016: a detached deck reuses the Program's published frames, acts by stable ID and docks back on close.
+    auto deckButton=[](QWidget* root,const QString& tip,int key){for(auto* b:root->findChildren<QPushButton*>())if(b->property("tipKey").toString()==tip&&b->property("deckKey").toInt()==key)return b;return static_cast<QPushButton*>(nullptr);};
+    auto deckWindow=[this](int key){for(const auto& view:deckViews_)if(view.key==key&&view.window)return view.window.data();return static_cast<DeckWindow*>(nullptr);};
+    {
+        const int idB=programDefinitions_[1].id;const auto generationB=channelAt(1)->requestGeneration();auto* detach=deckButton(programTiles_[1].panel,"Detach deck",idB);if(detach)detach->click();pump(150);
+        auto* window=deckWindow(idB);auto* picture=window?window->findChild<QVideoWidget*>():nullptr;const bool framed=wait([&]{return picture&&picture->videoSink()->videoFrame().isValid();});
+        auto* slot=programTiles_[1].panel->findChild<QStackedWidget*>("deckSlot");
+        record("detached_deck_opens_window_sharing_program_frames",detach&&window&&window->isVisible()&&window->isWindow()&&framed&&slot&&slot->currentIndex()==1&&channelAt(1)->requestGeneration()==generationB&&extraPrograms_.size()==4&&window->windowTitle().startsWith(programLabel(1)));
+        if(window){window->resize(960,600);pump(80);window->grab().save(base+"deck-window-"+stem+".png");capture(base+"deck-docked-"+stem+".png");}
+        if(detach)detach->click();pump(50);int windows=0;for(const auto& view:deckViews_)windows+=view.key==idB&&view.window;record("detaching_twice_reuses_the_same_window",windows==1&&deckWindow(idB)==window);
+        auto* frame=window?window->findChild<QFrame*>("deck"):nullptr;auto* badge=window?window->findChild<QLabel*>("onAirBadge"):nullptr;refreshTransport();
+        record("tally_marks_only_programs_with_media_on_air",frame&&badge&&frame->property("onAir").toBool()&&badge->isVisible()&&programTiles_[0].panel->property("onAir").toBool()&&programTiles_[1].panel->property("onAir").toBool()&&!programTiles_[2].panel->property("onAir").toBool()&&!programTiles_[4].panel->property("onAir").toBool());
+        QPushButton* play=nullptr;if(window)for(auto* b:window->findChildren<QPushButton*>())if(b->property("tipKey").toString()=="Play / pause")play=b;
+        if(play)play->click();const bool paused=wait([&]{return !channelAt(1)->playing();},3000);if(play)play->click();const bool resumed=wait([&]{return channelAt(1)->playing();},3000);
+        record("deck_window_controls_drive_its_program_only",play&&paused&&resumed&&programA_.playing()&&channelAt(1)->path()==second);
+        if(window)window->close();pump(80);record("closing_deck_window_docks_it_without_stopping",!deckWindow(idB)&&slot&&slot->currentIndex()==0&&channelAt(1)->playing()&&programA_.playing());
+        auto* previewDetach=deckButton(pages_->widget(0),"Detach deck",PreviewDeck);if(previewDetach)previewDetach->click();pump(80);auto* previewWindow=deckWindow(PreviewDeck);
+        const bool previewOpen=previewWindow&&previewWindow->isVisible()&&!previewWindow->findChild<QLabel*>("onAirBadge")->isVisible();dockDeck(PreviewDeck);pump(50);
+        record("preview_deck_detaches_without_tally_and_docks",previewDetach&&previewOpen&&!deckWindow(PreviewDeck));
+        auto* detachE=deckButton(programTiles_[4].panel,"Detach deck",programDefinitions_[4].id);if(detachE)detachE->click();pump(80);record("empty_program_deck_can_be_detached",detachE&&deckWindow(programDefinitions_[4].id));
+    }
     auto* addRoute=qobject_cast<QPushButton*>(programInventory_->cellWidget(4,3));if(addRoute)addRoute->click();
     record("inventory_adds_route_for_correct_program_without_opening_it",addRoute&&displayCount_==2&&sourceBoxes_[1]->currentIndex()==4&&!routeWindows_[1]);removeDisplay_->click();
     switchProgram(4);const bool removedE=removeSelectedProgram();switchProgram(3);const bool removedD=removeSelectedProgram();switchProgram(2);
     record("multiview_shrinks_without_stopping_surviving_programs",removedE&&removedD&&programCount_==3&&programTiles_.size()==3&&programA_.playing()&&channelAt(1)->playing());
+    record("removing_program_closes_its_detached_deck",deckViews_.isEmpty());
     record("copy_a_creates_independent_playlist",copyMainPlaylist()&&playlist_.size()==2&&programDefinitions_[0].cues.size()==2&&programDefinitions_[1].cues.size()==1);
     const auto originalCopy=playlist_[0].json();record("copy_refuses_to_overwrite_existing_items",!copyMainPlaylist()&&playlist_[0].json()==originalCopy&&playlist_.size()==2);
     playlistTable_->selectRow(0);cueRow(0);const bool cReady=wait([&]{return canTake();});selectPage(1);inBox_->setValue(.4);outBox_->setValue(2.2);const bool applied=applyEditor();const bool rangeReady=wait([&]{return canTake();});selectPage(0);loopBox_->setChecked(true);fadeButton_->click();const bool cLive=wait([&]{return channelAt(2)->frames()>=4;});

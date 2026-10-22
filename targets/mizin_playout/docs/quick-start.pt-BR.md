@@ -32,6 +32,12 @@ Salvar show guarda todas as listas aplicadas, IDs dos Programs e fontes das rota
 
 Cada CUT ou FADE manual inicia uma cópia da lista atual naquele Program. Alterações do editor entram no próximo disparo, após Aplicar item. Campos não aplicados não são enviados ao Program por CUT/FADE nem salvos no show; aplique antes de selecionar outro item. Alternar MAIN/EDIÇÃO ou preparar o Preview sem áudio não interrompe os Programs. O modo sequencial prepara o próximo item; se ele não estiver pronto, aguarda no limite. Uma falha é informada e interrompe o avanço. Em recortes curtos, fades são limitados à metade do trecho. Um próximo item preparado substitui o fade de saída do item atual na sequência.
 
+## Decks em janela própria e NO AR
+
+O ícone de destacar no canto de cada deck (Prévia, Program e cada Program da multiview) abre aquele deck numa janela própria, que pode ir para outro monitor e ser redimensionada. **F11** ou o botão de tela cheia alterna tela cheia; **Esc** sai da tela cheia. Fechar a janela (ou clicar em "Em janela separada · clique para encaixar" no deck) encaixa o deck de volta. A janela usa os mesmos quadros do Program, sem abrir a mídia de novo, e seus botões agem só naquele Program. Ela é um monitor do operador, não uma saída: para telão/LED use Saídas. A posição fica lembrada; se aquele monitor estiver com uma saída aberta, a janela abre no monitor da mesa.
+
+Um Program com mídia no ar (tocando ou pausado) recebe a barra vermelha e o selo **NO AR**; em preto/vazio, não. A borda azul continua indicando o destino do TAKE.
+
 ## Idioma e desempenho
 
 Inglês é o padrão; Português (Brasil) pode ser escolhido durante a reprodução. As opções de decodificação automática por hardware e por CPU ficam em Configurações e exigem reinício. O suporte depende de codec, perfil e driver. Cortes encaminham quadros nativos compartilhados; transições convertem e compõem em CPU uma vez por Program. Composição em GPU, controle remoto, agendamento e validação de desempenho/sincronismo para produção seguem como próximas etapas. Pranchetas demonstram a interface, não reprodução em saídas físicas.

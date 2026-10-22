@@ -31,8 +31,8 @@
                 auto* header=new QHBoxLayout;header->setSpacing(4);
                 auto* select=new QPushButton;select->setObjectName("programTileSelect");select->setCheckable(true);select->setMinimumSize(0,22);select->setSizePolicy(QSizePolicy::Ignored,QSizePolicy::Fixed);select->setProperty("tipKey","Select Program");header->addWidget(select,1);
                 connect(select,&QPushButton::clicked,this,[this,id]{switchProgram(programIndexById(id));refreshMultiview();});
-                auto* state=new QLabel;state->setObjectName("deckState");header->addWidget(state);body->addLayout(header);
-                auto* picture=monitor(channel,i%3);picture->setMinimumSize(0,40);body->addWidget(picture,1);
+                header->addWidget(detachButton(id));auto* state=new QLabel;state->setObjectName("deckState");header->addWidget(state);body->addLayout(header);
+                auto* picture=monitor(channel,i%3);picture->setMinimumSize(0,40);body->addWidget(deckSlot(id,picture),1);
                 auto* name=new ElidedLabel;name->setObjectName("muted");body->addWidget(name);
                 auto* controls=new QHBoxLayout;controls->setSpacing(5);auto* time=new QLabel;time->setObjectName("tileTime");controls->addWidget(time,1);
                 auto* play=iconButton("Play / pause",DeskIcon::Play);play->setFixedSize(28,24);controls->addWidget(play);connect(play,&QPushButton::clicked,this,[this,id]{const int index=programIndexById(id);if(index>=0)channelAt(index)->togglePause();});
@@ -48,6 +48,7 @@
             const int index=programIndexById(tile.id);if(index<0)continue;auto* channel=channelAt(index);
             tile.select->setText(programLabel(index));tile.select->setAccessibleName(tx("Select Program")+" · "+programLabel(index));tile.select->setChecked(index==selectedProgram_);
             const bool selected=index==selectedProgram_;if(tile.panel->property("selected").toBool()!=selected){tile.panel->setProperty("selected",selected);tile.panel->style()->unpolish(tile.panel);tile.panel->style()->polish(tile.panel);}
+            setFlag(tile.panel,"onAir",onAir(tile.id));setFlag(tile.state,"onAir",onAir(tile.id));
             tile.state->setText(tx(demo_?"Sample":channel->pending()?"Preparing":channel->path().isEmpty()?"Empty":channel->playing()?"Playing":"Paused"));
             tile.name->setText(demo_?QStringList{"02 - Opening film.mov","04 - Sponsor loop.avi","03 - Speaker intro.mkv"}.at(index%3):channel->path().isEmpty()?tx("No media loaded"):QFileInfo(channel->path()).fileName());tile.name->setToolTip(tile.name->text());
             tile.time->setText(demo_?"00:01:24":clockText(qMax<qint64>(0,channel->rangeEnd()-channel->position())));

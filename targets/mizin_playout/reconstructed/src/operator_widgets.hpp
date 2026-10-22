@@ -2,9 +2,11 @@
 #include "channel.hpp"
 #include <QtWidgets>
 #include <cmath>
+#include <functional>
+#include <utility>
 
 // Small native vector icons; no screenshot textures or external icon runtime.
-enum class DeskIcon { Play, Pause, Stop, Restart, Main, Edit, Folder, Display, Audio, Settings, Cut, Fade, Add, Save, Up, Down };
+enum class DeskIcon { Play, Pause, Stop, Restart, Main, Edit, Folder, Display, Audio, Settings, Cut, Fade, Add, Save, Up, Down, Detach, Dock, Fullscreen };
 inline QIcon deskIcon(DeskIcon icon, QColor color=QColor("#afc2d5")) {
     QPixmap pix(48,48); pix.fill(Qt::transparent);
     QPainter p(&pix); p.setRenderHint(QPainter::Antialiasing); p.scale(2,2);
@@ -26,6 +28,9 @@ inline QIcon deskIcon(DeskIcon icon, QColor color=QColor("#afc2d5")) {
     case DeskIcon::Save: p.drawRoundedRect(QRectF(4,3,16,18),1,1);p.drawRect(QRectF(8,3,8,6));p.drawRect(QRectF(8,14,8,7));break;
     case DeskIcon::Up: p.drawLine(12,19,12,5);p.drawPolyline(QPolygonF{QPointF(6,11),QPointF(12,5),QPointF(18,11)});break;
     case DeskIcon::Down: p.drawLine(12,5,12,19);p.drawPolyline(QPolygonF{QPointF(6,13),QPointF(12,19),QPointF(18,13)});break;
+    case DeskIcon::Detach: p.drawPolyline(QPolygonF{QPointF(11,5),QPointF(4,5),QPointF(4,20),QPointF(19,20),QPointF(19,13)});p.drawLine(11,13,20,4);p.drawPolyline(QPolygonF{QPointF(14,4),QPointF(20,4),QPointF(20,10)});break;
+    case DeskIcon::Dock: p.drawRoundedRect(QRectF(3,4,18,16),1,1);p.drawLine(20,5,12,13);p.drawPolyline(QPolygonF{QPointF(12,8),QPointF(12,13),QPointF(17,13)});break;
+    case DeskIcon::Fullscreen: for(int i=0;i<4;++i){p.save();p.translate(12,12);p.rotate(i*90);p.drawPolyline(QPolygonF{QPointF(-8,-3),QPointF(-8,-8),QPointF(-3,-8)});p.restore();}break;
     }
     return QIcon(pix);
 }
@@ -101,3 +106,19 @@ public:
         p->restore();
     }
 };
+
+// Operator deck in its own top-level window (ADR-016). It only hosts monitor
+// widgets built by MainWindow; it never owns media, decoders or outputs.
+class DeckWindow final : public QWidget {
+    std::function<void(DeckWindow*)> closed_;
+public:
+    DeckWindow(QWidget* owner,std::function<void(DeckWindow*)> closed):QWidget(owner,Qt::Window),closed_(std::move(closed)){
+        setObjectName("deckWindow");setAttribute(Qt::WA_DeleteOnClose);setMinimumSize(360,260);
+        auto* full=new QShortcut(QKeySequence(Qt::Key_F11),this);connect(full,&QShortcut::activated,this,[this]{toggleFullScreen();});
+        auto* leave=new QShortcut(QKeySequence(Qt::Key_Escape),this);connect(leave,&QShortcut::activated,this,[this]{if(isFullScreen())showNormal();});
+    }
+    void toggleFullScreen(){if(isFullScreen())showNormal();else showFullScreen();}
+protected:
+    void closeEvent(QCloseEvent* event) override {if(auto closed=std::exchange(closed_,nullptr))closed(this);QWidget::closeEvent(event);}
+};
+

@@ -32,6 +32,12 @@ Save show stores all applied playlists, stable Program IDs and route sources (sc
 
 Each manual CUT or FADE starts a snapshot of the current running order for that Program. Editor changes apply on the next launch, after Apply cue. Unapplied fields are not sent to Program by CUT/FADE or saved in the show; apply before changing the selected item. Switching MAIN/EDIT or preparing muted Preview does not stop the Programs. Sequential mode preloads one next item; an unready item waits at the boundary. A failed next item reports an error and stops advance. Short ranges clamp fades to half the range. A prepared next cue replaces the current cue's standalone exit fade in sequential mode.
 
+## Detached decks and ON AIR
+
+The detach icon at the corner of each deck (Preview, Program and every multiview Program) opens that deck in its own window, which can be moved to another monitor and resized. **F11** or the fullscreen button toggles fullscreen; **Esc** leaves fullscreen. Closing the window (or clicking "In separate window · click to dock" on the deck) docks it again. The window uses the Program's existing frames without reopening media, and its buttons act only on that Program. It is an operator monitor, not an output: use Outputs for screens/LED. Its position is remembered; if that monitor carries an open output, the window opens on the desk monitor instead.
+
+A Program with media on air (playing or paused) gets the red bar and the **ON AIR** badge; Black/empty does not. The blue border still marks the TAKE destination.
+
 ## Language and performance
 
 English is default; Português (Brasil) can be selected during playback. Automatic hardware decoding and CPU decoding are available in Settings after restart. Codec/profile/driver support varies. Cuts forward shared native frames; transitions currently convert and compose in CPU once per Program. GPU composition, remote control, scheduling and production AV-sync/performance qualification remain future work. Layout samples demonstrate the interface, not physical-output playback.
