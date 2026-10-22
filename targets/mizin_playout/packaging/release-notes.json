@@ -1,14 +1,16 @@
 {
   "en": [
-    "Checks for updates after startup and shows what is new. You choose when to download and install.",
-    "Verifies signed release metadata and downloaded file hashes before installation.",
-    "Installed and portable updates preserve preferences and show files. Installation waits until playback and outputs are stopped.",
-    "Includes the official NDI runtime beside the application, alongside OMT, with the required notices."
+    "Detachable decks: open Preview or any Program in its own window, move it to another monitor and go fullscreen (F11). ON AIR tally marks Programs with media on air.",
+    "Web monitor (Outputs → Web monitor): phones, tablets and computers on the same network watch the Programs live in a browser over WebRTC. View only, protected by an access code, off until you start it.",
+    "Low-latency audio (Audio → Low-latency output): WASAPI exclusive or shared low-latency output, each Program on its own output pair, automatically synced with the video plus a fine adjust for projector/LED delay.",
+    "Setup no longer needs administrator rights or a separate Microsoft runtime install: the runtime files ship with the app. The portable ZIP remains available.",
+    "Updates are checked after startup; you choose when to download and install. Signed metadata and file hashes are verified first."
   ],
   "pt-BR": [
-    "Verifica atualizações após abrir e mostra as novidades. Você escolhe quando baixar e instalar.",
-    "Confere a assinatura dos dados da versão e o hash do download antes de instalar.",
-    "Atualizações instaladas e portáteis preservam preferências e shows. A instalação aguarda reprodução e saídas paradas.",
-    "Inclui o runtime oficial NDI na pasta do aplicativo, junto do OMT, com os avisos necessários."
+    "Decks destacáveis: abra a Prévia ou qualquer Program numa janela própria, leve para outro monitor e use tela cheia (F11). O selo NO AR marca os Programs com mídia no ar.",
+    "Monitor web (Saídas → Monitor web): celulares, tablets e computadores na mesma rede assistem aos Programs ao vivo no navegador via WebRTC. Somente visualização, com código de acesso, desligado até você iniciar.",
+    "Áudio de baixa latência (Áudio → Saída de baixa latência): WASAPI exclusivo ou compartilhado de baixa latência, cada Program no seu par de saídas, sincronizado automaticamente com o vídeo e com ajuste fino para atraso de projetor/LED.",
+    "O instalador não pede mais administrador nem instalação separada do runtime da Microsoft: os arquivos do runtime acompanham o aplicativo. O ZIP portátil continua disponível.",
+    "As atualizações são verificadas após abrir; você escolhe quando baixar e instalar. A assinatura e os hashes são conferidos antes."
   ]
 }

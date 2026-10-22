@@ -1,12 +1,12 @@
 {
-  "display": "v0.18.1 (build 0046)",
-  "previous": "v0.18.0 (build 0045)",
-  "source_commit": "5376aac3442c33b43476af3bbf9d9e3dc1c693d1",
+  "display": "v0.18.2 (build 0047)",
+  "previous": "v0.18.1 (build 0046)",
+  "source_commit": "0e00df12f1eb4e12c803d56654fe95005e24dce7",
   "commits": [
     {
-      "sha": "5376aac3442c33b43476af3bbf9d9e3dc1c693d1",
-      "subject": "fix: corrige corte do instalador mantendo inicializacao e removendo so a etapa do runtime",
-      "kind": "fix"
+      "sha": "0e00df12f1eb4e12c803d56654fe95005e24dce7",
+      "subject": "improve: atualiza notas bilingues da versao com decks, monitor web, audio e instalador",
+      "kind": "improve"
     }
   ],
   "date": "2026-10-22",
