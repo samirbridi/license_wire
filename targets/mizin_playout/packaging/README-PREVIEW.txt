@@ -22,8 +22,8 @@ Qt and FFmpeg dynamically linked binaries can be replaced by compatible builds.
 
 This test preview is unsigned. A clean-machine test, bit-identical dependency
 rebuild and production physical display/audio/network qualification remain pending.
-Matching dependency source archive links/hashes are in dependency-sources.json. ISSUE-001 tracks
-intermittent NDI receiver timestamp tests. GPU composition and remote control
+Matching dependency source archive links/hashes are in dependency-sources.json. ISSUE-001 records
+NDI connection-cache behavior and strict source/delivery validation. GPU composition and remote control
 are planned; transitions currently compose on CPU.
 
 Uninstall removes known application files, keeping user preferences and media.

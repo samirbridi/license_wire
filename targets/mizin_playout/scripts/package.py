@@ -117,7 +117,7 @@ def stage(qt, redist, compiler):
     write(payload/'build-info.json', dict(version=build['display'], source_commit=build['source_commit'],
         executable_sha256=sha(payload/'MizinPlayout.exe'), architecture='x64', channel='private-preview',
         public_release_ready=False, remaining=['Authenticode signed release', 'bit-identical dependency rebuild qualification',
-            'clean Windows machine', 'physical display/audio/AV sync', 'ISSUE-001 NDI receiver timestamps'],
+            'clean Windows machine', 'physical display/audio/AV sync', 'independent LAN NDI/OMT and physical AV-sync qualification'],
         ndi='Official SDK runtime is bundled privately beside the app, with vendor/third-party notices; no NDI Tools or system DLL replacement.',
         settings='Default per-user AppLocalDataLocation; --portable uses adjacent state/; --state-dir has precedence.'))
     files = sorted(p for p in payload.rglob('*') if p.is_file())

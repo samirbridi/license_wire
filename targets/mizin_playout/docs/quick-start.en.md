@@ -73,7 +73,6 @@ The official NDI runtime is bundled beside the app; a separate runtime installat
 [About NDI®](https://ndi.video/) · NDI® is a registered trademark of Vizrt NDI AB.
 
 
-Known issue: local regression intermittently fails strict NDI receiver video timestamp monotonicity, even while video/audio arrive. This remains unresolved; see [ISSUE-001](../notes/ISSUE-001-ndi-receiver-timestamps.md). NDI frame-order/AV-sync qualification is pending.
 
 
 ## Minimal controls and resource footer
@@ -88,3 +87,5 @@ RAM and GPU memory use decimal MB/GB and automatically switch to GB at 1000 MB. 
 ## Optional updates
 
 Normal packaged startup checks for updates after eight seconds. Choose **View update** to read the English or Portuguese changes, **Download update** to fetch it, then **Install and restart** when ready. **Later** dismisses the banner. Settings → Updates also has **Check now**. Nothing downloads or installs without your choice. Downloads are signed-metadata/hash verified. Stop Programs and close display/NDI/OMT outputs, apply/reset edits and save your show before installation. The updater preserves your profile and reopens your saved show with outputs closed. Portable folders are updated in place without creating an installed-app registration. Build 0035 needs one manual installation to receive the updater.
+
+NDI diagnostics verify source-frame sequence, content hashes and strictly increasing SDK delivery timestamps. An exact cached frame may be replayed when connecting; it is recorded separately. See ISSUE-001 for the diagnosis and raw evidence. Physical AV-sync and another LAN receiver remain separate qualifications.

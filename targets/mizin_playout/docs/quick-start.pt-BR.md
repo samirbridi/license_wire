@@ -73,7 +73,6 @@ O runtime oficial NDI acompanha o aplicativo; não é necessária instalação s
 [Sobre NDI®](https://ndi.video/) · NDI® is a registered trademark of Vizrt NDI AB.
 
 
-Pendência conhecida: a regressão local apresentou falha intermitente na ordem estritamente crescente dos timestamps de vídeo recebidos por NDI, mesmo com chegada de vídeo/áudio. Ainda não foi resolvida; veja [ISSUE-001](../notes/ISSUE-001-ndi-receiver-timestamps.md). A validação de ordem de quadros/sincronismo NDI permanece pendente.
 
 
 ## Controles simplificados e rodapé de desempenho
@@ -88,3 +87,5 @@ RAM e memória de GPU usam MB/GB decimais, com troca automática para GB em 1000
 ## Atualizações opcionais
 
 O aplicativo empacotado verifica atualizações oito segundos após abrir. Use **Ver atualização** para ler as novidades em inglês ou português, **Baixar atualização** para obter o arquivo e **Instalar e reiniciar** quando estiver pronto. **Mais tarde** fecha o aviso. Configurações → Atualizações também oferece **Verificar agora**. Nada é baixado ou instalado sem sua escolha. Os downloads são verificados por assinatura dos metadados e hash. Pare os Programs, feche as saídas de tela/NDI/OMT, aplique/descarte edições e salve o projeto antes de instalar. O atualizador preserva seu perfil e reabre o projeto salvo com as saídas fechadas. A pasta portátil é atualizada no local, sem registrar aplicativo instalado. O build 0035 precisa de uma instalação manual para receber o atualizador.
+
+Os diagnósticos NDI verificam sequência, hash do conteúdo e ordem estrita dos timestamps de entrega do SDK. Ao conectar, o SDK pode repetir um quadro idêntico do cache; isso é registrado separadamente. Veja o diagnóstico e as evidências em ISSUE-001. Sincronismo físico AV e recepção em outro computador da rede continuam como validações separadas.
