@@ -7,7 +7,7 @@ html{scroll-behavior:smooth}
 body{margin:0;background:var(--bg);color:var(--text);font:16px/1.6 "Segoe UI",system-ui,-apple-system,Roboto,sans-serif}
 html[data-lang="en"] [lang="pt-BR"],html[data-lang="pt-BR"] [lang="en"]{display:none!important}
 a{color:var(--accent)}
-img{max-width:100%;display:block}
+img{max-width:100%;height:auto;display:block}
 .wrap{max-width:var(--max);margin:0 auto;padding:0 16px}
 header.top{position:sticky;top:0;z-index:10;background:rgba(11,18,27,.92);backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
 header.top .wrap{display:flex;align-items:center;gap:16px;min-height:60px;flex-wrap:wrap}
@@ -53,6 +53,14 @@ ul.checks li::before{content:"";position:absolute;left:4px;top:14px;width:10px;h
 .note{background:var(--panel-2);border-left:3px solid var(--accent-2);padding:12px 16px;border-radius:6px;color:var(--muted);font-size:14px;margin-top:20px}
 footer{padding:40px 0;border-top:1px solid var(--line);color:var(--muted);font-size:13px}
 footer .wrap{display:flex;gap:16px;flex-wrap:wrap;justify-content:space-between}
+/* changelog */
+.release{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:20px 22px;margin-bottom:16px}
+.release header{display:flex;flex-wrap:wrap;gap:8px 14px;align-items:baseline;margin-bottom:10px}
+.release h3{margin:0;font-size:20px}
+.release time{color:var(--muted);font-size:13px}
+.release .latest{font-size:11px;font-weight:700;letter-spacing:.8px;color:#06222a;background:var(--accent);border-radius:99px;padding:2px 8px}
+.release ul{margin:0;padding-left:20px;color:var(--muted)}
+.release li{margin:6px 0}
 /* tutorial */
 .toc{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 32px}
 .toc a{font-size:13px;text-decoration:none;border:1px solid var(--line);border-radius:99px;padding:5px 12px;color:var(--muted)}

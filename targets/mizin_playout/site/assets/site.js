@@ -16,6 +16,20 @@
   apply(pick);
 })();
 
+// What's new: rendered from assets/changelog.json (newest first), in both languages.
+(async function(){
+  const box=document.getElementById("releases");if(!box)return;
+  try{const r=await fetch("assets/changelog.json",{cache:"no-store"});if(!r.ok)return;const list=await r.json();
+    list.forEach((item,index)=>{const card=document.createElement("article");card.className="release";
+      const head=document.createElement("header");const title=document.createElement("h3");title.textContent=item.version;head.append(title);
+      if(index===0){const badge=document.createElement("span");badge.className="latest";badge.innerHTML='<span lang="en">LATEST</span><span lang="pt-BR">ATUAL</span>';head.append(badge);}
+      if(item.date){const time=document.createElement("time");time.dateTime=item.date;time.textContent=item.date;head.append(time);}
+      card.append(head);
+      for(const lang of ["en","pt-BR"]){const ul=document.createElement("ul");ul.lang=lang;for(const line of (item.notes&&item.notes[lang])||[]){const li=document.createElement("li");li.textContent=line;ul.append(li);}card.append(ul);}
+      box.append(card);});
+  }catch(_){}
+})();
+
 // Downloads: links are baked into the page; assets/release.json (same origin, written by
 // scripts/site.py at deploy time from the validated package) refreshes them.
 (async function(){
@@ -28,3 +42,6 @@
     document.querySelectorAll("[data-version]").forEach(el=>{el.textContent=release.version;});
   }catch(_){/* Static links stay. */}
 })();
+
+// Screenshots open full size in a new tab.
+document.querySelectorAll(".shot img").forEach(img=>{img.style.cursor="zoom-in";img.title=document.documentElement.dataset.lang==="pt-BR"?"Clique para ampliar":"Click to enlarge";img.addEventListener("click",()=>window.open(img.currentSrc||img.src,"_blank","noopener"));});

@@ -22,3 +22,17 @@ for kind,a in artifacts.items():
     html=re.sub(r'(<span data-size="'+kind+r'">)[^<]*',lambda m:m.group(1)+f"{a['bytes']/1e6:.1f} MB",html)
 html=re.sub(r'(data-version>)v[^<]*',lambda m:m.group(1)+latest['version'],html)
 index.write_text(html,encoding='utf-8');print(index)
+# What's new: each published version is added once (newest first) from its packaged bilingual notes.
+import datetime
+changelog_path=ROOT/'site/assets/changelog.json'
+changelog=json.loads(changelog_path.read_text(encoding='utf-8')) if changelog_path.exists() else []
+if not any(item['version']==latest['version'] for item in changelog):
+    notes=json.loads((ROOT/latest['release']/'payload/release-notes.json').read_text(encoding='utf-8-sig'))
+    changelog.insert(0,dict(version=latest['version'],date=datetime.date.today().isoformat(),notes={'en':notes['en'],'pt-BR':notes['pt-BR']}))
+    changelog_path.write_text(json.dumps(changelog,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
+print(changelog_path)
+# Cache busting: stylesheets/scripts are cached by browsers; stamp their content hash so every change is picked up.
+for page in (ROOT/'site').glob('*.html'):
+    html=page.read_text(encoding='utf-8')
+    html=re.sub(r'assets/(styles\.css|site\.js)(\?v=[^"]*)?"',lambda m:'assets/'+m.group(1)+'?v='+__import__('hashlib').sha256((ROOT/'site/assets'/m.group(1)).read_bytes()).hexdigest()[:10]+'"',html)
+    page.write_text(html,encoding='utf-8')

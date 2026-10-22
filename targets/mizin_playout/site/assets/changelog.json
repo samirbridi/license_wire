@@ -1,0 +1,42 @@
+[
+  {
+    "version": "v0.19.0 (build 0050)",
+    "date": "2026-10-22",
+    "notes": {
+      "en": [
+        "First public preview, published at playoutmizin.pages.dev with its own signed update feed.",
+        "Detachable decks: open Preview or any Program in its own window, move it to another monitor and go fullscreen (F11). ON AIR tally marks Programs with media on air.",
+        "Web monitor (Outputs → Web monitor): phones, tablets and computers on the same network watch the Programs live in a browser over WebRTC. View only, protected by an access code, off until you start it.",
+        "Low-latency audio (Audio → Low-latency output): WASAPI exclusive or shared low-latency output, each Program on its own output pair, automatically synced with the video plus a fine adjust for projector/LED delay.",
+        "Setup no longer needs administrator rights or a separate Microsoft runtime install: the runtime files ship with the app. The portable ZIP remains available.",
+        "Updates are checked after startup; you choose when to download and install. Signed metadata and file hashes are verified first."
+      ],
+      "pt-BR": [
+        "Primeira prévia pública, publicada em playoutmizin.pages.dev com feed de atualizações assinado próprio.",
+        "Decks destacáveis: abra a Prévia ou qualquer Program numa janela própria, leve para outro monitor e use tela cheia (F11). O selo NO AR marca os Programs com mídia no ar.",
+        "Monitor web (Saídas → Monitor web): celulares, tablets e computadores na mesma rede assistem aos Programs ao vivo no navegador via WebRTC. Somente visualização, com código de acesso, desligado até você iniciar.",
+        "Áudio de baixa latência (Áudio → Saída de baixa latência): WASAPI exclusivo ou compartilhado de baixa latência, cada Program no seu par de saídas, sincronizado automaticamente com o vídeo e com ajuste fino para atraso de projetor/LED.",
+        "O instalador não pede mais administrador nem instalação separada do runtime da Microsoft: os arquivos do runtime acompanham o aplicativo. O ZIP portátil continua disponível.",
+        "As atualizações são verificadas após abrir; você escolhe quando baixar e instalar. A assinatura e os hashes são conferidos antes."
+      ]
+    }
+  },
+  {
+    "version": "v0.10 – v0.18 (private previews)",
+    "date": "2026-10-20",
+    "notes": {
+      "en": [
+        "Independent Programs with their own playlists, manual and sequential modes, multiview and verified CUT/FADE takes.",
+        "Screen outputs with mirrors that share frames, Native and Lanczos GPU scaling.",
+        "NDI and OMT network outputs with per-Program audio.",
+        "Windows installer and portable ZIP, performance footer (CPU, RAM, GPU) and engine diagnostics."
+      ],
+      "pt-BR": [
+        "Programs independentes com playlists próprias, modos manual e sequencial, multiview e disparos CUT/FADE verificados.",
+        "Saídas de tela com espelhos que compartilham quadros, escala nativa e Lanczos por GPU.",
+        "Saídas de rede NDI e OMT com áudio por Program.",
+        "Instalador Windows e ZIP portátil, rodapé de desempenho (CPU, RAM, GPU) e diagnósticos do motor."
+      ]
+    }
+  }
+]
