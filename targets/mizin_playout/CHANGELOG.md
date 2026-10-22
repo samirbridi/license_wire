@@ -1,5 +1,19 @@
 # CHANGELOG — Mizin Playout
 
+## v0.23.0 (build 0054) - 2026-10-22
+
+### 💥 Breaking Changes
+- None.
+
+### ✨ Features
+- feat: adiciona Mizin Link fase 1 com pareamento, relogio e distribuicao verificada do show (42f863c9610bd87ba4875deed2dc7c6d69283dae)
+
+### 🐛 Fixes
+- None.
+
+### ⚡ Improvements
+- improve: registra publicacao do build com pacote portatil do show (5179f8615562ca9501e4ab63e23ed5e052ef0a3e)
+
 ## v0.22.0 (build 0053) - 2026-10-22
 
 ### 💥 Breaking Changes
