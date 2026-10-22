@@ -1,5 +1,19 @@
 # CHANGELOG — Mizin Playout
 
+## v0.18.4 (build 0049) - 2026-10-22
+
+### 💥 Breaking Changes
+- None.
+
+### ✨ Features
+- None.
+
+### 🐛 Fixes
+- fix: teste do VB-Cable exclusivo com janela maior e segunda captura registrada (4cec3b1190a57fde766fdeebcb95d740d57863b1)
+
+### ⚡ Improvements
+- None.
+
 ## v0.18.3 (build 0048) - 2026-10-22
 
 ### 💥 Breaking Changes

@@ -67,3 +67,11 @@ audio. Network/audio source is unchanged since 0038, so the build 0041 audio FAI
 host load (4K renders) rather than a regression; they remain recorded. The audio mute checks are
 timing-sensitive under heavy CPU load, which is itself a note for show machines. Issue stays OPEN
 pending an independent LAN receiver. Evidence: `evidence/ndi-external-*-0044.json`.
+
+Build 0049 (2026-10-22, host 30–70% CPU from another IDE): external probes in auto mode received only
+~9–10 silent audio packets (video fine, child exit 0); reconnect-cpu varied. Same-condition A/B with
+`binaries/qa/ndi-external-compare.py` (MIZIN_PROBE_EXE) shows build 0044 failing identically
+(`evidence/ndi-external-compare-startup-0044.json` vs `-0049.json`), so this is host-state/load
+dependent, not a 0045–0049 regression. In-process `--network-test` A/B: 0044 5/5 PASS, 0049 3/5 PASS
+(the two failures were `master_mute_reaches_both_network_receivers` during the CPU peak). Keep OPEN;
+repeat on an idle host and on a second LAN machine.

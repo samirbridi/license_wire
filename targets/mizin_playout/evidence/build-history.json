@@ -779,6 +779,21 @@
       }
     ],
     "date": "2026-10-22",
+    "build_status": "PASS",
+    "interruption_reason": "Compiled and packaged; package validation FAIL on vb_cable_exclusive_plays_program_audio (exclusive device opened, 1.5 s capture silent). Test widened with a recorded second capture in build 0049; 0048 not published."
+  },
+  {
+    "display": "v0.18.4 (build 0049)",
+    "previous": "v0.18.3 (build 0048)",
+    "source_commit": "4cec3b1190a57fde766fdeebcb95d740d57863b1",
+    "commits": [
+      {
+        "sha": "4cec3b1190a57fde766fdeebcb95d740d57863b1",
+        "subject": "fix: teste do VB-Cable exclusivo com janela maior e segunda captura registrada",
+        "kind": "fix"
+      }
+    ],
+    "date": "2026-10-22",
     "build_status": "PASS"
   }
 ]

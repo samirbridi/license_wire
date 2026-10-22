@@ -1,12 +1,12 @@
 {
-  "display": "v0.18.3 (build 0048)",
-  "previous": "v0.18.2 (build 0047)",
-  "source_commit": "cad7d0e9013f97967c1ee8631787495344f1e221",
+  "display": "v0.18.4 (build 0049)",
+  "previous": "v0.18.3 (build 0048)",
+  "source_commit": "4cec3b1190a57fde766fdeebcb95d740d57863b1",
   "commits": [
     {
-      "sha": "cad7d0e9013f97967c1ee8631787495344f1e221",
-      "subject": "improve: atualiza notas bilingues da versao com decks, monitor web, audio e instalador",
-      "kind": "improve"
+      "sha": "4cec3b1190a57fde766fdeebcb95d740d57863b1",
+      "subject": "fix: teste do VB-Cable exclusivo com janela maior e segunda captura registrada",
+      "kind": "fix"
     }
   ],
   "date": "2026-10-22",

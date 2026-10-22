@@ -1,0 +1,809 @@
+{
+  "result": "FAIL",
+  "source": "DESKTOP-BBB9G7I (Mizin QA NDI 38932)",
+  "mode": "auto",
+  "delay": 0.0,
+  "reconnected": false,
+  "video_frames": 78,
+  "audio_packets": 10,
+  "audio_peak": 0,
+  "raw_timecode_repeats_or_regressions": [],
+  "verified_exact_cache_repeats": 0,
+  "order_errors": [],
+  "frames": [
+    {
+      "sequence": 5,
+      "pixels_sha256": "1a8b9df7a06484d24085821da370af82462dc45f0c742b179a11c720079361d9",
+      "timecode": 17926653850328223,
+      "sdk_timestamp": 17926653850173238,
+      "width": 1920,
+      "height": 1080,
+      "rate_n": 30000,
+      "rate_d": 1000
+    },
+    {
+      "sequence": 6,
+      "pixels_sha256": "1a8b9df7a06484d24085821da370af82462dc45f0c742b179a11c720079361d9",
+      "timecode": 17926653850661556,
+      "sdk_timestamp": 17926653850517741,
+      "width": 1920,
+      "height": 1080,
+      "rate_n": 30000,
+      "rate_d": 1000
+    },
+    {
+      "sequence": 7,
+      "pixels_sha256": "1a8b9df7a06484d24085821da370af82462dc45f0c742b179a11c720079361d9",
+      "timecode": 17926653850994889,
+      "sdk_timestamp": 17926653850864843,
+      "width": 1920,
+      "height": 1080,
+      "rate_n": 30000,
+      "rate_d": 1000
+    },
+    {
+      "sequence": 8,
+      "pixels_sha256": "1a8b9df7a06484d24085821da370af82462dc45f0c742b179a11c720079361d9",
+      "timecode": 17926653851328222,
+      "sdk_timestamp": 17926653851213023,
+      "width": 1920,
+      "height": 1080,
+      "rate_n": 30000,
+      "rate_d": 1000
+    },
+    {
+      "sequence": 9,
+      "pixels_sha256": "1a8b9df7a06484d24085821da370af82462dc45f0c742b179a11c720079361d9",
+      "timecode": 17926653851661555,
+      "sdk_timestamp": 17926653851558603,
+      "width": 1920,
+      "height": 1080,
+      "rate_n": 30000,
+      "rate_d": 1000
+    },
+    {
+      "sequence": 10,
+      "pixels_sha256": "1a8b9df7a06484d24085821da370af82462dc45f0c742b179a11c720079361d9",
+      "timecode": 17926653851994888,
+      "sdk_timestamp": 17926653851912886,
+      "width": 1920,
+      "height": 1080,
+      "rate_n": 30000,
+      "rate_d": 1000
+    },
+    {
+      "sequence": 11,
+      "pixels_sha256": "1a8b9df7a06484d24085821da370af82462dc45f0c742b179a11c720079361d9",
+      "timecode": 17926653852661554,
+      "sdk_timestamp": 17926653852353062,
+      "width": 1920,
+      "height": 1080,
+      "rate_n": 30000,
+      "rate_d": 1000
+    },
+    {
+      "sequence": 12,
+      "pixels_sha256": "1a8b9df7a06484d24085821da370af82462dc45f0c742b179a11c720079361d9",
+      "timecode": 17926653852974053,
+      "sdk_timestamp": 17926653852597967,
+      "width": 1920,
+      "height": 1080,
+      "rate_n": 30000,
+      "rate_d": 1000
+    },
+    {
+      "sequence": 13,
+      "pixels_sha256": "1a8b9df7a06484d24085821da370af82462dc45f0c742b179a11c720079361d9",
+      "timecode": 17926653853307386,
+      "sdk_timestamp": 17926653852996941,
+      "width": 1920,
+      "height": 1080,
+      "rate_n": 30000,
+      "rate_d": 1000
+    },
+    {
+      "sequence": 14,
+      "pixels_sha256": "1a8b9df7a06484d24085821da370af82462dc45f0c742b179a11c720079361d9",
+      "timecode": 17926653853640719,
+      "sdk_timestamp": 17926653853313538,
+      "width": 1920,
+      "height": 1080,
+      "rate_n": 30000,
+      "rate_d": 1000
+    },
+    {
+      "sequence": 15,
+      "pixels_sha256": "927812dde88a71acca8cc633497a7dd828bcfc68514f0eed5ebdc4c211c9635e",
+      "timecode": 17926653853974052,
+      "sdk_timestamp": 17926653853654713,
+      "width": 1920,
+      "height": 1080,
+      "rate_n": 30000,
+      "rate_d": 1000
+    },
+    {
+      "sequence": 16,
+      "pixels_sha256": "deefe95c99e959b1be4f11caa9ce77865d8ebeab0efecc0f925278faf5072492",
+      "timecode": 17926653854307385,
+      "sdk_timestamp": 17926653854005906,
+      "width": 1920,
+      "height": 1080,
+      "rate_n": 30000,
+      "rate_d": 1000
+    },
+    {
+      "sequence": 17,
+      "pixels_sha256": "a768381ae9cfcd2359ca50b8c76d81e15607a404c9347cb0e2a6d7f27529c3da",
+      "timecode": 17926653854640718,
+      "sdk_timestamp": 17926653854354097,
+      "width": 1920,
+      "height": 1080,
+      "rate_n": 30000,
+      "rate_d": 1000
+    },
+    {
+      "sequence": 19,
+      "pixels_sha256": "e4aba1509ed6011e16476a2f30d488ea4e92b4788c8064a923222218cf560398",
+      "timecode": 17926653855307384,
+      "sdk_timestamp": 17926653855032429,
+      "width": 1920,
+      "height": 1080,
+      "rate_n": 30000,
+      "rate_d": 1000
+    },
+    {
+      "sequence": 21,
+      "pixels_sha256": "6eb7669549c4ba90370033e22fe3abbe1aa9ce69c6bf1030bb60c85248bf1c82",
+      "timecode": 17926653855974050,
+      "sdk_timestamp": 17926653855748495,
+      "width": 1920,
+      "height": 1080,
+      "rate_n": 30000,
+      "rate_d": 1000
+    },
+    {
+      "sequence": 23,
+      "pixels_sha256": "ce52b4c53efa3be611b9d01e087d283f1d2496463799a533e2b872d6a470e032",
+      "timecode": 17926653856640716,
+      "sdk_timestamp": 17926653856437452,
+      "width": 1920,
+      "height": 1080,
+      "rate_n": 30000,
+      "rate_d": 1000
+    },
+    {
+      "sequence": 25,
+      "pixels_sha256": "58f7581fc3a5c2c368f9f86c4de7a24e9dbc0e70b08c4c7a4a624da5310424a9",
+      "timecode": 17926653857307382,
+      "sdk_timestamp": 17926653857132412,
+      "width": 1920,
+      "height": 1080,
+      "rate_n": 30000,
+      "rate_d": 1000
+    },
+    {
+      "sequence": 27,
+      "pixels_sha256": "152c9cb69422e9cb8acf987ddb3723c5ff990f042ca7acd7c5763109546adc8f",
+      "timecode": 17926653857974048,
+      "sdk_timestamp": 17926653857836383,
+      "width": 1920,
+      "height": 1080,
+      "rate_n": 30000,
+      "rate_d": 1000
+    },
+    {
+      "sequence": 28,
+      "pixels_sha256": "990be82fb0a997fe14e87406fdf297c9635b9c1f5370a48e2e499e38f15dc246",
+      "timecode": 17926653858307381,
+      "sdk_timestamp": 17926653858221274,
+      "width": 1920,
+      "height": 1080,
+      "rate_n": 30000,
+      "rate_d": 1000
+    },
+    {
+      "sequence": 30,
+      "pixels_sha256": "44cb27ddc880822a1d5926eb7b3341dd6dbb6ca216c5c11ab43f66eb534a3a96",
+      "timecode": 17926653858974047,
+      "sdk_timestamp": 17926653858879644,
+      "width": 1920,
+      "height": 1080,
+      "rate_n": 30000,
+      "rate_d": 1000
+    },
+    {
+      "sequence": 31,
+      "pixels_sha256": "61ed60a1028c17d11b16c964ed87689d117549b14385b4a9765be50b56f10732",
+      "timecode": 17926653859307380,
+      "sdk_timestamp": 17926653859212782,
+      "width": 1920,
+      "height": 1080,
+      "rate_n": 30000,
+      "rate_d": 1000
+    },
+    {
+      "sequence": 33,
+      "pixels_sha256": "48f047a28dbffb16e3ff89de49fb99002a4337945f19695e83e8629c7ad3b22e",
+      "timecode": 17926653859974046,
+      "sdk_timestamp": 17926653859957501,
+      "width": 1920,
+      "height": 1080,
+      "rate_n": 30000,
+      "rate_d": 1000
+    },
+    {
+      "sequence": 35,
+      "pixels_sha256": "825000b20da08d84fe60a13473e47f665777e887de34c3d34eccf50f7d404e9a",
+      "timecode": 17926653860974045,
+      "sdk_timestamp": 17926653860641696,
+      "width": 1920,
+      "height": 1080,
+      "rate_n": 30000,
+      "rate_d": 1000
+    },
+    {
+      "sequence": 36,
+      "pixels_sha256": "c8d8b7fb78c6e17fadc7254c4c7bbf500aa3d7fd168a308cbaefabc7b6803c9d",
+      "timecode": 17926653861307378,
+      "sdk_timestamp": 17926653860992731,
+      "width": 1920,
+      "height": 1080,
+      "rate_n": 30000,
+      "rate_d": 1000
+    },
+    {
+      "sequence": 38,
+      "pixels_sha256": "183b32a6ae5e25ce05852049980b9d2abb26d1ff68983b9196dc218acb0c12ce",
+      "timecode": 17926653861974044,
+      "sdk_timestamp": 17926653861673735,
+      "width": 1920,
+      "height": 1080,
+      "rate_n": 30000,
+      "rate_d": 1000
+    },
+    {
+      "sequence": 39,
+      "pixels_sha256": "fff3aafc68ff5d000ff0db61aabdf14ab67c3b98dd7d37030fa03f3149c5f936",
+      "timecode": 17926653862307377,
+      "sdk_timestamp": 17926653862030888,
+      "width": 1920,
+      "height": 1080,
+      "rate_n": 30000,
+      "rate_d": 1000
+    },
+    {
+      "sequence": 41,
+      "pixels_sha256": "5f26aa62be947872eb3de6ca4471d6eb481544e9428c7249c586e0e96188542e",
+      "timecode": 17926653862974043,
+      "sdk_timestamp": 17926653862709194,
+      "width": 1920,
+      "height": 1080,
+      "rate_n": 30000,
+      "rate_d": 1000
+    },
+    {
+      "sequence": 43,
+      "pixels_sha256": "ba11e6f31d63387bd4bf539c28f6220f68073e8587384bbf76be68cad28a9ba7",
+      "timecode": 17926653863640709,
+      "sdk_timestamp": 17926653863387531,
+      "width": 1920,
+      "height": 1080,
+      "rate_n": 30000,
+      "rate_d": 1000
+    },
+    {
+      "sequence": 44,
+      "pixels_sha256": "57778f794af854046b821865cff70240c112be2ac625a2d7a31b56d23a12bb6e",
+      "timecode": 17926653863974042,
+      "sdk_timestamp": 17926653863731690,
+      "width": 1920,
+      "height": 1080,
+      "rate_n": 30000,
+      "rate_d": 1000
+    },
+    {
+      "sequence": 46,
+      "pixels_sha256": "708ebfa4fa4c4af62372dfc9f465e4a6d7b4bb847284beb353cbc9f76a9e0cc4",
+      "timecode": 17926653864640708,
+      "sdk_timestamp": 17926653864440005,
+      "width": 1920,
+      "height": 1080,
+      "rate_n": 30000,
+      "rate_d": 1000
+    },
+    {
+      "sequence": 47,
+      "pixels_sha256": "ab45b63c096d7757fbf39287e0d5be90a4b79d430e37fa2a009b9b13943034ed",
+      "timecode": 17926653864974041,
+      "sdk_timestamp": 17926653864772728,
+      "width": 1920,
+      "height": 1080,
+      "rate_n": 30000,
+      "rate_d": 1000
+    },
+    {
+      "sequence": 49,
+      "pixels_sha256": "aa117870f2913267ffccb155c5009d5c11ecb5db8b9d6475ab79d757ba61b711",
+      "timecode": 17926653865640707,
+      "sdk_timestamp": 17926653865463473,
+      "width": 1920,
+      "height": 1080,
+      "rate_n": 30000,
+      "rate_d": 1000
+    },
+    {
+      "sequence": 51,
+      "pixels_sha256": "042cca71e07e87def3b799e4c253dadff6c984aa24f75cd66ab640ad884aa0bc",
+      "timecode": 17926653866307373,
+      "sdk_timestamp": 17926653866171058,
+      "width": 1920,
+      "height": 1080,
+      "rate_n": 30000,
+      "rate_d": 1000
+    },
+    {
+      "sequence": 52,
+      "pixels_sha256": "bc6b19ee34229b63ab97a4792224f8b105259fc9bfe8303cce160a34bce5ef3b",
+      "timecode": 17926653866640706,
+      "sdk_timestamp": 17926653866543324,
+      "width": 1920,
+      "height": 1080,
+      "rate_n": 30000,
+      "rate_d": 1000
+    },
+    {
+      "sequence": 54,
+      "pixels_sha256": "b017d5fcc8192d4ea235ef042a3325a5b2f61fdc8ace94619e4d3f079003c201",
+      "timecode": 17926653867307372,
+      "sdk_timestamp": 17926653867249961,
+      "width": 1920,
+      "height": 1080,
+      "rate_n": 30000,
+      "rate_d": 1000
+    },
+    {
+      "sequence": 55,
+      "pixels_sha256": "ee8eb50be19b60b133690de2181965f706ff8535eb4a8b1d3d644c33749c0f7f",
+      "timecode": 17926653867640705,
+      "sdk_timestamp": 17926653867567453,
+      "width": 1920,
+      "height": 1080,
+      "rate_n": 30000,
+      "rate_d": 1000
+    },
+    {
+      "sequence": 57,
+      "pixels_sha256": "c86f3be0ce0bc1b72f83d4e9a03bb4f267e0cf30bc513c41bc56f65e9341019a",
+      "timecode": 17926653868307371,
+      "sdk_timestamp": 17926653868291283,
+      "width": 1920,
+      "height": 1080,
+      "rate_n": 30000,
+      "rate_d": 1000
+    },
+    {
+      "sequence": 58,
+      "pixels_sha256": "776126078aa96cf8a823675d603c1eedce490355f907ead815a05dfd8e81523f",
+      "timecode": 17926653868640704,
+      "sdk_timestamp": 17926653868630414,
+      "width": 1920,
+      "height": 1080,
+      "rate_n": 30000,
+      "rate_d": 1000
+    },
+    {
+      "sequence": 60,
+      "pixels_sha256": "eced4d1443748b3045e8436f05cd5dbe3ad51be08269a5f38811c5b35819347a",
+      "timecode": 17926653869640703,
+      "sdk_timestamp": 17926653869327971,
+      "width": 1920,
+      "height": 1080,
+      "rate_n": 30000,
+      "rate_d": 1000
+    },
+    {
+      "sequence": 61,
+      "pixels_sha256": "2b99735f1ac5f1d586d027ede4db21829c19581fcee1b0c52bf1de9e0f047572",
+      "timecode": 17926653869974036,
+      "sdk_timestamp": 17926653869671188,
+      "width": 1920,
+      "height": 1080,
+      "rate_n": 30000,
+      "rate_d": 1000
+    },
+    {
+      "sequence": 63,
+      "pixels_sha256": "7880b6552c3afe8c6b3aef6057562cdf11624dd4002e92e09ac4ed1b4b2e83a6",
+      "timecode": 17926653870640702,
+      "sdk_timestamp": 17926653870350977,
+      "width": 1920,
+      "height": 1080,
+      "rate_n": 30000,
+      "rate_d": 1000
+    },
+    {
+      "sequence": 64,
+      "pixels_sha256": "9cfd438e681365406bb7137285fd00a5db7158f7c30f230105ffb36fbc2d3aab",
+      "timecode": 17926653870974035,
+      "sdk_timestamp": 17926653870697169,
+      "width": 1920,
+      "height": 1080,
+      "rate_n": 30000,
+      "rate_d": 1000
+    },
+    {
+      "sequence": 66,
+      "pixels_sha256": "5d7a3cdfb69ef3c6538f69899b45527d82d2b3a11a112e2764e60b6e13668bc1",
+      "timecode": 17926653871640701,
+      "sdk_timestamp": 17926653871428208,
+      "width": 1920,
+      "height": 1080,
+      "rate_n": 30000,
+      "rate_d": 1000
+    },
+    {
+      "sequence": 67,
+      "pixels_sha256": "4767817b73116483cb5e1eb874e8ea67169c2aa184c550fe83d63c8a4ad39df3",
+      "timecode": 17926653871974034,
+      "sdk_timestamp": 17926653871779215,
+      "width": 1920,
+      "height": 1080,
+      "rate_n": 30000,
+      "rate_d": 1000
+    },
+    {
+      "sequence": 69,
+      "pixels_sha256": "ada941c6b65c2ddff64130d618a35f0b8c2e74ae58e4d5a95f79d4dfc1758786",
+      "timecode": 17926653872640700,
+      "sdk_timestamp": 17926653872467052,
+      "width": 1920,
+      "height": 1080,
+      "rate_n": 30000,
+      "rate_d": 1000
+    },
+    {
+      "sequence": 70,
+      "pixels_sha256": "4839126a4518fae95d4469bcb8453d6195e2aacd15b2e2ea81c425a361fddad7",
+      "timecode": 17926653872974033,
+      "sdk_timestamp": 17926653872821761,
+      "width": 1920,
+      "height": 1080,
+      "rate_n": 30000,
+      "rate_d": 1000
+    },
+    {
+      "sequence": 72,
+      "pixels_sha256": "72535f93191d76701b9077004755029733d36df40e79272aca70b371a9dce525",
+      "timecode": 17926653873640699,
+      "sdk_timestamp": 17926653873518184,
+      "width": 1920,
+      "height": 1080,
+      "rate_n": 30000,
+      "rate_d": 1000
+    },
+    {
+      "sequence": 74,
+      "pixels_sha256": "06236705810c2e8b8f3c6d0437c99048f054f56834b56c62321faaa04e9b3b25",
+      "timecode": 17926653874307365,
+      "sdk_timestamp": 17926653874241629,
+      "width": 1920,
+      "height": 1080,
+      "rate_n": 30000,
+      "rate_d": 1000
+    },
+    {
+      "sequence": 75,
+      "pixels_sha256": "1a04d1e68bc52df8935433e7209bb2c37be4984a959ddb1f96cb2e185394263b",
+      "timecode": 17926653874640698,
+      "sdk_timestamp": 17926653874605080,
+      "width": 1920,
+      "height": 1080,
+      "rate_n": 30000,
+      "rate_d": 1000
+    },
+    {
+      "sequence": 77,
+      "pixels_sha256": "11852da86f99b319b3d5dedbbc0709972279751b2f6e9b390169d088f1795958",
+      "timecode": 17926653875307364,
+      "sdk_timestamp": 17926653875292510,
+      "width": 1920,
+      "height": 1080,
+      "rate_n": 30000,
+      "rate_d": 1000
+    },
+    {
+      "sequence": 79,
+      "pixels_sha256": "b06e2a1ec7166fc99a6ffc8bc9e251acaffa3e7f1e5e93cb0b5eb3eed588f4a7",
+      "timecode": 17926653875974030,
+      "sdk_timestamp": 17926653875970372,
+      "width": 1920,
+      "height": 1080,
+      "rate_n": 30000,
+      "rate_d": 1000
+    },
+    {
+      "sequence": 80,
+      "pixels_sha256": "81c51125257fa6ee3a21a159e89a183fe18308da4303231bcc2ed82af0d3e11f",
+      "timecode": 17926653876640696,
+      "sdk_timestamp": 17926653876319871,
+      "width": 1920,
+      "height": 1080,
+      "rate_n": 30000,
+      "rate_d": 1000
+    },
+    {
+      "sequence": 83,
+      "pixels_sha256": "6c4cfa0532c9a2cf840566160229b89515e8ec8f50ddfc0acc3f8808c04d20e9",
+      "timecode": 17926653877640695,
+      "sdk_timestamp": 17926653877379594,
+      "width": 1920,
+      "height": 1080,
+      "rate_n": 30000,
+      "rate_d": 1000
+    },
+    {
+      "sequence": 85,
+      "pixels_sha256": "0c03dc00f0a69084673714b25bd1ff8a3053538c4fb1c9b3985644ace821b17c",
+      "timecode": 17926653878307361,
+      "sdk_timestamp": 17926653878059103,
+      "width": 1920,
+      "height": 1080,
+      "rate_n": 30000,
+      "rate_d": 1000
+    },
+    {
+      "sequence": 87,
+      "pixels_sha256": "863cea860852c33e145e2bed35cd4672c2e8943ca754bfe0e3cf64bdcd8ae0dd",
+      "timecode": 17926653878974027,
+      "sdk_timestamp": 17926653878753192,
+      "width": 1920,
+      "height": 1080,
+      "rate_n": 30000,
+      "rate_d": 1000
+    },
+    {
+      "sequence": 89,
+      "pixels_sha256": "863cea860852c33e145e2bed35cd4672c2e8943ca754bfe0e3cf64bdcd8ae0dd",
+      "timecode": 17926653879640693,
+      "sdk_timestamp": 17926653879517892,
+      "width": 1920,
+      "height": 1080,
+      "rate_n": 30000,
+      "rate_d": 1000
+    },
+    {
+      "sequence": 91,
+      "pixels_sha256": "4b197e98fedee24f3e3963d65c85fc810ecf4b11ab5d18df1b08043e9cd94c7b",
+      "timecode": 17926653880307359,
+      "sdk_timestamp": 17926653880239321,
+      "width": 1920,
+      "height": 1080,
+      "rate_n": 30000,
+      "rate_d": 1000
+    },
+    {
+      "sequence": 92,
+      "pixels_sha256": "25245a795cd1fb4297ba7c1f71ae9463551e368301a2907cdd48b3021c294b62",
+      "timecode": 17926653880640692,
+      "sdk_timestamp": 17926653880564791,
+      "width": 1920,
+      "height": 1080,
+      "rate_n": 30000,
+      "rate_d": 1000
+    },
+    {
+      "sequence": 95,
+      "pixels_sha256": "ba5f6365b5b83cf2c72032eb54c6bbb1367301f452e147227b2c051d101ac1c2",
+      "timecode": 17926653881974024,
+      "sdk_timestamp": 17926653881816290,
+      "width": 1920,
+      "height": 1080,
+      "rate_n": 30000,
+      "rate_d": 1000
+    },
+    {
+      "sequence": 96,
+      "pixels_sha256": "e16322bab75abd904904a6eaaf9574dc040580bc93316938db7cb777af4bbf1f",
+      "timecode": 17926653882307357,
+      "sdk_timestamp": 17926653882143668,
+      "width": 1920,
+      "height": 1080,
+      "rate_n": 30000,
+      "rate_d": 1000
+    },
+    {
+      "sequence": 99,
+      "pixels_sha256": "3aa0da183efb9b8e173e0c10285b808d79df427225fecf12a9f898db71f30310",
+      "timecode": 17926653883307356,
+      "sdk_timestamp": 17926653883240696,
+      "width": 1920,
+      "height": 1080,
+      "rate_n": 30000,
+      "rate_d": 1000
+    },
+    {
+      "sequence": 101,
+      "pixels_sha256": "6f24618d4902819a562fa63f67590f917de95843acb399a6adbbd38b09b252d3",
+      "timecode": 17926653884307355,
+      "sdk_timestamp": 17926653883985225,
+      "width": 1920,
+      "height": 1080,
+      "rate_n": 30000,
+      "rate_d": 1000
+    },
+    {
+      "sequence": 102,
+      "pixels_sha256": "6f24618d4902819a562fa63f67590f917de95843acb399a6adbbd38b09b252d3",
+      "timecode": 17926653884640688,
+      "sdk_timestamp": 17926653884312265,
+      "width": 1920,
+      "height": 1080,
+      "rate_n": 30000,
+      "rate_d": 1000
+    },
+    {
+      "sequence": 104,
+      "pixels_sha256": "6f24618d4902819a562fa63f67590f917de95843acb399a6adbbd38b09b252d3",
+      "timecode": 17926653885307354,
+      "sdk_timestamp": 17926653884988192,
+      "width": 1920,
+      "height": 1080,
+      "rate_n": 30000,
+      "rate_d": 1000
+    },
+    {
+      "sequence": 106,
+      "pixels_sha256": "bf99caa87e1744d6822c0b4722b56d7e67d8b6ecfd7fd199d102bfb29046dcd2",
+      "timecode": 17926653885974020,
+      "sdk_timestamp": 17926653885673432,
+      "width": 1920,
+      "height": 1080,
+      "rate_n": 30000,
+      "rate_d": 1000
+    },
+    {
+      "sequence": 107,
+      "pixels_sha256": "bf99caa87e1744d6822c0b4722b56d7e67d8b6ecfd7fd199d102bfb29046dcd2",
+      "timecode": 17926653886307353,
+      "sdk_timestamp": 17926653886023104,
+      "width": 1920,
+      "height": 1080,
+      "rate_n": 30000,
+      "rate_d": 1000
+    },
+    {
+      "sequence": 109,
+      "pixels_sha256": "bf99caa87e1744d6822c0b4722b56d7e67d8b6ecfd7fd199d102bfb29046dcd2",
+      "timecode": 17926653886974019,
+      "sdk_timestamp": 17926653886715862,
+      "width": 1920,
+      "height": 1080,
+      "rate_n": 30000,
+      "rate_d": 1000
+    },
+    {
+      "sequence": 111,
+      "pixels_sha256": "bf99caa87e1744d6822c0b4722b56d7e67d8b6ecfd7fd199d102bfb29046dcd2",
+      "timecode": 17926653887640685,
+      "sdk_timestamp": 17926653887396534,
+      "width": 1920,
+      "height": 1080,
+      "rate_n": 30000,
+      "rate_d": 1000
+    },
+    {
+      "sequence": 112,
+      "pixels_sha256": "bf99caa87e1744d6822c0b4722b56d7e67d8b6ecfd7fd199d102bfb29046dcd2",
+      "timecode": 17926653887974018,
+      "sdk_timestamp": 17926653887747504,
+      "width": 1920,
+      "height": 1080,
+      "rate_n": 30000,
+      "rate_d": 1000
+    },
+    {
+      "sequence": 113,
+      "pixels_sha256": "bf99caa87e1744d6822c0b4722b56d7e67d8b6ecfd7fd199d102bfb29046dcd2",
+      "timecode": 17926653888307351,
+      "sdk_timestamp": 17926653888100153,
+      "width": 1920,
+      "height": 1080,
+      "rate_n": 30000,
+      "rate_d": 1000
+    },
+    {
+      "sequence": 114,
+      "pixels_sha256": "bf99caa87e1744d6822c0b4722b56d7e67d8b6ecfd7fd199d102bfb29046dcd2",
+      "timecode": 17926653888640684,
+      "sdk_timestamp": 17926653888446780,
+      "width": 1920,
+      "height": 1080,
+      "rate_n": 30000,
+      "rate_d": 1000
+    },
+    {
+      "sequence": 115,
+      "pixels_sha256": "bf99caa87e1744d6822c0b4722b56d7e67d8b6ecfd7fd199d102bfb29046dcd2",
+      "timecode": 17926653888974017,
+      "sdk_timestamp": 17926653888790892,
+      "width": 1920,
+      "height": 1080,
+      "rate_n": 30000,
+      "rate_d": 1000
+    },
+    {
+      "sequence": 116,
+      "pixels_sha256": "bf99caa87e1744d6822c0b4722b56d7e67d8b6ecfd7fd199d102bfb29046dcd2",
+      "timecode": 17926653889307350,
+      "sdk_timestamp": 17926653889148153,
+      "width": 1920,
+      "height": 1080,
+      "rate_n": 30000,
+      "rate_d": 1000
+    },
+    {
+      "sequence": 117,
+      "pixels_sha256": "bf99caa87e1744d6822c0b4722b56d7e67d8b6ecfd7fd199d102bfb29046dcd2",
+      "timecode": 17926653889640683,
+      "sdk_timestamp": 17926653889481289,
+      "width": 1920,
+      "height": 1080,
+      "rate_n": 30000,
+      "rate_d": 1000
+    },
+    {
+      "sequence": 118,
+      "pixels_sha256": "bf99caa87e1744d6822c0b4722b56d7e67d8b6ecfd7fd199d102bfb29046dcd2",
+      "timecode": 17926653889974016,
+      "sdk_timestamp": 17926653889853752,
+      "width": 1920,
+      "height": 1080,
+      "rate_n": 30000,
+      "rate_d": 1000
+    },
+    {
+      "sequence": 119,
+      "pixels_sha256": "bf99caa87e1744d6822c0b4722b56d7e67d8b6ecfd7fd199d102bfb29046dcd2",
+      "timecode": 17926653890307349,
+      "sdk_timestamp": 17926653890215472,
+      "width": 1920,
+      "height": 1080,
+      "rate_n": 30000,
+      "rate_d": 1000
+    },
+    {
+      "sequence": 120,
+      "pixels_sha256": "98e1b050622c61b131564366491d1ec7e4e76272be14916837af757078fc067f",
+      "timecode": 17926653890640682,
+      "sdk_timestamp": 17926653890558907,
+      "width": 1920,
+      "height": 1080,
+      "rate_n": 30000,
+      "rate_d": 1000
+    },
+    {
+      "sequence": 121,
+      "pixels_sha256": "dfc6b45aaebc001fc4b54a5af601c185bcb6513102fcabec9171e461b951be58",
+      "timecode": 17926653890974015,
+      "sdk_timestamp": 17926653890910077,
+      "width": 1920,
+      "height": 1080,
+      "rate_n": 30000,
+      "rate_d": 1000
+    }
+  ],
+  "child_exit": 0,
+  "child_result": "D:\\REA - ENGENHARIA REVERSA\\targets\\mizin_playout\\evidence\\network-probe-startup-auto-0049-final.json",
+  "probe_sha256": "92606ccf7985c0556dce0bd2006b512e69ecaf9297eba37c9ba3be63b4f6870b",
+  "args": [
+    "D:\\REA - ENGENHARIA REVERSA\\targets\\mizin_playout\\dist\\MizinPlayout.exe",
+    "--network-test",
+    "--fixtures",
+    "D:\\REA - ENGENHARIA REVERSA\\targets\\mizin_playout\\binaries\\network-fixtures",
+    "--result",
+    "D:\\REA - ENGENHARIA REVERSA\\targets\\mizin_playout\\evidence\\network-probe-startup-auto-0049-final.json",
+    "--state-dir",
+    "D:\\REA - ENGENHARIA REVERSA\\targets\\mizin_playout\\binaries\\qa\\external-state-startup-auto-0049-final"
+  ],
+  "scope": "Strict source sequence/timecode/content and SDK delivery timestamps; identical cache replay is counted explicitly. Independent receiver process on same Windows computer, not another LAN machine or physical AV-sync."
+}

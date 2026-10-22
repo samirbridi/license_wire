@@ -1,0 +1,750 @@
+{
+    "audio_devices": [
+        {
+            "id": "ezAuMC4wLjAwMDAwMDAwfS57YTBlZWIyNmEtYTYwMC00OTJlLWIzN2EtYmEzMzA4MTFhMTc2fQ==",
+            "name": "Alto-falantes (Realtek(R) Audio)"
+        },
+        {
+            "id": "ezAuMC4wLjAwMDAwMDAwfS57YTMyYzgwNzYtZjU0ZS00ZDY3LWE5YzQtNzdmNzU1MDgxMGUyfQ==",
+            "name": "CABLE Input (VB-Audio Virtual Cable)"
+        },
+        {
+            "id": "ezAuMC4wLjAwMDAwMDAwfS57YTdkMzI3YzEtN2Q3Mi00ZDJkLWEzYTYtZTIzMzcxMmI2MWY0fQ==",
+            "name": "SONY TV (NVIDIA High Definition Audio)"
+        },
+        {
+            "id": "ezAuMC4wLjAwMDAwMDAwfS57YjgxNmU3OGQtMDQ1Ny00ZjI1LWE1NjgtNDhlOGRhYmVmOTMzfQ==",
+            "name": "CABLE-B Input (VB-Audio Cable B)"
+        },
+        {
+            "id": "ezAuMC4wLjAwMDAwMDAwfS57YzFlNDQ4MTMtZmJhNS00YmU2LTkzMWUtZDQxNzBhYWY4YWVhfQ==",
+            "name": "CABLE-A Input (VB-Audio Cable A)"
+        },
+        {
+            "id": "ezAuMC4wLjAwMDAwMDAwfS57ZmZkNThmZmEtYWY4OS00YzEzLWJhZmYtZWQ0OTk0ZWIyODgwfQ==",
+            "name": "CABLE In 16ch (VB-Audio Virtual Cable)"
+        }
+    ],
+    "loopback": [
+        {
+            "protocol": "NDI",
+            "statistics": {
+                "audio_packets": 157,
+                "connections": 4,
+                "dropped_audio": 0,
+                "error": "",
+                "ndi_timecode_policy": "SDK synthesis for audio/video; source sequence metadata distinguishes cached connection frames",
+                "running": true,
+                "source": "DESKTOP-BBB9G7I (Mizin QA NDI 22476)",
+                "superseded_video": 24,
+                "video_frames": 84
+            }
+        },
+        {
+            "protocol": "OMT",
+            "statistics": {
+                "audio_packets": 156,
+                "connections": 2,
+                "dropped_audio": 0,
+                "error": "",
+                "ndi_timecode_policy": "SDK synthesis for audio/video; source sequence metadata distinguishes cached connection frames",
+                "running": true,
+                "source": "DESKTOP-BBB9G7I (Mizin QA OMT 22476)",
+                "superseded_video": 24,
+                "video_frames": 74
+            }
+        }
+    ],
+    "mode": "auto",
+    "ndi_video_trace": [
+        {
+            "frame": 1,
+            "sdk_timestamp": "17926654223606734",
+            "sequence": "12",
+            "timecode": "17926654223661183",
+            "verified_payload_bytes": 8294400
+        },
+        {
+            "frame": 2,
+            "sdk_timestamp": "17926654225697514",
+            "sequence": "18",
+            "timecode": "17926654225994514",
+            "verified_payload_bytes": 8294400
+        },
+        {
+            "frame": 3,
+            "sdk_timestamp": "17926654226726517",
+            "sequence": "21",
+            "timecode": "17926654226994513",
+            "verified_payload_bytes": 8294400
+        },
+        {
+            "frame": 4,
+            "sdk_timestamp": "17926654227095585",
+            "sequence": "22",
+            "timecode": "17926654227327846",
+            "verified_payload_bytes": 8294400
+        },
+        {
+            "frame": 5,
+            "sdk_timestamp": "17926654227465593",
+            "sequence": "23",
+            "timecode": "17926654227661179",
+            "verified_payload_bytes": 8294400
+        },
+        {
+            "frame": 6,
+            "sdk_timestamp": "17926654227789810",
+            "sequence": "24",
+            "timecode": "17926654227994512",
+            "verified_payload_bytes": 8294400
+        },
+        {
+            "frame": 7,
+            "sdk_timestamp": "17926654228132783",
+            "sequence": "25",
+            "timecode": "17926654228327845",
+            "verified_payload_bytes": 8294400
+        },
+        {
+            "frame": 8,
+            "sdk_timestamp": "17926654228497104",
+            "sequence": "26",
+            "timecode": "17926654228661178",
+            "verified_payload_bytes": 8294400
+        },
+        {
+            "frame": 9,
+            "sdk_timestamp": "17926654228839116",
+            "sequence": "27",
+            "timecode": "17926654228994511",
+            "verified_payload_bytes": 8294400
+        },
+        {
+            "frame": 10,
+            "sdk_timestamp": "17926654229178491",
+            "sequence": "28",
+            "timecode": "17926654229327844",
+            "verified_payload_bytes": 8294400
+        },
+        {
+            "frame": 11,
+            "sdk_timestamp": "17926654229534504",
+            "sequence": "29",
+            "timecode": "17926654229661177",
+            "verified_payload_bytes": 8294400
+        },
+        {
+            "frame": 12,
+            "sdk_timestamp": "17926654229877931",
+            "sequence": "30",
+            "timecode": "17926654229994510",
+            "verified_payload_bytes": 8294400
+        },
+        {
+            "frame": 13,
+            "sdk_timestamp": "17926654230214684",
+            "sequence": "31",
+            "timecode": "17926654230327843",
+            "verified_payload_bytes": 8294400
+        },
+        {
+            "frame": 14,
+            "sdk_timestamp": "17926654230568450",
+            "sequence": "32",
+            "timecode": "17926654230661176",
+            "verified_payload_bytes": 8294400
+        },
+        {
+            "frame": 15,
+            "sdk_timestamp": "17926654230930969",
+            "sequence": "33",
+            "timecode": "17926654230994509",
+            "verified_payload_bytes": 8294400
+        },
+        {
+            "frame": 16,
+            "sdk_timestamp": "17926654231278347",
+            "sequence": "34",
+            "timecode": "17926654231327842",
+            "verified_payload_bytes": 8294400
+        },
+        {
+            "frame": 17,
+            "sdk_timestamp": "17926654231591352",
+            "sequence": "35",
+            "timecode": "17926654231661175",
+            "verified_payload_bytes": 8294400
+        },
+        {
+            "frame": 18,
+            "sdk_timestamp": "17926654231966189",
+            "sequence": "36",
+            "timecode": "17926654231994508",
+            "verified_payload_bytes": 8294400
+        },
+        {
+            "frame": 19,
+            "sdk_timestamp": "17926654232340798",
+            "sequence": "37",
+            "timecode": "17926654232661174",
+            "verified_payload_bytes": 8294400
+        },
+        {
+            "frame": 20,
+            "sdk_timestamp": "17926654232657764",
+            "sequence": "38",
+            "timecode": "17926654232973673",
+            "verified_payload_bytes": 8294400
+        },
+        {
+            "frame": 21,
+            "sdk_timestamp": "17926654233043004",
+            "sequence": "39",
+            "timecode": "17926654233307006",
+            "verified_payload_bytes": 8294400
+        },
+        {
+            "frame": 22,
+            "sdk_timestamp": "17926654233364659",
+            "sequence": "40",
+            "timecode": "17926654233640339",
+            "verified_payload_bytes": 8294400
+        },
+        {
+            "frame": 23,
+            "sdk_timestamp": "17926654233714639",
+            "sequence": "41",
+            "timecode": "17926654233973672",
+            "verified_payload_bytes": 8294400
+        },
+        {
+            "frame": 24,
+            "sdk_timestamp": "17926654234060046",
+            "sequence": "42",
+            "timecode": "17926654234307005",
+            "verified_payload_bytes": 8294400
+        },
+        {
+            "frame": 25,
+            "sdk_timestamp": "17926654234422432",
+            "sequence": "43",
+            "timecode": "17926654234640338",
+            "verified_payload_bytes": 8294400
+        },
+        {
+            "frame": 26,
+            "sdk_timestamp": "17926654234736333",
+            "sequence": "44",
+            "timecode": "17926654234973671",
+            "verified_payload_bytes": 8294400
+        },
+        {
+            "frame": 27,
+            "sdk_timestamp": "17926654235074831",
+            "sequence": "45",
+            "timecode": "17926654235307004",
+            "verified_payload_bytes": 8294400
+        },
+        {
+            "frame": 28,
+            "sdk_timestamp": "17926654235456804",
+            "sequence": "46",
+            "timecode": "17926654235640337",
+            "verified_payload_bytes": 8294400
+        },
+        {
+            "frame": 29,
+            "sdk_timestamp": "17926654235812927",
+            "sequence": "47",
+            "timecode": "17926654235973670",
+            "verified_payload_bytes": 8294400
+        },
+        {
+            "frame": 30,
+            "sdk_timestamp": "17926654236162002",
+            "sequence": "48",
+            "timecode": "17926654236307003",
+            "verified_payload_bytes": 8294400
+        },
+        {
+            "frame": 31,
+            "sdk_timestamp": "17926654236514758",
+            "sequence": "49",
+            "timecode": "17926654236640336",
+            "verified_payload_bytes": 8294400
+        },
+        {
+            "frame": 32,
+            "sdk_timestamp": "17926654236927020",
+            "sequence": "50",
+            "timecode": "17926654236973669",
+            "verified_payload_bytes": 8294400
+        },
+        {
+            "frame": 33,
+            "sdk_timestamp": "17926654237263372",
+            "sequence": "51",
+            "timecode": "17926654237307002",
+            "verified_payload_bytes": 8294400
+        },
+        {
+            "frame": 34,
+            "sdk_timestamp": "17926654237612495",
+            "sequence": "52",
+            "timecode": "17926654237640335",
+            "verified_payload_bytes": 8294400
+        },
+        {
+            "frame": 35,
+            "sdk_timestamp": "17926654237965474",
+            "sequence": "53",
+            "timecode": "17926654237973668",
+            "verified_payload_bytes": 8294400
+        },
+        {
+            "frame": 36,
+            "sdk_timestamp": "17926654238299296",
+            "sequence": "54",
+            "timecode": "17926654238307001",
+            "verified_payload_bytes": 8294400
+        },
+        {
+            "frame": 37,
+            "sdk_timestamp": "17926654246003427",
+            "sequence": "76",
+            "timecode": "17926654246306993",
+            "verified_payload_bytes": 8294400
+        },
+        {
+            "frame": 38,
+            "sdk_timestamp": "17926654247384519",
+            "sequence": "80",
+            "timecode": "17926654247640325",
+            "verified_payload_bytes": 8294400
+        },
+        {
+            "frame": 39,
+            "sdk_timestamp": "17926654247748059",
+            "sequence": "81",
+            "timecode": "17926654247973658",
+            "verified_payload_bytes": 8294400
+        },
+        {
+            "frame": 40,
+            "sdk_timestamp": "17926654248085650",
+            "sequence": "82",
+            "timecode": "17926654248306991",
+            "verified_payload_bytes": 8294400
+        },
+        {
+            "frame": 41,
+            "sdk_timestamp": "17926654248430542",
+            "sequence": "83",
+            "timecode": "17926654248640324",
+            "verified_payload_bytes": 8294400
+        },
+        {
+            "frame": 42,
+            "sdk_timestamp": "17926654248765713",
+            "sequence": "84",
+            "timecode": "17926654248973657",
+            "verified_payload_bytes": 8294400
+        },
+        {
+            "frame": 43,
+            "sdk_timestamp": "17926654249118894",
+            "sequence": "85",
+            "timecode": "17926654249306990",
+            "verified_payload_bytes": 8294400
+        },
+        {
+            "frame": 44,
+            "sdk_timestamp": "17926654249463835",
+            "sequence": "86",
+            "timecode": "17926654249640323",
+            "verified_payload_bytes": 8294400
+        },
+        {
+            "frame": 45,
+            "sdk_timestamp": "17926654249809059",
+            "sequence": "87",
+            "timecode": "17926654249973656",
+            "verified_payload_bytes": 8294400
+        }
+    ],
+    "omt_video_trace": [
+        {
+            "frame": 1,
+            "timecode": "20616520"
+        },
+        {
+            "frame": 2,
+            "timecode": "20616530"
+        },
+        {
+            "frame": 3,
+            "timecode": "20616540"
+        },
+        {
+            "frame": 4,
+            "timecode": "24403430"
+        },
+        {
+            "frame": 5,
+            "timecode": "25926160"
+        },
+        {
+            "frame": 6,
+            "timecode": "26926160"
+        },
+        {
+            "frame": 7,
+            "timecode": "27592820"
+        },
+        {
+            "frame": 8,
+            "timecode": "27926160"
+        },
+        {
+            "frame": 9,
+            "timecode": "28259490"
+        },
+        {
+            "frame": 10,
+            "timecode": "28926160"
+        },
+        {
+            "frame": 11,
+            "timecode": "29259490"
+        },
+        {
+            "frame": 12,
+            "timecode": "29592820"
+        },
+        {
+            "frame": 13,
+            "timecode": "29926160"
+        },
+        {
+            "frame": 14,
+            "timecode": "30259490"
+        },
+        {
+            "frame": 15,
+            "timecode": "30592820"
+        },
+        {
+            "frame": 16,
+            "timecode": "30926160"
+        },
+        {
+            "frame": 17,
+            "timecode": "31259490"
+        },
+        {
+            "frame": 18,
+            "timecode": "31592820"
+        },
+        {
+            "frame": 19,
+            "timecode": "31926160"
+        },
+        {
+            "frame": 20,
+            "timecode": "32259490"
+        },
+        {
+            "frame": 21,
+            "timecode": "32592820"
+        },
+        {
+            "frame": 22,
+            "timecode": "32926160"
+        },
+        {
+            "frame": 23,
+            "timecode": "33259490"
+        },
+        {
+            "frame": 24,
+            "timecode": "33592820"
+        },
+        {
+            "frame": 25,
+            "timecode": "33926160"
+        },
+        {
+            "frame": 26,
+            "timecode": "34259490"
+        },
+        {
+            "frame": 27,
+            "timecode": "34592820"
+        },
+        {
+            "frame": 28,
+            "timecode": "34926160"
+        },
+        {
+            "frame": 29,
+            "timecode": "35259490"
+        },
+        {
+            "frame": 30,
+            "timecode": "35592820"
+        },
+        {
+            "frame": 31,
+            "timecode": "36259490"
+        },
+        {
+            "frame": 32,
+            "timecode": "36592820"
+        },
+        {
+            "frame": 33,
+            "timecode": "36926160"
+        },
+        {
+            "frame": 34,
+            "timecode": "37259490"
+        },
+        {
+            "frame": 35,
+            "timecode": "37592820"
+        },
+        {
+            "frame": 36,
+            "timecode": "37926160"
+        },
+        {
+            "frame": 37,
+            "timecode": "38259490"
+        },
+        {
+            "frame": 38,
+            "timecode": "38592820"
+        },
+        {
+            "frame": 39,
+            "timecode": "47460660"
+        },
+        {
+            "frame": 40,
+            "timecode": "47819110"
+        }
+    ],
+    "result": "PASS",
+    "scope": "Native audio buffers, controls and in-process SDK network loopback on Windows; not an independent LAN receiver, physical listening, AV-sync or multi-hour qualification",
+    "tests": [
+        {
+            "name": "ndi_order_accepts_exact_cache_replay",
+            "pass": true
+        },
+        {
+            "name": "ndi_order_rejects_content_change_under_same_id",
+            "pass": true
+        },
+        {
+            "name": "ndi_order_rejects_new_frame_with_reused_timecode",
+            "pass": true
+        },
+        {
+            "name": "ndi_order_rejects_source_sequence_regression",
+            "pass": true
+        },
+        {
+            "name": "ndi_order_rejects_delivery_timestamp_regression",
+            "pass": true
+        },
+        {
+            "name": "master_gain_preserves_stereo",
+            "pass": true
+        },
+        {
+            "name": "master_mute_is_silence",
+            "pass": true
+        },
+        {
+            "name": "decks_are_mixed_once",
+            "pass": true
+        },
+        {
+            "name": "sum_is_clipped_to_valid_pcm",
+            "pass": true
+        },
+        {
+            "name": "transport_planar_channel_layout",
+            "pass": true
+        },
+        {
+            "name": "overload_is_clipped_at_full_scale",
+            "pass": true
+        },
+        {
+            "name": "flush_removes_stale_samples",
+            "pass": true
+        },
+        {
+            "name": "ring_wrap_does_not_replay_old_tags",
+            "pass": true
+        },
+        {
+            "name": "fade_uses_audio_sample_time",
+            "pass": true
+        },
+        {
+            "name": "fade_black_holds_first_half",
+            "pass": true
+        },
+        {
+            "name": "pause_shift_preserves_envelope_phase",
+            "pass": true
+        },
+        {
+            "name": "exclusive_audio_out_is_silent",
+            "pass": true
+        },
+        {
+            "decoded_buffers": 10,
+            "name": "native_media_decodes_real_audio",
+            "nonzero_packets": 6,
+            "packet_count": 38,
+            "pass": true
+        },
+        {
+            "name": "native_mute_does_not_stop_video",
+            "pass": true
+        },
+        {
+            "name": "native_unmute_restores_pcm",
+            "pass": true
+        },
+        {
+            "name": "preview_never_publishes_audio",
+            "pass": true
+        },
+        {
+            "name": "missing_device_mutes_local_without_stopping_program",
+            "pass": true
+        },
+        {
+            "name": "default_device_can_be_restored",
+            "pass": true
+        },
+        {
+            "name": "pause_flushes_network_pcm",
+            "pass": true
+        },
+        {
+            "name": "resume_produces_new_audio",
+            "pass": true
+        },
+        {
+            "name": "seek_reanchors_audio_timeline",
+            "pass": true
+        },
+        {
+            "name": "program_audio_timestamps_stay_monotonic",
+            "pass": true
+        },
+        {
+            "name": "missing_runtime_fails_without_stopping_program",
+            "pass": true
+        },
+        {
+            "name": "empty_source_name_is_rejected",
+            "pass": true
+        },
+        {
+            "name": "missing_omt_codec_is_reported_before_sender_creation",
+            "pass": true
+        },
+        {
+            "error": "",
+            "name": "private_ndi_runtime_loaded",
+            "pass": true,
+            "path": "D:/REA - ENGENHARIA REVERSA/targets/mizin_playout/releases/MizinPlayout-0.18.4-build0049-windows-x64-preview/payload/Processing.NDI.Lib.x64.dll",
+            "version": "NDI SDK WIN64 16:08:06 Feb 17 2026 6.3.1.0"
+        },
+        {
+            "error": "",
+            "name": "packaged_omt_runtime_loaded",
+            "pass": true,
+            "path": "D:/REA - ENGENHARIA REVERSA/targets/mizin_playout/releases/MizinPlayout-0.18.4-build0049-windows-x64-preview/payload/libomt.dll"
+        },
+        {
+            "name": "network_senders_are_off_by_default",
+            "pass": true
+        },
+        {
+            "name": "both_protocols_start_on_one_program",
+            "pass": true
+        },
+        {
+            "audio_packets": 9,
+            "audio_peak": 0.025040913373231888,
+            "name": "ndi_loopback_receives_native_video_and_audio",
+            "pass": true,
+            "video_frames": 13
+        },
+        {
+            "audio_packets": 9,
+            "audio_peak": 0.025026317685842514,
+            "name": "omt_loopback_receives_native_video_and_audio",
+            "pass": true,
+            "video_frames": 13
+        },
+        {
+            "name": "master_mute_reaches_both_network_receivers",
+            "pass": true
+        },
+        {
+            "name": "master_unmute_restores_both_network_receivers",
+            "pass": true
+        },
+        {
+            "name": "network_audio_can_be_disabled_independently",
+            "pass": true
+        },
+        {
+            "name": "independent_program_b_has_its_own_sender",
+            "pass": true
+        },
+        {
+            "name": "black_reaches_both_network_outputs",
+            "native_frame_stays_invalid": true,
+            "ndi_black": true,
+            "ndi_fourcc": 1095911234,
+            "ndi_mean": 0.6666666666666666,
+            "omt_black": true,
+            "omt_codec": 826363974,
+            "omt_mean": 0,
+            "pass": true
+        },
+        {
+            "audio_packets": 71,
+            "name": "ndi_source_frames_and_sdk_delivery_remain_strictly_in_order",
+            "pass": true,
+            "raw_timecode_repeats_or_regressions": 0,
+            "raw_timecode_strict": true,
+            "verified_exact_cache_repeats": 0,
+            "video_frames": 45
+        },
+        {
+            "name": "omt_video_timestamps_remain_strictly_increasing",
+            "pass": true,
+            "video_frames": 40,
+            "video_violations": 0
+        },
+        {
+            "name": "stopping_network_preserves_program",
+            "pass": true
+        },
+        {
+            "name": "black_flushes_audio",
+            "pass": true
+        }
+    ]
+}
