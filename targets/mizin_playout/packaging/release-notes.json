@@ -1,12 +1,10 @@
 {
   "en": [
-    "Automatic recovery: while a show has unsaved changes, a copy is written every few seconds. After an unexpected close the app offers to restore it.",
-    "Saving over a show keeps the previous version next to it as .mizinshow.bak.",
-    "Missing media: when a show's files moved (another computer, drive letter or folder), the app finds them by name in the folder you choose. Also in Library → Locate missing media."
+    "Every release is now tested on a clean Windows (Windows Sandbox, without Visual C++ runtime, Qt or NDI installed): Setup installs without administrator rights, the app opens and plays H.264, HEVC, MKV, MJPEG and ProRes, and the portable ZIP runs from a folder with spaces and accents.",
+    "Includes the automatic recovery, .bak backup and missing-media relink introduced in v0.20.0."
   ],
   "pt-BR": [
-    "Recuperação automática: enquanto o show tem alterações não salvas, uma cópia é gravada a cada poucos segundos. Se o app fechar inesperadamente, ele oferece restaurá-la.",
-    "Ao salvar por cima de um show, a versão anterior fica ao lado como .mizinshow.bak.",
-    "Mídias ausentes: quando os arquivos de um show mudaram de lugar (outro computador, letra de HD ou pasta), o app os encontra pelo nome na pasta que você indicar. Também em Biblioteca → Localizar mídias ausentes."
+    "Toda versão agora é testada num Windows limpo (Windows Sandbox, sem runtime Visual C++, Qt ou NDI instalados): o Setup instala sem administrador, o app abre e reproduz H.264, HEVC, MKV, MJPEG e ProRes, e o ZIP portátil roda de uma pasta com espaços e acentos.",
+    "Inclui a recuperação automática, o backup .bak e a religação de mídias ausentes da v0.20.0."
   ]
 }
