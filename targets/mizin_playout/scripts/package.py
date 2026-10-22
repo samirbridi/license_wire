@@ -86,7 +86,22 @@ def stage(qt, redist, compiler):
     shutil.copy2(ROOT/'packaging/README-PREVIEW.txt', payload/'README.txt')
     shutil.copy2(ROOT/'packaging/Start portable.cmd', payload/'Start portable.cmd')
     licenses = payload/'licenses'
-    shutil.copytree(ROOT/'packaging/notices', licenses)
+    shutil.copytree(ROOT/'packaging/notices', licenses,ignore=shutil.ignore_patterns('upstream'))
+    # Keep complete upstream notice bytes without their source-tree depth.
+    # NSIS/Windows can reject a nested notice at MAX_PATH even though the app
+    # itself installs successfully. An index retains exact original paths.
+    (licenses/'upstream').mkdir()
+    notice_index=[]
+    for original in sorted((ROOT/'packaging/notices/upstream').rglob('*')):
+        if not original.is_file():continue
+        relative=original.relative_to(ROOT/'packaging/notices/upstream').as_posix()
+        extension=original.suffix if len(original.suffix)<=8 else '.txt'
+        short=hashlib.sha256(relative.encode()).hexdigest()[:16]+extension
+        destination=licenses/'upstream'/short
+        if destination.exists():raise ValueError('Notice filename collision: '+relative)
+        shutil.copy2(original,destination)
+        notice_index.append(dict(source_path=relative,file=short,sha256=sha(destination)))
+    write(licenses/'upstream/index.json',dict(files=notice_index,reason='Complete original bytes, short install paths; sources and provenance in dependency-sources.json.'))
     (licenses/'qt-sdk-sbom').mkdir()
     for file in (qt/'sbom').glob('*.spdx.json'):
         shutil.copy2(file, licenses/'qt-sdk-sbom'/file.name)
