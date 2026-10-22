@@ -62,7 +62,7 @@ try{
         Check "$mode metadata matches compiled version and source" ($data.version -eq $record.version -and $data.source_commit -eq $record.source_commit -and $data.default_language -eq 'en') $null
     }
     Check 'runtime-info creates no user preferences' (-not(Test-Path -LiteralPath (Join-Path $appDir 'state'))) $null
-    foreach($suite in @('ui','readiness','smoke','web','audio-engine','link')){
+    foreach($suite in @('ui','readiness','smoke','web','audio-engine','link','link-mirror')){
         $fixtures=Join-Path $playoutRoot $(if($suite -eq 'readiness'){'binaries'}elseif($suite -in @('web','audio-engine')){'binaries/network-fixtures'}else{'binaries/fixtures'})
         $result=Join-Path $work "$suite.json"
         $args='--'+$suite+'-test --fixtures "'+$fixtures+'" --result "'+$result+'" --state-dir "'+(Join-Path $work "$suite-state")+'"'

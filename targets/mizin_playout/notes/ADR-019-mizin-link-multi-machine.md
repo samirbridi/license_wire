@@ -1,7 +1,7 @@
 # ADR-019 — Mizin Link: several playout machines working as one
 
 Date: 2026-10-22. Status: accepted by the owner (all four scenarios, events with 5+ machines);
-phase 1 in progress.
+phase 1 shipped in build 0054; phase 2 shipped next (see notes below).
 
 ## Scenarios (owner request)
 1. **Main + backup**: a backup follows everything the main does (show, playlists, takes, position) so
@@ -49,3 +49,17 @@ phase 1 in progress.
 In-process loopback (master + several followers in one test process) for protocol, auth/replay,
 clock offset, manifest/download/verification and resume; then real LAN with the owner's machines
 (5+), measuring clock offset, sync drift over 30 min and failover time.
+
+## Phase 2 notes (main + backup)
+- State-driven mirroring (idempotent): the master sends every Program's state ~10x/s (media as manifest-relative
+  path, active cue JSON, activeGeneration as take serial, playing/pending, position sampled on the master clock).
+  A follower with "Mirror the master" and the received show (same revision) loaded applies it: new serial ->
+  loadCue of the same cue (CUT/FADE parameters preserved); play/pause and loop follow; empty media -> black;
+  position error > 80 ms -> seek (1 s cooldown per Program). Follower controllers are forced to manual.
+- MASTER LOST: no state for 1.5 s or session closed -> red banner, playback continues; "Take over as master"
+  restarts Link as master with the same code and republishes the show.
+- Bug fixed on the way: QJsonObject::operator[] in announce() inserted an empty "name" into the master manifest,
+  so early followers received an empty show. Manifests are now only sent after publication and followers reject
+  incomplete ones.
+- Measured (two MainWindows, one computer, loopback): position drift 43–64 ms after correction; all mirroring and
+  failover checks pass (`--link-mirror-test`). Multi-computer LAN measurement pending.

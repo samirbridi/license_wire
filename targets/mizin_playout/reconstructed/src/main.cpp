@@ -189,7 +189,7 @@ public:
         updateBanner_=new QFrame;updateBanner_->setObjectName("panel");auto* updateRow=new QHBoxLayout(updateBanner_);updateRow->setContentsMargins(10,6,10,6);updateBannerText_=new QLabel;updateRow->addWidget(updateBannerText_,1);auto* viewUpdate=button("View update"),*laterUpdate=button("Later");updateRow->addWidget(viewUpdate);updateRow->addWidget(laterUpdate);updateBanner_->hide();contentLayout->addWidget(updateBanner_);
         connect(viewUpdate,&QPushButton::clicked,this,[this]{selectPage(5);settingsTabs_->setCurrentIndex(2);});connect(laterUpdate,&QPushButton::clicked,updateBanner_,&QWidget::hide);
         connect(updates_.get(),&UpdateController::available,this,[this]{updateBannerText_->setText(tx("Update available")+" · "+updates_->release().version);updateBanner_->show();});
-        contentLayout->addWidget(pages_,1);
+        contentLayout->addWidget(createMasterLostBanner());contentLayout->addWidget(pages_,1);
         auto* statusBar=new QFrame;statusBar->setObjectName("usageBar");auto* statusLayout=new QHBoxLayout(statusBar);statusLayout->setContentsMargins(0,5,0,0);statusLayout->setSpacing(16);
         footer_=new ElidedLabel;footer_->setObjectName("footer");footer_->setSizePolicy(QSizePolicy::Ignored,QSizePolicy::Preferred);statusLayout->addWidget(footer_,1);
         usageLabel_=new QLabel;usageLabel_->setObjectName("processUsage");usageLabel_->setTextFormat(Qt::PlainText);statusLayout->addWidget(usageLabel_);contentLayout->addWidget(statusBar);
@@ -341,6 +341,7 @@ private:
 #include "main_show_reliability.inc"
 #include "main_show_package.inc"
 #include "main_link.inc"
+#include "main_link_mirror.inc"
     void refreshDashboard(){
         if(!manualMode_||!playlistTable_)return;
         for(auto* name:{previewName_,programName_,secondaryName_})if(name){name->setToolTip(name->text());name->setAccessibleName(name->text());}
@@ -623,6 +624,7 @@ private:
 };
 
 #include "main_ui_tests.inc"
+#include "main_link_mirror_tests.inc"
 
 static const char* style=R"(
 QWidget {background:#0d151f;color:#e4edf6;font-family:'Segoe UI';font-size:13px;}
@@ -651,6 +653,8 @@ QFrame#deck[channel='program'] {border-top:2px solid #f5847a;}
 QFrame#deck[channel='secondary'] {border-top:2px solid #b58be9;}
 QFrame#programTile {background:#101c28;border:1px solid #283e52;border-radius:5px;}
 QFrame#programTile[selected="true"] {border:2px solid #55cce3;}
+QFrame#masterLost {background:#5a1418;border:2px solid #ff4b4b;border-radius:6px;}
+QLabel#masterLostText {color:#ffe1dd;font-weight:700;font-size:14px;}
 QFrame#programTile[onAir="true"] {border-top:3px solid #ff4b4b;}
 QFrame#deck[onAir="true"] {border:2px solid #ff4b4b;}
 QLabel#deckState[onAir="true"] {color:#ffd6d1;background:#6a2226;}
@@ -727,6 +731,7 @@ int main(int argc,char** argv){
     parser.addOption(QCommandLineOption(QStringLiteral("capture-size"),QStringLiteral("Native board viewport, e.g. 1280x800"),QStringLiteral("widthxheight"),QStringLiteral("1600x1000")));
     parser.addOption(QCommandLineOption(QStringLiteral("state-dir"),QStringLiteral("Portable settings directory"),QStringLiteral("directory")));
     parser.addOption(QCommandLineOption(QStringLiteral("cpu"),QStringLiteral("Force software decoding")));
+    parser.addOption(QCommandLineOption(QStringLiteral("link-mirror-test"),QStringLiteral("Test Mizin Link backup mirroring end to end")));
     parser.addOption(QCommandLineOption(QStringLiteral("link-test"),QStringLiteral("Test Mizin Link discovery, pairing and distribution")));
     parser.addOption(QCommandLineOption(QStringLiteral("audio-engine-test"),QStringLiteral("Test the low-latency local audio engine")));
     parser.addOption(QCommandLineOption(QStringLiteral("web-test"),QStringLiteral("Test the local WebRTC web monitor")));
@@ -767,6 +772,7 @@ int main(int argc,char** argv){
         if(!QDir().mkpath(state)||!QFile::copy(legacy,state+"/preferences.ini"))qWarning("Legacy preferences could not be copied; original retained.");
     }
     QSettings decodeSettings(state+"/preferences.ini",QSettings::IniFormat);if(decodeSettings.value("decode","auto").toString()=="cpu"){qputenv("QT_FFMPEG_DECODING_HW_DEVICE_TYPES",",");qputenv("MIZIN_DECODE_MODE","cpu");}
+    if(parser.isSet("link-mirror-test"))return MainWindow::runLinkMirrorTests(parser.value("fixtures"),parser.value("result"));
     MainWindow window(parser.isSet("board"),parser.value("lang"),state);
     if(parser.isSet("board-multi-output"))window.configureBoardOutputs();
     window.configureBoardPrograms(parser.value("board-programs").toInt());

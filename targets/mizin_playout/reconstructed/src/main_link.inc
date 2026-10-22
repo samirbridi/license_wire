@@ -20,6 +20,7 @@
         auto* actions=new QHBoxLayout;actions->setSpacing(10);linkAddress_=new QLineEdit(settings_->value("link/masterAddress").toString());linkAddress_->setObjectName("linkAddress");linkAddress_->setPlaceholderText(tx("Master address (optional, found automatically)"));actions->addWidget(linkAddress_,2);
         linkStart_=button("Start Link");linkStart_->setObjectName("linkStart");actions->addWidget(linkStart_);linkStop_=button("Stop Link");linkStop_->setObjectName("linkStop");actions->addWidget(linkStop_);
         linkSend_=button("Send show to machines");linkSend_->setObjectName("linkSend");actions->addWidget(linkSend_);linkLoad_=button("Load received show");linkLoad_->setObjectName("linkLoad");actions->addWidget(linkLoad_);body->addLayout(actions);
+        setupMirroring(body);
         linkStatus_=new QLabel;linkStatus_->setObjectName("muted");linkStatus_->setWordWrap(true);body->addWidget(linkStatus_);
         linkPeers_=new QTableWidget(0,5);linkPeers_->setObjectName("linkPeers");linkPeers_->setEditTriggers(QAbstractItemView::NoEditTriggers);linkPeers_->setSelectionMode(QAbstractItemView::NoSelection);linkPeers_->verticalHeader()->hide();linkPeers_->setShowGrid(false);
         linkPeers_->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);linkPeers_->setMinimumHeight(170);body->addWidget(linkPeers_);l->addWidget(panel);
@@ -51,7 +52,7 @@
         if(!linkStatus_)return;const auto role=link_->role();const bool on=role!=LinkNode::Role::Off;
         linkStart_->setEnabled(!on);linkStop_->setEnabled(on);linkRole_->setEnabled(!on);linkName_->setEnabled(!on);linkCode_->setEnabled(!on);linkNewCode_->setEnabled(!on);
         const bool master=on?role==LinkNode::Role::Master:linkRole_->currentData().toInt()==int(LinkNode::Role::Master);
-        linkAddress_->setVisible(!master);linkAddress_->setEnabled(!on);linkSend_->setVisible(master);linkSend_->setEnabled(on&&!link_->hashing());linkLoad_->setVisible(!master);linkLoad_->setEnabled(!link_->receivedShowPath().isEmpty());
+        linkAddress_->setVisible(!master);linkAddress_->setEnabled(!on);linkSend_->setVisible(master);linkSend_->setEnabled(on&&!link_->hashing());linkLoad_->setVisible(!master);linkMirror_->setVisible(!master);linkLoad_->setEnabled(!link_->receivedShowPath().isEmpty());
         const QLocale locale(language_=="pt-BR"?"pt_BR":"en_US");QString status;
         if(!on)status=link_->error().isEmpty()?tx("Off. Nothing is listening on the network."):tx("Mizin Link could not start")+": "+link_->error();
         else if(master){const auto peers=link_->peers();status=tx("Master · %1 machines connected").arg(peers.size());if(link_->hashing())status+=" · "+tx("preparing media list…");
@@ -59,6 +60,7 @@
         else if(!link_->connected())status=tx("Follower · looking for the master…")+(link_->error().isEmpty()?QString():" · "+link_->error());
         else{status=tx("Follower · connected to %1 · clock offset %2 ms (round trip %3 ms)").arg(link_->masterName(),locale.toString(link_->clockOffsetMs(),'f',2),locale.toString(link_->rttMs(),'f',2));
             if(link_->mediaTotal()>0)status+=" · "+tx("media %1 / %2").arg(link_->mediaReady()).arg(link_->mediaTotal());
+            if(!mirrorStatus().isEmpty())status+=" · "+mirrorStatus();
             if(link_->bytesTotal()>0&&link_->mediaReady()<link_->mediaTotal())status+=QString(" · %1 / %2").arg(memoryText(QJsonValue(double(link_->bytesDone()))),memoryText(QJsonValue(double(link_->bytesTotal()))));}
         linkStatus_->setText(status);
         const auto peers=link_->peers();linkPeers_->setHorizontalHeaderLabels({tx("Machine"),tx("Address"),tx("Status"),tx("Clock"),tx("Media")});linkPeers_->setRowCount(peers.size());

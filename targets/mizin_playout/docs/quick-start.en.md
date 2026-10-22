@@ -66,6 +66,12 @@ In **Outputs → Mizin Link**, choose each computer's role: **Master** (sends th
 
 On the master, **Send show to machines** sends the current show and all its media; every file is verified with SHA-256 and, when sending again, only what changed or is missing is downloaded. On a follower, **Load received show** opens the show with the copied media. Messages without the right code are refused. This is phase 1; backup mirroring (the backup repeats the main and can take over) and synchronized playback across PCs come in the next versions.
 
+### Main + backup (mirroring)
+
+On the backup machine (Follower), after **Load received show**, tick **Mirror the master (backup)**. From then on it repeats every CUT and FADE, pause, black and loop of the main machine and follows each Program's position, correcting when the drift exceeds 80 ms. The status line shows the position error and how many corrections were made. Open the backup's outputs as usual; they never open by themselves.
+
+If the main machine fails or stops answering for 1.5 s, the red **MASTER LOST** bar appears: the backup keeps playing on its own, you switch the screens to it (on your switcher/matrix) and, if you want, click **Take over as master** so it commands the other machines.
+
 ## Language and performance
 
 English is default; Português (Brasil) can be selected during playback. Automatic hardware decoding and CPU decoding are available in Settings after restart. Codec/profile/driver support varies. Cuts forward shared native frames; transitions currently convert and compose in CPU once per Program. GPU composition, remote control, scheduling and production AV-sync/performance qualification remain future work. Layout samples demonstrate the interface, not physical-output playback.

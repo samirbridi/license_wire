@@ -66,6 +66,12 @@ Em **Saídas → Mizin Link**, escolha a função de cada computador: **Mestre**
 
 No mestre, **Enviar show para as máquinas** manda o show atual e todas as mídias; cada arquivo é conferido por SHA-256 e, num reenvio, só o que mudou ou faltou é baixado. No seguidor, **Carregar show recebido** abre o show com as mídias copiadas. Mensagens sem o código certo são recusadas. Esta é a fase 1; o espelhamento de reserva (o reserva repete o principal e pode assumir) e a reprodução sincronizada entre PCs vêm nas próximas versões.
 
+### Principal + reserva (espelhamento)
+
+Na máquina reserva (Seguidor), depois de **Carregar show recebido**, marque **Espelhar o mestre (reserva)**. A partir daí ela repete cada CUT e FADE, pausa, preto e loop do principal e acompanha a posição de cada Program, corrigindo se o desvio passar de 80 ms. A linha de status mostra o erro de posição e quantas correções foram feitas. Abra as saídas da reserva normalmente; elas não abrem sozinhas.
+
+Se o principal cair ou parar de responder por 1,5 s, aparece a faixa vermelha **MESTRE PERDIDO**: a reserva continua tocando sozinha, você passa as telas para ela (no seu switcher/matriz) e, se quiser, clica em **Assumir como mestre** para ela passar a comandar as outras máquinas.
+
 ## Idioma e desempenho
 
 Inglês é o padrão; Português (Brasil) pode ser escolhido durante a reprodução. As opções de decodificação automática por hardware e por CPU ficam em Configurações e exigem reinício. O suporte depende de codec, perfil e driver. Cortes encaminham quadros nativos compartilhados; transições convertem e compõem em CPU uma vez por Program. Composição em GPU, controle remoto, agendamento e validação de desempenho/sincronismo para produção seguem como próximas etapas. Pranchetas demonstram a interface, não reprodução em saídas físicas.
