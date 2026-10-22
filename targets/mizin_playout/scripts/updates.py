@@ -3,7 +3,7 @@
 Signing private material stays in ignored binaries/release-signing, never in R2,
 Git or app packages. The public key is compiled into the native client.
 """
-import argparse,base64,hashlib,json,pathlib,struct,subprocess,urllib.request,urllib.error,datetime
+import argparse,base64,hashlib,json,pathlib,struct,subprocess,urllib.request,urllib.error,datetime,uuid
 from cryptography.hazmat.primitives import hashes,serialization
 from cryptography.hazmat.primitives.asymmetric import padding,rsa
 
@@ -66,7 +66,10 @@ def publish(node,wrangler):
   assert relative.startswith('playout/') and '..' not in relative.split('/')
   subprocess.run([str(node),str(wrangler),'r2','object','put',BUCKET+'/'+relative,'--file',str(file),'--content-type',content_type,'--cache-control',cache,'--remote'],cwd=ROOT,check=True)
  def public_hash(relative):
-  with urllib.request.urlopen(BASE+relative,timeout=120) as response:
+  # Probe a unique cache key: a pre-upload 404 for .zip/.exe must not seed the
+  # canonical URL's negative cache before the object exists. Clients keep the
+  # canonical signed URL and verify it independently in online native QA.
+  with urllib.request.urlopen(BASE+relative+'?release_verify='+uuid.uuid4().hex,timeout=120) as response:
    digest=hashlib.sha256();size=0
    while block:=response.read(1024*1024):digest.update(block);size+=len(block)
   return size,digest.hexdigest()
