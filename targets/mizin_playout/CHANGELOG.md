@@ -1,5 +1,19 @@
 # CHANGELOG — Mizin Playout
 
+## v0.25.0 (build 0056) - 2026-10-22
+
+### 💥 Breaking Changes
+- None.
+
+### ✨ Features
+- feat: adiciona disparo sincronizado entre varios PCs e area por saida para telao dividido (101f363300e20d6975412b944c36d6ec790e3fe7)
+
+### 🐛 Fixes
+- None.
+
+### ⚡ Improvements
+- improve: registra publicacao do build 0055 com principal mais reserva (cb61e1f85b5be68b687e072bebeb20e7af89e7e9)
+
 ## v0.24.0 (build 0055) - 2026-10-22
 
 ### 💥 Breaking Changes

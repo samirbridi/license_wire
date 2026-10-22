@@ -969,5 +969,24 @@
     ],
     "date": "2026-10-22",
     "build_status": "PASS"
+  },
+  {
+    "display": "v0.25.0 (build 0056)",
+    "previous": "v0.24.0 (build 0055)",
+    "source_commit": "101f363300e20d6975412b944c36d6ec790e3fe7",
+    "commits": [
+      {
+        "sha": "cb61e1f85b5be68b687e072bebeb20e7af89e7e9",
+        "subject": "improve: registra publicacao do build 0055 com principal mais reserva",
+        "kind": "improve"
+      },
+      {
+        "sha": "101f363300e20d6975412b944c36d6ec790e3fe7",
+        "subject": "feat: adiciona disparo sincronizado entre varios PCs e area por saida para telao dividido",
+        "kind": "feat"
+      }
+    ],
+    "date": "2026-10-22",
+    "build_status": "PASS"
   }
 ]
