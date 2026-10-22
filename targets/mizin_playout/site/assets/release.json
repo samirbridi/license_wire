@@ -1,0 +1,15 @@
+{
+  "version": "v0.18.4 (build 0049)",
+  "artifacts": {
+    "setup": {
+      "url": "https://updates.p2pmizin.dev/playout/releases/MizinPlayout-0.18.4-build0049-windows-x64-preview/MizinPlayout-0.18.4-build0049-windows-x64-preview-setup.exe",
+      "bytes": 54510058,
+      "sha256": "310fe497a42a93df3ae7af6cccef73cdadf4809d978e19ff444f7cfbdb2cdd99"
+    },
+    "portable": {
+      "url": "https://updates.p2pmizin.dev/playout/releases/MizinPlayout-0.18.4-build0049-windows-x64-preview/MizinPlayout-0.18.4-build0049-windows-x64-preview-portable.zip",
+      "bytes": 54477209,
+      "sha256": "b1edce7b6ef157eac012556f6bb831fbd089c10a98ca17a101050ab7b01148ad"
+    }
+  }
+}

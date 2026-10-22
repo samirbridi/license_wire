@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="en" data-lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Mizin Playout — Tutorial</title>
+<meta name="title-en" content="Mizin Playout — Tutorial">
+<meta name="title-pt-BR" content="Mizin Playout — Tutorial">
+<meta name="description" content="Step by step: install, build your first show, take CUT/FADE, outputs, NDI/OMT, web monitor and low-latency audio.">
+<meta name="description-en" content="Step by step: install, build your first show, take CUT/FADE, outputs, NDI/OMT, web monitor and low-latency audio.">
+<meta name="description-pt-BR" content="Passo a passo: instalar, montar o primeiro show, disparar CUT/FADE, saídas, NDI/OMT, monitor web e áudio de baixa latência.">
+<link rel="icon" href="assets/favicon-32.png">
+<link rel="stylesheet" href="assets/styles.css">
+</head>
+<body>
+<header class="top"><div class="wrap">
+  <a class="brand" href="./"><img src="assets/icon-256.png" alt="">MIZIN <small>PLAYOUT</small></a>
+  <nav class="links">
+    <a href="./"><span lang="en">Home</span><span lang="pt-BR">Início</span></a>
+    <a href="./#download"><span lang="en">Download</span><span lang="pt-BR">Baixar</span></a>
+  </nav>
+  <div class="lang" role="group" aria-label="Language / Idioma"><button data-lang="en">EN</button><button data-lang="pt-BR">PT</button></div>
+</div></header>
+<main>
+<section style="border-top:0"><div class="wrap">
+  <h2 lang="en">How to use Mizin Playout</h2><h2 lang="pt-BR">Como usar o Mizin Playout</h2>
+  <p class="sub" lang="en">From installation to a full show in ten short steps. Press <kbd>F1</kbd> inside the app for the same guide.</p>
+  <p class="sub" lang="pt-BR">Da instalação a um show completo em dez passos curtos. Aperte <kbd>F1</kbd> dentro do app para o mesmo guia.</p>
+  <nav class="toc">
+    <a href="#install">1 · <span lang="en">Install</span><span lang="pt-BR">Instalar</span></a>
+    <a href="#show">2 · <span lang="en">First show</span><span lang="pt-BR">Primeiro show</span></a>
+    <a href="#take">3 · CUT / FADE</a>
+    <a href="#programs">4 · Programs</a>
+    <a href="#decks">5 · <span lang="en">Decks &amp; ON AIR</span><span lang="pt-BR">Decks e NO AR</span></a>
+    <a href="#edit">6 · <span lang="en">Trim &amp; transitions</span><span lang="pt-BR">Recortes e transições</span></a>
+    <a href="#outputs">7 · <span lang="en">Screens</span><span lang="pt-BR">Telas</span></a>
+    <a href="#network">8 · NDI / OMT</a>
+    <a href="#web">9 · <span lang="en">Web monitor</span><span lang="pt-BR">Monitor web</span></a>
+    <a href="#audio">10 · <span lang="en">Audio</span><span lang="pt-BR">Áudio</span></a>
+    <a href="#trouble"><span lang="en">Troubleshooting</span><span lang="pt-BR">Problemas</span></a>
+  </nav>
+
+  <div class="step" id="install"><div>
+    <h3 lang="en">1 · Install</h3><h3 lang="pt-BR">1 · Instalar</h3>
+    <ol lang="en"><li>Download the <b>Setup</b> or the <b>portable ZIP</b>.</li><li>Setup installs for your account (no administrator). The ZIP runs from any folder or USB drive.</li><li>Unsigned preview: on "Windows protected your PC" click <b>More info → Run anyway</b>.</li><li>Settings live in your profile; <b>Start portable.cmd</b> keeps them beside the app.</li></ol>
+    <ol lang="pt-BR"><li>Baixe o <b>Setup</b> ou o <b>ZIP portátil</b>.</li><li>O Setup instala na sua conta (sem administrador). O ZIP roda de qualquer pasta ou pendrive.</li><li>Prévia sem assinatura: em "O Windows protegeu o computador" clique em <b>Mais informações → Executar assim mesmo</b>.</li><li>As configurações ficam no seu perfil; o <b>Start portable.cmd</b> guarda tudo junto do app.</li></ol>
+  </div><div class="note" style="margin:0"><span lang="en">Updates: the app checks after it opens and shows a banner. You choose when to install; it waits until playback and outputs are stopped.</span><span lang="pt-BR">Atualizações: o app verifica depois de abrir e mostra um aviso. Você escolhe quando instalar; ele espera a reprodução e as saídas pararem.</span></div></div>
+
+  <div class="step" id="show"><div>
+    <h3 lang="en">2 · Build your first show</h3><h3 lang="pt-BR">2 · Monte o primeiro show</h3>
+    <ol lang="en"><li>In <b>MAIN</b>, click <b>Add media</b> → files or a whole folder (or drag files in).</li><li>Files stay where they are — nothing is converted.</li><li>Reorder with the arrows; <b>More</b> duplicates or removes an item.</li><li><b>Save show</b> (<kbd>Ctrl</kbd>+<kbd>S</kbd>) creates a <code>.mizinshow</code> file.</li></ol>
+    <ol lang="pt-BR"><li>Na <b>MAIN</b>, clique em <b>Adicionar mídia</b> → arquivos ou uma pasta inteira (ou arraste os arquivos).</li><li>Os arquivos ficam onde estão — nada é convertido.</li><li>Reordene com as setas; <b>Mais</b> duplica ou remove um item.</li><li><b>Salvar show</b> (<kbd>Ctrl</kbd>+<kbd>S</kbd>) cria um arquivo <code>.mizinshow</code>.</li></ol>
+  </div><div class="shot" style="margin:0"><img alt="" src="assets/shots/01-main-en.webp" data-src-en="assets/shots/01-main-en.webp" data-src-pt="assets/shots/04-main-pt-BR.webp" loading="lazy" width="1600" height="1000"></div></div>
+
+  <div class="step" id="take"><div>
+    <h3 lang="en">3 · Take it on air: CUT and FADE</h3><h3 lang="pt-BR">3 · Coloque no ar: CUT e FADE</h3>
+    <ol lang="en"><li>Double-click an item (or <b>Cue selected</b>): it loads muted in <b>PREVIEW</b> and shows <b>READY</b> once checked.</li><li>Choose the <b>Take destination</b> (Program).</li><li><b>CUT</b> (<kbd>Ctrl</kbd>+<kbd>Enter</kbd>) switches instantly; <b>FADE</b> (<kbd>Ctrl</kbd>+<kbd>Space</kbd>) uses the fade duration (300 ms by default).</li><li><b>Black</b> clears the selected Program. <b>Loop</b> repeats the current item.</li></ol>
+    <ol lang="pt-BR"><li>Dê dois cliques num item (ou <b>Carregar selecionado</b>): ele entra mudo na <b>PRÉVIA</b> e mostra <b>PRONTO</b> após a verificação.</li><li>Escolha o <b>Destino do envio</b> (Program).</li><li><b>CUT</b> (<kbd>Ctrl</kbd>+<kbd>Enter</kbd>) troca na hora; <b>FADE</b> (<kbd>Ctrl</kbd>+<kbd>Espaço</kbd>) usa a duração do fade (300 ms por padrão).</li><li><b>Preto</b> limpa o Program selecionado. <b>Loop</b> repete o item atual.</li></ol>
+  </div><div><ul class="checks"><li lang="en"><b>Manual</b>: the item holds at its Out point.</li><li lang="pt-BR"><b>Manual</b>: o item para no ponto de saída.</li><li lang="en"><b>Sequential</b>: the next item is prepared and plays automatically, with its own transition; <b>Repeat order</b> loops the list.</li><li lang="pt-BR"><b>Sequencial</b>: o próximo item é preparado e entra sozinho, com sua transição; <b>Repetir lista</b> repete a lista.</li></ul></div></div>
+
+  <div class="step" id="programs"><div>
+    <h3 lang="en">4 · Several Programs at once</h3><h3 lang="pt-BR">4 · Vários Programs ao mesmo tempo</h3>
+    <ol lang="en"><li>Click <b>+</b> next to the take destination to add a Program (B, C…). Each has its own playlist and mode.</li><li>The multiview shows every Program; click a tile name to edit its list without stopping the others.</li><li><b>Copy A playlist</b> starts a new Program with A's items.</li></ol>
+    <ol lang="pt-BR"><li>Clique no <b>+</b> ao lado do destino para criar um Program (B, C…). Cada um tem sua playlist e modo.</li><li>A multiview mostra todos; clique no nome de um tile para editar a lista dele sem parar os outros.</li><li><b>Copiar playlist de A</b> começa um Program novo com os itens de A.</li></ol>
+  </div><div class="note" style="margin:0"><span lang="en">Removing a Program requires it to be black and with its screens and network outputs closed — a live Program is never removed by accident.</span><span lang="pt-BR">Para remover um Program ele precisa estar em preto e com telas e saídas de rede fechadas — um Program no ar nunca é removido por engano.</span></div></div>
+
+  <div class="step" id="decks"><div>
+    <h3 lang="en">5 · Detach decks and watch the ON AIR tally</h3><h3 lang="pt-BR">5 · Destaque decks e acompanhe o NO AR</h3>
+    <ol lang="en"><li>Click the detach icon at the corner of a deck: it opens in its own window. Drag it to another monitor.</li><li><kbd>F11</kbd> or the fullscreen button toggles fullscreen; <kbd>Esc</kbd> leaves it.</li><li>Close the window (or click the dock note on the desk) to dock it again.</li><li>A red bar and <b>ON AIR</b> mark Programs with media on air; the blue border is the take destination.</li></ol>
+    <ol lang="pt-BR"><li>Clique no ícone de destacar no canto do deck: ele abre numa janela própria. Arraste para outro monitor.</li><li><kbd>F11</kbd> ou o botão de tela cheia alterna tela cheia; <kbd>Esc</kbd> sai.</li><li>Feche a janela (ou clique no aviso no deck) para encaixar de volta.</li><li>A barra vermelha e o <b>NO AR</b> marcam os Programs com mídia no ar; a borda azul é o destino do TAKE.</li></ol>
+  </div><div class="note" style="margin:0"><span lang="en">A deck window is an operator monitor, not an output. For the LED wall or projector use Outputs (step 7).</span><span lang="pt-BR">A janela do deck é um monitor do operador, não uma saída. Para o telão de LED ou projetor use Saídas (passo 7).</span></div></div>
+
+  <div class="step" id="edit"><div>
+    <h3 lang="en">6 · Trim and transitions</h3><h3 lang="pt-BR">6 · Recortes e transições</h3>
+    <ol lang="en"><li>Select an item and open <b>EDIT</b>.</li><li>Set <b>In</b> / <b>Out</b>, the sequence transition (Cut, Dissolve, Fade through black), fade in and fade out.</li><li>Click <b>Apply cue</b>: changes take effect on the next launch; what is on air is not altered.</li></ol>
+    <ol lang="pt-BR"><li>Selecione um item e abra a <b>EDIÇÃO</b>.</li><li>Defina <b>In</b> / <b>Out</b>, a transição da sequência (Corte, Dissolve, Passagem pelo preto), fade de entrada e de saída.</li><li>Clique em <b>Aplicar item</b>: vale no próximo disparo; o que está no ar não muda.</li></ol>
+  </div><div class="shot" style="margin:0"><img alt="" src="assets/shots/05-edit-en.webp" data-src-en="assets/shots/05-edit-en.webp" data-src-pt="assets/shots/06-edit-pt-BR.webp" loading="lazy" width="1600" height="1000"></div></div>
+
+  <div class="step" id="outputs"><div>
+    <h3 lang="en">7 · Screens (LED, projector, TV)</h3><h3 lang="pt-BR">7 · Telas (LED, projetor, TV)</h3>
+    <ol lang="en"><li>Open <b>Outputs → Displays</b>. Each route has a <b>Source</b> (Program) and a <b>Display</b>.</li><li><b>+ Add display output</b> creates more routes; several routes can mirror the same Program.</li><li>Choose scaling: <b>Native</b> (recommended live) or <b>Lanczos GPU</b>.</li><li><b>Open output</b> goes fullscreen on that display; <kbd>Esc</kbd> closes it — the Program keeps running.</li></ol>
+    <ol lang="pt-BR"><li>Abra <b>Saídas → Telas</b>. Cada rota tem uma <b>Origem</b> (Program) e uma <b>Tela</b>.</li><li><b>+ Adicionar saída de tela</b> cria mais rotas; várias rotas podem espelhar o mesmo Program.</li><li>Escolha a escala: <b>Nativa</b> (recomendada ao vivo) ou <b>Lanczos GPU</b>.</li><li><b>Abrir saída</b> abre em tela cheia naquela tela; <kbd>Esc</kbd> fecha — o Program continua rodando.</li></ol>
+  </div><div class="shot" style="margin:0"><img alt="" src="assets/shots/02-outputs-en.webp" loading="lazy" width="1600" height="1000"></div></div>
+
+  <div class="step" id="network"><div>
+    <h3 lang="en">8 · NDI® and OMT</h3><h3 lang="pt-BR">8 · NDI® e OMT</h3>
+    <ol lang="en"><li>Open <b>Outputs → NDI / OMT</b>.</li><li>Name each Program's source and choose whether to include audio.</li><li>Click <b>Start NDI</b> and/or <b>Start OMT</b>. They appear on the network for switchers, OBS, vMix and recorders.</li></ol>
+    <ol lang="pt-BR"><li>Abra <b>Saídas → NDI / OMT</b>.</li><li>Dê nome à fonte de cada Program e escolha se inclui áudio.</li><li>Clique em <b>Iniciar NDI</b> e/ou <b>Iniciar OMT</b>. Eles aparecem na rede para switchers, OBS, vMix e gravadores.</li></ol>
+  </div><div class="shot" style="margin:0"><img alt="" src="assets/shots/09-network-en.webp" data-src-en="assets/shots/09-network-en.webp" data-src-pt="assets/shots/10-network-pt-BR.webp" loading="lazy" width="1600" height="1000"></div></div>
+
+  <div class="step" id="web"><div>
+    <h3 lang="en">9 · Web monitor (phones and tablets)</h3><h3 lang="pt-BR">9 · Monitor web (celulares e tablets)</h3>
+    <ol lang="en"><li>Open <b>Outputs → Web monitor</b>, choose <b>Local network (LAN)</b> and click <b>Start web monitor</b>.</li><li>Share the address shown (it includes the access code), e.g. <code>http://192.168.1.30:8787/?k=…</code>.</li><li>On the phone, open the address and tap <b>Watch</b> on a Program. Tap <b>Sound</b> to unmute.</li><li><b>New code</b> disconnects everyone. Windows may ask to allow network access the first time.</li></ol>
+    <ol lang="pt-BR"><li>Abra <b>Saídas → Monitor web</b>, escolha <b>Rede local (LAN)</b> e clique em <b>Iniciar monitor web</b>.</li><li>Compartilhe o endereço mostrado (ele inclui o código de acesso), ex.: <code>http://192.168.1.30:8787/?k=…</code>.</li><li>No celular, abra o endereço e toque em <b>Assistir</b> num Program. Toque em <b>Som</b> para ativar o áudio.</li><li><b>Novo código</b> desconecta todos. Na primeira vez o Windows pode pedir para liberar a rede.</li></ol>
+  </div><div class="note" style="margin:0"><span lang="en">View only: nothing in the browser controls the show. Keep it on the event network; do not expose the port to the internet.</span><span lang="pt-BR">Só visualização: nada no navegador controla o show. Use na rede do evento; não exponha a porta na internet.</span></div></div>
+
+  <div class="step" id="audio"><div>
+    <h3 lang="en">10 · Audio and low-latency output</h3><h3 lang="pt-BR">10 · Áudio e saída de baixa latência</h3>
+    <ol lang="en"><li><b>Audio</b> page: each Program has volume, mute, local monitoring and device.</li><li>For minimum delay, in <b>Low-latency output</b> pick <b>WASAPI exclusive</b>, your interface and <b>Device minimum</b>, then <b>Start low-latency output</b>.</li><li>Assign each Program an output pair (A on 1–2, B on 3–4…).</li><li>Keep <b>Sync with the video</b> on; use <b>Fine adjust</b> for projector/LED delay. Raise the buffer if you hear clicks.</li></ol>
+    <ol lang="pt-BR"><li>Página <b>Áudio</b>: cada Program tem volume, mudo, monitoramento local e dispositivo.</li><li>Para o menor atraso, em <b>Saída de baixa latência</b> escolha <b>WASAPI exclusivo</b>, sua interface e <b>Mínimo do dispositivo</b>, e clique em <b>Iniciar saída de baixa latência</b>.</li><li>Defina o par de saídas de cada Program (A em 1–2, B em 3–4…).</li><li>Deixe <b>Sincronizar com o vídeo</b> ligado; use o <b>Ajuste fino</b> para o atraso do projetor/LED. Aumente o buffer se ouvir estalos.</li></ol>
+  </div><div class="shot" style="margin:0"><img alt="" src="assets/shots/07-audio-en.webp" data-src-en="assets/shots/07-audio-en.webp" data-src-pt="assets/shots/08-audio-pt-BR.webp" loading="lazy" width="1600" height="1000"></div></div>
+
+  <div class="step" id="trouble"><div>
+    <h3 lang="en">Troubleshooting</h3><h3 lang="pt-BR">Solução de problemas</h3>
+    <ul lang="en"><li><b>Setup blocked or fails</b>: use the portable ZIP — same app, no installation.</li><li><b>"Device is in use"</b> on low-latency audio: another app holds the device in exclusive mode; close it or choose WASAPI shared.</li><li><b>Web monitor does not open on the phone</b>: same Wi-Fi/LAN? Allow the app in Windows Firewall (TCP port shown, UDP 50200–50399).</li><li><b>NDI source not visible</b>: check that both computers are on the same network and the firewall allows the app.</li><li><b>Choppy video</b>: Settings → Engine diagnostics shows decoding, FPS and timing per Program.</li></ul>
+    <ul lang="pt-BR"><li><b>Setup bloqueado ou com erro</b>: use o ZIP portátil — é o mesmo app, sem instalação.</li><li><b>"Dispositivo em uso"</b> no áudio de baixa latência: outro app está usando o dispositivo em modo exclusivo; feche-o ou escolha WASAPI compartilhado de baixa latência.</li><li><b>Monitor web não abre no celular</b>: mesmo Wi-Fi/rede? Libere o app no Firewall do Windows (porta TCP mostrada e UDP 50200–50399).</li><li><b>Fonte NDI não aparece</b>: confira se os computadores estão na mesma rede e se o firewall libera o app.</li><li><b>Vídeo travando</b>: Configurações → Diagnósticos do motor mostra decodificação, FPS e tempos por Program.</li></ul>
+  </div></div>
+</div></section>
+</main>
+<footer><div class="wrap"><span>© 2026 Mizin · <a href="./">Mizin Playout</a></span><span lang="en">NDI® is a registered trademark of Vizrt NDI AB.</span><span lang="pt-BR">NDI® é marca registrada da Vizrt NDI AB.</span></div></footer>
+<script src="assets/site.js"></script>
+</body>
+</html>
