@@ -10,6 +10,12 @@ if (-not $QtRoot) { $QtRoot = Join-Path $playoutRoot 'binaries\qt\6.10.2\msvc202
 $playoutBuild = Join-Path $playoutRoot 'build'
 $playoutDist = Join-Path $playoutRoot 'dist'
 $env:MIZIN_VCVARS = $VcVars
+$lockDirectory=Join-Path $playoutRoot 'binaries/build-lock'
+New-Item -ItemType Directory -Path $lockDirectory -Force | Out-Null
+# Serialize the complete reservation/configure/compile/deploy lifecycle. A
+# second invocation must not clean another build or replace its version header.
+$buildLock=[IO.File]::Open((Join-Path $lockDirectory 'native.lock'),[IO.FileMode]::OpenOrCreate,[IO.FileAccess]::ReadWrite,[IO.FileShare]::None)
+try {
 & $Python (Join-Path $PSScriptRoot 'version.py') --reserve
 if ($LASTEXITCODE -ne 0) { throw 'Version reservation failed' }
 try {
@@ -39,3 +45,4 @@ try {
     & $Python (Join-Path $PSScriptRoot 'version.py') --status FAIL
     throw
 }
+} finally { $buildLock.Dispose() }

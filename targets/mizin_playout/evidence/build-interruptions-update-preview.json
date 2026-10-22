@@ -1,0 +1,17 @@
+{
+  "builds": [
+    {
+      "version": "v0.15.3 (build 0039)",
+      "source_commit": "9575dd36642932f298a7e0316283725bf0f1fcd0",
+      "result": "FAIL_NO_ARTIFACT_PUBLISHED",
+      "reason": "Superseded before deployment: native restart visibility fix; attempted compiler interruption failed and overlapped the successor. Both verified task-only build trees were terminated; next build is clean and serialized by an exclusive lock."
+    },
+    {
+      "version": "v0.15.4 (build 0040)",
+      "source_commit": "4895f077fbf5462242e3d8a2efc34c8ce194a009",
+      "result": "FAIL_NO_ARTIFACT_PUBLISHED",
+      "reason": "Superseded before deployment: native restart visibility fix; attempted compiler interruption failed and overlapped the successor. Both verified task-only build trees were terminated; next build is clean and serialized by an exclusive lock."
+    }
+  ],
+  "scope": "No package or published artifact was produced from either interrupted build. Existing dist-build0038 preserved; next build uses clean-first and an exclusive lifecycle lock."
+}
