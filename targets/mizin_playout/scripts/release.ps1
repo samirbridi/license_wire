@@ -14,6 +14,8 @@ foreach($step in 'build','package','test-package','test-update-install'){
 if($SkipPublish){Write-Output 'Validated; publication skipped.';return}
 & $python (Join-Path $PSScriptRoot 'updates.py') publish --node (Get-Command node).Source --wrangler $wrangler.FullName
 if($LASTEXITCODE -ne 0){throw 'Update publication failed.'}
+& $python (Join-Path $PSScriptRoot 'site-shots.py')
+if($LASTEXITCODE -ne 0){throw 'Site screenshots failed.'}
 & $python (Join-Path $PSScriptRoot 'site.py')
 if($LASTEXITCODE -ne 0){throw 'Site generation failed.'}
 Push-Location $root
