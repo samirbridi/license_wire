@@ -36,6 +36,38 @@ Var PortableMode
 
 Function .onInit
   SetShellVarContext current
+  SetRegView 64
+  StrCpy $QaMode 0
+  StrCpy $PortableMode 0
+  ${GetParameters} $0
+  ClearErrors
+  ${GetOptions} $0 "/QA" $1
+  ${IfNot} ${Errors}
+    StrCpy $QaMode 1
+  ${EndIf}
+  ClearErrors
+  ${GetOptions} $0 "/PORTABLE" $1
+  ${IfNot} ${Errors}
+    StrCpy $PortableMode 1
+  ${EndIf}
+  ${IfNot} ${RunningX64}
+    MessageBox MB_OK|MB_ICONSTOP "Mizin Playout requires Windows x64."
+    Abort
+  ${EndIf}
+  ${IfNot} ${AtLeastWin10}
+    MessageBox MB_OK|MB_ICONSTOP "Mizin Playout requires Windows 10 or later."
+    Abort
+  ${EndIf}
+  IfSilent language_ready
+  !insertmacro MUI_LANGDLL_DISPLAY
+language_ready:
+FunctionEnd
+
+Section "Mizin Playout" Main
+  !insertmacro InstallPayload
+  IfErrors 0 +3
+    SetErrorLevel 1
+    Abort "Application files could not be installed. Close Mizin Playout and retry."
   ; The Microsoft C/C++ runtime DLLs ship beside the app (app-local deployment), so Setup never needs
   ; the machine-wide runtime or administrator rights. A beta tester's Setup aborted here when the
   ; elevated runtime install was refused/failed while the portable ZIP ran fine on the same PC.
