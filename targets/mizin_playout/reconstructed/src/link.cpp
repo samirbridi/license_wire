@@ -51,7 +51,7 @@ quint16 LinkNode::filePort()const{return files_?files_->serverPort():0;}
 void LinkNode::fail(const QString& message){error_=message;emit changed();}
 
 bool LinkNode::startMaster(const QString& code,quint16 port){
-    stop();key_=deriveKey(code);role_=Role::Master;error_.clear();
+    stop();key_=deriveKey(code);code_=code.trimmed();role_=Role::Master;error_.clear();
     server_=new QTcpServer(this);files_=new QTcpServer(this);
     if(!server_->listen(QHostAddress::AnyIPv4,port)||!files_->listen(QHostAddress::AnyIPv4,port?quint16(port+1):0)){const QString message=server_->isListening()?files_->errorString():server_->errorString();stop();fail(message);return false;}
     connect(server_,&QTcpServer::newConnection,this,&LinkNode::acceptSession);connect(files_,&QTcpServer::newConnection,this,&LinkNode::acceptFile);
@@ -59,7 +59,7 @@ bool LinkNode::startMaster(const QString& code,quint16 port){
     emit changed();return true;
 }
 bool LinkNode::startFollower(const QString& code,bool discover){
-    stop();key_=deriveKey(code);role_=Role::Follower;error_.clear();network_=new QNetworkAccessManager(this);network_->setProxy(QNetworkProxy::NoProxy);
+    stop();key_=deriveKey(code);code_=code.trimmed();role_=Role::Follower;error_.clear();network_=new QNetworkAccessManager(this);network_->setProxy(QNetworkProxy::NoProxy);
     if(discover){discovery_=new QUdpSocket(this);if(discovery_->bind(QHostAddress::AnyIPv4,DiscoveryPort,QUdpSocket::ShareAddress|QUdpSocket::ReuseAddressHint))connect(discovery_,&QUdpSocket::readyRead,this,&LinkNode::readDiscovery);else error_="Discovery port busy; connect by address";}
     heartbeat_=new QTimer(this);heartbeat_->setInterval(500);
     connect(heartbeat_,&QTimer::timeout,this,[this]{
@@ -84,13 +84,13 @@ void LinkNode::stop(){
     for(const auto& session:sessions_)if(session->socket){session->socket->disconnect(this);session->socket->abort();session->socket->deleteLater();}
     sessions_.clear();if(master_&&master_->socket){master_->socket->disconnect(this);master_->socket->abort();master_->socket->deleteLater();}master_.reset();sessionReady_=false;
     for(QObject* object:std::initializer_list<QObject*>{server_,files_,discovery_,heartbeat_,network_})if(object)object->deleteLater();
-    server_=nullptr;files_=nullptr;discovery_=nullptr;heartbeat_=nullptr;network_=nullptr;discovered_.clear();clockSamples_.clear();offsetUs_=rttUs_=0;
+    server_=nullptr;files_=nullptr;discovery_=nullptr;heartbeat_=nullptr;network_=nullptr;discovered_.clear();clockSamples_.clear();offsetUs_=rttUs_=0;lastStateMs_=-1;
     const bool wasActive=role_!=Role::Off;role_=Role::Off;if(wasActive)emit changed();
 }
 
 void LinkNode::announce(){
     if(!discovery_||role_!=Role::Master)return;
-    const QByteArray datagram=compact({{"t","mizin-link"},{"id",id_},{"name",name_},{"role","master"},{"version",QString(MizinVersion)},{"port",int(port())},{"keyId",keyId(key_)},{"show",manifest_["name"].toString()}});
+    const QByteArray datagram=compact({{"t","mizin-link"},{"id",id_},{"name",name_},{"role","master"},{"version",QString(MizinVersion)},{"port",int(port())},{"keyId",keyId(key_)},{"show",manifest_.value("name").toString()}});
     discovery_->writeDatagram(datagram,QHostAddress::Broadcast,DiscoveryPort);
     for(const auto& interface:QNetworkInterface::allInterfaces())if(interface.flags().testFlag(QNetworkInterface::IsUp)&&interface.flags().testFlag(QNetworkInterface::CanBroadcast))
         for(const auto& entry:interface.addressEntries())if(!entry.broadcast().isNull())discovery_->writeDatagram(datagram,entry.broadcast(),DiscoveryPort);
@@ -138,7 +138,7 @@ void LinkNode::readSession(const std::shared_ptr<Session>& session){
 void LinkNode::handle(const std::shared_ptr<Session>& session,const QString& type,const QJsonObject& body){
     if(role_==Role::Master){
         if(type=="auth"){session->authenticated=true;session->peerId=body["id"].toString().left(64);session->peerName=body["name"].toString().left(80);session->peerVersion=body["version"].toString().left(40);
-            send(session,"welcome",{{"name",name_},{"filePort",int(filePort())}});if(!manifest_.isEmpty())send(session,"show",manifest_);emit changed();}
+            send(session,"welcome",{{"name",name_},{"filePort",int(filePort())}});if(revision_>0)send(session,"show",manifest_);emit changed();}
         else if(type=="ping")send(session,"pong",{{"t1",body["t1"]},{"t2",double(localTimeUs())}});
         else if(type=="status"){session->offsetMs=body["offsetMs"].toDouble();session->rttMs=body["rttMs"].toDouble();session->mediaReady=body["mediaReady"].toInt();session->mediaTotal=body["mediaTotal"].toInt();emit changed();}
         return;
@@ -151,6 +151,7 @@ void LinkNode::handle(const std::shared_ptr<Session>& session,const QString& typ
         const auto best=*std::min_element(clockSamples_.cbegin(),clockSamples_.cend(),[](const auto& a,const auto& b){return a.first<b.first;});rttUs_=best.first;offsetUs_=best.second;emit changed();
     }
     else if(type=="show")receiveManifest(body);
+    else if(type=="state"){lastStateMs_=clock_.elapsed();emit stateReceived(body);}
 }
 void LinkNode::dropSession(const std::shared_ptr<Session>& session){
     if(!session)return;if(session->socket){session->socket->disconnect(this);session->socket->abort();session->socket->deleteLater();session->socket=nullptr;}
@@ -158,7 +159,7 @@ void LinkNode::dropSession(const std::shared_ptr<Session>& session){
 }
 QList<LinkPeer> LinkNode::peers()const{
     QList<LinkPeer> list;
-    if(role_==Role::Master){for(const auto& session:sessions_)if(session->authenticated)list.append({session->peerId,session->peerName,"follower",session->peerVersion,session->address,manifest_["name"].toString(),{},0,0,session->offsetMs,session->rttMs,session->mediaReady,session->mediaTotal});}
+    if(role_==Role::Master){for(const auto& session:sessions_)if(session->authenticated)list.append({session->peerId,session->peerName,"follower",session->peerVersion,session->address,manifest_.value("name").toString(),{},0,0,session->offsetMs,session->rttMs,session->mediaReady,session->mediaTotal});}
     else for(const auto& peer:discovered_)list.append(peer);
     return list;
 }
@@ -170,6 +171,7 @@ void LinkNode::publishShow(const Show& show,const QString& showName){
     QHash<QString,QString> relative;QSet<QString> used;
     for(const auto& path:media){const QFileInfo info(path);if(!info.isFile())continue;QString file=info.fileName();
         for(int n=2;used.contains(file.toLower());++n)file=info.completeBaseName()+QString(" (%1)").arg(n)+(info.suffix().isEmpty()?QString():"."+info.suffix());used.insert(file.toLower());relative.insert(path,"media/"+file);}
+    relative_=relative;
     auto fix=[&](QString& path){const auto it=relative.constFind(path);if(it!=relative.cend())path=it.value();};
     copy.programs=copy.definitions();for(auto& path:copy.library)fix(path);for(auto& cue:copy.cues)fix(cue.path);for(auto& program:copy.programs)for(auto& cue:program.cues)fix(cue.path);
     const QJsonObject showJson=copy.json();const auto cache=hashCache_;const QString name=safeName(showName);
@@ -185,6 +187,7 @@ void LinkNode::publishShow(const Show& show,const QString& showName){
             items.append(QJsonObject{{"relative",it.value()},{"size",double(info.size())},{"sha256",sha},{"source",it.key()}});}
         return qMakePair(QJsonObject{{"name",name},{"show",showJson},{"media",items}},hashes);}));
 }
+void LinkNode::broadcastState(const QJsonObject& state){if(role_!=Role::Master)return;for(const auto& session:sessions_)if(session->authenticated)send(session,"state",state);}
 void LinkNode::finishManifest(const QJsonObject& manifest,const QHash<QString,QString>& sources,const QHash<QString,QString>& cache){
     hashing_=false;if(role_!=Role::Master){emit changed();return;}
     manifest_=manifest;manifest_["revision"]=++revision_;sources_=sources;hashCache_=cache;
@@ -214,8 +217,10 @@ void LinkNode::acceptFile(){
 
 // ---- Follower: manifest, downloads, verification ----
 void LinkNode::receiveManifest(const QJsonObject& manifest){
+    // Only complete, published manifests are accepted.
+    if(!manifest.contains("show")||!manifest.contains("media")||manifest.value("revision").toInt()<1)return;
     if(reply_){reply_->abort();reply_=nullptr;}part_.reset();partHash_.reset();
-    pendingManifest_=manifest;queue_.clear();const QString folder=QDir(mediaRoot()).filePath(safeName(manifest["name"].toString()));
+    pendingManifest_=manifest;receivedRevision_=manifest["revision"].toInt();queue_.clear();const QString folder=QDir(mediaRoot()).filePath(safeName(manifest["name"].toString()));
     const auto items=manifest["media"].toArray();mediaTotal_=items.size();bytesTotal_=0;bytesDone_=0;
     for(const auto& value:items){const auto o=value.toObject();LinkMedia media{o["relative"].toString(),o["sha256"].toString(),{},qint64(o["size"].toDouble())};
         if(!media.relative.startsWith("media/")||media.relative.contains("..")||media.sha256.size()!=64)continue;
