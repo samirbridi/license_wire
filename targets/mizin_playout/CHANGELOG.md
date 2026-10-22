@@ -1,5 +1,19 @@
 # CHANGELOG — Mizin Playout
 
+## v0.24.0 (build 0055) - 2026-10-22
+
+### 💥 Breaking Changes
+- None.
+
+### ✨ Features
+- feat: adiciona espelhamento principal mais reserva no Mizin Link com alarme de mestre perdido (8d09ad54b0365a79d0886a3bdd61d49a06bdb97e)
+
+### 🐛 Fixes
+- fix: mestre do Link nao envia manifesto vazio e seguidor rejeita manifesto incompleto (5d33e00bedbb95ed01999b2cbc0c108d2ebd63f0)
+
+### ⚡ Improvements
+- improve: registra publicacao do build 0054 com Mizin Link fase 1 (32f7eb2f21decae4f53ed34818d34c667688fb2d)
+
 ## v0.23.0 (build 0054) - 2026-10-22
 
 ### 💥 Breaking Changes

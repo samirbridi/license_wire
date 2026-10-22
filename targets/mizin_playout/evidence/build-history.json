@@ -945,5 +945,29 @@
     ],
     "date": "2026-10-22",
     "build_status": "PASS"
+  },
+  {
+    "display": "v0.24.0 (build 0055)",
+    "previous": "v0.23.0 (build 0054)",
+    "source_commit": "8d09ad54b0365a79d0886a3bdd61d49a06bdb97e",
+    "commits": [
+      {
+        "sha": "32f7eb2f21decae4f53ed34818d34c667688fb2d",
+        "subject": "improve: registra publicacao do build 0054 com Mizin Link fase 1",
+        "kind": "improve"
+      },
+      {
+        "sha": "5d33e00bedbb95ed01999b2cbc0c108d2ebd63f0",
+        "subject": "fix: mestre do Link nao envia manifesto vazio e seguidor rejeita manifesto incompleto",
+        "kind": "fix"
+      },
+      {
+        "sha": "8d09ad54b0365a79d0886a3bdd61d49a06bdb97e",
+        "subject": "feat: adiciona espelhamento principal mais reserva no Mizin Link com alarme de mestre perdido",
+        "kind": "feat"
+      }
+    ],
+    "date": "2026-10-22",
+    "build_status": "PASS"
   }
 ]

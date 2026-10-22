@@ -1,5 +1,21 @@
 [
   {
+    "version": "v0.24.0 (build 0055)",
+    "date": "2026-10-22",
+    "notes": {
+      "en": [
+        "Mizin Link phase 2 — main + backup: a follower with \"Mirror the master\" repeats every CUT, FADE, pause, black and loop of the main machine and follows each Program's position (measured drift 40–65 ms on one computer).",
+        "If the main machine goes silent for 1.5 s, the backup shows MASTER LOST, keeps playing on its own and can take over as master in one click.",
+        "Fix: a follower that connected before the show was sent could receive an empty show."
+      ],
+      "pt-BR": [
+        "Mizin Link fase 2 — principal + reserva: um seguidor com \"Espelhar o mestre\" repete cada CUT, FADE, pausa, preto e loop do principal e acompanha a posição de cada Program (desvio medido de 40–65 ms num mesmo computador).",
+        "Se o principal ficar 1,5 s sem responder, a reserva mostra MESTRE PERDIDO, continua tocando sozinha e pode assumir como mestre com um clique.",
+        "Correção: um seguidor que conectava antes do envio do show podia receber um show vazio."
+      ]
+    }
+  },
+  {
     "version": "v0.23.0 (build 0054)",
     "date": "2026-10-22",
     "notes": {

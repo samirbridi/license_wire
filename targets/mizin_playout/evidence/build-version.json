@@ -1,16 +1,21 @@
 {
-  "display": "v0.23.0 (build 0054)",
-  "previous": "v0.22.0 (build 0053)",
-  "source_commit": "42f863c9610bd87ba4875deed2dc7c6d69283dae",
+  "display": "v0.24.0 (build 0055)",
+  "previous": "v0.23.0 (build 0054)",
+  "source_commit": "8d09ad54b0365a79d0886a3bdd61d49a06bdb97e",
   "commits": [
     {
-      "sha": "5179f8615562ca9501e4ab63e23ed5e052ef0a3e",
-      "subject": "improve: registra publicacao do build com pacote portatil do show",
+      "sha": "32f7eb2f21decae4f53ed34818d34c667688fb2d",
+      "subject": "improve: registra publicacao do build 0054 com Mizin Link fase 1",
       "kind": "improve"
     },
     {
-      "sha": "42f863c9610bd87ba4875deed2dc7c6d69283dae",
-      "subject": "feat: adiciona Mizin Link fase 1 com pareamento, relogio e distribuicao verificada do show",
+      "sha": "5d33e00bedbb95ed01999b2cbc0c108d2ebd63f0",
+      "subject": "fix: mestre do Link nao envia manifesto vazio e seguidor rejeita manifesto incompleto",
+      "kind": "fix"
+    },
+    {
+      "sha": "8d09ad54b0365a79d0886a3bdd61d49a06bdb97e",
+      "subject": "feat: adiciona espelhamento principal mais reserva no Mizin Link com alarme de mestre perdido",
       "kind": "feat"
     }
   ],
