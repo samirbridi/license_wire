@@ -8,6 +8,8 @@
     QLabel* engineStatus_=nullptr;
     QGridLayout* engineRoutes_=nullptr;
     QList<QComboBox*> enginePairs_;
+    QList<QLabel*> enginePairNames_;
+    QList<int> enginePairIds_;
     static constexpr int EnginePairs=32;
     QWidget* localEnginePanel(){
         engine_=std::make_unique<LocalAudioEngine>();
@@ -26,7 +28,7 @@
         auto* sync=new QHBoxLayout;sync->setSpacing(10);engineSync_=new QCheckBox;bindings_.append({engineSync_,"Sync with the video automatically"});sync->addWidget(engineSync_);
         sync->addWidget(label("Fine adjust","muted"));engineOffset_=new QSpinBox;engineOffset_->setObjectName("engineOffset");engineOffset_->setRange(-200,500);engineOffset_->setSuffix(" ms");engineOffset_->setToolTip(tx("Positive values delay the audio, e.g. for projector or LED processing delay."));sync->addWidget(engineOffset_);
         sync->addStretch();engineAutoStart_=new QCheckBox;bindings_.append({engineAutoStart_,"Start when the app opens"});sync->addWidget(engineAutoStart_);body->addLayout(sync);
-        auto* routes=new QWidget;engineRoutes_=new QGridLayout(routes);engineRoutes_->setContentsMargins(0,0,0,0);engineRoutes_->setHorizontalSpacing(10);body->addWidget(routes);
+        auto* routes=new QWidget;routes->setObjectName("engineRoutes");routes->setStyleSheet("QWidget#engineRoutes{background:transparent;}");engineRoutes_=new QGridLayout(routes);engineRoutes_->setContentsMargins(0,0,0,0);engineRoutes_->setHorizontalSpacing(10);body->addWidget(routes);
         engineStatus_=new QLabel;engineStatus_->setObjectName("muted");engineStatus_->setWordWrap(true);body->addWidget(engineStatus_);
         auto& s=*settings_;engineBackend_->setCurrentIndex(qMax(0,engineBackend_->findData(s.value("localAudio/backend",int(AudioBackend::Wasapi)).toInt())));if(engineBackend_->currentIndex()==2&&!LocalAudioEngine::asioAvailable())engineBackend_->setCurrentIndex(0);
         engineBuffer_->setCurrentIndex(qMax(0,engineBuffer_->findData(s.value("localAudio/buffer",0).toInt())));engineSync_->setChecked(s.value("localAudio/sync",true).toBool());engineOffset_->setValue(s.value("localAudio/offsetMs",0).toInt());engineAutoStart_->setChecked(s.value("localAudio/autoStart",false).toBool());
@@ -64,14 +66,17 @@
         for(int i=0;i<programCount_;++i)if(i!=skip&&channelAt(i)->localEngine()!=on)channelAt(i)->setLocalEngine(on);
     }
     void rebuildEngineRoutes(){
-        if(!engineRoutes_)return;while(auto* item=engineRoutes_->takeAt(0)){delete item->widget();delete item;}enginePairs_.clear();
+        if(!engineRoutes_)return;QList<int> ids;for(const auto& definition:programDefinitions_)ids.append(definition.id);
+        // Same Programs: only refresh texts. Recreating open combo boxes on every retranslate would close them.
+        if(ids==enginePairIds_){for(int i=0;i<enginePairs_.size();++i){enginePairNames_[i]->setText(programLabel(i));for(int p=0;p<EnginePairs;++p)enginePairs_[i]->setItemText(p,tx("Outputs %1–%2").arg(2*p+1).arg(2*p+2));}applyEngineOwnership();refreshEngineStatus();return;}
+        while(auto* item=engineRoutes_->takeAt(0)){delete item->widget();delete item;}enginePairs_.clear();enginePairNames_.clear();enginePairIds_=ids;
         for(int i=0;i<programCount_;++i){
-            auto* name=new QLabel(programLabel(i));engineRoutes_->addWidget(name,i/4,(i%4)*2);auto* pair=new QComboBox;pair->setObjectName("enginePair"+preferencesId(i));
+            auto* name=new QLabel(programLabel(i));enginePairNames_.append(name);engineRoutes_->addWidget(name,i/4,(i%4)*2);auto* pair=new QComboBox;pair->setObjectName("enginePair"+preferencesId(i));
             for(int p=0;p<EnginePairs;++p)pair->addItem(tx("Outputs %1–%2").arg(2*p+1).arg(2*p+2),p);pair->setCurrentIndex(qBound(0,settings_->value("localAudio/pair/"+preferencesId(i),0).toInt(),EnginePairs-1));
             const QString id=preferencesId(i);connect(pair,&QComboBox::currentIndexChanged,this,[this,id](int p){if(!demo_)settings_->setValue("localAudio/pair/"+id,p);applyEngineOwnership();refreshEngineStatus();});
             engineRoutes_->addWidget(pair,i/4,(i%4)*2+1);enginePairs_.append(pair);
         }
-        applyEngineOwnership();refreshEngineStatus();
+        engineRoutes_->setColumnStretch(8,1);applyEngineOwnership();refreshEngineStatus();
     }
     void refreshEngineStatus(){
         if(!engineStatus_)return;const bool on=engine_->running();engineStart_->setEnabled(!on&&engineDevice_->count()>0);engineStop_->setEnabled(on);engineBackend_->setEnabled(!on);engineDevice_->setEnabled(!on);engineBuffer_->setEnabled(!on);
