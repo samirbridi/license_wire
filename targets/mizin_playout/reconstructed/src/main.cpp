@@ -213,7 +213,7 @@ public:
         auto* saveKey=new QShortcut(QKeySequence::Save,this);connect(saveKey,&QShortcut::activated,this,[this]{saveProject(false);});
         auto* ticker=new QTimer(this);connect(ticker,&QTimer::timeout,this,[this]{refreshTransport();});ticker->start(200);
         if(demo_) { for(const auto& s : {"01 - Doors open.mp4","02 - Opening film.mov","03 - Speaker intro.mkv","04 - Sponsor loop.avi","05 - Closing credits.mov"}) {library_<<s;playlist_<<Cue{QString(s),0,150000,Transition::Dissolve,600,400,600};} folders_<<"Show media"<<"Sponsor assets"; }
-        programDefinitions_[0].cues=playlist_;refreshOutputConfiguration();retranslate();
+        programDefinitions_[0].cues=playlist_;refreshOutputConfiguration();retranslate();startAutosave();
         if(demo_){playlistTable_->selectRow(2);syncEditor(2);}
     }
     void selectPage(int page){pages_->setCurrentIndex(page);if(navigation_->button(page))navigation_->button(page)->setChecked(true);}
@@ -245,7 +245,7 @@ protected:
     void dropEvent(QDropEvent* event) override {QStringList paths;for(const auto& url:event->mimeData()->urls())if(url.isLocalFile())paths<<url.toLocalFile();importExternal(paths);event->acceptProposedAction();}
     void closeEvent(QCloseEvent* event) override {
         if(!demo_ && dirty_ && QMessageBox::question(this,tx("Unsaved show"),tx("Close without saving the show?"),QMessageBox::Yes|QMessageBox::No,QMessageBox::No)!=QMessageBox::Yes){event->ignore();return;}
-        for(auto& output:outputWindows_)if(output)output->close();closeDeckWindows();if(web_)web_->stop();if(engine_)engine_->stop();event->accept();
+        for(auto& output:outputWindows_)if(output)output->close();closeDeckWindows();if(web_)web_->stop();if(engine_)engine_->stop();if(!demo_)clearRecovery();event->accept();
     }
 private:
     QString tx(const QString& key)const{const QString resolved=programCount_==1&&key=="Program A"?"Program":programCount_==1&&key=="PROGRAM A"?"PROGRAM":key;if(dictionary_.contains(resolved))return dictionary_.value(resolved).toString();if(resolved.startsWith("Program "))return dictionary_.value("Program %1").toString("Program %1").arg(resolved.mid(8));if(resolved.startsWith("PROGRAM "))return dictionary_.value("PROGRAM %1").toString("PROGRAM %1").arg(resolved.mid(8));return resolved;}
@@ -335,6 +335,7 @@ private:
 #include "main_decks.inc"
 #include "main_web.inc"
 #include "main_audio_engine.inc"
+#include "main_show_reliability.inc"
     void refreshDashboard(){
         if(!manualMode_||!playlistTable_)return;
         for(auto* name:{previewName_,programName_,secondaryName_})if(name){name->setToolTip(name->text());name->setAccessibleName(name->text());}
@@ -349,7 +350,7 @@ private:
     }
     QTableWidget* makeTable(){auto* t=new QTableWidget(0,5);t->setSelectionBehavior(QAbstractItemView::SelectRows);t->setSelectionMode(QAbstractItemView::SingleSelection);t->setEditTriggers(QAbstractItemView::NoEditTriggers);t->setAlternatingRowColors(true);t->verticalHeader()->hide();t->setShowGrid(false);t->setAcceptDrops(false);t->horizontalHeader()->setStretchLastSection(true);t->horizontalHeader()->setSectionResizeMode(1,QHeaderView::Stretch);t->setColumnWidth(0,44);t->setColumnWidth(2,110);t->setColumnWidth(3,130);t->verticalHeader()->setDefaultSectionSize(42);return t;}
     QWidget* libraryPage(){auto* page=new QWidget;auto* l=new QVBoxLayout(page);l->setContentsMargins(0,0,0,0);auto* heading=label("Media library","heading");l->addWidget(heading);l->addWidget(label("Original files stay in place. No mandatory conversion.","muted"));
-        auto* row=new QHBoxLayout;auto* search=new QLineEdit;search->setPlaceholderText(tx("Search media"));bindings_.append({search,"Search media"});row->addWidget(search,1);auto* add=button("Add files");row->addWidget(add);connect(add,&QPushButton::clicked,this,[this]{chooseFiles();});auto* folder=button("Add folder");row->addWidget(folder);connect(folder,&QPushButton::clicked,this,[this]{chooseFolder();});l->addLayout(row);
+        auto* row=new QHBoxLayout;auto* search=new QLineEdit;search->setPlaceholderText(tx("Search media"));bindings_.append({search,"Search media"});row->addWidget(search,1);auto* add=button("Add files");row->addWidget(add);connect(add,&QPushButton::clicked,this,[this]{chooseFiles();});auto* folder=button("Add folder");row->addWidget(folder);connect(folder,&QPushButton::clicked,this,[this]{chooseFolder();});auto* relink=button("Locate missing media");relink->setObjectName("relinkMedia");row->addWidget(relink);connect(relink,&QPushButton::clicked,this,[this]{relinkMedia();});l->addLayout(row);
         auto* main=new QHBoxLayout;auto* rootPanel=new QFrame;rootPanel->setObjectName("panel");rootPanel->setFixedWidth(230);auto* rootsLayout=new QVBoxLayout(rootPanel);rootsLayout->addWidget(label("FOLDERS","eyebrow"));roots_=new QListWidget;rootsLayout->addWidget(roots_);main->addWidget(rootPanel);libraryTable_=makeTable();main->addWidget(libraryTable_,1);l->addLayout(main,1);
         connect(search,&QLineEdit::textChanged,this,[this](const QString& q){for(int i=0;i<libraryTable_->rowCount();++i)libraryTable_->setRowHidden(i,!libraryTable_->item(i,1)->text().contains(q,Qt::CaseInsensitive));});
         connect(libraryTable_,&QTableWidget::cellDoubleClicked,this,[this](int row,int){if(row>=0&&!demo_)addPaths({library_.value(row)});});return page;}
@@ -596,7 +597,9 @@ private:
     Show currentShow(){storeActivePlaylist();return {library_,folders_,programDefinitions_[0].cues,currentOutputConfiguration(),programDefinitions_};}
     void saveProject(bool){
         if(demo_)return;QString path=projectPath_;if(path.isEmpty())path=QFileDialog::getSaveFileName(this,tx("Save show"),{},"Mizin show (*.mizinshow)");if(path.isEmpty())return;if(!path.endsWith(".mizinshow",Qt::CaseInsensitive))path+=".mizinshow";
-        QSaveFile file(path);const auto payload=QJsonDocument(currentShow().json()).toJson();if(!file.open(QIODevice::WriteOnly)||file.write(payload)!=payload.size()||!file.commit()){footer_->setText(tx("Could not save show"));return;}projectPath_=path;dirty_=false;showTitle_->setText(QFileInfo(path).completeBaseName());footer_->setText(tx("Show saved"));
+        // Keep the previous version beside the show (one .bak) before replacing it.
+        if(QFileInfo::exists(path)){QFile::remove(path+".bak");QFile::copy(path,path+".bak");}
+        QSaveFile file(path);const auto payload=QJsonDocument(currentShow().json()).toJson();if(!file.open(QIODevice::WriteOnly)||file.write(payload)!=payload.size()||!file.commit()){footer_->setText(tx("Could not save show"));return;}projectPath_=path;dirty_=false;clearRecovery();showTitle_->setText(QFileInfo(path).completeBaseName());footer_->setText(tx("Show saved"));
     }
     bool applyShow(const Show& loaded,const QString& path){
         if(scanner_.isRunning()){footer_->setText(tx("Wait for the folder scan before opening another show."));return false;}
@@ -608,7 +611,7 @@ private:
         programDefinitions_=definitions;for(const auto& definition:definitions)nextProgramId_=qMax(nextProgramId_,definition.id+1);if(!demo_)settings_->setValue("nextProgramId",nextProgramId_);library_=loaded.library;folders_=loaded.folders;playlist_=definitions[0].cues;selectedProgram_=0;editing_=cuedRow_=-1;setEditorStatus("Select a cue to edit.");readiness_.clear();preview_.black();rebuildSelectedDeck();applyOutputConfiguration(loaded.outputs,false);projectPath_=path;dirty_=false;refreshTables();refreshTransport();showTitle_->setText(QFileInfo(path).completeBaseName());return true;
     }
     void openProject(){
-        if(demo_)return;if(dirty_&&QMessageBox::question(this,tx("Unsaved show"),tx("Open another show without saving?"),QMessageBox::Yes|QMessageBox::No,QMessageBox::No)!=QMessageBox::Yes)return;const auto path=QFileDialog::getOpenFileName(this,tx("Open show"),{},"Mizin show (*.mizinshow)");if(path.isEmpty())return;QFile file(path);if(!file.open(QIODevice::ReadOnly)){footer_->setText(tx("Could not open show"));return;}QJsonParseError error;const auto doc=QJsonDocument::fromJson(file.readAll(),&error);Show loaded;if(error.error!=QJsonParseError::NoError||!Show::read(doc.object(),loaded)){footer_->setText(tx("Invalid show file"));return;}applyShow(loaded,path);
+        if(demo_)return;if(dirty_&&QMessageBox::question(this,tx("Unsaved show"),tx("Open another show without saving?"),QMessageBox::Yes|QMessageBox::No,QMessageBox::No)!=QMessageBox::Yes)return;const auto path=QFileDialog::getOpenFileName(this,tx("Open show"),{},"Mizin show (*.mizinshow)");if(path.isEmpty())return;QFile file(path);if(!file.open(QIODevice::ReadOnly)){footer_->setText(tx("Could not open show"));return;}QJsonParseError error;const auto doc=QJsonDocument::fromJson(file.readAll(),&error);Show loaded;if(error.error!=QJsonParseError::NoError||!Show::read(doc.object(),loaded)){footer_->setText(tx("Invalid show file"));return;}if(applyShow(loaded,path)){clearRecovery();checkMissingMedia(true);}
     }
     void helpDialog(){QDialog dialog(this);dialog.setWindowTitle(tx("Quick start"));dialog.resize(700,540);auto* l=new QVBoxLayout(&dialog);auto* browser=new QTextBrowser;browser->setOpenExternalLinks(false);browser->setMarkdown(tx("HELP_MARKDOWN"));l->addWidget(browser);auto* close=button("Close");l->addWidget(close);connect(close,&QPushButton::clicked,&dialog,&QDialog::accept);dialog.exec();}
 };
@@ -760,7 +763,9 @@ int main(int argc,char** argv){
     window.configureBoardPrograms(parser.value("board-programs").toInt());
     if(parser.isSet("capture-sequential"))window.configureBoardSequential();
     if(parser.isSet("capture-dir")){const auto match=QRegularExpression("^([0-9]{3,4})x([0-9]{3,4})$").match(parser.value("capture-size"));if(!match.hasMatch()||match.captured(1).toInt()<1280||match.captured(2).toInt()<800)return 4;window.resize(match.captured(1).toInt(),match.captured(2).toInt());}
-    window.show();if(parser.isSet("ui-test"))return window.runUiTests(parser.value("fixtures"),parser.value("result"));if(parser.isSet("show")&&!window.openShowPath(parser.value("show")))QMessageBox::warning(&window,QStringLiteral("Mizin Playout"),QStringLiteral("Could not open the saved show."));window.importExternal(parser.positionalArguments());if(!parser.isSet("capture-dir"))window.startUpdateChecks(parser.isSet("portable"));
+    window.show();if(parser.isSet("ui-test"))return window.runUiTests(parser.value("fixtures"),parser.value("result"));if(parser.isSet("show")&&!window.openShowPath(parser.value("show")))QMessageBox::warning(&window,QStringLiteral("Mizin Playout"),QStringLiteral("Could not open the saved show."));
+    if(!parser.isSet("capture-dir")&&!parser.isSet("board")){if(parser.isSet("show"))window.checkMissingMedia(true);else window.offerRecovery();}
+   window.importExternal(parser.positionalArguments());if(!parser.isSet("capture-dir"))window.startUpdateChecks(parser.isSet("portable"));
     if(parser.isSet("capture-dir")){
         const QString dir=parser.value("capture-dir");QDir().mkpath(dir);
         const int page=qBound(0,parser.value("capture-page").toInt(),4);window.selectPage(page);if(parser.isSet("capture-digital"))window.selectDigital();if(parser.isSet("capture-diagnostics"))window.selectDiagnostics();

@@ -50,6 +50,12 @@ In **Audio → Low-latency output**, choose the engine and device and click **St
 
 Pick each Program's output pair (e.g. A on 1–2, B on 3–4) — useful on multi-output interfaces such as Dante. Each Program's volume, mute and Local monitoring still apply. **Sync with the video automatically** measures how late video frames are published and delays the audio only as needed; use **Fine adjust** (ms) for projector/LED processor delay. If the device fails or is unplugged, every Program falls back to its normal output automatically. NDI, OMT and the web monitor are not affected.
 
+## Autosave, recovery and missing media
+
+While there are unsaved changes, Mizin Playout writes an automatic copy of the show every few seconds to its settings folder. If the app closes without saving (crash, power cut), the next start asks whether to restore that copy; the show comes back marked as unsaved so you can save it. A discarded copy is kept in `recovery/` (latest 5), never deleted silently. When you save over a show, the previous version stays next to it as `.mizinshow.bak`.
+
+If a show is opened on another computer or with the drive on another letter, the app tells you how many media files were not found and asks for the folder where they are. It searches by file name, including subfolders; when several files share a name, it picks the one in the most similar folder and leaves ambiguous cases out. You can also do it from **Library → Locate missing media**. Programs on air are not changed; the fix applies to the next takes and marks the show to be saved.
+
 ## Language and performance
 
 English is default; Português (Brasil) can be selected during playback. Automatic hardware decoding and CPU decoding are available in Settings after restart. Codec/profile/driver support varies. Cuts forward shared native frames; transitions currently convert and compose in CPU once per Program. GPU composition, remote control, scheduling and production AV-sync/performance qualification remain future work. Layout samples demonstrate the interface, not physical-output playback.

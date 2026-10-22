@@ -50,6 +50,12 @@ Em **Áudio → Saída de baixa latência**, escolha o motor e o dispositivo e c
 
 Escolha o par de saídas de cada Program (ex.: A em 1–2, B em 3–4) — útil em interfaces com muitas saídas, como Dante. Volume, mudo e Monitoramento local de cada Program continuam valendo. **Sincronizar com o vídeo automaticamente** mede o atraso com que o vídeo é publicado e atrasa o áudio só o necessário; use **Ajuste fino** (ms) para compensar projetor/processador de LED. Se o dispositivo falhar ou for desconectado, os Programs voltam sozinhos para a saída normal. As saídas NDI, OMT e o monitor web não mudam.
 
+## Salvamento automático, recuperação e mídias ausentes
+
+Enquanto houver alterações não salvas, o Mizin Playout grava uma cópia automática do show a cada poucos segundos na pasta de configurações. Se o aplicativo fechar sem salvar (queda, falta de energia), na próxima abertura ele pergunta se você quer restaurar essa cópia; o show volta marcado como não salvo para você salvar. Uma cópia descartada é guardada em `recovery/` (as 5 mais recentes), nunca apagada sem aviso. Ao salvar por cima de um show, a versão anterior fica ao lado como `.mizinshow.bak`.
+
+Se um show for aberto em outro computador ou com o HD em outra letra, o aplicativo avisa quantas mídias não foram encontradas e pede a pasta onde elas estão. Ele procura pelos nomes dos arquivos, inclusive em subpastas; quando há arquivos com o mesmo nome, escolhe o que está na pasta mais parecida e deixa de fora os casos ambíguos. Também dá para fazer isso em **Biblioteca → Localizar mídias ausentes**. Os Programs no ar não são alterados; a mudança vale nos próximos disparos e marca o show para salvar.
+
 ## Idioma e desempenho
 
 Inglês é o padrão; Português (Brasil) pode ser escolhido durante a reprodução. As opções de decodificação automática por hardware e por CPU ficam em Configurações e exigem reinício. O suporte depende de codec, perfil e driver. Cortes encaminham quadros nativos compartilhados; transições convertem e compõem em CPU uma vez por Program. Composição em GPU, controle remoto, agendamento e validação de desempenho/sincronismo para produção seguem como próximas etapas. Pranchetas demonstram a interface, não reprodução em saídas físicas.

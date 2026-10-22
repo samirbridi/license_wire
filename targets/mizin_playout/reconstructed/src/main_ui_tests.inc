@@ -145,5 +145,25 @@ int MainWindow::runUiTests(const QString& directory,const QString& resultPath){
     programA_.load(first);const bool retainedReady=wait([&]{return programA_.frames()>=4;});record("update_install_guard_blocks_live_program",updatePlaybackBusy());programA_.togglePause();wait([&]{return !programA_.playing();});programA_.seek(1300);pump(200);
     const bool collapsed=applyOutputConfiguration(OutputConfiguration{});pump(80);auto* restoredVideo=programViews_->widget(0)->findChild<QVideoWidget*>();
     record("paused_retained_frame_restores_when_returning_to_single_view",retainedReady&&collapsed&&restoredVideo&&restoredVideo->videoSink()->videoFrame().isValid()&&restoredVideo->videoSink()->videoFrame().startTime()==programA_.lastFrame().startTime());controllerA_.stop();
+    // Show reliability: autosave/recovery, .bak on save, relink of moved media.
+    {
+        clearRecovery();switchProgram(0,true);dirty_=true;const bool wrote=autosaveTick();QFile copy(recoveryPath());const bool parsed=copy.open(QIODevice::ReadOnly)&&QJsonDocument::fromJson(copy.readAll()).object()==currentShow().json();copy.close();
+        record("autosave_writes_recovery_copy_of_unsaved_show",wrote&&hasRecovery()&&parsed&&!autosaveTick());
+        const QString showFile=base+"reliability-"+stem+".mizinshow";QFile::remove(showFile);QFile::remove(showFile+".bak");projectPath_=showFile;saveProject(false);const bool firstSave=QFileInfo::exists(showFile)&&!QFileInfo::exists(showFile+".bak")&&!hasRecovery()&&!dirty_;
+        playlist_.append(Cue{QDir(directory).absoluteFilePath("03-h264.mkv")});dirty_=true;saveProject(false);
+        record("saving_keeps_previous_version_as_bak_and_clears_recovery",firstSave&&QFileInfo::exists(showFile+".bak")&&!hasRecovery());
+        const int savedItems=playlist_.size();playlist_.append(Cue{QDir(directory).absoluteFilePath("01-h264.mp4")});dirty_=true;autosaveTick();const int unsavedItems=playlist_.size();
+        playlist_.removeLast();programDefinitions_[0].cues=playlist_;dirty_=false;
+        const bool restored=restoreRecovery();record("recovery_restores_unsaved_show_and_keeps_it_dirty",restored&&dirty_&&playlist_.size()==unsavedItems&&unsavedItems==savedItems+1&&projectPath_==showFile);
+        discardRecovery();record("discarded_recovery_is_moved_aside_not_deleted",!hasRecovery()&&!QDir(recoveryDirectory()).entryList({"discarded-*.mizinshow"},QDir::Files).isEmpty());
+        const QString root=base+"relink-"+stem;QDir(root).removeRecursively();QDir().mkpath(root+"/show/sub");QDir().mkpath(root+"/a");QDir().mkpath(root+"/b");
+        QFile::copy(QDir(directory).absoluteFilePath("01-h264.mp4"),root+"/show/sub/01-h264.mp4");for(auto folder:{"/a/dup.mp4","/b/dup.mp4"}){QFile f(root+folder);f.open(QIODevice::WriteOnly);f.write("x");}
+        const QString oldA="Z:/old/show/sub/01-h264.mp4",oldDup="Z:/old/a/dup.mp4",tieDup="Z:/other/dup.mp4";
+        const auto plan=relinkPlan({oldA,oldDup,tieDup},root);
+        record("relink_finds_moved_media_and_disambiguates_by_folder",plan.value(oldA)==QDir::cleanPath(root+"/show/sub/01-h264.mp4")&&plan.value(oldDup)==QDir::cleanPath(root+"/a/dup.mp4")&&!plan.contains(tieDup));
+        playlist_=QList<Cue>{Cue{oldA}};programDefinitions_[0].cues=playlist_;library_.append(oldA);const bool missingBefore=missingMedia().contains(oldA);const int changed=applyRelink(plan);
+        record("relink_updates_playlists_library_and_marks_show_dirty",missingBefore&&changed>=2&&playlist_[0].path==plan.value(oldA)&&library_.contains(plan.value(oldA))&&!missingMedia().contains(oldA)&&dirty_);
+        dirty_=false;clearRecovery();
+    }
     QJsonObject result{{"result",all?"PASS":"FAIL"},{"version",QString(MizinVersion)},{"mode",qEnvironmentVariable("MIZIN_DECODE_MODE","auto")},{"scope","Native in-process widgets; stable selected-mode text, aligned TAKE controls, real process counters, decimal MB/GB and DXGI GPU memory, five-Program multiview/inventory and five floating display routes. Not OS-pointer/physical monitor/AV-sync or maximum-capacity qualification."},{"tests",tests}};QFile output(resultPath);if(!output.open(QIODevice::WriteOnly))return 3;output.write(QJsonDocument(result).toJson());return all?0:2;
 }
