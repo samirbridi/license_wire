@@ -7,12 +7,12 @@ struct NdiFrameOrder {
     qint64 sequence=-1,timecode=-1,sdkTimestamp=-1;
     QByteArray pixels;
     int cachedRepeats=0;
-    bool observe(qint64 next,qint64 tc,qint64 stamp,const QByteArray& digest){
-        if(next<0||digest.isEmpty()||stamp<=sdkTimestamp)return false;
+    bool observe(qint64 next,qint64 tc,qint64 stamp,const QByteArray& content){
+        if(next<0||content.isEmpty()||stamp<=sdkTimestamp)return false;
         sdkTimestamp=stamp;
-        if(next==sequence){++cachedRepeats;return tc==timecode&&digest==pixels;}
+        if(next==sequence){++cachedRepeats;return tc==timecode&&content==pixels;}
         if(next<=sequence||tc<=timecode)return false;
-        sequence=next;timecode=tc;pixels=digest;return true;
+        sequence=next;timecode=tc;pixels=content;return true;
     }
     static qint64 readSequence(const char* metadata){
         if(!metadata)return -1;const auto match=QRegularExpression("<mizin_frame sequence=\"([0-9]+)\"").match(QString::fromUtf8(metadata));
