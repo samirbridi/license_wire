@@ -702,5 +702,53 @@
     ],
     "date": "2026-10-22",
     "build_status": "PASS"
+  },
+  {
+    "display": "v0.18.0 (build 0045)",
+    "previous": "v0.17.0 (build 0044)",
+    "source_commit": "cdd066ed2142c25d4158aac340f4e3d7202bdcff",
+    "commits": [
+      {
+        "sha": "eb008275824bd435aa0e0da0759d0d1a0dfa3a87",
+        "subject": "improve: registra build 0044 com monitor web e reteste NDI com maquina livre",
+        "kind": "improve"
+      },
+      {
+        "sha": "102aff74964ded9720898b4c2b67c89b4e73f16f",
+        "subject": "feat: adiciona motor de audio de baixa latencia WASAPI e ASIO opcional com sincronia ao video",
+        "kind": "feat"
+      },
+      {
+        "sha": "eebfbcad4b19e9cbef0c46c0c5805fada5fec30d",
+        "subject": "fix: exibe pares de saida por Program sem recriar a lista a cada traducao",
+        "kind": "fix"
+      },
+      {
+        "sha": "dd00b078cf781281a70414b18804e4624c41901b",
+        "subject": "fix: instalador sem exigir runtime da maquina com CRT da Microsoft junto ao app",
+        "kind": "fix"
+      },
+      {
+        "sha": "cdd066ed2142c25d4158aac340f4e3d7202bdcff",
+        "subject": "improve: documenta audio de baixa latencia e fixa ASIO desligado no build oficial",
+        "kind": "improve"
+      }
+    ],
+    "date": "2026-10-22",
+    "build_status": "PASS"
+  },
+  {
+    "display": "v0.18.1 (build 0046)",
+    "previous": "v0.18.0 (build 0045)",
+    "source_commit": "5376aac3442c33b43476af3bbf9d9e3dc1c693d1",
+    "commits": [
+      {
+        "sha": "5376aac3442c33b43476af3bbf9d9e3dc1c693d1",
+        "subject": "fix: corrige corte do instalador mantendo inicializacao e removendo so a etapa do runtime",
+        "kind": "fix"
+      }
+    ],
+    "date": "2026-10-22",
+    "build_status": "PASS"
   }
 ]

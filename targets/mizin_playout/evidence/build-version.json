@@ -1,17 +1,12 @@
 {
-  "display": "v0.17.0 (build 0044)",
-  "previous": "v0.16.1 (build 0043)",
-  "source_commit": "8e06fcc8a58095a0bffe08d221e9c33312f0ed6e",
+  "display": "v0.18.1 (build 0046)",
+  "previous": "v0.18.0 (build 0045)",
+  "source_commit": "5376aac3442c33b43476af3bbf9d9e3dc1c693d1",
   "commits": [
     {
-      "sha": "2e79de28131955d68a4c418aec81d8850f9f0686",
-      "subject": "improve: registra build 0043 com decks destacaveis e validacao do pacote",
-      "kind": "improve"
-    },
-    {
-      "sha": "8e06fcc8a58095a0bffe08d221e9c33312f0ed6e",
-      "subject": "feat: adiciona monitor web WebRTC somente visualizacao com H.264 do Windows e Opus",
-      "kind": "feat"
+      "sha": "5376aac3442c33b43476af3bbf9d9e3dc1c693d1",
+      "subject": "fix: corrige corte do instalador mantendo inicializacao e removendo so a etapa do runtime",
+      "kind": "fix"
     }
   ],
   "date": "2026-10-22",

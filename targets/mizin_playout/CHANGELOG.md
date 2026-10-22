@@ -1,5 +1,35 @@
 # CHANGELOG — Mizin Playout
 
+## v0.18.1 (build 0046) - 2026-10-22
+
+### 💥 Breaking Changes
+- None.
+
+### ✨ Features
+- None.
+
+### 🐛 Fixes
+- fix: corrige corte do instalador mantendo inicializacao e removendo so a etapa do runtime (5376aac3442c33b43476af3bbf9d9e3dc1c693d1)
+
+### ⚡ Improvements
+- None.
+
+## v0.18.0 (build 0045) - 2026-10-22
+
+### 💥 Breaking Changes
+- None.
+
+### ✨ Features
+- feat: adiciona motor de audio de baixa latencia WASAPI e ASIO opcional com sincronia ao video (102aff74964ded9720898b4c2b67c89b4e73f16f)
+
+### 🐛 Fixes
+- fix: exibe pares de saida por Program sem recriar a lista a cada traducao (eebfbcad4b19e9cbef0c46c0c5805fada5fec30d)
+- fix: instalador sem exigir runtime da maquina com CRT da Microsoft junto ao app (dd00b078cf781281a70414b18804e4624c41901b)
+
+### ⚡ Improvements
+- improve: registra build 0044 com monitor web e reteste NDI com maquina livre (eb008275824bd435aa0e0da0759d0d1a0dfa3a87)
+- improve: documenta audio de baixa latencia e fixa ASIO desligado no build oficial (cdd066ed2142c25d4158aac340f4e3d7202bdcff)
+
 ## v0.17.0 (build 0044) - 2026-10-22
 
 ### 💥 Breaking Changes
