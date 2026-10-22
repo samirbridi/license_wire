@@ -43,5 +43,31 @@
   }catch(_){/* Static links stay. */}
 })();
 
-// Screenshots open full size in a new tab.
-document.querySelectorAll(".shot img").forEach(img=>{img.style.cursor="zoom-in";img.title=document.documentElement.dataset.lang==="pt-BR"?"Clique para ampliar":"Click to enlarge";img.addEventListener("click",()=>window.open(img.currentSrc||img.src,"_blank","noopener"));});
+// Screenshots open in an in-page viewer (no new tab): Esc / click outside / × close, arrows browse.
+(function(){
+  const shots=[...document.querySelectorAll(".shot img")];if(!shots.length)return;
+  const pt=()=>document.documentElement.dataset.lang==="pt-BR";
+  const box=document.createElement("dialog");box.className="lightbox";
+  box.innerHTML='<button class="lb-close" type="button">×</button><button class="lb-prev" type="button">‹</button><figure><img alt=""><figcaption></figcaption></figure><button class="lb-next" type="button">›</button>';
+  document.body.append(box);
+  const image=box.querySelector("img"),caption=box.querySelector("figcaption"),prev=box.querySelector(".lb-prev"),next=box.querySelector(".lb-next"),close=box.querySelector(".lb-close");
+  let current=0;
+  const visible=()=>shots.filter(img=>img.offsetParent!==null);
+  function show(index){
+    const list=visible();if(!list.length)return;current=(index+list.length)%list.length;const img=list[current];
+    image.src=img.currentSrc||img.src;image.alt=img.alt||"";caption.textContent=(current+1)+" / "+list.length;
+    prev.hidden=next.hidden=list.length<2;
+    close.setAttribute("aria-label",pt()?"Fechar":"Close");prev.setAttribute("aria-label",pt()?"Anterior":"Previous");next.setAttribute("aria-label",pt()?"Próxima":"Next");
+  }
+  function open(img){show(visible().indexOf(img));if(!box.open)box.showModal();document.body.classList.add("lb-open");}
+  function shut(){if(box.open)box.close();}
+  box.addEventListener("close",()=>document.body.classList.remove("lb-open"));
+  shots.forEach(img=>{img.style.cursor="zoom-in";img.tabIndex=0;img.setAttribute("role","button");
+    img.title=pt()?"Clique para ampliar":"Click to enlarge";
+    img.addEventListener("click",()=>open(img));img.addEventListener("keydown",e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();open(img);}});});
+  close.addEventListener("click",shut);prev.addEventListener("click",e=>{e.stopPropagation();show(current-1);});next.addEventListener("click",e=>{e.stopPropagation();show(current+1);});
+  box.addEventListener("click",e=>{if(e.target===box||e.target.tagName==="FIGURE")shut();});
+  box.addEventListener("keydown",e=>{if(e.key==="ArrowLeft")show(current-1);else if(e.key==="ArrowRight")show(current+1);});
+  let startX=null;box.addEventListener("touchstart",e=>{startX=e.touches[0].clientX;},{passive:true});
+  box.addEventListener("touchend",e=>{if(startX===null)return;const dx=e.changedTouches[0].clientX-startX;if(Math.abs(dx)>50)show(current+(dx<0?1:-1));startX=null;});
+})();
