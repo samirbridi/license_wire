@@ -11,6 +11,11 @@ foreach($step in 'build','package','test-package','test-update-install'){
   & powershell -NoProfile -ExecutionPolicy Bypass -File (Join-Path $PSScriptRoot "$step.ps1")
   if($LASTEXITCODE -ne 0){throw "$step failed; nothing was published."}
 }
+# Clean-Windows gate (Windows Sandbox) whenever the feature is enabled on this machine.
+if(Test-Path -LiteralPath (Join-Path $env:windir 'System32\WindowsSandbox.exe')){
+  & powershell -NoProfile -ExecutionPolicy Bypass -File (Join-Path $PSScriptRoot 'test-sandbox.ps1')
+  if($LASTEXITCODE -ne 0){throw 'Clean-Windows sandbox test failed; nothing was published.'}
+}else{Write-Warning 'Windows Sandbox not enabled: clean-Windows installer test skipped.'}
 if($SkipPublish){Write-Output 'Validated; publication skipped.';return}
 & $python (Join-Path $PSScriptRoot 'updates.py') publish --node (Get-Command node).Source --wrangler $wrangler.FullName
 if($LASTEXITCODE -ne 0){throw 'Update publication failed.'}
