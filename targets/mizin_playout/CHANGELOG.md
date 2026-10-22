@@ -1,5 +1,20 @@
 # CHANGELOG — Mizin Playout
 
+## v0.19.0 (build 0050) - 2026-10-22
+
+### 💥 Breaking Changes
+- None.
+
+### ✨ Features
+- feat: cria site de apresentacao bilingue com tutorial e downloads do Mizin Playout (3723a5ae806827757bd6a4f19a6fd6e0a5591d9f)
+- feat: separa atualizacoes e site do Playout em playoutmizin.pages.dev com bucket proprio (8e677d240d753444d2f4bc457cf3bd09faadb220)
+
+### 🐛 Fixes
+- None.
+
+### ⚡ Improvements
+- improve: registra build 0049 e comparacao NDI com 0044 nas mesmas condicoes (5e489835abafe03b6b5a71e30feb6e5c61e50da3)
+
 ## v0.18.4 (build 0049) - 2026-10-22
 
 ### 💥 Breaking Changes

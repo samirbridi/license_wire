@@ -1,0 +1,53 @@
+﻿{
+    "version":  "v0.19.0 (build 0050)",
+    "source_commit":  "8e677d240d753444d2f4bc457cf3bd09faadb220",
+    "result":  "PASS",
+    "checks":  [
+                   {
+                       "name":  "isolated portable installation succeeds",
+                       "pass":  true
+                   },
+                   {
+                       "name":  "corrupt installer hash is rejected before replacement",
+                       "pass":  true
+                   },
+                   {
+                       "name":  "verified handoff waits for parent exit and installs",
+                       "pass":  true
+                   },
+                   {
+                       "name":  "portable update keeps registration marker absent",
+                       "pass":  true
+                   },
+                   {
+                       "name":  "operator profile is byte-for-byte preserved",
+                       "pass":  true
+                   },
+                   {
+                       "name":  "updated application restarts successfully",
+                       "pass":  true
+                   },
+                   {
+                       "name":  "updated app retains version and explicit profile",
+                       "pass":  true
+                   },
+                   {
+                       "name":  "verified installer and native restart complete",
+                       "pass":  true
+                   },
+                   {
+                       "name":  "helper restarts exactly the isolated updated app",
+                       "pass":  true
+                   },
+                   {
+                       "name":  "restarted operator window is visible",
+                       "pass":  true
+                   },
+                   {
+                       "name":  "profile survives actual restart",
+                       "pass":  true
+                   }
+               ],
+    "work":  "D:\\REA - ENGENHARIA REVERSA\\targets\\mizin_playout\\binaries\\update-install-qa\\f28b2736d7204f449d61a1e09d674199",
+    "scope":  "Real native helper waits for an isolated parent, rejects wrong hash, invokes NSIS portable update, preserves profile and restarts the updated app. Same-host QA, not clean-machine qualification."
+}

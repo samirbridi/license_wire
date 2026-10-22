@@ -1,7 +1,7 @@
 {
-  "version": "v0.18.4 (build 0049)",
-  "source_commit": "4cec3b1190a57fde766fdeebcb95d740d57863b1",
-  "executable_sha256": "a8e2142bb37b46363fad8faef6ff37c7440c8ecfe58664a1982740c2fa5f2810",
+  "version": "v0.19.0 (build 0050)",
+  "source_commit": "8e677d240d753444d2f4bc457cf3bd09faadb220",
+  "executable_sha256": "9e88324a8f2358adc863a0180445b0ada43b293067ba627af5eb5f099f42d4e4",
   "architecture": "x64",
   "channel": "private-preview",
   "public_release_ready": false,
@@ -16,16 +16,16 @@
   "settings": "Default per-user AppLocalDataLocation; --portable uses adjacent state/; --state-dir has precedence.",
   "artifacts": [
     {
-      "file": "MizinPlayout-0.18.4-build0049-windows-x64-preview-setup.exe",
-      "bytes": 54510058,
-      "sha256": "310fe497a42a93df3ae7af6cccef73cdadf4809d978e19ff444f7cfbdb2cdd99"
+      "file": "MizinPlayout-0.19.0-build0050-windows-x64-preview-setup.exe",
+      "bytes": 54511673,
+      "sha256": "06b407c510ecad13708c8ddb9ea9d941fc8324354915af8252530b889b4d0e7f"
     },
     {
-      "file": "MizinPlayout-0.18.4-build0049-windows-x64-preview-portable.zip",
-      "bytes": 54477209,
-      "sha256": "b1edce7b6ef157eac012556f6bb831fbd089c10a98ca17a101050ab7b01148ad"
+      "file": "MizinPlayout-0.19.0-build0050-windows-x64-preview-portable.zip",
+      "bytes": 54478250,
+      "sha256": "a1e50d03cc8e715db669654a2803d82ec7655279ea58c266da798d57ad3d1385"
     }
   ],
-  "release": "releases/MizinPlayout-0.18.4-build0049-windows-x64-preview",
+  "release": "releases/MizinPlayout-0.19.0-build0050-windows-x64-preview",
   "payload_files": 244
 }
