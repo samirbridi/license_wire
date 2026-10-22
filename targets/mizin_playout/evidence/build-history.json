@@ -819,5 +819,64 @@
     ],
     "date": "2026-10-22",
     "build_status": "PASS"
+  },
+  {
+    "display": "v0.20.0 (build 0051)",
+    "previous": "v0.19.0 (build 0050)",
+    "source_commit": "4b8386bb16c120b81ab3cfeba8974c18f125d5c5",
+    "commits": [
+      {
+        "sha": "344200514e2a163ff6b9a1ce2224a1f9104c5490",
+        "subject": "improve: registra build 0050 e aponta site para os pacotes validados",
+        "kind": "improve"
+      },
+      {
+        "sha": "cc12cb9c85955b35bab12d30c9d6900db8c6c8d5",
+        "subject": "improve: registra publicacao do build 0050 no site e feed proprios do Playout",
+        "kind": "improve"
+      },
+      {
+        "sha": "58cf6b677342276f80b5880c64fc3f489b0b55ac",
+        "subject": "fix: corrige proporcao das imagens do site e adiciona pagina de novidades e script de lancamento",
+        "kind": "fix"
+      },
+      {
+        "sha": "684bfe2269fb23a9c496be1ecdcce94c8787baa4",
+        "subject": "feat: abre capturas do site em visualizador na propria pagina",
+        "kind": "feat"
+      },
+      {
+        "sha": "d517c692dde75565027941f31921f4331ec4acf6",
+        "subject": "improve: recaptura telas do site a cada lancamento e registra regra de atualizacao do site",
+        "kind": "improve"
+      },
+      {
+        "sha": "017e52b045b3d2741706397baff79fafd5a8ad55",
+        "subject": "improve: prepara preenchimento do contrato ASIO da Steinberg e obrigacoes da licenca",
+        "kind": "improve"
+      },
+      {
+        "sha": "ec234f50919805ad12b2a34faecb57a705d65321",
+        "subject": "improve: gera contrato ASIO editavel e versao achatada para assinatura digital",
+        "kind": "improve"
+      },
+      {
+        "sha": "b330fd55df14241df53a305c3ab76885dea3a503",
+        "subject": "feat: adiciona salvamento automatico com recuperacao, backup ao salvar e religacao de midias",
+        "kind": "feat"
+      },
+      {
+        "sha": "f5392c4bab92e33b2e13cc9856c836af635c9e76",
+        "subject": "fix: localiza wrangler do npm direto no caminho conhecido no script de lancamento",
+        "kind": "fix"
+      },
+      {
+        "sha": "4b8386bb16c120b81ab3cfeba8974c18f125d5c5",
+        "subject": "fix: corrige caminho do wrangler corrompido no script de lancamento",
+        "kind": "fix"
+      }
+    ],
+    "date": "2026-10-22",
+    "build_status": "PASS"
   }
 ]

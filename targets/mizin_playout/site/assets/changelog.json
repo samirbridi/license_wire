@@ -1,5 +1,21 @@
 [
   {
+    "version": "v0.20.0 (build 0051)",
+    "date": "2026-10-22",
+    "notes": {
+      "en": [
+        "Automatic recovery: while a show has unsaved changes, a copy is written every few seconds. After an unexpected close the app offers to restore it.",
+        "Saving over a show keeps the previous version next to it as .mizinshow.bak.",
+        "Missing media: when a show's files moved (another computer, drive letter or folder), the app finds them by name in the folder you choose. Also in Library → Locate missing media."
+      ],
+      "pt-BR": [
+        "Recuperação automática: enquanto o show tem alterações não salvas, uma cópia é gravada a cada poucos segundos. Se o app fechar inesperadamente, ele oferece restaurá-la.",
+        "Ao salvar por cima de um show, a versão anterior fica ao lado como .mizinshow.bak.",
+        "Mídias ausentes: quando os arquivos de um show mudaram de lugar (outro computador, letra de HD ou pasta), o app os encontra pelo nome na pasta que você indicar. Também em Biblioteca → Localizar mídias ausentes."
+      ]
+    }
+  },
+  {
     "version": "v0.19.0 (build 0050)",
     "date": "2026-10-22",
     "notes": {

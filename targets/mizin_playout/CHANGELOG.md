@@ -1,5 +1,26 @@
 # CHANGELOG — Mizin Playout
 
+## v0.20.0 (build 0051) - 2026-10-22
+
+### 💥 Breaking Changes
+- None.
+
+### ✨ Features
+- feat: abre capturas do site em visualizador na propria pagina (684bfe2269fb23a9c496be1ecdcce94c8787baa4)
+- feat: adiciona salvamento automatico com recuperacao, backup ao salvar e religacao de midias (b330fd55df14241df53a305c3ab76885dea3a503)
+
+### 🐛 Fixes
+- fix: corrige proporcao das imagens do site e adiciona pagina de novidades e script de lancamento (58cf6b677342276f80b5880c64fc3f489b0b55ac)
+- fix: localiza wrangler do npm direto no caminho conhecido no script de lancamento (f5392c4bab92e33b2e13cc9856c836af635c9e76)
+- fix: corrige caminho do wrangler corrompido no script de lancamento (4b8386bb16c120b81ab3cfeba8974c18f125d5c5)
+
+### ⚡ Improvements
+- improve: registra build 0050 e aponta site para os pacotes validados (344200514e2a163ff6b9a1ce2224a1f9104c5490)
+- improve: registra publicacao do build 0050 no site e feed proprios do Playout (cc12cb9c85955b35bab12d30c9d6900db8c6c8d5)
+- improve: recaptura telas do site a cada lancamento e registra regra de atualizacao do site (d517c692dde75565027941f31921f4331ec4acf6)
+- improve: prepara preenchimento do contrato ASIO da Steinberg e obrigacoes da licenca (017e52b045b3d2741706397baff79fafd5a8ad55)
+- improve: gera contrato ASIO editavel e versao achatada para assinatura digital (ec234f50919805ad12b2a34faecb57a705d65321)
+
 ## v0.19.0 (build 0050) - 2026-10-22
 
 ### 💥 Breaking Changes
