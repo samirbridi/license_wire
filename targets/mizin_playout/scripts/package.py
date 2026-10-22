@@ -17,7 +17,7 @@ ROOT = pathlib.Path(__file__).resolve().parents[1]
 RUNTIME_FILES = ('MizinPlayout.exe', 'MizinUpdater.exe', 'Processing.NDI.Lib.x64.dll', 'Qt6Core.dll', 'Qt6Gui.dll', 'Qt6Widgets.dll',
     'Qt6Multimedia.dll', 'Qt6MultimediaWidgets.dll', 'Qt6Network.dll', 'Qt6OpenGL.dll',
     'Qt6OpenGLWidgets.dll', 'avcodec-61.dll', 'avformat-61.dll', 'avutil-59.dll',
-    'swresample-5.dll', 'swscale-8.dll', 'D3Dcompiler_47.dll', 'icuuc.dll', 'libomt.dll', 'libvmx.dll')
+    'swresample-5.dll', 'swscale-8.dll', 'D3Dcompiler_47.dll', 'icuuc.dll', 'libomt.dll', 'libvmx.dll', 'datachannel.dll')
 PLUGIN_DIRS = ('generic', 'imageformats', 'multimedia', 'networkinformation', 'platforms', 'styles', 'tls')
 
 def read(path):

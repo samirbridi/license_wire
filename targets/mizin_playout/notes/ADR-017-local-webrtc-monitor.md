@@ -1,6 +1,6 @@
 # ADR-017 — Local WebRTC monitor (view only)
 
-Date: 2026-10-21. Status: accepted direction, not implemented. Follows ADR-016.
+Date: 2026-10-21. Status: implemented 2026-10-22 (see Implementation notes). Follows ADR-016.
 
 ## Decision
 
@@ -37,3 +37,25 @@ Latency glass-to-glass on LAN (goal < 300 ms, measured with a timecode fixture),
 Program, multiple viewers on one encoder, viewer leave/rejoin, wrong/expired code rejected, server off by
 default, nothing listening when disabled (port check). Browsers: Chrome/Edge desktop, Safari iOS,
 Chrome Android.
+
+## Implementation notes (2026-10-22)
+
+- Dependencies are built from pinned sources by `scripts/build-web-sdk.cmd` into ignored `binaries/web-sdk`
+  (libdatachannel v0.24.6 + submodules, Mbed TLS v3.6.7 with `MBEDTLS_SSL_DTLS_SRTP`, Opus v1.5.2).
+  `datachannel.dll` ships beside the app; notices/commits in `packaging/notices/webrtc-monitor`.
+- Video: Windows Media Foundation **software** H.264 MFT (`CLSID_CMSH264EncoderMFT`), Baseline, CBR
+  3.5 Mb/s, low-latency mode, GOP 2 s, forced IDR on viewer join/PLI, 1280×720 letterboxed, <= 30 fps.
+  The shipped FFmpeg has no development files, so `h264_mf`/NVENC through FFmpeg was not used.
+  A hardware (async) MFT path is a measured follow-up.
+- Audio: Program mix tap (ADR-006) → Opus 20 ms, 128 kb/s stereo; the page munges its answer to
+  `stereo=1` so browsers do not downmix.
+- Signaling: server offer, browser answer, non-trickle over two POSTs; `playout-delay` header
+  extension 0–100 ms asks the browser for minimum buffering. Host candidates only, UDP 50200–50399;
+  "This computer only" binds HTTP and ICE to 127.0.0.1.
+- Access: 8-char code (persisted per machine, "New code" disconnects everyone), 20 wrong codes per
+  minute → 429, 16 viewers max, no control endpoint exists.
+- Paused/black Programs repeat the last picture at 2 fps so joining viewers still get a keyframe.
+
+Measured (dev build, same PC, built-in Chromium browser pane): 1280×720 at 29 fps decoded, video
+jitter buffer 4–21 ms, audio jitter buffer ~57 ms, Opus negotiated stereo. Glass-to-glass latency on
+a real LAN/phone is not yet measured.

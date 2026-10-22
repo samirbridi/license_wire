@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="referrer" content="no-referrer">
+<title>Mizin Playout · Monitor</title>
+<style>
+:root{--bg:#0d151f;--panel:#101c28;--line:#283e52;--text:#e4edf6;--muted:#9eb4c9;--accent:#55cce3;--air:#ff4b4b}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+body{margin:0;background:var(--bg);color:var(--text);font:14px/1.4 "Segoe UI",system-ui,sans-serif}
+header{display:flex;align-items:center;gap:12px;padding:12px 16px;border-bottom:1px solid var(--line);flex-wrap:wrap}
+header h1{font-size:17px;letter-spacing:3px;margin:0;font-weight:700}
+header h1 span{color:var(--accent)}
+#status{color:var(--muted);font-size:12px;margin-left:auto}
+main{padding:16px;display:grid;gap:16px}
+#programs{display:flex;gap:8px;flex-wrap:wrap}
+.program{background:var(--panel);border:1px solid var(--line);border-top:3px solid var(--line);border-radius:6px;padding:8px 10px;min-width:170px;display:flex;flex-direction:column;gap:4px}
+.program.air{border-top-color:var(--air)}
+.program b{font-size:14px}
+.program small{color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:220px}
+.badge{display:inline-block;font-size:10px;font-weight:700;letter-spacing:.8px;padding:2px 6px;border-radius:3px;background:#192635;color:var(--muted)}
+.air .badge{background:#d7343a;color:#fff}
+button{background:#162434;color:var(--text);border:1px solid #2e465d;border-radius:4px;padding:6px 10px;font:inherit;cursor:pointer}
+button:hover{border-color:var(--accent)}
+button.primary{background:#1d4a57;border-color:#2f7d8d}
+button:disabled{opacity:.45;cursor:default}
+#players{display:grid;gap:16px;grid-template-columns:repeat(auto-fill,minmax(min(100%,520px),1fr))}
+.player{background:var(--panel);border:1px solid var(--line);border-radius:6px;overflow:hidden}
+.player.air{border-color:var(--air)}
+.player .bar{display:flex;align-items:center;gap:8px;padding:8px 10px}
+.player .bar b{margin-right:auto}
+.player video{display:block;width:100%;aspect-ratio:16/9;background:#000}
+.state{font-size:11px;color:var(--muted)}
+.stats{font-size:11px;color:var(--muted);padding:6px 10px;font-family:Consolas,monospace}
+form{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+input{background:#0a121b;color:var(--text);border:1px solid #2e465d;border-radius:4px;padding:7px 10px;font:inherit}
+.note{color:var(--muted);font-size:12px}
+</style>
+</head>
+<body>
+<header><h1>MIZIN <span>MONITOR</span></h1><span id="status"></span></header>
+<main>
+<form id="login" hidden><label id="codeLabel" for="code"></label><input id="code" autocomplete="off" autocapitalize="off"><button class="primary" id="enter"></button></form>
+<div id="programs"></div>
+<div id="players"></div>
+<p class="note" id="note"></p>
+</main>
+<script>
+const pt=(navigator.language||"").toLowerCase().startsWith("pt");
+const T=pt?{code:"Código de acesso",enter:"Entrar",watch:"Assistir",stop:"Fechar",sound:"Som",mute:"Mudo",full:"Tela cheia",air:"NO AR",off:"Fora do ar",connecting:"Conectando…",live:"Ao vivo",failed:"Falhou — tente de novo",wrong:"Código errado ou trocado no aplicativo.",offline:"Aplicativo não responde.",viewers:n=>n+" assistindo",note:"Somente visualização: nada aqui controla o playout. O áudio começa mudo (exigência do navegador)."}
+                :{code:"Access code",enter:"Enter",watch:"Watch",stop:"Close",sound:"Sound",mute:"Mute",full:"Fullscreen",air:"ON AIR",off:"Off air",connecting:"Connecting…",live:"Live",failed:"Failed — try again",wrong:"Wrong code, or it was changed in the app.",offline:"App is not responding.",viewers:n=>n+" watching",note:"View only: nothing here controls playout. Audio starts muted (browser rule)."};
+const params=new URLSearchParams(location.search);const key=params.get("k")||"";
+const $=id=>document.getElementById(id);const players=new Map();let programs=[],lastList="";
+$("note").textContent=T.note;$("codeLabel").textContent=T.code;$("enter").textContent=T.enter;
+$("login").onsubmit=e=>{e.preventDefault();location.search="?k="+encodeURIComponent($("code").value.trim());};
+function api(path,options){return fetch(path+(path.includes("?")?"&":"?")+"k="+encodeURIComponent(key),Object.assign({cache:"no-store"},options||{}));}
+async function refresh(){
+  if(!key){$("login").hidden=false;return;}
+  try{const r=await api("/api/programs");if(r.status===403||r.status===429){$("status").textContent=T.wrong;$("login").hidden=false;return;}
+    const data=await r.json();programs=data.programs;$("status").textContent=T.viewers(data.viewers);$("login").hidden=true;const list=JSON.stringify(programs)+[...players.keys()];if(list!==lastList){lastList=list;render();}}
+  catch(e){$("status").textContent=T.offline;}
+}
+function render(){
+  const box=$("programs");box.replaceChildren();
+  for(const p of programs){const card=document.createElement("div");card.className="program"+(p.onAir?" air":"");
+    const name=document.createElement("b");name.textContent=p.name;const badge=document.createElement("span");badge.className="badge";badge.textContent=p.onAir?T.air:T.off;
+    const media=document.createElement("small");media.textContent=p.media||"—";const watch=document.createElement("button");watch.className="primary";watch.textContent=T.watch;watch.disabled=players.has(p.id);watch.onclick=()=>open(p);
+    card.append(name,badge,media,watch);box.append(card);
+    const player=players.get(p.id);if(player){player.root.classList.toggle("air",p.onAir);player.title.textContent=p.name;}}
+}
+function waitGathering(pc){return new Promise(resolve=>{if(pc.iceGatheringState==="complete")return resolve();const done=()=>{if(pc.iceGatheringState==="complete"){pc.removeEventListener("icegatheringstatechange",done);resolve();}};pc.addEventListener("icegatheringstatechange",done);setTimeout(resolve,2500);});}
+async function open(p){
+  const root=document.createElement("section");root.className="player";const bar=document.createElement("div");bar.className="bar";const title=document.createElement("b");title.textContent=p.name;
+  const state=document.createElement("span");state.className="state";state.textContent=T.connecting;const sound=document.createElement("button");sound.textContent=T.sound;
+  const full=document.createElement("button");full.textContent=T.full;const close=document.createElement("button");close.textContent=T.stop;bar.append(title,state,sound,full,close);
+  const video=document.createElement("video");video.autoplay=true;video.muted=true;video.playsInline=true;const info=document.createElement("div");info.className="stats";root.append(bar,video,info);$("players").append(root);
+  const player={root,title,pc:null,session:null,timer:0};players.set(p.id,player);render();
+  sound.onclick=()=>{video.muted=!video.muted;sound.textContent=video.muted?T.sound:T.mute;video.play();};
+  full.onclick=()=>(video.requestFullscreen||video.webkitEnterFullscreen||(()=>{})).call(video);
+  close.onclick=()=>stop(p.id);
+  try{
+    const r=await api("/api/session?program="+p.id,{method:"POST"});if(!r.ok)throw new Error(r.status);const offer=await r.json();player.session=offer.session;
+    const pc=new RTCPeerConnection({iceServers:[]});player.pc=pc;
+    pc.ontrack=e=>{try{e.receiver.playoutDelayHint=0;e.receiver.jitterBufferTarget=0;}catch(_){}const stream=e.streams[0]||new MediaStream([e.track]);if(video.srcObject!==stream){if(video.srcObject&&!e.streams[0])video.srcObject.addTrack(e.track);else video.srcObject=stream;}};
+    pc.onconnectionstatechange=()=>{state.textContent=pc.connectionState==="connected"?T.live:pc.connectionState==="failed"?T.failed:T.connecting;};
+    await pc.setRemoteDescription({type:"offer",sdp:offer.sdp});const answer=await pc.createAnswer();
+    // Receive the Program mix in stereo (browsers otherwise answer Opus as mono).
+    const fmtp=new RegExp("a=fmtp:111 [^"+String.fromCharCode(13,10)+"]*");answer.sdp=answer.sdp.replace(fmtp,m=>m.includes("stereo=1")?m:m+";stereo=1;sprop-stereo=1");
+    await pc.setLocalDescription(answer);await waitGathering(pc);
+    player.timer=setInterval(async()=>{let line="";(await pc.getStats()).forEach(s=>{if(s.type==="inbound-rtp"&&s.kind==="video"&&s.frameWidth){const buffer=s.jitterBufferEmittedCount?Math.round(s.jitterBufferDelay/s.jitterBufferEmittedCount*1000):0;line=s.frameWidth+"×"+s.frameHeight+" · "+Math.round(s.framesPerSecond||0)+" fps · buffer "+buffer+" ms";}});info.textContent=line;},2000);
+    const a=await api("/api/answer?session="+offer.session,{method:"POST",body:pc.localDescription.sdp,headers:{"Content-Type":"application/sdp"}});if(!a.ok)throw new Error(a.status);
+  }catch(e){state.textContent=T.failed;}
+}
+function stop(id){const p=players.get(id);if(!p)return;clearInterval(p.timer);if(p.pc)p.pc.close();if(p.session)navigator.sendBeacon("/api/close?session="+p.session+"&k="+encodeURIComponent(key));p.root.remove();players.delete(id);render();}
+addEventListener("pagehide",()=>{for(const id of [...players.keys()])stop(id);});
+refresh();setInterval(refresh,1500);
+</script>
+</body>
+</html>

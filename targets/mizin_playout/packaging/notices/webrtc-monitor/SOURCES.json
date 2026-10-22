@@ -1,0 +1,14 @@
+{
+  "purpose": "Local WebRTC web monitor (ADR-017). datachannel.dll statically contains libdatachannel, libjuice, libsrtp, usrsctp, plog and Mbed TLS. Opus is statically linked into MizinPlayout.exe. H.264 uses the Windows Media Foundation encoder shipped with Windows (no codec library is distributed).",
+  "build": "scripts/build-web-sdk.cmd (MSVC x64 Release, /MD). Only change to upstream sources: MBEDTLS_SSL_DTLS_SRTP enabled in mbedtls/include/mbedtls/mbedtls_config.h. MPL-2.0 files are unmodified; their source is available at the commits below.",
+  "components": [
+    {"name": "libdatachannel", "version": "v0.24.6", "license": "MPL-2.0", "repository": "https://github.com/paullouisageneau/libdatachannel", "commit": "6b1e2e620f1e37f0eafeee702eaea0043cb305fd"},
+    {"name": "libjuice", "version": "libdatachannel v0.24.6 submodule", "license": "MPL-2.0", "repository": "https://github.com/paullouisageneau/libjuice", "commit": "b89c792e3612faf2f12cf35bcc56857313a06be3"},
+    {"name": "libsrtp", "version": "libdatachannel v0.24.6 submodule", "license": "BSD-3-Clause", "repository": "https://github.com/cisco/libsrtp", "commit": "24b3bf8f19b6f5ab4cd2bcceb4f4064efca86fd5"},
+    {"name": "usrsctp", "version": "libdatachannel v0.24.6 submodule", "license": "BSD-3-Clause", "repository": "https://github.com/paullouisageneau/usrsctp", "commit": "fec583d54493f879d2ae44a743423bf8a04371ab"},
+    {"name": "plog", "version": "libdatachannel v0.24.6 submodule", "license": "MIT", "repository": "https://github.com/SergiusTheBest/plog", "commit": "94899e0b926ac1b0f4750bfbd495167b4a6ae9ef"},
+    {"name": "nlohmann/json", "version": "libdatachannel v0.24.6 submodule", "license": "MIT", "repository": "https://github.com/nlohmann/json", "commit": "55f93686c01528224f448c19128836e7df245f72"},
+    {"name": "Mbed TLS", "version": "v3.6.7", "license": "Apache-2.0 OR GPL-2.0-or-later (used under Apache-2.0)", "repository": "https://github.com/Mbed-TLS/mbedtls", "commit": "068ff080b369adfac81509f9b57b2afabaf82dc5"},
+    {"name": "Opus", "version": "v1.5.2", "license": "BSD-3-Clause", "repository": "https://github.com/xiph/opus", "commit": "ddbe48383984d56acd9e1ab6a090c54ca6b735a6"}
+  ]
+}

@@ -1,0 +1,222 @@
+#include "web_monitor.hpp"
+#include "web_encoder.hpp"
+#include <rtc/rtc.hpp>
+#include <QDateTime>
+#include <QElapsedTimer>
+#include <QFile>
+#include <QJsonArray>
+#include <QJsonDocument>
+#include <QNetworkInterface>
+#include <QPainter>
+#include <QRandomGenerator>
+#include <QTcpServer>
+#include <QTcpSocket>
+#include <QTimer>
+#include <QUrlQuery>
+#include <QVideoFrameFormat>
+#include <atomic>
+#include <chrono>
+#include <condition_variable>
+#include <deque>
+#include <mutex>
+#include <thread>
+
+namespace {
+constexpr int Width=1280,Height=720,Fps=30,VideoBitrate=3500000,AudioBitrate=128000;
+constexpr int VideoPayload=96,AudioPayload=111,PlayoutDelayExtension=6;
+constexpr int MaxRequestBytes=128*1024;
+void initLogger(){static std::once_flag once;std::call_once(once,[]{rtc::InitLogger(rtc::LogLevel::Warning);});}
+}
+
+// One encoder per watched Program, shared by every viewer of that Program. Frames are converted on
+// the GUI thread at <= 30 fps only while someone watches (as NetworkBus does), then letterboxed to
+// 1280x720 and encoded on a worker thread; the Program and GUI never wait for the network.
+class WebStream final : public QObject {
+public:
+    struct Viewer {
+        QString session;std::shared_ptr<rtc::PeerConnection> pc;std::shared_ptr<rtc::Track> video,audio;
+        std::atomic<bool> videoOpen{false},audioOpen{false},connected{false};
+    };
+    explicit WebStream(NativeChannel* channel):channel_(channel){
+        clock_.start();
+        connect(channel,&NativeChannel::frameReady,this,[this](const QVideoFrame& frame){this->frame(frame,false);});
+        connect(channel,&NativeChannel::audioReady,this,[this](const AudioPacket& packet){if(!watching())return;std::lock_guard lock(mutex_);while(audio_.size()>=50){audio_.pop_front();++droppedAudio_;}audio_.push_back(packet);wake_.notify_one();});
+        connect(channel,&NativeChannel::audioReset,this,[this]{std::lock_guard lock(mutex_);audio_.clear();resetAudio_=true;});
+        worker_=std::thread([this]{work();});
+        frame(channel->lastFrame(),true);
+    }
+    ~WebStream() override {
+        {std::lock_guard lock(mutex_);stopping_=true;}wake_.notify_all();if(worker_.joinable())worker_.join();
+        for(const auto& viewer:snapshot())if(viewer->pc)viewer->pc->close();
+    }
+    std::shared_ptr<Viewer> addViewer(const QString& session,const rtc::Configuration& config,QObject* context,std::function<void(QString)> offer,std::function<void()> failed){
+        auto viewer=std::make_shared<Viewer>();viewer->session=session;viewer->pc=std::make_shared<rtc::PeerConnection>(config);std::weak_ptr<Viewer> weak=viewer;auto keyframe=keyframe_;
+        const uint32_t ssrc=QRandomGenerator::global()->generate()&0x7ffffffe;
+        rtc::Description::Video video("video",rtc::Description::Direction::SendOnly);video.addH264Codec(VideoPayload,"profile-level-id=42e01f;packetization-mode=1;level-asymmetry-allowed=1");video.addSSRC(ssrc,"mizin-video","mizin","mizin-video");
+        video.addExtMap(rtc::Description::Entry::ExtMap(PlayoutDelayExtension,"http://www.webrtc.org/experiments/rtp-hdrext/playout-delay"));
+        viewer->video=viewer->pc->addTrack(video);
+        auto videoConfig=std::make_shared<rtc::RtpPacketizationConfig>(ssrc,"mizin",VideoPayload,rtc::H264RtpPacketizer::ClockRate);
+        // Ask the browser to render as soon as frames arrive (0-100 ms jitter buffer) instead of its default smoothing delay.
+        videoConfig->playoutDelayId=PlayoutDelayExtension;videoConfig->playoutDelayMin=0;videoConfig->playoutDelayMax=10;
+        auto packetizer=std::make_shared<rtc::H264RtpPacketizer>(rtc::NalUnit::Separator::StartSequence,videoConfig);
+        packetizer->addToChain(std::make_shared<rtc::RtcpSrReporter>(videoConfig));packetizer->addToChain(std::make_shared<rtc::RtcpNackResponder>());packetizer->addToChain(std::make_shared<rtc::PliHandler>([keyframe]{*keyframe=true;}));
+        viewer->video->setMediaHandler(packetizer);
+        rtc::Description::Audio audio("audio",rtc::Description::Direction::SendOnly);audio.addOpusCodec(AudioPayload);audio.addSSRC(ssrc+1,"mizin-audio","mizin","mizin-audio");viewer->audio=viewer->pc->addTrack(audio);
+        auto audioConfig=std::make_shared<rtc::RtpPacketizationConfig>(ssrc+1,"mizin",AudioPayload,48000);auto opus=std::make_shared<rtc::OpusRtpPacketizer>(audioConfig);opus->addToChain(std::make_shared<rtc::RtcpSrReporter>(audioConfig));viewer->audio->setMediaHandler(opus);
+        viewer->video->onOpen([weak,keyframe]{if(auto v=weak.lock()){v->videoOpen=true;*keyframe=true;}});viewer->video->onClosed([weak]{if(auto v=weak.lock())v->videoOpen=false;});
+        viewer->audio->onOpen([weak]{if(auto v=weak.lock())v->audioOpen=true;});viewer->audio->onClosed([weak]{if(auto v=weak.lock())v->audioOpen=false;});
+        viewer->pc->onStateChange([weak,context,failed](rtc::PeerConnection::State state){
+            if(auto v=weak.lock())v->connected=state==rtc::PeerConnection::State::Connected;
+            if(state==rtc::PeerConnection::State::Failed||state==rtc::PeerConnection::State::Closed||state==rtc::PeerConnection::State::Disconnected)QMetaObject::invokeMethod(context,failed,Qt::QueuedConnection);
+        });
+        viewer->pc->onGatheringStateChange([weak,context,offer](rtc::PeerConnection::GatheringState state){
+            if(state!=rtc::PeerConnection::GatheringState::Complete)return;auto v=weak.lock();if(!v)return;const auto description=v->pc->localDescription();if(!description)return;
+            const QString sdp=QString::fromStdString(std::string(*description));QMetaObject::invokeMethod(context,[offer,sdp]{offer(sdp);},Qt::QueuedConnection);
+        });
+        {std::lock_guard lock(viewersMutex_);viewers_.push_back(viewer);}
+        viewer->pc->setLocalDescription();return viewer;
+    }
+    bool answer(const QString& session,const QString& sdp){
+        for(const auto& viewer:snapshot())if(viewer->session==session){try{viewer->pc->setRemoteDescription(rtc::Description(sdp.toStdString(),"answer"));return true;}catch(const std::exception&){return false;}}
+        return false;
+    }
+    bool connected(const QString& session){for(const auto& viewer:snapshot())if(viewer->session==session)return viewer->connected;return false;}
+    void removeViewer(const QString& session){
+        std::shared_ptr<Viewer> removed;{std::lock_guard lock(viewersMutex_);for(auto it=viewers_.begin();it!=viewers_.end();++it)if((*it)->session==session){removed=*it;viewers_.erase(it);break;}}
+        if(removed&&removed->pc)removed->pc->close();
+    }
+    int viewerCount()const{std::lock_guard lock(viewersMutex_);return int(viewers_.size());}
+    QJsonObject statistics()const{
+        std::lock_guard lock(statsMutex_);
+        return {{"viewers",viewerCount()},{"encoded_frames",encoded_.load()},{"keyframes",keyframes_.load()},{"superseded_frames",superseded_.load()},{"audio_packets",audioPackets_.load()},{"dropped_audio_packets",droppedAudio_.load()},{"encode_ms_last",encodeUs_.load()/1000.0},{"video_bytes",double(bytes_.load())},{"width",Width},{"height",Height},{"fps_limit",Fps},{"encoder",encoderError_.isEmpty()?QStringLiteral("Windows Media Foundation H.264 (software MFT)"):encoderError_},{"audio_codec","Opus 48 kHz stereo"}};
+    }
+private:
+    NativeChannel* channel_;
+    QElapsedTimer clock_;
+    qint64 lastFrameMs_=-1000;
+    std::mutex mutex_;mutable std::mutex viewersMutex_,statsMutex_;std::condition_variable wake_;std::thread worker_;
+    std::vector<std::shared_ptr<Viewer>> viewers_;
+    QImage pending_;bool hasPending_=false,stopping_=false,resetAudio_=false;std::deque<AudioPacket> audio_;
+    std::shared_ptr<std::atomic<bool>> keyframe_=std::make_shared<std::atomic<bool>>(true);
+    std::atomic<qint64> encoded_{0},keyframes_{0},superseded_{0},audioPackets_{0},droppedAudio_{0},encodeUs_{0},bytes_{0};
+    QString encoderError_;
+    std::vector<std::shared_ptr<Viewer>> snapshot()const{std::lock_guard lock(viewersMutex_);return viewers_;}
+    bool watching()const{for(const auto& viewer:snapshot())if(viewer->videoOpen||viewer->audioOpen)return true;return false;}
+    double seconds()const{return clock_.nsecsElapsed()/1e9;}
+    void frame(const QVideoFrame& frame,bool force){
+        if(!force&&!watching())return;const qint64 now=clock_.elapsed();if(!force&&now-lastFrameMs_<1000/Fps-3)return;lastFrameMs_=now;
+        QImage image;
+        if(frame.isValid()){const auto format=frame.surfaceFormat();const bool hdr=format.colorTransfer()==QVideoFrameFormat::ColorTransfer_ST2084||format.colorTransfer()==QVideoFrameFormat::ColorTransfer_STD_B67;if(!hdr&&frame.width()<=4096&&frame.height()<=4096)image=frame.toImage();}
+        if(image.isNull()){image=QImage(16,9,QImage::Format_RGB32);image.fill(Qt::black);}
+        std::lock_guard lock(mutex_);if(hasPending_)++superseded_;pending_=std::move(image);hasPending_=true;wake_.notify_one();
+    }
+    void send(const std::shared_ptr<rtc::Track>& track,const QByteArray& data,double timestamp){
+        try{track->sendFrame(reinterpret_cast<const rtc::byte*>(data.constData()),size_t(data.size()),rtc::FrameInfo(std::chrono::duration<double>(timestamp)));}catch(const std::exception&){}
+    }
+    void work(){
+        H264Encoder video;OpusAudioEncoder opus;const bool videoReady=video.open(Width,Height,Fps,VideoBitrate);opus.open(AudioBitrate);
+        if(!videoReady){std::lock_guard lock(statsMutex_);encoderError_=video.error();}
+        QImage canvas(Width,Height,QImage::Format_RGB32),last;double lastVideo=-1,audioClock=-1;std::vector<float> pcm;
+        for(;;){
+            QImage image;std::deque<AudioPacket> audio;bool reset=false;
+            {std::unique_lock lock(mutex_);wake_.wait_for(lock,std::chrono::milliseconds(100),[this]{return stopping_||hasPending_||!audio_.empty();});if(stopping_)break;
+                if(hasPending_){image=std::move(pending_);hasPending_=false;}audio.swap(audio_);reset=std::exchange(resetAudio_,false);}
+            const double now=seconds();
+            // Paused/black Programs publish no new frames: repeat the last picture twice per second so joining viewers get a keyframe.
+            if(image.isNull()&&!last.isNull()&&now-lastVideo>.5)image=last;
+            if(!image.isNull()&&videoReady){
+                last=image;canvas.fill(Qt::black);{QPainter painter(&canvas);painter.setRenderHint(QPainter::SmoothPixmapTransform);const QSize fit=image.size().scaled(Width,Height,Qt::KeepAspectRatio);painter.drawImage(QRect(QPoint((Width-fit.width())/2,(Height-fit.height())/2),fit),image);}
+                const bool force=keyframe_->exchange(false);bool key=false;QElapsedTimer timer;timer.start();const QByteArray unit=video.encode(canvas,qint64(now*1e6),force,&key);encodeUs_=timer.nsecsElapsed()/1000;
+                if(!unit.isEmpty()){++encoded_;bytes_+=unit.size();if(key)++keyframes_;lastVideo=qMax(now,lastVideo+.001);for(const auto& viewer:snapshot())if(viewer->videoOpen)send(viewer->video,unit,lastVideo);}
+            }
+            if(reset){pcm.clear();audioClock=-1;}
+            for(const auto& packet:audio){const auto* samples=reinterpret_cast<const float*>(packet.samples.constData());pcm.insert(pcm.end(),samples,samples+packet.frames()*2);}
+            if(pcm.size()>size_t(48000*2)){pcm.erase(pcm.begin(),pcm.end()-48000);++droppedAudio_;}
+            while(pcm.size()>=size_t(OpusAudioEncoder::FrameSamples*2)){
+                const QByteArray packet=opus.encode(pcm.data());pcm.erase(pcm.begin(),pcm.begin()+OpusAudioEncoder::FrameSamples*2);if(packet.isEmpty())continue;
+                // Audio RTP time follows its own sample clock, re-anchored to wall time after gaps/drift (RTCP SR maps both tracks to the same clock).
+                if(audioClock<0||std::abs(audioClock-now)>.25)audioClock=now;++audioPackets_;for(const auto& viewer:snapshot())if(viewer->audioOpen)send(viewer->audio,packet,audioClock);audioClock+=.02;
+            }
+        }
+    }
+};
+
+WebMonitorServer::WebMonitorServer(Programs programs,Channel channel,QObject* parent):QObject(parent),programs_(std::move(programs)),channel_(std::move(channel)){}
+WebMonitorServer::~WebMonitorServer(){closeAll();}
+bool WebMonitorServer::running()const{return server_&&server_->isListening();}
+quint16 WebMonitorServer::port()const{return running()?server_->serverPort():0;}
+QString WebMonitorServer::generateCode(){static const QString alphabet="abcdefghjkmnpqrstuvwxyz23456789";QString code;for(int i=0;i<8;++i)code+=alphabet[int(QRandomGenerator::system()->bounded(alphabet.size()))];return code;}
+bool WebMonitorServer::start(quint16 port,bool lan,const QString& code){
+    stop();initLogger();server_=new QTcpServer(this);
+    if(!server_->listen(lan?QHostAddress::AnyIPv4:QHostAddress::LocalHost,port)){error_=server_->errorString();delete server_;server_=nullptr;emit changed();return false;}
+    lan_=lan;code_=code.size()>=6?code:generateCode();error_.clear();failures_.clear();
+    connect(server_,&QTcpServer::newConnection,this,[this]{while(auto* socket=server_->nextPendingConnection()){connect(socket,&QTcpSocket::readyRead,this,[this,socket]{read(socket);});connect(socket,&QTcpSocket::disconnected,socket,&QObject::deleteLater);QTimer::singleShot(15000,socket,[socket]{socket->abort();});}});
+    emit changed();return true;
+}
+void WebMonitorServer::stop(){closeAll();if(server_){server_->close();delete server_;server_=nullptr;}emit changed();}
+void WebMonitorServer::setCode(const QString& code){code_=code;closeAll();emit changed();}
+void WebMonitorServer::closeAll(){sessions_.clear();streams_.clear();}
+void WebMonitorServer::programRemoved(int id){for(auto it=sessions_.begin();it!=sessions_.end();)if(it.value()==id)it=sessions_.erase(it);else ++it;streams_.remove(id);emit changed();}
+int WebMonitorServer::viewers()const{int total=0;for(const auto& stream:streams_)total+=stream->viewerCount();return total;}
+QStringList WebMonitorServer::urls()const{
+    if(!running())return {};QStringList list;const QString suffix=QString(":%1/?k=%2").arg(port()).arg(code_);
+    if(lan_)for(const auto& address:QNetworkInterface::allAddresses())if(address.protocol()==QAbstractSocket::IPv4Protocol&&!address.isLoopback()&&!address.isLinkLocal())list<<"http://"+address.toString()+suffix;
+    list<<"http://127.0.0.1"+suffix;return list;
+}
+QJsonObject WebMonitorServer::statistics()const{
+    QJsonArray streams;for(auto it=streams_.cbegin();it!=streams_.cend();++it){auto item=it.value()->statistics();item["program_id"]=it.key();streams.append(item);}
+    return {{"running",running()},{"port",port()},{"lan",lan_},{"viewers",viewers()},{"encoders",encoders()},{"streams",streams},{"media_udp_ports",QString("%1-%2").arg(MediaPortFirst).arg(MediaPortLast)},{"error",error_}};
+}
+void WebMonitorServer::respond(QTcpSocket* socket,int status,const QByteArray& type,const QByteArray& body){
+    static const QHash<int,QByteArray> reasons{{200,"OK"},{204,"No Content"},{400,"Bad Request"},{403,"Forbidden"},{404,"Not Found"},{405,"Method Not Allowed"},{413,"Payload Too Large"},{429,"Too Many Requests"},{503,"Service Unavailable"}};
+    QByteArray head="HTTP/1.1 "+QByteArray::number(status)+" "+reasons.value(status,"Error")+"\r\nContent-Length: "+QByteArray::number(body.size())+"\r\nConnection: close\r\nCache-Control: no-store\r\nX-Content-Type-Options: nosniff\r\nReferrer-Policy: no-referrer\r\nX-Frame-Options: DENY\r\n";
+    if(!type.isEmpty())head+="Content-Type: "+type+"\r\n";
+    socket->write(head+"\r\n"+body);socket->disconnectFromHost();
+}
+void WebMonitorServer::read(QTcpSocket* socket){
+    QByteArray buffer=socket->property("buffer").toByteArray()+socket->readAll();if(buffer.size()>MaxRequestBytes){respond(socket,413,"text/plain","Too large");return;}
+    const int end=buffer.indexOf("\r\n\r\n");if(end<0){socket->setProperty("buffer",buffer);return;}
+    const auto lines=buffer.left(end).split('\n');const auto first=lines.value(0).trimmed().split(' ');int length=0;
+    for(const auto& line:lines.mid(1)){const int colon=line.indexOf(':');if(colon>0&&line.left(colon).trimmed().toLower()=="content-length")length=line.mid(colon+1).trimmed().toInt();}
+    if(first.size()<2||length<0||length>MaxRequestBytes){respond(socket,400,"text/plain","Bad request");return;}
+    if(buffer.size()<end+4+length){socket->setProperty("buffer",buffer);return;}
+    socket->setProperty("buffer",QByteArray());disconnect(socket,&QTcpSocket::readyRead,this,nullptr);
+    Request request;request.method=first[0];const QByteArray target=first[1];const int mark=target.indexOf('?');request.path=mark<0?target:target.left(mark);
+    if(mark>=0){const QUrlQuery query(QString::fromUtf8(target.mid(mark+1)));for(const auto& item:query.queryItems(QUrl::FullyDecoded))request.query.insert(item.first,item.second);}
+    request.body=buffer.mid(end+4,length);handle(socket,request);
+}
+void WebMonitorServer::handle(QTcpSocket* socket,const Request& request){
+    if(request.path=="/"||request.path=="/index.html"){
+        if(request.method!="GET"){respond(socket,405,"text/plain","GET only");return;}QFile page(":/web/monitor.html");page.open(QIODevice::ReadOnly);respond(socket,200,"text/html; charset=utf-8",page.readAll());return;
+    }
+    if(!request.path.startsWith("/api/")){respond(socket,404,"text/plain","Not found");return;}
+    const qint64 now=QDateTime::currentMSecsSinceEpoch();failures_.removeIf([now](qint64 time){return now-time>60000;});
+    if(failures_.size()>=20){respond(socket,429,"text/plain","Too many wrong codes. Wait one minute.");return;}
+    if(request.query.value("k")!=code_){failures_.append(now);respond(socket,403,"text/plain","Wrong or expired access code");return;}
+    if(request.path=="/api/programs"&&request.method=="GET"){
+        QJsonArray list;for(const auto& program:programs_())list.append(QJsonObject{{"id",program.id},{"name",program.name},{"media",program.media},{"onAir",program.onAir},{"playing",program.playing}});
+        respond(socket,200,"application/json",QJsonDocument(QJsonObject{{"programs",list},{"viewers",viewers()}}).toJson(QJsonDocument::Compact));return;
+    }
+    if(request.method!="POST"){respond(socket,405,"text/plain","POST only");return;}
+    if(request.path=="/api/session"){createSession(socket,request.query.value("program").toInt());return;}
+    const QString session=request.query.value("session");
+    if(request.path=="/api/answer"){auto stream=streams_.value(sessions_.value(session,-1));respond(socket,stream&&stream->answer(session,QString::fromUtf8(request.body))?204:404,{},{});return;}
+    if(request.path=="/api/close"){closeSession(session);respond(socket,204,{},{});return;}
+    respond(socket,404,"text/plain","Not found");
+}
+void WebMonitorServer::createSession(QTcpSocket* socket,int programId){
+    auto* channel=channel_(programId);if(!channel){respond(socket,404,"text/plain","Program not available");return;}
+    if(viewers()>=16){respond(socket,503,"text/plain","Viewer limit reached");return;}
+    auto stream=streams_.value(programId);if(!stream){stream=std::make_shared<WebStream>(channel);streams_.insert(programId,stream);}
+    QString session;for(int i=0;i<4;++i)session+=QString::number(QRandomGenerator::system()->generate(),16).rightJustified(8,'0');
+    rtc::Configuration config;config.portRangeBegin=MediaPortFirst;config.portRangeEnd=MediaPortLast;if(!lan_)config.bindAddress="127.0.0.1";
+    QPointer<QTcpSocket> reply=socket;sessions_.insert(session,programId);
+    stream->addViewer(session,config,this,[this,reply,session](QString sdp){if(reply&&sessions_.contains(session))respond(reply,200,"application/json",QJsonDocument(QJsonObject{{"session",session},{"type","offer"},{"sdp",sdp}}).toJson(QJsonDocument::Compact));},[this,session]{closeSession(session);});
+    // A browser that never answers or connects releases its encoder share.
+    QTimer::singleShot(20000,this,[this,session]{auto stream=streams_.value(sessions_.value(session,-1));if(stream&&!stream->connected(session))closeSession(session);});
+    emit changed();
+}
+void WebMonitorServer::closeSession(const QString& session){
+    if(!sessions_.contains(session))return;const int id=sessions_.take(session);auto stream=streams_.value(id);
+    if(stream){stream->removeViewer(session);if(!stream->viewerCount())streams_.remove(id);}emit changed();
+}

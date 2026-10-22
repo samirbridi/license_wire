@@ -38,6 +38,12 @@ The detach icon at the corner of each deck (Preview, Program and every multiview
 
 A Program with media on air (playing or paused) gets the red bar and the **ON AIR** badge; Black/empty does not. The blue border still marks the TAKE destination.
 
+## Web monitor (watch in a browser)
+
+In **Outputs → Web monitor**, choose **Local network (LAN)** or **This computer only**, the port (default 8787) and click **Start web monitor**. The addresses with the access code appear (e.g. `http://192.168.1.30:8787/?k=code`): open one on a phone, tablet or another computer on the same network. The page lists the Programs with the **ON AIR** badge; **Watch** opens a Program live (1280×720, up to 30 fps, stereo audio). Audio starts muted by browser rule: tap **Sound**. It is view only — nothing in the browser controls playout.
+
+The web monitor never starts by itself at launch. **New code** replaces the code and disconnects everyone. Each watched Program uses a single Windows H.264 encoder shared by all its viewers. Windows may ask to allow network access the first time; video uses UDP ports 50200–50399. Do not expose the port to the internet.
+
 ## Language and performance
 
 English is default; Português (Brasil) can be selected during playback. Automatic hardware decoding and CPU decoding are available in Settings after restart. Codec/profile/driver support varies. Cuts forward shared native frames; transitions currently convert and compose in CPU once per Program. GPU composition, remote control, scheduling and production AV-sync/performance qualification remain future work. Layout samples demonstrate the interface, not physical-output playback.

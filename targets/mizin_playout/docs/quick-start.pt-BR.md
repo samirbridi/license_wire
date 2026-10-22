@@ -38,6 +38,12 @@ O ícone de destacar no canto de cada deck (Prévia, Program e cada Program da m
 
 Um Program com mídia no ar (tocando ou pausado) recebe a barra vermelha e o selo **NO AR**; em preto/vazio, não. A borda azul continua indicando o destino do TAKE.
 
+## Monitor web (assistir pelo navegador)
+
+Em **Saídas → Monitor web**, escolha **Rede local (LAN)** ou **Somente este computador**, a porta (padrão 8787) e clique em **Iniciar monitor web**. Aparecem os endereços com o código de acesso (ex.: `http://192.168.1.30:8787/?k=código`): abra num celular, tablet ou outro computador da mesma rede. A página lista os Programs com o selo **NO AR**; **Assistir** abre o Program ao vivo (1280×720, até 30 fps, áudio estéreo). O áudio começa mudo por regra do navegador: toque em **Som**. É só visualização — nada no navegador controla o playout.
+
+O monitor web nunca liga sozinho ao abrir o aplicativo. **Novo código** troca o código e desconecta todos. Cada Program assistido usa um único codificador H.264 do Windows, compartilhado por todos que o assistem. Na primeira vez o Windows pode pedir para liberar a rede; o vídeo usa as portas UDP 50200–50399. Não exponha a porta na internet.
+
 ## Idioma e desempenho
 
 Inglês é o padrão; Português (Brasil) pode ser escolhido durante a reprodução. As opções de decodificação automática por hardware e por CPU ficam em Configurações e exigem reinício. O suporte depende de codec, perfil e driver. Cortes encaminham quadros nativos compartilhados; transições convertem e compõem em CPU uma vez por Program. Composição em GPU, controle remoto, agendamento e validação de desempenho/sincronismo para produção seguem como próximas etapas. Pranchetas demonstram a interface, não reprodução em saídas físicas.

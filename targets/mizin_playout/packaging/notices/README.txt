@@ -9,6 +9,9 @@ The package also retains the supplied Qt SDK SPDX SBOMs, including third-party
 copyrights/license expressions, OMT MIT notice, NDI runtime vendor/third-party and header notices,
 NSIS notices and exact deployed FFmpeg runtime configuration/license.
 
+The webrtc-monitor folder holds the license texts and SOURCES.json (repositories and exact
+commits) of libdatachannel and its submodules, Mbed TLS and Opus used by the local web monitor.
+
 Sources:
 https://download.qt.io/archive/qt/6.10/6.10.2/submodules/
 https://ffmpeg.org/releases/ffmpeg-7.1.2.tar.xz

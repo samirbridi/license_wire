@@ -39,6 +39,10 @@ try {
         $notices=Join-Path $playoutDist 'licenses/omt';New-Item -ItemType Directory -Path $notices -Force | Out-Null
         Copy-Item -LiteralPath (Join-Path $playoutRoot 'reconstructed/third_party/omt/LICENSE.txt') -Destination $notices -Force
     } else {Write-Warning 'OMT runtime not installed; run scripts/setup-network-runtime.ps1 to enable OMT.'}
+    # ADR-017 web monitor runtime (libdatachannel + Mbed TLS), built by scripts/build-web-sdk.cmd.
+    $webRuntime=Join-Path $playoutRoot 'binaries/web-sdk/install/bin/datachannel.dll'
+    if(-not(Test-Path -LiteralPath $webRuntime)){throw 'Web monitor runtime missing; run scripts/build-web-sdk.cmd.'}
+    Copy-Item -LiteralPath $webRuntime -Destination $playoutDist -Force
     & $Python (Join-Path $PSScriptRoot 'version.py') --status PASS
     Get-FileHash -LiteralPath (Join-Path $playoutDist 'MizinPlayout.exe') -Algorithm SHA256
 } catch {
