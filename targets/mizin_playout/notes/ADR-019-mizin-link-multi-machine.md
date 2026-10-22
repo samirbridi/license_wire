@@ -1,7 +1,7 @@
 # ADR-019 — Mizin Link: several playout machines working as one
 
 Date: 2026-10-22. Status: accepted by the owner (all four scenarios, events with 5+ machines);
-phase 1 shipped in build 0054, phase 2 in 0055, phase 3 next (see notes below).
+phase 1 shipped in build 0054, phase 2 in 0055, phases 3 and 4 together in 0057 (0056 passed its build but was not published: host audio gate; see notes below).
 
 ## Scenarios (owner request)
 1. **Main + backup**: a backup follows everything the main does (show, playlists, takes, position) so
@@ -78,3 +78,18 @@ clock offset, manifest/download/verification and resume; then real LAN with the 
   thirds and quarters plus custom X/Y/W/H in %. Stored per route in settings (outputArea/outputRegion).
 - Validation: `--link-mirror-test` adds synchronized-take, drift-hold, follower-drift-report and crop checks
   (two MainWindows, loopback). Real multi-PC LAN measurement still pending.
+
+## Phase 4 notes (remote control)
+- New role "Control station". It joins with the Link code (session MAC as for followers) and, in `auth`, sends the
+  operator name plus proof = HMAC(SHA256("mizin-link-operator-v1|code|PIN"), session nonce). The PIN never travels.
+  Unknown operator or wrong proof -> `denied` and the session closes; the station stops auto-reconnecting.
+- Operators live on the master (settings `link/operators`): name, PIN, level operator|viewer, Program ids (empty = all).
+  Changing a PIN or removing an operator signs its station out immediately.
+- The master sends control stations a `desk` 4x/s (Programs, playlist item names, current row, media, position,
+  playing) with the station's level and allowed Programs; stations never receive the show, media, state or takes.
+- Commands (`cut`, `fade` with row + fade ms, `black`, `pause`, `play`) are validated against the operator again on
+  every command, executed by the playout machine as local takes (synchronized takes when active, so backups and
+  wall nodes follow) and answered with `ack`; each one is appended to `<profile>/link/remote-log.txt`.
+- Validation: `--link-test` covers sign-in, wrong PIN, per-operator permissions in the desk, command enforcement and
+  sign-out on PIN change; `--link-mirror-test` drives a real control-station window commanding the master while the
+  backup mirrors it. Real multi-PC LAN validation still pending.

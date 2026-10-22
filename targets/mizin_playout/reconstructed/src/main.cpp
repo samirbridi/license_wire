@@ -343,6 +343,7 @@ private:
 #include "main_link.inc"
 #include "main_link_mirror.inc"
 #include "main_link_sync.inc"
+#include "main_link_remote.inc"
     void refreshDashboard(){
         if(!manualMode_||!playlistTable_)return;
         for(auto* name:{previewName_,programName_,secondaryName_})if(name){name->setToolTip(name->text());name->setAccessibleName(name->text());}

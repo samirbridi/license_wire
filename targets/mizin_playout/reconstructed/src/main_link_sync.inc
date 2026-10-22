@@ -17,15 +17,16 @@
         auto* timer=new QTimer(this);timer->setSingleShot(true);timer->setTimerType(Qt::PreciseTimer);connect(timer,&QTimer::timeout,this,[timer,run]{run();timer->deleteLater();});
         timer->start(int(qMax<qint64>(0,(atLocalUs-link_->localTimeUs())/1000)));
     }
-    bool syncTake(PlaylistController::ManualTake mode){
-        if(cuedRow_<0||cuedRow_>=playlist_.size())return false;Cue incoming=playlist_[cuedRow_];
+    bool syncTake(PlaylistController::ManualTake mode){storeActivePlaylist();return syncTakeOn(selectedProgram_,cuedRow_,mode,manualFadeTime_->value());}
+    bool syncTakeOn(int index,int row,PlaylistController::ManualTake mode,int fadeMs){
+        const auto items=programDefinitions_[index].cues;if(row<0||row>=items.size())return false;Cue incoming=items[row];
         incoming.transition=mode==PlaylistController::ManualTake::Cut?Transition::Cut:Transition::Dissolve;
-        incoming.transitionMs=incoming.enterMs=mode==PlaylistController::ManualTake::Cut?0:manualFadeTime_->value();
+        incoming.transitionMs=incoming.enterMs=mode==PlaylistController::ManualTake::Cut?0:fadeMs;
         const QString relative=link_->relativeFor(incoming.path);
         if(relative.isEmpty()){footer_->setText(tx("This media was not sent to the other machines. Send the show again to take it in sync."));return false;}
-        auto* c=targetChannel();targetController()->adoptTake(playlist_,cuedRow_);c->cancelPrepared();c->prepareCue(incoming);
+        auto* c=channelAt(index);controllerAt(index)->adoptTake(items,row);c->cancelPrepared();c->prepareCue(incoming);
         const qint64 at=link_->localTimeUs()+SyncLeadMs*1000;Cue sent=incoming;sent.path=relative;
-        link_->broadcastTake({{"id",programDefinitions_[selectedProgram_].id},{"cue",sent.json()},{"serial",double(c->requestGeneration())},{"atUs",double(at)}});
+        link_->broadcastTake({{"id",programDefinitions_[index].id},{"cue",sent.json()},{"serial",double(c->requestGeneration())},{"atUs",double(at)}});
         scheduleTake(c,at);return true;
     }
     void applyLinkTake(const QJsonObject& take){

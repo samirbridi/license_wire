@@ -78,6 +78,12 @@ No mestre, marque **Disparo sincronizado**. A partir daí, cada CUT e FADE é pr
 
 Para dividir um telão entre saídas ou PCs, em **Saídas → Telas** escolha a **ÁREA** de cada saída: metades, terços, quartos ou **Área personalizada** (X, Y, largura e altura em % do vídeo). Cada tela mostra só o seu pedaço, esticado para preencher a tela.
 
+### Controle remoto (estação de controle)
+
+No mestre, em **Operadores remotos**, clique em **Adicionar operador**: defina o nome, o PIN, a permissão (**Operador** controla, **Observador** só assiste) e quais Programs ele pode comandar (**Todos os Programs** ou só alguns). Na outra máquina escolha a função **Estação de controle (remota)**, use o mesmo código do Link, digite o nome de operador e o PIN e clique em **Iniciar Link**. Aparece a **Mesa remota** com cada Program, o que está no ar e a playlist: selecione um item e use CUT, FADE, PRETO ou PAUSA.
+
+A máquina de playout continua no comando: ela confere cada comando, executa como se fosse local (inclusive em disparo sincronizado) e registra tudo em `link/remote-log.txt`. O PIN nunca trafega pela rede; trocar o PIN ou remover o operador desconecta a estação na hora.
+
 ## Idioma e desempenho
 
 Inglês é o padrão; Português (Brasil) pode ser escolhido durante a reprodução. As opções de decodificação automática por hardware e por CPU ficam em Configurações e exigem reinício. O suporte depende de codec, perfil e driver. Cortes encaminham quadros nativos compartilhados; transições convertem e compõem em CPU uma vez por Program. Composição em GPU, controle remoto, agendamento e validação de desempenho/sincronismo para produção seguem como próximas etapas. Pranchetas demonstram a interface, não reprodução em saídas físicas.

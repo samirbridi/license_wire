@@ -45,6 +45,7 @@ QString LinkNode::generateCode(){static const QString alphabet="abcdefghjkmnpqrs
 QByteArray LinkNode::deriveKey(const QString& code){return QCryptographicHash::hash(("mizin-link-v1|"+code.trimmed().toLower()).toUtf8(),QCryptographicHash::Sha256);}
 QString LinkNode::keyId(const QByteArray& key){return QString::fromLatin1(QCryptographicHash::hash(key,QCryptographicHash::Sha256).toHex().left(12));}
 QByteArray LinkNode::mac(const QByteArray& key,const QByteArray& data){return QMessageAuthenticationCode::hash(data,key,QCryptographicHash::Sha256).toHex();}
+QByteArray LinkNode::operatorKey(const QString& code,const QString& pin){return QCryptographicHash::hash(("mizin-link-operator-v1|"+code.trimmed().toLower()+"|"+pin.trimmed()).toUtf8(),QCryptographicHash::Sha256);}
 QString LinkNode::mediaRoot()const{return QDir(stateDirectory_).filePath("link-media");}
 quint16 LinkNode::port()const{return server_?server_->serverPort():0;}
 quint16 LinkNode::filePort()const{return files_?files_->serverPort():0;}
@@ -58,20 +59,24 @@ bool LinkNode::startMaster(const QString& code,quint16 port){
     discovery_=new QUdpSocket(this);heartbeat_=new QTimer(this);heartbeat_->setInterval(1000);connect(heartbeat_,&QTimer::timeout,this,&LinkNode::announce);heartbeat_->start();announce();
     emit changed();return true;
 }
-bool LinkNode::startFollower(const QString& code,bool discover){
-    stop();key_=deriveKey(code);code_=code.trimmed();role_=Role::Follower;error_.clear();network_=new QNetworkAccessManager(this);network_->setProxy(QNetworkProxy::NoProxy);
+bool LinkNode::startFollower(const QString& code,bool discover){return startClient(code,Role::Follower,discover);}
+bool LinkNode::startControl(const QString& code,const QString& operatorName,const QString& pin,bool discover){
+    const bool ok=startClient(code,Role::Control,discover);operator_=operatorName.trimmed().left(40);pin_=pin.trimmed();return ok;
+}
+bool LinkNode::startClient(const QString& code,Role role,bool discover){
+    stop();key_=deriveKey(code);code_=code.trimmed();role_=role;error_.clear();denied_=false;network_=new QNetworkAccessManager(this);network_->setProxy(QNetworkProxy::NoProxy);
     if(discover){discovery_=new QUdpSocket(this);if(discovery_->bind(QHostAddress::AnyIPv4,DiscoveryPort,QUdpSocket::ShareAddress|QUdpSocket::ReuseAddressHint))connect(discovery_,&QUdpSocket::readyRead,this,&LinkNode::readDiscovery);else error_="Discovery port busy; connect by address";}
     heartbeat_=new QTimer(this);heartbeat_->setInterval(500);
     connect(heartbeat_,&QTimer::timeout,this,[this]{
         const qint64 now=QDateTime::currentMSecsSinceEpoch();for(auto it=discovered_.begin();it!=discovered_.end();)if(now-it->lastSeenMs>5000)it=discovered_.erase(it);else ++it;
         if(sessionReady_){send(master_,"ping",{{"t1",double(localTimeUs())}});static int tick=0;if(++tick%4==0)reportMedia();}
-        else if(!master_)for(const auto& peer:discovered_)if(peer.keyId==keyId(key_)){connectTo(peer.address,peer.port);break;}
+        else if(!master_&&!denied_)for(const auto& peer:discovered_)if(peer.keyId==keyId(key_)){connectTo(peer.address,peer.port);break;}
         emit changed();
     });
     heartbeat_->start();emit changed();return true;
 }
 bool LinkNode::connectTo(const QString& host,quint16 port){
-    if(role_!=Role::Follower)return false;if(master_)dropSession(master_);
+    if(!client())return false;if(master_)dropSession(master_);
     auto session=std::make_shared<Session>();auto* socket=new QTcpSocket(this);session->socket=socket;session->address=host;masterHost_=host;master_=session;
     socket->setSocketOption(QAbstractSocket::LowDelayOption,1);
     connect(socket,&QTcpSocket::readyRead,this,[this,session]{readSession(session);});
@@ -125,11 +130,11 @@ void LinkNode::readSession(const std::shared_ptr<Session>& session){
     for(int end=session->buffer.indexOf('\n');end>=0;end=session->buffer.indexOf('\n')){
         const QByteArray line=session->buffer.left(end);session->buffer.remove(0,end+1);const auto message=QJsonDocument::fromJson(line).object();
         const QString type=message["type"].toString();const auto body=message["body"].toObject();const quint64 seq=quint64(message["seq"].toDouble());
-        if(role_==Role::Follower&&type=="hello"&&!session->authenticated&&session->nonce.isEmpty())session->nonce=body["nonce"].toString().toLatin1();
+        if(client()&&type=="hello"&&!session->authenticated&&session->nonce.isEmpty())session->nonce=body["nonce"].toString().toLatin1();
         const QByteArray expected=mac(key_,session->nonce+"|"+QByteArray::number(seq)+"|"+type.toUtf8()+"|"+compact(body));
         // Wrong code, tampering or replay: the session is closed.
         if(session->nonce.isEmpty()||message["mac"].toString().toLatin1()!=expected||seq<=session->recvSeq){
-            if(role_==Role::Follower&&!sessionReady_)fail("Link code does not match the master");dropSession(session);return;}
+            if(client()&&!sessionReady_)fail("Link code does not match the master");dropSession(session);return;}
         session->recvSeq=seq;
         if(role_==Role::Master&&!session->authenticated&&type!="auth"){dropSession(session);return;}
         handle(session,type,body);if(!session->socket)return;
@@ -137,19 +142,42 @@ void LinkNode::readSession(const std::shared_ptr<Session>& session){
 }
 void LinkNode::handle(const std::shared_ptr<Session>& session,const QString& type,const QJsonObject& body){
     if(role_==Role::Master){
-        if(type=="auth"){session->authenticated=true;session->peerId=body["id"].toString().left(64);session->peerName=body["name"].toString().left(80);session->peerVersion=body["version"].toString().left(40);
-            send(session,"welcome",{{"name",name_},{"filePort",int(filePort())}});if(revision_>0)send(session,"show",manifest_);emit changed();}
+        if(type=="auth"){
+            if(body["role"].toString()=="control"){
+                // Operator sign-in: unknown name or wrong PIN -> refused, nothing else is processed for this session.
+                const auto op=findOperator(body["operator"].toString());const QString pin=op["pin"].toString();
+                if(op.isEmpty()||body["proof"].toString().toLatin1()!=mac(operatorKey(code_,pin),session->nonce)){send(session,"denied",{{"reason","Operator name or PIN not accepted"}});
+                    if(session->socket)session->socket->flush();QTimer::singleShot(300,this,[this,session]{dropSession(session);});return;}
+                session->role="control";session->operatorName=op["name"].toString();session->pinTag=keyId(operatorKey(code_,pin));
+            }
+            session->authenticated=true;session->peerId=body["id"].toString().left(64);session->peerName=body["name"].toString().left(80);session->peerVersion=body["version"].toString().left(40);
+            send(session,"welcome",{{"name",name_},{"filePort",session->role=="control"?0:int(filePort())},{"level",session->role=="control"?findOperator(session->operatorName)["level"].toString():QString("follower")}});
+            if(revision_>0&&session->role!="control")send(session,"show",manifest_);emit changed();}
+        else if(type=="command"){
+            const auto op=session->role=="control"?findOperator(session->operatorName):QJsonObject{};const int program=body["program"].toInt();QString error;
+            if(op.isEmpty()||op["level"].toString()!="operator")error="Not allowed: view only";
+            else if(const auto allowed=allowedPrograms(op);!allowed.isEmpty()&&!allowed.contains(program))error="Not allowed: Program not assigned to this operator";
+            else if(!commandHandler_)error="Remote control unavailable";
+            else error=commandHandler_(body,session->operatorName);
+            send(session,"ack",{{"id",body["id"]},{"ok",error.isEmpty()},{"error",error}});
+        }
         else if(type=="ping")send(session,"pong",{{"t1",body["t1"]},{"t2",double(localTimeUs())}});
         else if(type=="status"){session->offsetMs=body["offsetMs"].toDouble();session->rttMs=body["rttMs"].toDouble();session->mediaReady=body["mediaReady"].toInt();session->mediaTotal=body["mediaTotal"].toInt();session->syncMs=body.contains("syncMs")?body["syncMs"].toDouble():-1;emit changed();}
         return;
     }
-    if(type=="hello")send(session,"auth",{{"id",id_},{"name",name_},{"version",QString(MizinVersion)}});
+    if(type=="hello"){QJsonObject auth{{"id",id_},{"name",name_},{"version",QString(MizinVersion)}};
+        if(role_==Role::Control){auth["role"]="control";auth["operator"]=operator_;auth["proof"]=QString::fromLatin1(mac(operatorKey(code_,pin_),session->nonce));}
+        send(session,"auth",auth);}
+    else if(type=="denied"){denied_=true;fail(body["reason"].toString().left(120));}
     else if(type=="welcome"){session->authenticated=true;sessionReady_=true;error_.clear();masterName_=body["name"].toString().left(80);masterFilePort_=quint16(body["filePort"].toInt());emit changed();}
     else if(type=="pong"){
         const qint64 t4=localTimeUs(),t1=qint64(body["t1"].toDouble()),t2=qint64(body["t2"].toDouble());if(t4<t1)return;
         clockSamples_.append({t4-t1,t2-(t1+t4)/2});while(clockSamples_.size()>16)clockSamples_.removeFirst();
         const auto best=*std::min_element(clockSamples_.cbegin(),clockSamples_.cend(),[](const auto& a,const auto& b){return a.first<b.first;});rttUs_=best.first;offsetUs_=best.second;emit changed();
     }
+    else if(type=="desk"){lastStateMs_=clock_.elapsed();emit deskReceived(body);}
+    else if(type=="ack")emit commandAnswered(body);
+    else if(role_==Role::Control)return; // stations never download media nor mirror
     else if(type=="show")receiveManifest(body);
     else if(type=="state"){lastStateMs_=clock_.elapsed();emit stateReceived(body);}
     else if(type=="take")emit takeReceived(body);
@@ -160,7 +188,7 @@ void LinkNode::dropSession(const std::shared_ptr<Session>& session){
 }
 QList<LinkPeer> LinkNode::peers()const{
     QList<LinkPeer> list;
-    if(role_==Role::Master){for(const auto& session:sessions_)if(session->authenticated)list.append({session->peerId,session->peerName,"follower",session->peerVersion,session->address,manifest_.value("name").toString(),{},0,0,session->offsetMs,session->rttMs,session->mediaReady,session->mediaTotal,session->syncMs});}
+    if(role_==Role::Master){for(const auto& session:sessions_)if(session->authenticated)list.append({session->peerId,session->peerName,session->role,session->peerVersion,session->address,manifest_.value("name").toString(),{},0,0,session->offsetMs,session->rttMs,session->mediaReady,session->mediaTotal,session->syncMs,session->operatorName});}
     else for(const auto& peer:discovered_)list.append(peer);
     return list;
 }
@@ -188,8 +216,22 @@ void LinkNode::publishShow(const Show& show,const QString& showName){
             items.append(QJsonObject{{"relative",it.value()},{"size",double(info.size())},{"sha256",sha},{"source",it.key()}});}
         return qMakePair(QJsonObject{{"name",name},{"show",showJson},{"media",items}},hashes);}));
 }
-void LinkNode::broadcastTake(const QJsonObject& take){if(role_!=Role::Master)return;for(const auto& session:sessions_)if(session->authenticated)send(session,"take",take);}
-void LinkNode::broadcastState(const QJsonObject& state){if(role_!=Role::Master)return;for(const auto& session:sessions_)if(session->authenticated)send(session,"state",state);}
+void LinkNode::broadcastTake(const QJsonObject& take){if(role_!=Role::Master)return;for(const auto& session:sessions_)if(session->authenticated&&session->role=="follower")send(session,"take",take);}
+void LinkNode::broadcastState(const QJsonObject& state){if(role_!=Role::Master)return;for(const auto& session:sessions_)if(session->authenticated&&session->role=="follower")send(session,"state",state);}
+QJsonObject LinkNode::findOperator(const QString& name)const{for(const auto& value:operators_){const auto op=value.toObject();if(!name.trimmed().isEmpty()&&op["name"].toString().compare(name.trimmed(),Qt::CaseInsensitive)==0)return op;}return {};}
+void LinkNode::setOperators(const QJsonArray& operators){
+    operators_=operators;if(role_!=Role::Master)return;
+    // A removed operator or a changed PIN signs that station out at once.
+    for(const auto& session:QList<std::shared_ptr<Session>>(sessions_))if(session->role=="control"){const auto op=findOperator(session->operatorName);
+        if(op.isEmpty()||keyId(operatorKey(code_,op["pin"].toString()))!=session->pinTag){send(session,"denied",{{"reason","Operator removed or PIN changed on the master"}});if(session->socket)session->socket->flush();QTimer::singleShot(300,this,[this,session]{dropSession(session);});}}
+}
+bool LinkNode::hasControlStations()const{for(const auto& session:sessions_)if(session->authenticated&&session->role=="control")return true;return false;}
+void LinkNode::broadcastDesk(const QJsonObject& desk){
+    if(role_!=Role::Master)return;
+    for(const auto& session:sessions_)if(session->authenticated&&session->role=="control"){const auto op=findOperator(session->operatorName);if(op.isEmpty())continue;
+        QJsonObject body=desk;body["level"]=op["level"].toString();body["allowed"]=allowedPrograms(op);send(session,"desk",body);}
+}
+int LinkNode::sendCommand(QJsonObject command){if(role_!=Role::Control||!sessionReady_)return -1;command["id"]=++commandSeq_;send(master_,"command",command);return commandSeq_;}
 void LinkNode::finishManifest(const QJsonObject& manifest,const QHash<QString,QString>& sources,const QHash<QString,QString>& cache){
     hashing_=false;if(role_!=Role::Master){emit changed();return;}
     manifest_=manifest;manifest_["revision"]=++revision_;sources_=sources;hashCache_=cache;

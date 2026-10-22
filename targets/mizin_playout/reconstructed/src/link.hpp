@@ -5,7 +5,9 @@
 #include <QJsonObject>
 #include <QObject>
 #include <QPointer>
+#include <QJsonArray>
 #include <QSet>
+#include <functional>
 #include <memory>
 
 class QUdpSocket;
@@ -18,13 +20,15 @@ class QCryptographicHash;
 
 // ADR-019 Mizin Link, phase 1: discovery, pairing, authenticated sessions, shared clock and verified
 // show + media distribution from one master to many followers on the LAN.
-struct LinkPeer {QString id,name,role,version,address,show,keyId;quint16 port=0;qint64 lastSeenMs=0;double offsetMs=0,rttMs=0;int mediaReady=0,mediaTotal=0;double syncMs=-1;};
+struct LinkPeer {QString id,name,role,version,address,show,keyId;quint16 port=0;qint64 lastSeenMs=0;double offsetMs=0,rttMs=0;int mediaReady=0,mediaTotal=0;double syncMs=-1;QString operatorName;};
 struct LinkMedia {QString relative,sha256,source;qint64 size=0;};
 
 class LinkNode final : public QObject {
     Q_OBJECT
 public:
-    enum class Role {Off,Master,Follower};
+    enum class Role {Off,Master,Follower,Control};
+    // Phase 4: master-side handler for remote commands; returns an error text, empty when executed.
+    using CommandHandler=std::function<QString(const QJsonObject& command,const QString& operatorName)>;
     static constexpr quint16 DiscoveryPort=47800,DefaultPort=47810;
     LinkNode(const QString& name,const QString& stateDirectory,QObject* parent=nullptr);
     ~LinkNode() override;
@@ -32,8 +36,11 @@ public:
     static QByteArray deriveKey(const QString& code);
     static QString keyId(const QByteArray& key);
     static QByteArray mac(const QByteArray& key,const QByteArray& data);
+    // The PIN never travels: the station proves it with an HMAC of the session nonce.
+    static QByteArray operatorKey(const QString& code,const QString& pin);
     bool startMaster(const QString& code,quint16 port=DefaultPort);
     bool startFollower(const QString& code,bool discover=true);
+    bool startControl(const QString& code,const QString& operatorName,const QString& pin,bool discover=true);
     bool connectTo(const QString& host,quint16 port);
     void stop();
     Role role()const{return role_;}
@@ -53,6 +60,14 @@ public:
     // Phase 3: a take every node executes at the same master-clock instant.
     void broadcastTake(const QJsonObject& take);
     void setSyncError(double ms){syncErrorMs_=ms;}
+    // Phase 4 (master): operators [{name,pin,level:"operator"|"viewer",programs:[ids], empty = all}].
+    void setOperators(const QJsonArray& operators);
+    void setCommandHandler(CommandHandler handler){commandHandler_=std::move(handler);}
+    bool hasControlStations()const;
+    void broadcastDesk(const QJsonObject& desk);
+    // Phase 4 (control station)
+    QString operatorName()const{return operator_;}
+    int sendCommand(QJsonObject command);
     QString relativeFor(const QString& absolutePath)const{return relative_.value(absolutePath);}
     int revision()const{return revision_;}
     bool hashing()const{return hashing_;}
@@ -77,8 +92,10 @@ signals:
     void showReady(const QString& showPath);
     void stateReceived(const QJsonObject& state);
     void takeReceived(const QJsonObject& take);
+    void deskReceived(const QJsonObject& desk);
+    void commandAnswered(const QJsonObject& answer);
 private:
-    struct Session {QPointer<QTcpSocket> socket;QByteArray nonce,buffer;QString peerId,peerName,peerVersion,address;bool authenticated=false;quint64 sendSeq=0,recvSeq=0;double offsetMs=0,rttMs=0;int mediaReady=0,mediaTotal=0;double syncMs=-1;};
+    struct Session {QPointer<QTcpSocket> socket;QByteArray nonce,buffer;QString peerId,peerName,peerVersion,address;bool authenticated=false;quint64 sendSeq=0,recvSeq=0;double offsetMs=0,rttMs=0;int mediaReady=0,mediaTotal=0;double syncMs=-1;QString role="follower",operatorName,pinTag;};
     QString name_,stateDirectory_,id_,error_,code_;
     Role role_=Role::Off;
     QByteArray key_;
@@ -112,6 +129,15 @@ private:
     int mediaReady_=0,mediaTotal_=0,downloads_=0,receivedRevision_=0;
     qint64 lastStateMs_=-1;
     double syncErrorMs_=-1;
+    QJsonArray operators_;
+    CommandHandler commandHandler_;
+    QString operator_,pin_;
+    bool denied_=false;
+    int commandSeq_=0;
+    bool client()const{return role_==Role::Follower||role_==Role::Control;}
+    bool startClient(const QString& code,Role role,bool discover);
+    QJsonObject findOperator(const QString& name)const;
+    QJsonArray allowedPrograms(const QJsonObject& op)const{return op["level"].toString()=="operator"?op["programs"].toArray():QJsonArray{};}
     qint64 bytesDone_=0,bytesTotal_=0;
     void announce();
     void readDiscovery();

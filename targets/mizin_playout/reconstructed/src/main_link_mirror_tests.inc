@@ -42,6 +42,20 @@ int MainWindow::runLinkMirrorTests(const QString& directory,const QString& resul
     {OutputWindow crop(&main->programA_,&main->outputRouter_,OutputScaling::Native);crop.resize(400,300);crop.setRegion({.5,0,.5,1});const QRect g=crop.canvasGeometry();
      main->areaBoxes_[0]->setCurrentIndex(2);const QRectF preset=main->routeRegion(0);main->areaBoxes_[0]->setCurrentIndex(0);
      record("output_area_shows_only_its_part_of_the_video",g==QRect(-400,0,800,300)&&crop.video()->aspectRatioMode()==Qt::IgnoreAspectRatio&&preset==QRectF(.5,0,.5,1)&&main->routeRegion(0)==QRectF(0,0,1,1),{{"canvas",QString("%1,%2 %3x%4").arg(g.x()).arg(g.y()).arg(g.width()).arg(g.height())}});}
+    // Phase 4: a control station window signs in as an operator and commands the master's Program A.
+    auto* station=new MainWindow(false,"en",work.path()+"/station");for(int i=0;i<station->programCount_;++i)station->channelAt(i)->setLocalAudioEnabled(false);
+    main->appendOperator({{"name","Ana"},{"pin","2468"},{"level","operator"},{"programs",QJsonArray{}}});main->saveOperators();
+    station->linkRole_->setCurrentIndex(2);const bool stationUp=station->link_->startControl("mirror-code","Ana","2468",false)&&station->link_->connectTo("127.0.0.1",main->link_->port());
+    const bool desk=stationUp&&wait([&]{return station->remotePrograms_.size()==main->programCount_&&station->remotePrograms_[0].items->count()==2;},8000);station->refreshLink();
+    record("control_station_shows_the_master_desk",desk&&!station->remoteDesk_->isHidden()&&station->link_->operatorName()=="Ana",{{"programs",int(station->remotePrograms_.size())}});
+    const int remoteId=main->programDefinitions_[0].id;if(desk)station->sendRemote(remoteId,"cut",1);
+    const bool remoteCut=wait([&]{return QFileInfo(main->programA_.path()).fileName()=="03-h264.mkv"&&main->programA_.playing();},8000);
+    const bool backupFollowed=wait([&]{return QFileInfo(backup->programA_.path()).fileName()=="03-h264.mkv";},8000);
+    record("remote_cut_runs_on_the_master_and_its_backup",remoteCut&&backupFollowed,{{"main",main->programA_.path()},{"backup",backup->programA_.path()}});
+    station->sendRemote(remoteId,"black");const bool remoteBlack=wait([&]{return main->programA_.path().isEmpty();},5000);
+    QFile remoteLog(QDir(main->stateDirectory_).filePath("link/remote-log.txt"));const bool logged=remoteLog.open(QIODevice::ReadOnly)&&remoteLog.readAll().contains("Ana");
+    record("remote_black_runs_and_every_command_is_logged",remoteBlack&&logged);
+    station->link_->stop();delete station;
     main->controllerA_.takeManual(main->playlist_,0,PlaylistController::ManualTake::Cut);wait([&]{return backup->programA_.playing();},10000);
     record("backup_shows_no_alarm_while_the_master_is_alive",!backup->masterLost_&&!backup->masterLostBanner_->isHidden()==false);
     main->link_->stop();const bool alarmed=wait([&]{return backup->masterLost_&&!backup->masterLostBanner_->isHidden();},6000);

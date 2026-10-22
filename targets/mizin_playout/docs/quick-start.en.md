@@ -78,6 +78,12 @@ On the master, tick **Synchronized takes**. From then on every CUT and FADE is p
 
 To split a wall across outputs or PCs, in **Outputs → Displays** choose each output's **AREA**: halves, thirds, quarters or **Custom area** (X, Y, width and height in % of the video). Each screen shows only its part, stretched to fill the screen.
 
+### Remote control (control station)
+
+On the master, in **Remote operators**, click **Add operator**: set the name, the PIN, the permission (**Operator** controls, **Viewer** only watches) and which Programs it may command (**All Programs** or some). On the other machine choose the role **Control station (remote)**, use the same Link code, type the operator name and PIN and click **Start Link**. The **Remote desk** shows every Program, what is on air and the playlist: select an item and use CUT, FADE, BLACK or PAUSE.
+
+The playout machine stays in charge: it checks every command, runs it as if it were local (synchronized takes included) and logs everything in `link/remote-log.txt`. The PIN never travels over the network; changing the PIN or removing the operator signs the station out at once.
+
 ## Language and performance
 
 English is default; Português (Brasil) can be selected during playback. Automatic hardware decoding and CPU decoding are available in Settings after restart. Codec/profile/driver support varies. Cuts forward shared native frames; transitions currently convert and compose in CPU once per Program. GPU composition, remote control, scheduling and production AV-sync/performance qualification remain future work. Layout samples demonstrate the interface, not physical-output playback.

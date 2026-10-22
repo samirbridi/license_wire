@@ -51,6 +51,28 @@ int runLinkTests(const QString& directory,const QString& resultPath){
     QFile::remove(folder+"/media/clip (2).mp4");ready1.clear();ready2.clear();master.publishShow(show,"Opening Night");
     const bool resumed=waitFor([&]{return !ready1.isEmpty()&&!ready2.isEmpty();},30000);
     record("republish_downloads_only_missing_files",resumed&&f1.downloads()==3&&f2.downloads()==2&&QFileInfo(folder+"/media/clip (2).mp4").size()==QFileInfo(root+"/media/b/clip.mp4").size(),{{"f1_downloads",f1.downloads()},{"f2_downloads",f2.downloads()}});
+    // Phase 4: control stations sign in with operator name + PIN; permissions are enforced by the master.
+    master.setOperators(QJsonArray{QJsonObject{{"name","Ana"},{"pin","4321"},{"level","operator"},{"programs",QJsonArray{1}}},QJsonObject{{"name","Guest"},{"pin","1111"},{"level","viewer"},{"programs",QJsonArray{}}}});
+    QList<QPair<QJsonObject,QString>> executed;master.setCommandHandler([&](const QJsonObject& command,const QString& op){executed.append({command,op});return QString();});
+    LinkNode ana("Desk",root+"/ana"),guest("Lobby",root+"/guest"),intruder("Fake",root+"/intruder");
+    ana.startControl("code-one","ana","4321",false);guest.startControl("code-one","Guest","1111",false);intruder.startControl("code-one","Ana","9999",false);
+    for(auto* node:{&ana,&guest,&intruder})node->connectTo("127.0.0.1",master.port());
+    const bool signedIn=waitFor([&]{return ana.connected()&&guest.connected();},8000);waitFor([&]{return !intruder.error().isEmpty();},4000);
+    int stations=0;for(const auto& p:master.peers())if(p.role=="control")++stations;
+    record("operators_sign_in_and_a_wrong_pin_is_refused",signedIn&&stations==2&&master.hasControlStations()&&!intruder.connected()&&intruder.error().contains("PIN"),{{"stations",stations},{"intruder",intruder.error()}});
+    QJsonObject deskAna,deskGuest;bool followerDesk=false;
+    QObject::connect(&ana,&LinkNode::deskReceived,&ana,[&](const QJsonObject& d){deskAna=d;});QObject::connect(&guest,&LinkNode::deskReceived,&guest,[&](const QJsonObject& d){deskGuest=d;});QObject::connect(&f1,&LinkNode::deskReceived,&f1,[&](const QJsonObject&){followerDesk=true;});
+    master.broadcastDesk({{"master","Main"},{"programs",QJsonArray{QJsonObject{{"id",1}},QJsonObject{{"id",2}}}}});waitFor([&]{return !deskAna.isEmpty()&&!deskGuest.isEmpty();},5000);
+    record("desk_carries_each_operator_permission",deskAna["level"].toString()=="operator"&&deskAna["allowed"].toArray()==QJsonArray{1}&&deskGuest["level"].toString()=="viewer"&&deskAna["programs"].toArray().size()==2&&!followerDesk);
+    QList<QJsonObject> answersAna,answersGuest;QObject::connect(&ana,&LinkNode::commandAnswered,&ana,[&](const QJsonObject& a){answersAna.append(a);});QObject::connect(&guest,&LinkNode::commandAnswered,&guest,[&](const QJsonObject& a){answersGuest.append(a);});
+    ana.sendCommand({{"action","cut"},{"program",1},{"row",0}});ana.sendCommand({{"action","black"},{"program",2}});guest.sendCommand({{"action","black"},{"program",1}});
+    waitFor([&]{return answersAna.size()==2&&answersGuest.size()==1;},5000);
+    record("commands_respect_permissions",executed.size()==1&&executed[0].second=="Ana"&&executed[0].first["action"].toString()=="cut"&&answersAna.size()==2&&answersAna[0]["ok"].toBool()&&!answersAna[1]["ok"].toBool()&&answersGuest.size()==1&&!answersGuest[0]["ok"].toBool(),
+        {{"executed",int(executed.size())},{"ana_second",answersAna.size()>1?answersAna[1]["error"].toString():QString()},{"guest",answersGuest.isEmpty()?QString():answersGuest[0]["error"].toString()}});
+    master.setOperators(QJsonArray{QJsonObject{{"name","Ana"},{"pin","5555"},{"level","operator"},{"programs",QJsonArray{}}}});
+    const bool signedOut=waitFor([&]{return !ana.connected()&&!guest.connected();},5000);
+    record("changing_a_pin_or_removing_an_operator_signs_the_station_out",signedOut&&ana.error().contains("PIN")&&f1.connected(),{{"ana",ana.error()},{"guest",guest.error()}});
+    ana.stop();guest.stop();intruder.stop();
     LinkNode listener("Listener",root+"/listen");listener.startFollower("code-one",true);const bool heard=waitFor([&]{for(const auto& p:listener.peers())if(p.name=="Main")return true;return false;},5000);
     record("master_is_discovered_on_the_lan",heard||listener.error().contains("Discovery"),{{"heard",heard},{"note",heard?QString():listener.error()}});
     master.stop();const bool closed=waitFor([&]{return !f1.connected()&&!f2.connected();},5000);record("stopping_master_disconnects_followers",closed);
