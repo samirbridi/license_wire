@@ -1,5 +1,20 @@
 # CHANGELOG — Mizin Playout
 
+## v0.21.0 (build 0052) - 2026-10-22
+
+### 💥 Breaking Changes
+- None.
+
+### ✨ Features
+- feat: adiciona teste do instalador em Windows limpo via Windows Sandbox no lancamento (5e48c5a82a4633b50910e3fde80c9507b14799b9)
+
+### 🐛 Fixes
+- fix: teste de midia invalida usa pasta temporaria e funciona com fixtures somente leitura (aa588ee2d0c87935e5aa994bcc2270fb4efd8a0c)
+
+### ⚡ Improvements
+- improve: registra publicacao do build 0051 com recuperacao e religacao de midias (66cd14ccd462797a2b9defb45f2d8f9260aa001a)
+- improve: registra teste do 0051 em Windows limpo e notas da versao 0052 (4065e928dce60e043a4a0b992c679dead9930be5)
+
 ## v0.20.0 (build 0051) - 2026-10-22
 
 ### 💥 Breaking Changes

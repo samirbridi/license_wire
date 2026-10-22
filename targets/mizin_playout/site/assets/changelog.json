@@ -1,5 +1,19 @@
 [
   {
+    "version": "v0.21.0 (build 0052)",
+    "date": "2026-10-22",
+    "notes": {
+      "en": [
+        "Every release is now tested on a clean Windows (Windows Sandbox, without Visual C++ runtime, Qt or NDI installed): Setup installs without administrator rights, the app opens and plays H.264, HEVC, MKV, MJPEG and ProRes, and the portable ZIP runs from a folder with spaces and accents.",
+        "Includes the automatic recovery, .bak backup and missing-media relink introduced in v0.20.0."
+      ],
+      "pt-BR": [
+        "Toda versão agora é testada num Windows limpo (Windows Sandbox, sem runtime Visual C++, Qt ou NDI instalados): o Setup instala sem administrador, o app abre e reproduz H.264, HEVC, MKV, MJPEG e ProRes, e o ZIP portátil roda de uma pasta com espaços e acentos.",
+        "Inclui a recuperação automática, o backup .bak e a religação de mídias ausentes da v0.20.0."
+      ]
+    }
+  },
+  {
     "version": "v0.20.0 (build 0051)",
     "date": "2026-10-22",
     "notes": {
