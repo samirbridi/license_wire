@@ -10,6 +10,7 @@
 #include "program_runtime.hpp"
 #include "brand.hpp"
 #include "process_usage.hpp"
+#include "updates.hpp"
 #include <QtWidgets>
 #include <QtConcurrent>
 #include <QVideoWidget>
@@ -133,6 +134,12 @@ class MainWindow final : public QMainWindow {
     QTabWidget* settingsTabs_=nullptr;
     DiagnosticsPanel* diagnosticsPanel_=nullptr;
     std::unique_ptr<QSettings> settings_;
+    std::unique_ptr<UpdateController> updates_;
+    UpdatePanel* updatePanel_=nullptr;
+    QFrame* updateBanner_=nullptr;
+    QLabel* updateBannerText_=nullptr;
+    QString stateDirectory_;
+    bool portableMode_=false;
     QList<QPointer<QWidget>> outputWindows_;
     QList<QComboBox*> sourceBoxes_, screenBoxes_,scalingBoxes_;
     QList<QLabel*> outputStatus_;
@@ -146,6 +153,8 @@ public:
     MainWindow(bool demo, const QString& language, const QString& stateDir) : demo_(demo), language_(language) {
         QDir().mkpath(stateDir);
         settings_ = std::make_unique<QSettings>(stateDir+"/preferences.ini",QSettings::IniFormat);
+        stateDirectory_=stateDir;
+        updates_=std::make_unique<UpdateController>(MizinVersion,QDir(stateDir).filePath("updates"));
         nextProgramId_=qBound(2,settings_->value("nextProgramId",2).toInt(),1000001);
         if(language_.isEmpty()) language_=settings_->value("language","en").toString();
         readDictionary();
@@ -168,7 +177,11 @@ public:
         languageBox_=new QComboBox;languageBox_->addItem("English","en");languageBox_->addItem("Português (Brasil)","pt-BR");languageBox_->setCurrentIndex(language_=="pt-BR"?1:0);top->addWidget(languageBox_);
         auto* open=button("Open show");open->setIcon(deskIcon(DeskIcon::Folder));top->addWidget(open);connect(open,&QPushButton::clicked,this,[this]{openProject();});
         auto* save=button("Save show");save->setIcon(deskIcon(DeskIcon::Save));top->addWidget(save);connect(save,&QPushButton::clicked,this,[this]{saveProject(false);});
-        contentLayout->addLayout(top);contentLayout->addWidget(pages_,1);
+        contentLayout->addLayout(top);
+        updateBanner_=new QFrame;updateBanner_->setObjectName("panel");auto* updateRow=new QHBoxLayout(updateBanner_);updateRow->setContentsMargins(10,6,10,6);updateBannerText_=new QLabel;updateRow->addWidget(updateBannerText_,1);auto* viewUpdate=button("View update"),*laterUpdate=button("Later");updateRow->addWidget(viewUpdate);updateRow->addWidget(laterUpdate);updateBanner_->hide();contentLayout->addWidget(updateBanner_);
+        connect(viewUpdate,&QPushButton::clicked,this,[this]{selectPage(5);settingsTabs_->setCurrentIndex(2);});connect(laterUpdate,&QPushButton::clicked,updateBanner_,&QWidget::hide);
+        connect(updates_.get(),&UpdateController::available,this,[this]{updateBannerText_->setText(tx("Update available")+" · "+updates_->release().version);updateBanner_->show();});
+        contentLayout->addWidget(pages_,1);
         auto* statusBar=new QFrame;statusBar->setObjectName("usageBar");auto* statusLayout=new QHBoxLayout(statusBar);statusLayout->setContentsMargins(0,5,0,0);statusLayout->setSpacing(16);
         footer_=new ElidedLabel;footer_->setObjectName("footer");footer_->setSizePolicy(QSizePolicy::Ignored,QSizePolicy::Preferred);statusLayout->addWidget(footer_,1);
         usageLabel_=new QLabel;usageLabel_->setObjectName("processUsage");usageLabel_->setTextFormat(Qt::PlainText);statusLayout->addWidget(usageLabel_);contentLayout->addWidget(statusBar);
@@ -213,6 +226,12 @@ public:
         image.save(path);
     }
     int runUiTests(const QString& directory,const QString& resultPath);
+    void startUpdateChecks(bool portable){
+        portableMode_=portable;
+        if(demo_||qEnvironmentVariableIsSet("MIZIN_DISABLE_UPDATE_CHECK")||!QFileInfo::exists(QCoreApplication::applicationDirPath()+"/build-info.json"))return;
+        QTimer::singleShot(8000,this,[this]{updates_->check();});auto* timer=new QTimer(this);timer->setInterval(4*60*60*1000);connect(timer,&QTimer::timeout,updates_.get(),&UpdateController::check);timer->start();
+    }
+    bool openShowPath(const QString& path){QFile file(path);if(!file.open(QIODevice::ReadOnly))return false;QJsonParseError error;const auto doc=QJsonDocument::fromJson(file.readAll(),&error);Show loaded;return error.error==QJsonParseError::NoError&&Show::read(doc.object(),loaded)&&applyShow(loaded,path);}
     void importExternal(const QStringList& paths){for(const auto& p:paths){if(QFileInfo(p).isDir())scanFolder(p);else addPaths({p});}}
 protected:
     void resizeEvent(QResizeEvent* event) override {QMainWindow::resizeEvent(event);if(multiviewGrid_)layoutMultiview();}
@@ -393,7 +412,18 @@ private:
         outputsTabs_=new QTabWidget;outputsTabs_->addTab(scrollPage(physicalOutputsPage()),tx("Displays"));auto* digital=new QWidget;auto* l=new QVBoxLayout(digital);l->setContentsMargins(16,16,16,16);l->setSpacing(16);l->addWidget(label("Digital outputs","heading"));auto* panels=new QWidget;digitalLayout_=new QVBoxLayout(panels);digitalLayout_->setContentsMargins(0,0,0,0);l->addWidget(panels);auto* attribution=new QLabel("<a href=\"https://ndi.video/\">NDI® · ndi.video</a><br>NDI® is a registered trademark of Vizrt NDI AB.");attribution->setOpenExternalLinks(true);l->addWidget(attribution);l->addWidget(label("Network output starts only when requested. No remote control service is started.","muted"));l->addStretch();outputsTabs_->addTab(scrollPage(digital),tx("NDI / OMT"));return outputsTabs_;
     }
     QWidget* audioPage(){auto* page=new QWidget;auto* l=new QVBoxLayout(page);l->setContentsMargins(0,0,0,0);l->setSpacing(16);l->addWidget(label("Audio routing","heading"));auto* panels=new QWidget;audioLayout_=new QVBoxLayout(panels);audioLayout_->setContentsMargins(0,0,0,0);l->addWidget(panels);appendProgramPanels(0);l->addWidget(label("Preview stays muted. Mirrored video outputs do not duplicate local audio.","muted"));l->addStretch();return page;}
-    QWidget* settingsPage(){settingsTabs_=new QTabWidget;settingsTabs_->addTab(playbackSettingsPage(),tx("Playback"));diagnosticsPanel_=new DiagnosticsPanel([this](const QString& key){return tx(key);},[this]{return diagnosticsReport();},demo_);settingsTabs_->addTab(diagnosticsPanel_,tx("Engine diagnostics"));return settingsTabs_;}
+    QWidget* settingsPage(){settingsTabs_=new QTabWidget;settingsTabs_->addTab(playbackSettingsPage(),tx("Playback"));diagnosticsPanel_=new DiagnosticsPanel([this](const QString& key){return tx(key);},[this]{return diagnosticsReport();},demo_);settingsTabs_->addTab(diagnosticsPanel_,tx("Engine diagnostics"));updatePanel_=new UpdatePanel(updates_.get(),[this](const QString& key){return tx(key);},[this]{installUpdate();});settingsTabs_->addTab(updatePanel_,tx("Updates"));return settingsTabs_;}
+    bool updatePlaybackBusy()const{
+        for(int i=0;i<programCount_;++i){if(channelAt(i)->playing()||channelAt(i)->pending())return true;for(auto protocol:{NetworkProtocol::Ndi,NetworkProtocol::Omt})if(busAt(i)->sender(protocol).running())return true;}
+        for(const auto& output:routeWindows_)if(output&&output->isVisible())return true;return scanner_.isRunning();
+    }
+    void installUpdate(){
+        if(demo_)return;
+        if(updatePlaybackBusy()){QMessageBox::information(this,tx("Updates"),tx("Stop playback and close display and digital outputs before installing. You can keep the download for later."));return;}
+        if(editorStatusKey_=="Unapplied changes"){QMessageBox::information(this,tx("Updates"),tx("Apply or reset cue edits before updating."));return;}
+        if(dirty_){if(QMessageBox::question(this,tx("Unsaved show"),tx("Save the show before installing this update?"),QMessageBox::Save|QMessageBox::Cancel,QMessageBox::Save)!=QMessageBox::Save)return;saveProject(false);if(dirty_)return;}
+        QString error;if(!updates_->launchInstaller(stateDirectory_,projectPath_,language_,!QFileInfo::exists(QCoreApplication::applicationDirPath()+"/installation.ini"),error)){QMessageBox::warning(this,tx("Updates"),tx(error));return;}QCoreApplication::quit();
+    }
     QWidget* playbackSettingsPage(){auto* page=new QWidget;auto* l=new QVBoxLayout(page);l->setContentsMargins(12,12,12,12);l->setSpacing(18);l->addWidget(label("Playback preferences","heading"));
         auto* p=new QFrame;p->setObjectName("panel");auto* pl=new QVBoxLayout(p);pl->setContentsMargins(24,24,24,24);pl->setSpacing(14);pl->addWidget(label("DECODING","eyebrow"));pl->addWidget(label("Native FFmpeg backend","mediaTitle"));auto* decode=new QComboBox;decodingBox_=decode;decode->addItem(tx("Automatic hardware selection"),"auto");decode->addItem(tx("CPU decoding"),"cpu");decode->setCurrentIndex(settings_->value("decode","auto").toString()=="cpu"?1:0);pl->addWidget(decode);connect(decode,&QComboBox::currentIndexChanged,this,[this,decode]{if(!demo_)settings_->setValue("decode",decode->currentData());footer_->setText(tx("Restart the application to apply decoding preferences."));});
         pl->addWidget(label("Hardware support depends on codec, profile, driver and GPU.","muted"));l->addWidget(p);
@@ -533,7 +563,7 @@ private:
     void retranslate(){
         bindings_.removeIf([](const Binding& binding){return binding.widget.isNull();});
         for(auto* action:findChildren<QAction*>()){const auto key=action->property("textKey").toString();if(!key.isEmpty())action->setText(tx(key));}
-        if(settingsTabs_){settingsTabs_->setTabText(0,tx("Playback"));settingsTabs_->setTabText(1,tx("Engine diagnostics"));}if(outputsTabs_){outputsTabs_->setTabText(0,tx("Displays"));outputsTabs_->setTabText(1,tx("NDI / OMT"));}
+        if(settingsTabs_){settingsTabs_->setTabText(0,tx("Playback"));settingsTabs_->setTabText(1,tx("Engine diagnostics"));settingsTabs_->setTabText(2,tx("Updates"));}if(updatePanel_)updatePanel_->retranslate();if(updateBannerText_)updateBannerText_->setText(tx("Update available")+" · "+updates_->release().version);if(outputsTabs_){outputsTabs_->setTabText(0,tx("Displays"));outputsTabs_->setTabText(1,tx("NDI / OMT"));}
         for(auto* widget:findChildren<QWidget*>()){const auto key=widget->property("tipKey").toString();if(!key.isEmpty()){widget->setToolTip(tx(key));widget->setAccessibleName(tx(key));}}
         for(int i=0;i<audioPanels_.size();++i){audioPanels_[i]->setProperty("programName",programDefinitions_[i].name);audioPanels_[i]->retranslate();digitalPanels_[i]->setProperty("programName",programDefinitions_[i].name);digitalPanels_[i]->retranslate();}
         for(const auto& binding:bindings_){if(auto* l=qobject_cast<QLabel*>(binding.widget.data()))l->setText(tx(binding.key));else if(auto* b=qobject_cast<QPushButton*>(binding.widget.data()))b->setText(tx(binding.key));else if(auto* c=qobject_cast<QCheckBox*>(binding.widget.data()))c->setText(tx(binding.key));else if(auto* e=qobject_cast<QLineEdit*>(binding.widget.data()))e->setPlaceholderText(tx(binding.key));}
@@ -655,6 +685,9 @@ int main(int argc,char** argv){
     QCommandLineParser parser;
     parser.addHelpOption();
     parser.addVersionOption();
+    parser.addOption(QCommandLineOption(QStringLiteral("update-test"),QStringLiteral("Test signed update metadata and validation")));
+    parser.addOption(QCommandLineOption(QStringLiteral("update-online-test"),QStringLiteral("Test the live update feed and verified download")));
+    parser.addOption(QCommandLineOption(QStringLiteral("show"),QStringLiteral("Open a saved show without starting outputs"),QStringLiteral("path")));
     parser.addOption(QCommandLineOption(QStringLiteral("portable"),QStringLiteral("Keep settings beside the executable in state/")));
     parser.addOption(QCommandLineOption(QStringLiteral("runtime-info"),QStringLiteral("Write version and resolved settings path, then exit"),QStringLiteral("path")));
     parser.addOption(QCommandLineOption(QStringLiteral("board"),QStringLiteral("Show sample content for layout review")));
@@ -680,13 +713,15 @@ int main(int argc,char** argv){
     parser.addOption(QCommandLineOption(QStringLiteral("result"),QStringLiteral("Smoke result JSON"),QStringLiteral("path")));
     parser.addPositionalArgument("media","Local media paths","[media...]");
     parser.process(app);
+    if(parser.isSet("update-test")||parser.isSet("update-online-test"))return runUpdateTests(parser.value("fixtures"),parser.value("result"),parser.isSet("update-online-test"));
+    const QString state=QDir::cleanPath(parser.isSet("state-dir")?QFileInfo(parser.value("state-dir")).absoluteFilePath():parser.isSet("portable")?QCoreApplication::applicationDirPath()+"/state":QStandardPaths::writableLocation(QStandardPaths::AppLocalDataLocation));
+    qputenv("MIZIN_STATE_DIR",state.toUtf8());
     if(parser.isSet("readiness-test"))return runReadinessTests(parser.value("fixtures"),parser.value("result"));
     if(parser.isSet("network-test"))return runNetworkTests(parser.value("fixtures"),parser.value("result"));
     if(parser.isSet("gpu-test"))return runGpuTests(parser.value("fixtures"),parser.value("result"));
     if(parser.isSet("output-test"))return runOutputTests(parser.value("fixtures"),parser.value("result"));
     if(parser.isSet("transport-test"))return runTransportTests(parser.value("fixtures"),parser.value("result"));
     if(parser.isSet("smoke-test"))return runSmoke(parser.value("fixtures"),parser.value("result"));
-    const QString state=QDir::cleanPath(parser.isSet("state-dir")?QFileInfo(parser.value("state-dir")).absoluteFilePath():parser.isSet("portable")?QCoreApplication::applicationDirPath()+"/state":QStandardPaths::writableLocation(QStandardPaths::AppLocalDataLocation));
     if(parser.isSet("runtime-info")){
         QSaveFile report(parser.value("runtime-info"));if(!report.open(QIODevice::WriteOnly))return 5;
         report.write(QJsonDocument(QJsonObject{{"version",QString(MizinVersion)},{"source_commit",QString(MizinSourceCommit)},{"state_dir",state},{"portable",parser.isSet("portable")},{"state_override",parser.isSet("state-dir")},{"default_language","en"}}).toJson());return report.commit()?0:5;
@@ -703,7 +738,7 @@ int main(int argc,char** argv){
     window.configureBoardPrograms(parser.value("board-programs").toInt());
     if(parser.isSet("capture-sequential"))window.configureBoardSequential();
     if(parser.isSet("capture-dir")){const auto match=QRegularExpression("^([0-9]{3,4})x([0-9]{3,4})$").match(parser.value("capture-size"));if(!match.hasMatch()||match.captured(1).toInt()<1280||match.captured(2).toInt()<800)return 4;window.resize(match.captured(1).toInt(),match.captured(2).toInt());}
-    window.show();if(parser.isSet("ui-test"))return window.runUiTests(parser.value("fixtures"),parser.value("result"));window.importExternal(parser.positionalArguments());
+    window.show();if(parser.isSet("ui-test"))return window.runUiTests(parser.value("fixtures"),parser.value("result"));if(parser.isSet("show")&&!window.openShowPath(parser.value("show")))QMessageBox::warning(&window,QStringLiteral("Mizin Playout"),QStringLiteral("Could not open the saved show."));window.importExternal(parser.positionalArguments());if(!parser.isSet("capture-dir"))window.startUpdateChecks(parser.isSet("portable"));
     if(parser.isSet("capture-dir")){
         const QString dir=parser.value("capture-dir");QDir().mkpath(dir);
         const int page=qBound(0,parser.value("capture-page").toInt(),4);window.selectPage(page);if(parser.isSet("capture-digital"))window.selectDigital();if(parser.isSet("capture-diagnostics"))window.selectDiagnostics();

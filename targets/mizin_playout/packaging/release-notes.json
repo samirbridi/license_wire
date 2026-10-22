@@ -1,0 +1,14 @@
+{
+  "en": [
+    "Checks for updates after startup and shows what is new. You choose when to download and install.",
+    "Verifies signed release metadata and downloaded file hashes before installation.",
+    "Installed and portable updates preserve preferences and show files. Installation waits until playback and outputs are stopped.",
+    "Includes the official NDI runtime beside the application, alongside OMT, with the required notices."
+  ],
+  "pt-BR": [
+    "Verifica atualizações após abrir e mostra as novidades. Você escolhe quando baixar e instalar.",
+    "Confere a assinatura dos dados da versão e o hash do download antes de instalar.",
+    "Atualizações instaladas e portáteis preservam preferências e shows. A instalação aguarda reprodução e saídas paradas.",
+    "Inclui o runtime oficial NDI na pasta do aplicativo, junto do OMT, com os avisos necessários."
+  ]
+}

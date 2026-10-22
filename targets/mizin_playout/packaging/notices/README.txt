@@ -6,7 +6,7 @@ https://github.com/qt/qtbase/tree/v6.10.2/LICENSES
 https://github.com/FFmpeg/FFmpeg/tree/n7.1.2
 
 The package also retains the supplied Qt SDK SPDX SBOMs, including third-party
-copyrights/license expressions, OMT MIT notice, NDI header notice (no NDI binary),
+copyrights/license expressions, OMT MIT notice, NDI runtime vendor/third-party and header notices,
 NSIS notices and exact deployed FFmpeg runtime configuration/license.
 
 Sources:
@@ -20,7 +20,9 @@ loaded by this app. Exact payload binaries are listed in package-manifest.json.
 The app dynamically links Qt/FFmpeg; compatible modified libraries can be relinked
 or replaced. No restriction on debugging such modifications is imposed here.
 
-Complete matching dependency-source archive/rebuild validation and final binary
-notice audit remain pending for public distribution. This artifact is an internal
-private preview. The original application source for its commit is bundled in
-source/mizin-playout-source.zip; this does not supply dependency source archives.
+Matching Qt 6.10.2/FFmpeg 7.1.2 upstream archives, SDK build configuration and
+source SPDX are indexed with SHA-256 in dependency-sources.json and made available
+alongside the preview at https://updates.p2pmizin.dev/playout/sources/qt-6.10.2-ffmpeg-7.1.2/.
+Original third-party license/notice and attribution files from those archives are
+retained in licenses/upstream/. A bit-identical rebuild is not asserted. The
+original application source for the recorded commit is bundled in source/.

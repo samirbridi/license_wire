@@ -1,6 +1,6 @@
 # Your first show
 
-For the Windows private preview, run the Setup EXE to install for your account, or extract the ZIP and run MizinPlayout.exe. Microsoft Visual C++ x64 runtime is required; its official signed installer is in prerequisites/. NDI needs the separately installed official NDI runtime. Normal startup keeps settings under %LOCALAPPDATA%/Mizin/Mizin Playout. Start portable.cmd (or --portable) uses adjacent state/; --state-dir overrides either mode. Reinstallation/uninstallation preserves user settings and media. Existing development launcher paths remain valid. Save shows explicitly; media files stay in their original folders.
+For the Windows private preview, run the Setup EXE to install for your account, or extract the ZIP and run MizinPlayout.exe. Microsoft Visual C++ x64 runtime is required; its official signed installer is in prerequisites/. The official NDI and OMT runtimes are included privately beside the app. Normal startup keeps settings under %LOCALAPPDATA%/Mizin/Mizin Playout. Start portable.cmd (or --portable) uses adjacent state/; --state-dir overrides either mode. Reinstallation/uninstallation preserves user settings and media. Existing development launcher paths remain valid. Save shows explicitly; media files stay in their original folders.
 
 The Live Desk starts with muted Preview and one **PROGRAM**. **+ Add Program** creates an independent Program with an empty running order. Select the Program in MAIN to edit its playlist and operate CUT/FADE, Manual/Sequential, Loop and Repeat. With additional Programs, MAIN builds a multiview of all Programs beside muted Preview. Click a Program name in the grid or use the destination menu to select its playlist and TAKE controls. Selection does not interrupt playback. Each tile has play/pause and Black controls for that tile's Program. Larger configurations scroll inside the multiview.
 
@@ -68,7 +68,7 @@ L/R meters show Program mix peaks in dBFS. Preview stays muted and mirrored disp
 
 Video follows source size/cadence. Black preserves the last stream size/cadence. An initially empty Program publishes 1280×720/30 black. Saved preferences/design previews never auto-start transmission. Closing the application stops its senders.
 
-NDI requires an official installed runtime; missing dependencies are reported. Restart the application after installing a missing runtime. OMT uses the native libraries included in this development package. The initial network path is 8-bit SDR/stereo, without HX, HDR, exclusive ASIO, multichannel mapping or a manual delay offset. Qualify a separate receiving computer and AV sync with actual media/network conditions before an event. See [scope and evidence](compatibility-and-performance.md).
+The official NDI runtime is bundled beside the app; a separate runtime installation is not required. Vendor/third-party notices are in licenses/ndi. OMT uses the native libraries included in this development package. The initial network path is 8-bit SDR/stereo, without HX, HDR, exclusive ASIO, multichannel mapping or a manual delay offset. Qualify a separate receiving computer and AV sync with actual media/network conditions before an event. See [scope and evidence](compatibility-and-performance.md).
 
 [About NDI®](https://ndi.video/) · NDI® is a registered trademark of Vizrt NDI AB.
 
@@ -84,3 +84,7 @@ The persistent footer shows this process's normalized CPU load, RAM working set 
 
 
 RAM and GPU memory use decimal MB/GB and automatically switch to GB at 1000 MB. GPU shows activity % and current application graphics-memory usage separately. Memory comes from DXGI usage across queried hardware adapters (LOCAL + NON_LOCAL, node 0); it is not installed VRAM capacity. Missing/partial readings show a dash. **Composition**, formerly Mix, measures the CPU work to blend one transition frame; a 300 ms fade duration is a separate setting. The tooltip and diagnostic JSON provide memory scope and per-adapter readings.
+
+## Optional updates
+
+Normal packaged startup checks for updates after eight seconds. Choose **View update** to read the English or Portuguese changes, **Download update** to fetch it, then **Install and restart** when ready. **Later** dismisses the banner. Settings → Updates also has **Check now**. Nothing downloads or installs without your choice. Downloads are signed-metadata/hash verified. Stop Programs and close display/NDI/OMT outputs, apply/reset edits and save your show before installation. The updater preserves your profile and reopens your saved show with outputs closed. Portable folders are updated in place without creating an installed-app registration. Build 0035 needs one manual installation to receive the updater.

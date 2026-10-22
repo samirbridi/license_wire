@@ -44,7 +44,10 @@ try{
     $manifest=Get-Content -LiteralPath (Join-Path $appDir 'package-manifest.json') -Raw | ConvertFrom-Json
     $bad=@($manifest.files | Where-Object {(Get-FileHash -LiteralPath (Join-Path $appDir $_.path) -Algorithm SHA256).Hash.ToLowerInvariant() -ne $_.sha256})
     Check 'all portable payload hashes match' ($bad.Count -eq 0) $manifest.files.Count
-    Check 'no development state SDK fixtures or NDI runtime shipped' (@($manifest.files | Where-Object {$_.path -match '^(state|binaries|build|\.git)/|Processing\.NDI\.Lib\.x64\.dll$'}).Count -eq 0) $null
+    Check 'no development state SDK or fixtures shipped' (@($manifest.files | Where-Object {$_.path -match '^(state|binaries|build|\.git)/'}).Count -eq 0) $null
+    Check 'official NDI DLL is private and signed' ((Test-Path -LiteralPath (Join-Path $appDir 'Processing.NDI.Lib.x64.dll')) -and (Get-AuthenticodeSignature -LiteralPath (Join-Path $appDir 'Processing.NDI.Lib.x64.dll')).Status -eq 'Valid') $null
+    Check 'NDI vendor notices are present' ((Test-Path -LiteralPath (Join-Path $appDir 'licenses/ndi/Processing.NDI.Lib.Licenses.txt')) -and (Test-Path -LiteralPath (Join-Path $appDir 'licenses/ndi/NDI SDK License Agreement.pdf'))) $null
+    Check 'native update helper has matching build resource' ((Get-Item -LiteralPath (Join-Path $appDir 'MizinUpdater.exe')).VersionInfo.ProductVersion -eq $record.version) $null
     $resource=(Get-Item -LiteralPath $exe).VersionInfo
     Check 'EXE resource version matches build' ($resource.ProductVersion -eq $record.version) $resource.ProductVersion
     foreach($mode in @('default','portable','override')){
@@ -74,6 +77,9 @@ try{
         }
     }
     $setup=Join-Path $Release (@($record.artifacts | Where-Object {$_.file -like '*-setup.exe'})[0].file)
+    $portableInstall=Join-Path $work 'Portable update folder'
+    $null=RunNative $setup ('/S /QA /PORTABLE /D='+$portableInstall) 'portable-install'
+    Check 'portable setup creates app without uninstall registration marker' ((Test-Path -LiteralPath (Join-Path $portableInstall 'MizinPlayout.exe')) -and -not(Test-Path -LiteralPath (Join-Path $portableInstall 'Uninstall.exe')) -and -not(Test-Path -LiteralPath (Join-Path $portableInstall 'installation.ini'))) $null
     $installed=Join-Path $work 'Instalacao teste'
     $null=RunNative $setup ('/S /QA /D='+$installed) 'install'
     Check 'installer writes EXE and uninstaller' ((Test-Path -LiteralPath (Join-Path $installed 'MizinPlayout.exe')) -and (Test-Path -LiteralPath (Join-Path $installed 'Uninstall.exe'))) $null

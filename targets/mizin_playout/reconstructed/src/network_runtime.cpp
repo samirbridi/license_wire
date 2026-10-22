@@ -2,6 +2,7 @@
 #include <QCoreApplication>
 #include <QDir>
 #include <QFileInfo>
+#include <QStandardPaths>
 
 NdiApi::NdiApi(){
     const QString app=QCoreApplication::applicationDirPath();QStringList candidates;
@@ -27,7 +28,7 @@ NdiApi::NdiApi(){
 NdiApi::~NdiApi(){if(ready)destroy();}
 OmtApi::OmtApi(){
     const auto app=QCoreApplication::applicationDirPath();
-    if(qEnvironmentVariable("OMT_STORAGE_PATH").isEmpty()){const auto state=app+"/state/omt";QDir().mkpath(state);qputenv("OMT_STORAGE_PATH",state.toUtf8());}
+    if(qEnvironmentVariable("OMT_STORAGE_PATH").isEmpty()){const auto state=qEnvironmentVariable("MIZIN_STATE_DIR",QStandardPaths::writableLocation(QStandardPaths::AppLocalDataLocation))+"/omt";QDir().mkpath(state);qputenv("OMT_STORAGE_PATH",state.toUtf8());}
 #ifdef Q_OS_WIN
     const QString file=qEnvironmentVariable("MIZIN_OMT_RUNTIME",app+"/libomt.dll");codec.setFileName(QFileInfo(file).absolutePath()+"/libvmx.dll");if(!codec.load()){error="OMT video codec unavailable. Reinstall the OMT libraries.";return;}
 #elif defined(Q_OS_MACOS)

@@ -1,6 +1,6 @@
 # Seu primeiro show
 
-Na versão Windows de testes, execute o Setup para instalar na sua conta, ou extraia o ZIP e abra MizinPlayout.exe. É necessário o runtime Microsoft Visual C++ x64; o instalador oficial assinado está em prerequisites/. NDI depende do runtime oficial instalado separadamente. A abertura normal guarda configurações em %LOCALAPPDATA%/Mizin/Mizin Playout. Start portable.cmd (ou --portable) usa state/ ao lado do EXE; --state-dir tem prioridade sobre os dois modos. Reinstalar/desinstalar preserva preferências e mídias. O atalho de desenvolvimento anterior continua válido. Salve o show explicitamente; os vídeos continuam nas pastas originais.
+Na versão Windows de testes, execute o Setup para instalar na sua conta, ou extraia o ZIP e abra MizinPlayout.exe. É necessário o runtime Microsoft Visual C++ x64; o instalador oficial assinado está em prerequisites/. Os runtimes oficiais NDI e OMT acompanham o aplicativo em sua própria pasta. A abertura normal guarda configurações em %LOCALAPPDATA%/Mizin/Mizin Playout. Start portable.cmd (ou --portable) usa state/ ao lado do EXE; --state-dir tem prioridade sobre os dois modos. Reinstalar/desinstalar preserva preferências e mídias. O atalho de desenvolvimento anterior continua válido. Salve o show explicitamente; os vídeos continuam nas pastas originais.
 
 A Live Desk começa com Prévia sem áudio e um único **PROGRAMA**. **+ Adicionar Program** cria um Program independente com playlist vazia. Selecione o Program na MAIN para editar sua lista e operar CUT/FADE, Manual/Sequencial, Loop e Repetir. Ao adicionar Programs, a MAIN monta um multiview de todos eles ao lado da Prévia. Clique no nome de um Program na grade ou use o menu de destino para selecionar sua playlist e os controles de envio. Selecionar não interrompe a reprodução. Cada quadro tem controles próprios de reproduzir/pausar e Preto. Configurações maiores usam rolagem dentro do multiview.
 
@@ -68,7 +68,7 @@ Os medidores L/R mostram o pico do mix do Program em dBFS. O Preview segue sempr
 
 O vídeo acompanha tamanho e cadência da fonte. Preto mantém a última resolução/cadência da transmissão. Sem mídia inicial, a fonte publica preto em 1280×720/30. As transmissões nunca iniciam automaticamente ao abrir o aplicativo ou uma prancheta de demonstração. Ao fechar o aplicativo, os emissores são encerrados.
 
-NDI precisa do runtime oficial instalado; a integração detecta a instalação existente e informa sua ausência. Reinicie o aplicativo depois de instalar um runtime ausente. OMT usa as bibliotecas nativas incluídas neste pacote de desenvolvimento. O caminho atual de rede é SDR de 8 bits com áudio estéreo; não oferece HX, HDR, ASIO exclusivo, mapa multicanal ou ajuste manual de atraso. Valide recepção em outro computador e sincronismo AV com os arquivos e a rede reais antes de um evento. Veja [escopo e evidências](compatibility-and-performance.md).
+O runtime oficial NDI acompanha o aplicativo; não é necessária instalação separada. Os termos e avisos do fornecedor estão em licenses/ndi. OMT usa as bibliotecas nativas incluídas neste pacote de desenvolvimento. O caminho atual de rede é SDR de 8 bits com áudio estéreo; não oferece HX, HDR, ASIO exclusivo, mapa multicanal ou ajuste manual de atraso. Valide recepção em outro computador e sincronismo AV com os arquivos e a rede reais antes de um evento. Veja [escopo e evidências](compatibility-and-performance.md).
 
 [Sobre NDI®](https://ndi.video/) · NDI® is a registered trademark of Vizrt NDI AB.
 
@@ -84,3 +84,7 @@ O rodapé permanente mostra CPU normalizada do processo, RAM residente (MB/GB) e
 
 
 RAM e memória de GPU usam MB/GB decimais, com troca automática para GB em 1000 MB. GPU mostra separadamente atividade em % e memória gráfica usada pelo aplicativo. A memória vem do uso DXGI nos adaptadores consultados (LOCAL + NON_LOCAL, nó 0); não é a capacidade instalada de VRAM. Leituras ausentes/parciais mostram um traço. **Composição**, antes Mix, mede o trabalho de CPU para combinar um quadro de transição; a duração de fade de 300 ms é outro ajuste. O tooltip e o JSON dos Diagnósticos mostram o escopo e as leituras por adaptador.
+
+## Atualizações opcionais
+
+O aplicativo empacotado verifica atualizações oito segundos após abrir. Use **Ver atualização** para ler as novidades em inglês ou português, **Baixar atualização** para obter o arquivo e **Instalar e reiniciar** quando estiver pronto. **Mais tarde** fecha o aviso. Configurações → Atualizações também oferece **Verificar agora**. Nada é baixado ou instalado sem sua escolha. Os downloads são verificados por assinatura dos metadados e hash. Pare os Programs, feche as saídas de tela/NDI/OMT, aplique/descarte edições e salve o projeto antes de instalar. O atualizador preserva seu perfil e reabre o projeto salvo com as saídas fechadas. A pasta portátil é atualizada no local, sem registrar aplicativo instalado. O build 0035 precisa de uma instalação manual para receber o atualizador.

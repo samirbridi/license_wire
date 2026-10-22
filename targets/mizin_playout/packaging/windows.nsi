@@ -32,6 +32,7 @@ VIAddVersionKey /LANG=1033 "LegalCopyright" "Mizin"
 !insertmacro MUI_LANGUAGE "English"
 !insertmacro MUI_LANGUAGE "PortugueseBR"
 Var QaMode
+Var PortableMode
 Var RuntimeInstalled
 Var RuntimeMajor
 Var RuntimeMinor
@@ -41,11 +42,17 @@ Function .onInit
   SetShellVarContext current
   SetRegView 64
   StrCpy $QaMode 0
+  StrCpy $PortableMode 0
   ${GetParameters} $0
   ClearErrors
   ${GetOptions} $0 "/QA" $1
   ${IfNot} ${Errors}
     StrCpy $QaMode 1
+  ${EndIf}
+  ClearErrors
+  ${GetOptions} $0 "/PORTABLE" $1
+  ${IfNot} ${Errors}
+    StrCpy $PortableMode 1
   ${EndIf}
   ${IfNot} ${RunningX64}
     MessageBox MB_OK|MB_ICONSTOP "Mizin Playout requires Windows x64."
@@ -96,9 +103,13 @@ install_runtime:
       SetRebootFlag true
     ${EndIf}
 runtime_ready:
-  WriteUninstaller "$INSTDIR\Uninstall.exe"
-  WriteINIStr "$INSTDIR\installation.ini" "Setup" "QA" "$QaMode"
+  ${If} $PortableMode == 0
+    WriteUninstaller "$INSTDIR\Uninstall.exe"
+    WriteINIStr "$INSTDIR\installation.ini" "Setup" "QA" "$QaMode"
+  ${EndIf}
+  SetOutPath "$INSTDIR"
   ${If} $QaMode == 0
+  ${AndIf} $PortableMode == 0
     CreateDirectory "$SMPROGRAMS\Mizin Playout Preview"
     CreateShortcut "$SMPROGRAMS\Mizin Playout Preview\Mizin Playout.lnk" "$INSTDIR\MizinPlayout.exe"
     CreateShortcut "$SMPROGRAMS\Mizin Playout Preview\Uninstall.lnk" "$INSTDIR\Uninstall.exe"

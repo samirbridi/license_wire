@@ -14,7 +14,7 @@ import subprocess
 import zipfile
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]
-RUNTIME_FILES = ('MizinPlayout.exe', 'Qt6Core.dll', 'Qt6Gui.dll', 'Qt6Widgets.dll',
+RUNTIME_FILES = ('MizinPlayout.exe', 'MizinUpdater.exe', 'Processing.NDI.Lib.x64.dll', 'Qt6Core.dll', 'Qt6Gui.dll', 'Qt6Widgets.dll',
     'Qt6Multimedia.dll', 'Qt6MultimediaWidgets.dll', 'Qt6Network.dll', 'Qt6OpenGL.dll',
     'Qt6OpenGLWidgets.dll', 'avcodec-61.dll', 'avformat-61.dll', 'avutil-59.dll',
     'swresample-5.dll', 'swscale-8.dll', 'D3Dcompiler_47.dll', 'icuuc.dll', 'libomt.dll', 'libvmx.dll')
@@ -81,6 +81,8 @@ def stage(qt, redist, compiler):
         shutil.copy2(ROOT/'docs'/name, payload/'docs'/name)
     shutil.copy2(ROOT/'CHANGELOG.md', payload/'CHANGELOG.md')
     shutil.copy2(ROOT/'VERSION', payload/'VERSION')
+    shutil.copy2(ROOT/'packaging/release-notes.json',payload/'release-notes.json')
+    shutil.copy2(ROOT/'packaging/dependency-sources.json',payload/'dependency-sources.json')
     shutil.copy2(ROOT/'packaging/README-PREVIEW.txt', payload/'README.txt')
     shutil.copy2(ROOT/'packaging/Start portable.cmd', payload/'Start portable.cmd')
     licenses = payload/'licenses'
@@ -90,9 +92,10 @@ def stage(qt, redist, compiler):
         shutil.copy2(file, licenses/'qt-sdk-sbom'/file.name)
     (licenses/'omt').mkdir()
     shutil.copy2(ROOT/'reconstructed/third_party/omt/LICENSE.txt', licenses/'omt/LICENSE.txt')
+    shutil.copytree(dist/'licenses/ndi',licenses/'ndi')
     shutil.copy2(compiler/'COPYING', licenses/'NSIS-COPYING.txt')
     (licenses/'ndi-headers').mkdir()
-    # Header notices are MIT. No NDI runtime binary is redistributed.
+    # Header notices are MIT; the private NDI runtime has separate vendor terms below.
     shutil.copy2(ROOT/'reconstructed/third_party/ndi/Processing.NDI.Lib.h', licenses/'ndi-headers/Processing.NDI.Lib.h')
     (payload/'prerequisites').mkdir()
     shutil.copy2(redist, payload/'prerequisites/vc_redist.x64.exe')
@@ -113,9 +116,9 @@ def stage(qt, redist, compiler):
     write(licenses/'ffmpeg-runtime.json', ffmpeg)
     write(payload/'build-info.json', dict(version=build['display'], source_commit=build['source_commit'],
         executable_sha256=sha(payload/'MizinPlayout.exe'), architecture='x64', channel='private-preview',
-        public_release_ready=False, remaining=['signed release', 'complete corresponding dependency source archive/rebuild qualification',
+        public_release_ready=False, remaining=['Authenticode signed release', 'bit-identical dependency rebuild qualification',
             'clean Windows machine', 'physical display/audio/AV sync', 'ISSUE-001 NDI receiver timestamps'],
-        optional_ndi='Official NDI runtime must be installed separately; no NDI DLL is bundled.',
+        ndi='Official SDK runtime is bundled privately beside the app, with vendor/third-party notices; no NDI Tools or system DLL replacement.',
         settings='Default per-user AppLocalDataLocation; --portable uses adjacent state/; --state-dir has precedence.'))
     files = sorted(p for p in payload.rglob('*') if p.is_file())
     inventory = [dict(path=p.relative_to(payload).as_posix(), bytes=p.stat().st_size, sha256=sha(p)) for p in files]
