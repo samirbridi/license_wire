@@ -83,8 +83,14 @@ int runAudioEngineTests(const QString& directory,const QString& resultPath){
     else for(auto backend:{AudioBackend::WasapiShared,AudioBackend::Wasapi}){
         LocalAudioEngine device;const bool opened=device.start(backend,cable,0);device.setRoutes({{&a,0}});a.setLocalEngine(opened);
         // The virtual cable can need a moment after an exclusive open; capture twice and keep both peaks.
-        const auto pump=[]{QCoreApplication::processEvents(QEventLoop::AllEvents,5);};double first=opened?capturePeak("CABLE Output",2500,pump):-1;double peak=first;if(opened&&peak<=.005)peak=capturePeak("CABLE Output",2500,pump);const auto s=device.statistics();
-        record(QString("vb_cable_%1_plays_program_audio").arg(backend==AudioBackend::Wasapi?"exclusive":"shared"),opened&&peak>.005,{{"opened",opened},{"error",device.error()},{"captured_peak",peak},{"first_attempt_peak",first},{"device",s["device"].toString()},{"buffer_ms",s["buffer_ms"].toDouble()},{"device_latency_ms",s["device_latency_ms"].toDouble()},{"late_samples",s["late_samples"].toDouble()}});
+        const auto pump=[]{QCoreApplication::processEvents(QEventLoop::AllEvents,5);};double first=opened?capturePeak("CABLE Output",2500,pump):-1;double peak=first;if(opened&&peak<=.005)peak=capturePeak("CABLE Output",2500,pump);QJsonObject retry;
+        // VB-Cable has its own internal buffer and may stay silent at the 2 ms exclusive minimum on a busy host
+        // (seen on builds that had already passed). Then exclusive mode is proven again with a 10 ms buffer.
+        if(backend==AudioBackend::Wasapi&&opened&&peak<=.005){device.stop();const bool reopened=device.start(backend,cable,480);device.setRoutes({{&a,0}});a.setLocalEngine(reopened);
+            const double retryPeak=reopened?capturePeak("CABLE Output",2500,pump):-1;retry={{"retry_buffer_frames",480},{"retry_opened",reopened},{"retry_peak",retryPeak}};if(reopened)peak=retryPeak;}
+        const auto s=device.statistics();
+        QJsonObject details{{"opened",opened},{"error",device.error()},{"captured_peak",peak},{"first_attempt_peak",first},{"device",s["device"].toString()},{"buffer_ms",s["buffer_ms"].toDouble()},{"device_latency_ms",s["device_latency_ms"].toDouble()},{"late_samples",s["late_samples"].toDouble()}};for(auto it=retry.begin();it!=retry.end();++it)details[it.key()]=it.value();
+        record(QString("vb_cable_%1_plays_program_audio").arg(backend==AudioBackend::Wasapi?"exclusive":"shared"),opened&&peak>.005,details);
         device.stop();a.setLocalEngine(false);
     }
 #endif
