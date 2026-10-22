@@ -1,5 +1,34 @@
 # CHANGELOG — Mizin Playout
 
+## v0.16.1 (build 0043) - 2026-10-21
+
+### 💥 Breaking Changes
+- None.
+
+### ✨ Features
+- None.
+
+### 🐛 Fixes
+- Recompile at source commit 33bc2c5b8adf8bf3c482bd39490337a442e09072; build counter advanced.
+
+### ⚡ Improvements
+- None.
+
+## v0.16.0 (build 0042) - 2026-10-21
+
+### 💥 Breaking Changes
+- None.
+
+### ✨ Features
+- feat: destaca decks em janelas proprias e marca Programs no ar (33bc2c5b8adf8bf3c482bd39490337a442e09072)
+
+### 🐛 Fixes
+- fix: aguarda janela reiniciada no teste de atualizacao (ea824d7fe4122a82239b1919e9e9ff1e6dc6650a)
+
+### ⚡ Improvements
+- improve: registra pacote e validacao do build 0041 e evidencias 0036-0038 (2cc5b0fd4f9a5ac6acecc267238a33d63d11930c)
+- improve: registra ADRs de decks destacaveis, monitor WebRTC local e audio ASIO/WASAPI (84eed666e67ceecf4386d8ecb0aa099b66936605)
+
 ## v0.15.5 (build 0041) - 2026-10-21
 
 ### 💥 Breaking Changes

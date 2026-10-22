@@ -1,14 +1,8 @@
 {
-  "display": "v0.15.5 (build 0041)",
-  "previous": "v0.15.4 (build 0040)",
-  "source_commit": "0d5195e313793c3999b637442a115fad16dd6976",
-  "commits": [
-    {
-      "sha": "0d5195e313793c3999b637442a115fad16dd6976",
-      "subject": "fix: serializa reserva compilacao e implantacao do build nativo",
-      "kind": "fix"
-    }
-  ],
+  "display": "v0.16.1 (build 0043)",
+  "previous": "v0.16.0 (build 0042)",
+  "source_commit": "33bc2c5b8adf8bf3c482bd39490337a442e09072",
+  "commits": [],
   "date": "2026-10-21",
   "build_status": "PASS"
 }
