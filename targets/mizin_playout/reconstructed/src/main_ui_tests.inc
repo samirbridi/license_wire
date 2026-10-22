@@ -12,6 +12,7 @@ int MainWindow::runUiTests(const QString& directory,const QString& resultPath){
     const bool webOn=web_->running()&&web_->urls().size()==1&&web_->urls()[0].contains("127.0.0.1:"+QString::number(webPort_->value()))&&webUrls_->text().contains(webCodeValue_)&&!webPort_->isEnabled();
     const QString oldCode=webCodeValue_;webNewCode_->click();const bool newCode=webCodeValue_!=oldCode&&web_->code()==webCodeValue_&&settings_->value("webMonitorCode").toString()==webCodeValue_;webStop_->click();pump(30);
     record("web_monitor_starts_on_request_and_stops",webOn&&newCode&&!web_->running()&&webStatus_->text()==tx("Stopped. Nothing is listening on the network."));
+    record("low_latency_output_is_off_by_default",engine_&&!engine_->running()&&!programA_.localEngine()&&!programA_.qtSinksMuted()&&engineStart_->isVisible()==false&&enginePairs_.size()==1&&engineStatus_->text()==tx("Off. Programs play through their normal output (Audio routing below)."));
     record("approved_brand_icon_is_present",!windowIcon().isNull()&&findChild<QWidget*>("brandMark"));
     auto report=diagnosticsReport();record("single_diagnostics_has_no_inactive_placeholders",report["channels"].toArray().size()==2&&report["network"].toArray().size()==2&&report["outputs"].toArray().size()==1);
     for(const auto& locale:{QString("en"),QString("pt-BR")})for(const auto& size:{QSize(1600,1000),QSize(1280,800)}){
@@ -55,8 +56,14 @@ int MainWindow::runUiTests(const QString& directory,const QString& resultPath){
     playlistTable_->selectRow(0);cueRow(0);const bool readyB=wait([&]{return canTake();});loopBox_->setChecked(true);fadeButton_->click();const bool bLive=wait([&]{return channelAt(1)->frames()>=4;});
     record("second_program_plays_own_list_with_manual_fade",readyB&&bLive&&channelAt(1)->path()==second&&channelAt(1)->composedFrames()>0&&channelAt(1)->cue().transitionMs==300&&programA_.playing());
     addProgram_->click();record("third_program_is_allocated_on_demand",programCount_==3&&extraPrograms_.size()==2&&selectedProgram_==2&&playlist_.isEmpty()&&sourceBoxes_[0]->count()==3);
+    // ADR-018: the engine takes local output of every Program while it runs and gives it back when it stops or fails.
+    {const bool started=startLocalEngine(AudioBackend::Test,"8",128);bool owned=started&&enginePairs_.size()==3;for(int i=0;i<programCount_;++i)owned&=channelAt(i)->localEngine()&&channelAt(i)->qtSinksMuted();
+     enginePairs_[1]->setCurrentIndex(1);const auto routes=engine_->statistics()["routes"].toArray();
+     record("low_latency_output_owns_all_programs_with_pairs",owned&&routes.size()==3&&routes[1].toObject()["first_channel"].toInt()==3&&settings_->value("localAudio/pair/B").toInt()==1&&engineStatus_->text().startsWith(tx("Running · %1 · device latency %2 ms · sync delay %3 ms · late samples %4").section(' ',0,0)));
+     enginePairs_[1]->setCurrentIndex(0);}
     // Five Programs must remain visible even with only one configured display route.
     addProgram(false);addProgram(false);pump(80);
+    const int engineRoutesAtFive=int(engine_->statistics()["routes"].toArray().size());const bool fifthOwned=channelAt(4)->localEngine();
     record("five_program_inventory_with_one_route",programCount_==5&&displayCount_==1&&programInventory_->rowCount()==5&&sourceBoxes_[0]->count()==5&&programInventory_->item(4,2)->text()==tx("No display route"));
     for(const auto& locale:{QString("en"),QString("pt-BR")})for(const auto& size:{QSize(1600,1000),QSize(1280,800)}){
         setLanguage(locale);resize(size);pump(100);bool visible=programTiles_.size()==5;
@@ -98,6 +105,9 @@ int MainWindow::runUiTests(const QString& directory,const QString& resultPath){
     switchProgram(4);const bool removedE=removeSelectedProgram();switchProgram(3);const bool removedD=removeSelectedProgram();switchProgram(2);
     record("multiview_shrinks_without_stopping_surviving_programs",removedE&&removedD&&programCount_==3&&programTiles_.size()==3&&programA_.playing()&&channelAt(1)->playing());
     record("removing_program_closes_its_detached_deck",deckViews_.isEmpty());
+    record("program_add_remove_updates_engine_routes",engineRoutesAtFive==5&&fifthOwned&&engine_->statistics()["routes"].toArray().size()==3);
+    {engine_->stop();pump(30);bool returned=true;for(int i=0;i<programCount_;++i)returned&=!channelAt(i)->localEngine()&&!channelAt(i)->qtSinksMuted();
+     record("stopping_low_latency_output_returns_programs_to_qt",returned&&programA_.playing()&&channelAt(1)->playing());}
     record("copy_a_creates_independent_playlist",copyMainPlaylist()&&playlist_.size()==2&&programDefinitions_[0].cues.size()==2&&programDefinitions_[1].cues.size()==1);
     const auto originalCopy=playlist_[0].json();record("copy_refuses_to_overwrite_existing_items",!copyMainPlaylist()&&playlist_[0].json()==originalCopy&&playlist_.size()==2);
     playlistTable_->selectRow(0);cueRow(0);const bool cReady=wait([&]{return canTake();});selectPage(1);inBox_->setValue(.4);outBox_->setValue(2.2);const bool applied=applyEditor();const bool rangeReady=wait([&]{return canTake();});selectPage(0);loopBox_->setChecked(true);fadeButton_->click();const bool cLive=wait([&]{return channelAt(2)->frames()>=4;});

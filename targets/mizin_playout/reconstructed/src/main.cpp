@@ -12,6 +12,7 @@
 #include "process_usage.hpp"
 #include "updates.hpp"
 #include "web_monitor.hpp"
+#include "local_audio.hpp"
 #include <QtWidgets>
 #include <QtConcurrent>
 #include <QVideoWidget>
@@ -244,7 +245,7 @@ protected:
     void dropEvent(QDropEvent* event) override {QStringList paths;for(const auto& url:event->mimeData()->urls())if(url.isLocalFile())paths<<url.toLocalFile();importExternal(paths);event->acceptProposedAction();}
     void closeEvent(QCloseEvent* event) override {
         if(!demo_ && dirty_ && QMessageBox::question(this,tx("Unsaved show"),tx("Close without saving the show?"),QMessageBox::Yes|QMessageBox::No,QMessageBox::No)!=QMessageBox::Yes){event->ignore();return;}
-        for(auto& output:outputWindows_)if(output)output->close();closeDeckWindows();if(web_)web_->stop();event->accept();
+        for(auto& output:outputWindows_)if(output)output->close();closeDeckWindows();if(web_)web_->stop();if(engine_)engine_->stop();event->accept();
     }
 private:
     QString tx(const QString& key)const{const QString resolved=programCount_==1&&key=="Program A"?"Program":programCount_==1&&key=="PROGRAM A"?"PROGRAM":key;if(dictionary_.contains(resolved))return dictionary_.value(resolved).toString();if(resolved.startsWith("Program "))return dictionary_.value("Program %1").toString("Program %1").arg(resolved.mid(8));if(resolved.startsWith("PROGRAM "))return dictionary_.value("PROGRAM %1").toString("PROGRAM %1").arg(resolved.mid(8));return resolved;}
@@ -333,6 +334,7 @@ private:
 #include "main_multiview.inc"
 #include "main_decks.inc"
 #include "main_web.inc"
+#include "main_audio_engine.inc"
     void refreshDashboard(){
         if(!manualMode_||!playlistTable_)return;
         for(auto* name:{previewName_,programName_,secondaryName_})if(name){name->setToolTip(name->text());name->setAccessibleName(name->text());}
@@ -396,7 +398,7 @@ private:
     }
     void refreshOutputConfiguration(){
         if(outputConfigurationLabel_)outputConfigurationLabel_->setText(tx(programCount_==1?"%1 Program":"%1 Programs").arg(programCount_)+" · "+tx(displayCount_==1?"%1 display route":"%1 display routes").arg(displayCount_));
-        rebuildMultiview();refreshProgramInventory();
+        rebuildMultiview();refreshProgramInventory();rebuildEngineRoutes();
         {QSignalBlocker block(targetBox_);targetBox_->clear();for(int p=0;p<programCount_;++p)targetBox_->addItem(programLabel(p));targetBox_->setCurrentIndex(selectedProgram_);}
         addProgram_->setEnabled(programCount_<OutputConfiguration::MaxPrograms);if(toggleProgram_)toggleProgram_->setEnabled(selectedProgram_>0);if(copyPlaylist_)copyPlaylist_->setEnabled(selectedProgram_>0);addDisplay_->setEnabled(displayCount_<OutputConfiguration::MaxDisplays);removeDisplay_->setEnabled(displayCount_>1);runningMarkKey_.clear();
     }
@@ -420,7 +422,7 @@ private:
     QWidget* outputsPage(){
         outputsTabs_=new QTabWidget;outputsTabs_->addTab(scrollPage(physicalOutputsPage()),tx("Displays"));auto* digital=new QWidget;auto* l=new QVBoxLayout(digital);l->setContentsMargins(16,16,16,16);l->setSpacing(16);l->addWidget(label("Digital outputs","heading"));auto* panels=new QWidget;digitalLayout_=new QVBoxLayout(panels);digitalLayout_->setContentsMargins(0,0,0,0);l->addWidget(panels);auto* attribution=new QLabel("<a href=\"https://ndi.video/\">NDI® · ndi.video</a><br>NDI® is a registered trademark of Vizrt NDI AB.");attribution->setOpenExternalLinks(true);l->addWidget(attribution);l->addWidget(label("Network output starts only when requested. No remote control service is started.","muted"));l->addStretch();outputsTabs_->addTab(scrollPage(digital),tx("NDI / OMT"));outputsTabs_->addTab(scrollPage(webMonitorPage()),tx("Web monitor"));return outputsTabs_;
     }
-    QWidget* audioPage(){auto* page=new QWidget;auto* l=new QVBoxLayout(page);l->setContentsMargins(0,0,0,0);l->setSpacing(16);l->addWidget(label("Audio routing","heading"));auto* panels=new QWidget;audioLayout_=new QVBoxLayout(panels);audioLayout_->setContentsMargins(0,0,0,0);l->addWidget(panels);appendProgramPanels(0);l->addWidget(label("Preview stays muted. Mirrored video outputs do not duplicate local audio.","muted"));l->addStretch();return page;}
+    QWidget* audioPage(){auto* page=new QWidget;auto* l=new QVBoxLayout(page);l->setContentsMargins(0,0,0,0);l->setSpacing(16);l->addWidget(label("Audio routing","heading"));l->addWidget(localEnginePanel());auto* panels=new QWidget;audioLayout_=new QVBoxLayout(panels);audioLayout_->setContentsMargins(0,0,0,0);l->addWidget(panels);appendProgramPanels(0);l->addWidget(label("Preview stays muted. Mirrored video outputs do not duplicate local audio.","muted"));l->addStretch();return page;}
     QWidget* settingsPage(){settingsTabs_=new QTabWidget;settingsTabs_->addTab(playbackSettingsPage(),tx("Playback"));diagnosticsPanel_=new DiagnosticsPanel([this](const QString& key){return tx(key);},[this]{return diagnosticsReport();},demo_);settingsTabs_->addTab(diagnosticsPanel_,tx("Engine diagnostics"));updatePanel_=new UpdatePanel(updates_.get(),[this](const QString& key){return tx(key);},[this]{installUpdate();});settingsTabs_->addTab(updatePanel_,tx("Updates"));return settingsTabs_;}
     bool updatePlaybackBusy()const{
         for(int i=0;i<programCount_;++i){if(channelAt(i)->playing()||channelAt(i)->pending())return true;for(auto protocol:{NetworkProtocol::Ndi,NetworkProtocol::Omt})if(busAt(i)->sender(protocol).running())return true;}
@@ -462,6 +464,7 @@ private:
         for(auto* source:sourceBoxes_){QSignalBlocker block(source);source->addItem(programLabel(programCount_-1));}switchProgram(programCount_-1);if(!demo_)dirty_=true;return true;
     }
     void dropProgram(int index){
+        applyEngineOwnership(index);
         dockDeck(programDefinitions_[index].id);if(web_)web_->programRemoved(programDefinitions_[index].id);
         for(auto* source:sourceBoxes_){QSignalBlocker block(source);const int current=source->currentIndex();source->removeItem(index);source->setCurrentIndex(current==index?0:current>index?current-1:current);}
         for(int i=0;i<displayCount_;++i){if(routePrograms_[i]==index){if(routeWindows_[i])delete routeWindows_[i].data();routePrograms_[i]=-1;}else if(routePrograms_[i]>index)--routePrograms_[i];}
@@ -480,7 +483,7 @@ private:
         QJsonArray channels;auto preview=preview_.diagnostics();preview["id"]="preview";preview["name"]=tx("PREVIEW");preview["enabled"]=true;channels.append(preview);QJsonArray senders;
         for(int i=0;i<programCount_;++i){auto snapshot=channelAt(i)->diagnostics();snapshot["id"]=QString::number(programDefinitions_[i].id);snapshot["name"]=programLabel(i);snapshot["enabled"]=true;channels.append(snapshot);for(auto protocol:{NetworkProtocol::Ndi,NetworkProtocol::Omt}){auto status=busAt(i)->sender(protocol).statistics();status["program"]=QString::number(programDefinitions_[i].id);status["program_name"]=programLabel(i);status["enabled"]=true;status["protocol"]=protocol==NetworkProtocol::Ndi?"NDI":"OMT";senders.append(status);}}
         QJsonArray outputs;for(int i=0;i<displayCount_;++i){const auto window=routeWindows_[i];const bool open=window&&window->isVisible();const int source=open?routePrograms_[i]:sourceBoxes_[i]->currentIndex();outputs.append(QJsonObject{{"route",i+1},{"enabled",true},{"open",open},{"program",programDefinitions_[qBound(0,source,programCount_-1)].id},{"program_name",programLabel(source)},{"published_to_window",window?window->frames():0},{"width",window?window->targetPixels().width():0},{"height",window?window->targetPixels().height():0},{"gpu_scaler_active",window&&window->gpuActive()}});}
-        return {{"schema",2},{"web_monitor",web_?web_->statistics():QJsonObject{}},{"process_usage",resourceSnapshot()},{"version",QString(MizinVersion)},{"recorded_utc",QDateTime::currentDateTimeUtc().toString(Qt::ISODateWithMs)},{"language",language_},{"decode_mode_requested",qEnvironmentVariable("MIZIN_DECODE_MODE","auto")},{"sample_content",demo_},{"output_configuration",currentOutputConfiguration().json()},{"selected_program_id",programDefinitions_[selectedProgram_].id},{"take_enabled",canTake()},{"selected_row",playlistTable_->currentRow()},{"readiness",readiness_.snapshot()},{"channels",channels},{"network",senders},{"outputs",outputs},{"scope","Qt callbacks and CPU composition timing; dynamic Program allocation is not a concurrency qualification. Decoder/GPU timing and physical delivery are not measured."}};
+        return {{"schema",2},{"web_monitor",web_?web_->statistics():QJsonObject{}},{"local_audio",engine_?engine_->statistics():QJsonObject{}},{"process_usage",resourceSnapshot()},{"version",QString(MizinVersion)},{"recorded_utc",QDateTime::currentDateTimeUtc().toString(Qt::ISODateWithMs)},{"language",language_},{"decode_mode_requested",qEnvironmentVariable("MIZIN_DECODE_MODE","auto")},{"sample_content",demo_},{"output_configuration",currentOutputConfiguration().json()},{"selected_program_id",programDefinitions_[selectedProgram_].id},{"take_enabled",canTake()},{"selected_row",playlistTable_->currentRow()},{"readiness",readiness_.snapshot()},{"channels",channels},{"network",senders},{"outputs",outputs},{"scope","Qt callbacks and CPU composition timing; dynamic Program allocation is not a concurrency qualification. Decoder/GPU timing and physical delivery are not measured."}};
     }
     bool canTake()const{return selectedProgram_>=0&&selectedProgram_<programCount_&&cuedRow_>=0&&cuedRow_<playlist_.size()&&cuedRow_==playlistTable_->currentRow()&&readiness_.readyFor(playlist_[cuedRow_]);}
     void takeSelected(PlaylistController::ManualTake mode){
@@ -715,6 +718,7 @@ int main(int argc,char** argv){
     parser.addOption(QCommandLineOption(QStringLiteral("capture-size"),QStringLiteral("Native board viewport, e.g. 1280x800"),QStringLiteral("widthxheight"),QStringLiteral("1600x1000")));
     parser.addOption(QCommandLineOption(QStringLiteral("state-dir"),QStringLiteral("Portable settings directory"),QStringLiteral("directory")));
     parser.addOption(QCommandLineOption(QStringLiteral("cpu"),QStringLiteral("Force software decoding")));
+    parser.addOption(QCommandLineOption(QStringLiteral("audio-engine-test"),QStringLiteral("Test the low-latency local audio engine")));
     parser.addOption(QCommandLineOption(QStringLiteral("web-test"),QStringLiteral("Test the local WebRTC web monitor")));
     parser.addOption(QCommandLineOption(QStringLiteral("network-test"),QStringLiteral("Test audio mixing and native NDI/OMT loopback")));
     parser.addOption(QCommandLineOption(QStringLiteral("capture-digital"),QStringLiteral("Capture the Digital/IP outputs tab")));
@@ -735,13 +739,14 @@ int main(int argc,char** argv){
     if(parser.isSet("readiness-test"))return runReadinessTests(parser.value("fixtures"),parser.value("result"));
     if(parser.isSet("network-test"))return runNetworkTests(parser.value("fixtures"),parser.value("result"));
     if(parser.isSet("web-test"))return runWebTests(parser.value("fixtures"),parser.value("result"));
+    if(parser.isSet("audio-engine-test"))return runAudioEngineTests(parser.value("fixtures"),parser.value("result"));
     if(parser.isSet("gpu-test"))return runGpuTests(parser.value("fixtures"),parser.value("result"));
     if(parser.isSet("output-test"))return runOutputTests(parser.value("fixtures"),parser.value("result"));
     if(parser.isSet("transport-test"))return runTransportTests(parser.value("fixtures"),parser.value("result"));
     if(parser.isSet("smoke-test"))return runSmoke(parser.value("fixtures"),parser.value("result"));
     if(parser.isSet("runtime-info")){
         QSaveFile report(parser.value("runtime-info"));if(!report.open(QIODevice::WriteOnly))return 5;
-        report.write(QJsonDocument(QJsonObject{{"version",QString(MizinVersion)},{"source_commit",QString(MizinSourceCommit)},{"state_dir",state},{"portable",parser.isSet("portable")},{"state_override",parser.isSet("state-dir")},{"default_language","en"}}).toJson());return report.commit()?0:5;
+        report.write(QJsonDocument(QJsonObject{{"version",QString(MizinVersion)},{"source_commit",QString(MizinSourceCommit)},{"state_dir",state},{"portable",parser.isSet("portable")},{"state_override",parser.isSet("state-dir")},{"default_language","en"},{"asio",LocalAudioEngine::asioAvailable()}}).toJson());return report.commit()?0:5;
     }
     // Preserve legacy preferences on first normal launch; explicit/portable paths
     // keep their old semantics. Never delete or replace an existing user profile.

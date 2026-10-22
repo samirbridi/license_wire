@@ -1,4 +1,5 @@
 #include "channel.hpp"
+#include <algorithm>
 #include "compositor.hpp"
 #include <QFileInfo>
 #include <QUrl>
@@ -95,10 +96,10 @@ void NativeChannel::takePrepared() {
     blendMs_=preview_?0:qMin<qint64>(hadProgram && c.transition!=Transition::Cut ? c.transitionMs : c.enterMs,qMax<qint64>(0,length/2));
     blendType_=hadProgram && c.transition!=Transition::Cut ? c.transition : Transition::Dissolve;
     if (hadProgram && blendMs_>0 && c.transition!=Transition::Cut) outgoing_=previous;
-    else {decks_[previous].audio->setMuted(true);decks_[previous].player->stop();audioMix_.envelope[previous].cutoffUs=programTimeUs();outgoing_=-1;}
+    else {decks_[previous].audio->setMuted(true);decks_[previous].player->stop();{const auto ringGuard=audioMix_.guard();audioMix_.envelope[previous].cutoffUs=programTimeUs();}outgoing_=-1;}
     auto& d=decks_[active_];d.audio->setVolume(blendMs_>0?0:1);d.audio->setMuted(true);
     syncAudioTimeline(active_,c.in*1000);
-    if(outgoing_>=0){auto& old=audioMix_.envelope[outgoing_];old.fadeOutStartUs=programTimeUs();old.fadeOutUs=blendMs_*1000/(blendType_==Transition::FadeBlack?2:1);}
+    if(outgoing_>=0){const auto ringGuard=audioMix_.guard();auto& old=audioMix_.envelope[outgoing_];old.fadeOutStartUs=programTimeUs();old.fadeOutUs=blendMs_*1000/(blendType_==Transition::FadeBlack?2:1);}
     if (playIncoming_) d.player->play();
     renderActive();emit started();emit changed();
 }
@@ -115,8 +116,8 @@ void NativeChannel::renderActive() {
     const double incomingGain=(blendType_==Transition::FadeBlack?qMax(0.0,2*p-1):p)*exitGain;
     d.gain=float(incomingGain);
     if (outgoing_>=0) decks_[outgoing_].gain=float(blendType_==Transition::FadeBlack?qMax(0.0,1-2*p):1-p);
-    auto& envelope=audioMix_.envelope[active_];const qint64 endUs=d.offsetUs+rangeEnd()*1000;
-    envelope.cutoffUs=endUs;envelope.fadeOutUs=ready_?0:exitMs*1000;envelope.fadeOutStartUs=exitMs>0 && !ready_?endUs-exitMs*1000:-1;
+    {const auto ringGuard=audioMix_.guard();auto& envelope=audioMix_.envelope[active_];const qint64 endUs=d.offsetUs+rangeEnd()*1000;
+    envelope.cutoffUs=endUs;envelope.fadeOutUs=ready_?0:exitMs*1000;envelope.fadeOutStartUs=exitMs>0 && !ready_?endUs-exitMs*1000:-1;}
     applyLocalAudio();
     QVideoFrame frame=d.last;
     if (frame.isValid() && (p<1 || exitGain<1)) {
@@ -129,7 +130,10 @@ void NativeChannel::renderActive() {
         compositionLastMs_=double(composition.nsecsElapsed())/1000000.0;compositionPeakMs_=qMax(compositionPeakMs_,compositionLastMs_);compositionTotalMs_+=compositionLastMs_;++compositionSamples_;
     }
     if (p>=1) stopOutgoing();
-    output_=frame;if(frame.isValid()){++publishedFrames_;const auto now=clock_.elapsed();publishedTimes_.push_back(now);while(!publishedTimes_.empty()&&(publishedTimes_.front()<now-1000||publishedTimes_.size()>512))publishedTimes_.pop_front();}emit frameReady(output_);
+    output_=frame;if(frame.isValid()){++publishedFrames_;
+        // ADR-018: how late frames are published relative to the audio mix timeline (decode/render pipeline).
+        if(frame.startTime()>=0&&playing()){const qint64 lag=std::clamp<qint64>(programTimeUs()-(decks_[active_].offsetUs+frame.startTime()),0,500000);const qint64 old=videoLagUs_.load();videoLagUs_=old<0?lag:(old*15+lag)/16;}
+       const auto now=clock_.elapsed();publishedTimes_.push_back(now);while(!publishedTimes_.empty()&&(publishedTimes_.front()<now-1000||publishedTimes_.size()>512))publishedTimes_.pop_front();}emit frameReady(output_);
 }
 void NativeChannel::finishRange() {
     if (ended_ || path().isEmpty()) return;
@@ -153,7 +157,7 @@ void NativeChannel::togglePause() {
     else if (!player->source().isEmpty()) {
         if (ended_) {ended_=false;player->setPosition(cue().in);}
         decks_[active_].audio->setMuted(true);player->play();if(outgoing_>=0)decks_[outgoing_].player->play();
-        if(pausedAtUs_>=0){const auto delta=programTimeUs()-pausedAtUs_;for(int i=0;i<2;++i){decks_[i].offsetUs+=delta;audioMix_.envelope[i].shift(delta);}pausedAtUs_=-1;}else syncAudioTimeline(active_,position()*1000);
+        if(pausedAtUs_>=0){const auto delta=programTimeUs()-pausedAtUs_;for(int i=0;i<2;++i){decks_[i].offsetUs+=delta;const auto ringGuard=audioMix_.guard();audioMix_.envelope[i].shift(delta);}pausedAtUs_=-1;}else syncAudioTimeline(active_,position()*1000);
         applyLocalAudio();
     }
 }
@@ -202,9 +206,11 @@ void NativeChannel::setAudioDevice(const QByteArray& id){
     if(deviceAvailable_)for(auto& d:decks_)d.audio->setDevice(selected);
     applyLocalAudio();if(wasAvailable && !deviceAvailable_)emit audioWarning("Audio device unavailable; local output muted");emit changed();
 }
-void NativeChannel::applyLocalAudio(){for(int i=0;i<2;++i){auto& d=decks_[i];d.audio->setVolume(qBound(0.0f,d.gain*volume_,1.0f));d.audio->setMuted(preview_ || muted_ || !localAudio_ || !deviceAvailable_ || ended_ || (i!=active_ && i!=outgoing_));}}
+void NativeChannel::mixLocal(qint64 first,int frames,float* out,int* missing)const{audioMix_.mixInto(first,frames,engineGain_.load(),engineSilent_.load(),out,missing);}
+void NativeChannel::setLocalEngine(bool owned){localEngine_=owned;applyLocalAudio();emit changed();}
+void NativeChannel::applyLocalAudio(){engineGain_=volume_;engineSilent_=preview_ || muted_ || !localAudio_;for(int i=0;i<2;++i){auto& d=decks_[i];d.audio->setVolume(qBound(0.0f,d.gain*volume_,1.0f));d.audio->setMuted(localEngine_ || preview_ || muted_ || !localAudio_ || !deviceAvailable_ || ended_ || (i!=active_ && i!=outgoing_));}}
 void NativeChannel::syncAudioTimeline(int deck,qint64 mediaUs){
-    auto& d=decks_[deck];d.offsetUs=programTimeUs()-mediaUs;audioMix_.clear(deck);auto& e=audioMix_.envelope[deck];e={};e.startUs=d.offsetUs+d.cue.in*1000;e.fadeInUs=blendMs_*1000;e.fadeBlackIn=blendType_==Transition::FadeBlack;e.cutoffUs=d.offsetUs+d.cue.end(d.player->duration())*1000;
+    const auto ringGuard=audioMix_.guard();auto& d=decks_[deck];d.offsetUs=programTimeUs()-mediaUs;audioMix_.clear(deck);auto& e=audioMix_.envelope[deck];e={};e.startUs=d.offsetUs+d.cue.in*1000;e.fadeInUs=blendMs_*1000;e.fadeBlackIn=blendType_==Transition::FadeBlack;e.cutoffUs=d.offsetUs+d.cue.end(d.player->duration())*1000;
 }
 void NativeChannel::flushAudio(){audioMix_.clear();emit audioReset();}
 void NativeChannel::receiveAudio(int i,const QAudioBuffer& b){

@@ -3,6 +3,7 @@
 #include <QVector>
 #include <array>
 #include <limits>
+#include <mutex>
 
 struct AudioPacket {
     QByteArray samples; // Interleaved, stereo float32, 48000 Hz.
@@ -27,7 +28,12 @@ public:
     void clear(int deck=-1);
     void push(int deck,const float* stereo,int frames,qint64 firstSample);
     AudioPacket mix(qint64 firstSample,int frames,float master,bool muted)const;
+    // Allocation-free variant for real-time audio threads (ADR-018); out holds frames*2 floats.
+    void mixInto(qint64 firstSample,int frames,float master,bool muted,float* out,int* missing=nullptr)const;
+    // Envelope edits on the GUI thread take this guard so an audio thread never reads a half-written fade.
+    std::unique_lock<std::recursive_mutex> guard()const{return std::unique_lock<std::recursive_mutex>(lock_);}
 private:
+    mutable std::recursive_mutex lock_;
     struct Deck {QVector<float> pcm;QVector<qint64> tags;};
     std::array<Deck,2> decks_;
 };

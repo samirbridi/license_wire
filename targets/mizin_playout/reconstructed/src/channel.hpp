@@ -13,6 +13,7 @@
 #include <array>
 #include <deque>
 #include <QJsonObject>
+#include <atomic>
 
 class NativeChannel final : public QObject {
     Q_OBJECT
@@ -64,6 +65,15 @@ public:
     qint64 videoTimeUs()const;
     int audioBuffers()const{return audioBuffers_;}
     float localDeckVolume(int index)const{return decks_[index].audio->volume();}
+    // ADR-018 low-latency local output. mixLocal is thread-safe and allocation-free: the audio engine
+    // pulls Program sample "first" (48 kHz Program clock) directly from the mix ring.
+    void mixLocal(qint64 firstSample,int frames,float* stereo,int* missing=nullptr)const;
+    qint64 programSampleNow()const{return programTimeUs()*48/1000;}
+    // When an engine owns local output, Qt's own audio sinks are muted (they keep the playback clock).
+    void setLocalEngine(bool owned);
+    bool localEngine()const{return localEngine_;}
+    bool qtSinksMuted()const{return decks_[0].audio->isMuted()&&decks_[1].audio->isMuted();}
+    qint64 videoLagUs()const{return videoLagUs_.load();}
 signals:
     void frameReady(const QVideoFrame& frame);
     void changed();
@@ -103,7 +113,10 @@ private:
     AudioMixRing audioMix_;
     qint64 audioCursor_=0,pausedAtUs_=-1;
     float volume_=1;
-    bool muted_=false,localAudio_=true,deviceAvailable_=true;
+    bool muted_=false,localAudio_=true,deviceAvailable_=true,localEngine_=false;
+    std::atomic<float> engineGain_{1};
+    std::atomic<bool> engineSilent_{false};
+    std::atomic<qint64> videoLagUs_{-1};
     QByteArray deviceId_;
     int audioBuffers_=0;
     quint64 requestGeneration_=0,activeGeneration_=0,publishedFrames_=0,receivedFrames_=0,prerollFiltered_=0;
