@@ -539,5 +539,111 @@
     ],
     "date": "2026-10-20",
     "build_status": "PASS"
+  },
+  {
+    "display": "v0.15.0 (build 0036)",
+    "previous": "v0.14.1 (build 0035)",
+    "source_commit": "0b40201bed0076659660c4d368a7a8b9275e43aa",
+    "commits": [
+      {
+        "sha": "31f4372b52e0b057f88089fc9b01f19a7f323432",
+        "subject": "fix: limita relatorio do instalador a valores simples e registra hash do validador",
+        "kind": "fix"
+      },
+      {
+        "sha": "e97d426de906a85f9bb5ab60bf4fe31760aec402",
+        "subject": "improve: registra build Windows instalavel e validacao dos pacotes preview",
+        "kind": "improve"
+      },
+      {
+        "sha": "0b40201bed0076659660c4d368a7a8b9275e43aa",
+        "subject": "feat: integra atualizacoes opcionais assinadas e runtime NDI privado",
+        "kind": "feat"
+      }
+    ],
+    "date": "2026-10-21",
+    "build_status": "PASS"
+  },
+  {
+    "display": "v0.15.1 (build 0037)",
+    "previous": "v0.15.0 (build 0036)",
+    "source_commit": "1f854525eaa017699df51ca484bb419915daee24",
+    "commits": [
+      {
+        "sha": "1f854525eaa017699df51ca484bb419915daee24",
+        "subject": "fix: distingue cache NDI de regressao real de quadros e entrega",
+        "kind": "fix"
+      }
+    ],
+    "date": "2026-10-21",
+    "build_status": "PASS"
+  },
+  {
+    "display": "v0.15.2 (build 0038)",
+    "previous": "v0.15.1 (build 0037)",
+    "source_commit": "2ca58c99e8135b463f6e0fcb84a27128176ff5d6",
+    "commits": [
+      {
+        "sha": "981bdb6f443281a21103b366d69ea2391b439985",
+        "subject": "fix: identifica cliente de publicacao no dominio Cloudflare",
+        "kind": "fix"
+      },
+      {
+        "sha": "2ca58c99e8135b463f6e0fcb84a27128176ff5d6",
+        "subject": "perf: verifica cache NDI por bytes sem hash pesado na thread de audio",
+        "kind": "perf"
+      }
+    ],
+    "date": "2026-10-21",
+    "build_status": "PASS"
+  },
+  {
+    "display": "v0.15.3 (build 0039)",
+    "previous": "v0.15.2 (build 0038)",
+    "source_commit": "9575dd36642932f298a7e0316283725bf0f1fcd0",
+    "commits": [
+      {
+        "sha": "15977e6f48f856528871bbb849a030fecb64f6ef",
+        "subject": "fix: evita cache negativo antes da publicacao dos pacotes",
+        "kind": "fix"
+      },
+      {
+        "sha": "9575dd36642932f298a7e0316283725bf0f1fcd0",
+        "subject": "fix: preserva avisos com caminhos curtos no instalador Windows",
+        "kind": "fix"
+      }
+    ],
+    "date": "2026-10-21",
+    "build_status": "FAIL",
+    "interruption_reason": "Superseded before deployment: native restart visibility fix; attempted compiler interruption failed and overlapped the successor. Both verified task-only build trees were terminated; next build is clean and serialized by an exclusive lock."
+  },
+  {
+    "display": "v0.15.4 (build 0040)",
+    "previous": "v0.15.3 (build 0039)",
+    "source_commit": "4895f077fbf5462242e3d8a2efc34c8ce194a009",
+    "commits": [
+      {
+        "sha": "4895f077fbf5462242e3d8a2efc34c8ce194a009",
+        "subject": "fix: exibe janela do operador ao reiniciar apos atualizar",
+        "kind": "fix"
+      }
+    ],
+    "date": "2026-10-21",
+    "build_status": "FAIL",
+    "interruption_reason": "Superseded before deployment: native restart visibility fix; attempted compiler interruption failed and overlapped the successor. Both verified task-only build trees were terminated; next build is clean and serialized by an exclusive lock."
+  },
+  {
+    "display": "v0.15.5 (build 0041)",
+    "previous": "v0.15.4 (build 0040)",
+    "source_commit": "0d5195e313793c3999b637442a115fad16dd6976",
+    "commits": [
+      {
+        "sha": "0d5195e313793c3999b637442a115fad16dd6976",
+        "subject": "fix: serializa reserva compilacao e implantacao do build nativo",
+        "kind": "fix"
+      }
+    ],
+    "date": "2026-10-21",
+    "build_status": "PASS"
   }
 ]

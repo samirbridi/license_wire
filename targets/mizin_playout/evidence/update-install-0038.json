@@ -1,0 +1,13 @@
+{
+  "version": "v0.15.2 (build 0038)",
+  "source_commit": "2ca58c99e8135b463f6e0fcb84a27128176ff5d6",
+  "result": "FAIL",
+  "checks": [
+    {
+      "name": "isolated portable installation succeeds",
+      "pass": false
+    }
+  ],
+  "work": "D:\\REA - ENGENHARIA REVERSA\\targets\\mizin_playout\\binaries\\update-install-qa\\b93fb9021b304a8692a64b9f21c85855",
+  "scope": "Real native helper waits for an isolated parent, rejects wrong hash, invokes NSIS portable update, preserves profile and restarts the updated app. Same-host QA, not clean-machine qualification."
+}

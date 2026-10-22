@@ -1,0 +1,5 @@
+{
+  "result": "PASS",
+  "exclusive_build_lock_held": true,
+  "scope": "Second process cannot open the native build lifecycle lock. No version reservation or second compiler started."
+}

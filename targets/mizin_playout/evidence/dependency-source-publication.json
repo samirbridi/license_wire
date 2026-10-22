@@ -1,0 +1,37 @@
+{
+  "result": "PASS",
+  "index": "https://updates.p2pmizin.dev/playout/sources/qt-6.10.2-ffmpeg-7.1.2/index.json",
+  "files": [
+    {
+      "file": "qtbase-everywhere-src-6.10.2.tar.xz",
+      "origin": "https://download.qt.io/archive/qt/6.10/6.10.2/submodules/qtbase-everywhere-src-6.10.2.tar.xz",
+      "bytes": 50374380,
+      "sha256": "aeb78d29291a2b5fd53cb55950f8f5065b4978c25fb1d77f627d695ab9adf21e",
+      "members": 26572
+    },
+    {
+      "file": "qtmultimedia-everywhere-src-6.10.2.tar.xz",
+      "origin": "https://download.qt.io/archive/qt/6.10/6.10.2/submodules/qtmultimedia-everywhere-src-6.10.2.tar.xz",
+      "bytes": 9907852,
+      "sha256": "93f7ef0106fbd731165a2723f3e436c911fc5e6880f5bc987b55516c20833e2b",
+      "members": 3150
+    },
+    {
+      "file": "ffmpeg-7.1.2.tar.xz",
+      "origin": "https://ffmpeg.org/releases/ffmpeg-7.1.2.tar.xz",
+      "bytes": 11030368,
+      "sha256": "089bc60fb59d6aecc5d994ff530fd0dcb3ee39aa55867849a2bbc4e555f9c304",
+      "members": 8646
+    },
+    {
+      "file": "build-configuration.zip",
+      "bytes": 1973179,
+      "sha256": "0162b3fa3c28286c18f53b63594ae0722e22ed44358c0e825cfde05e0fb15362"
+    },
+    {
+      "file": "index.json",
+      "bytes": 1384,
+      "sha256": "d80bfd846272f04973bc7f992190740c7adff99a7490f4db93171f75ed1d536f"
+    }
+  ]
+}

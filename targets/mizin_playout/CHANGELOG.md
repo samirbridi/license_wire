@@ -1,5 +1,90 @@
 # CHANGELOG — Mizin Playout
 
+## v0.15.5 (build 0041) - 2026-10-21
+
+### 💥 Breaking Changes
+- None.
+
+### ✨ Features
+- None.
+
+### 🐛 Fixes
+- fix: serializa reserva compilacao e implantacao do build nativo (0d5195e313793c3999b637442a115fad16dd6976)
+
+### ⚡ Improvements
+- None.
+
+## v0.15.4 (build 0040) - 2026-10-21
+
+### 💥 Breaking Changes
+- None.
+
+### ✨ Features
+- None.
+
+### 🐛 Fixes
+- fix: exibe janela do operador ao reiniciar apos atualizar (4895f077fbf5462242e3d8a2efc34c8ce194a009)
+
+### ⚡ Improvements
+- None.
+
+## v0.15.3 (build 0039) - 2026-10-21
+
+### 💥 Breaking Changes
+- None.
+
+### ✨ Features
+- None.
+
+### 🐛 Fixes
+- fix: evita cache negativo antes da publicacao dos pacotes (15977e6f48f856528871bbb849a030fecb64f6ef)
+- fix: preserva avisos com caminhos curtos no instalador Windows (9575dd36642932f298a7e0316283725bf0f1fcd0)
+
+### ⚡ Improvements
+- None.
+
+## v0.15.2 (build 0038) - 2026-10-21
+
+### 💥 Breaking Changes
+- None.
+
+### ✨ Features
+- None.
+
+### 🐛 Fixes
+- fix: identifica cliente de publicacao no dominio Cloudflare (981bdb6f443281a21103b366d69ea2391b439985)
+
+### ⚡ Improvements
+- perf: verifica cache NDI por bytes sem hash pesado na thread de audio (2ca58c99e8135b463f6e0fcb84a27128176ff5d6)
+
+## v0.15.1 (build 0037) - 2026-10-21
+
+### 💥 Breaking Changes
+- None.
+
+### ✨ Features
+- None.
+
+### 🐛 Fixes
+- fix: distingue cache NDI de regressao real de quadros e entrega (1f854525eaa017699df51ca484bb419915daee24)
+
+### ⚡ Improvements
+- None.
+
+## v0.15.0 (build 0036) - 2026-10-21
+
+### 💥 Breaking Changes
+- None.
+
+### ✨ Features
+- feat: integra atualizacoes opcionais assinadas e runtime NDI privado (0b40201bed0076659660c4d368a7a8b9275e43aa)
+
+### 🐛 Fixes
+- fix: limita relatorio do instalador a valores simples e registra hash do validador (31f4372b52e0b057f88089fc9b01f19a7f323432)
+
+### ⚡ Improvements
+- improve: registra build Windows instalavel e validacao dos pacotes preview (e97d426de906a85f9bb5ab60bf4fe31760aec402)
+
 ## v0.14.1 (build 0035) - 2026-10-20
 
 ### 💥 Breaking Changes

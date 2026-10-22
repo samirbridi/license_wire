@@ -1,0 +1,650 @@
+{
+  "result": "PASS",
+  "source": "DESKTOP-BBB9G7I (Mizin QA NDI 33824)",
+  "mode": "auto",
+  "delay": 0.0,
+  "reconnected": false,
+  "video_frames": 78,
+  "audio_packets": 175,
+  "audio_peak": 0.02507065236568451,
+  "timecode_violations": [],
+  "frames": [
+    {
+      "timecode": 17926300922347818,
+      "sdk_timestamp": 17926300922173706,
+      "width": 1920,
+      "height": 1080,
+      "rate_n": 30000,
+      "rate_d": 1000
+    },
+    {
+      "timecode": 17926300922681151,
+      "sdk_timestamp": 17926300922513940,
+      "width": 1920,
+      "height": 1080,
+      "rate_n": 30000,
+      "rate_d": 1000
+    },
+    {
+      "timecode": 17926300923014484,
+      "sdk_timestamp": 17926300922862757,
+      "width": 1920,
+      "height": 1080,
+      "rate_n": 30000,
+      "rate_d": 1000
+    },
+    {
+      "timecode": 17926300923347817,
+      "sdk_timestamp": 17926300923209046,
+      "width": 1920,
+      "height": 1080,
+      "rate_n": 30000,
+      "rate_d": 1000
+    },
+    {
+      "timecode": 17926300923681150,
+      "sdk_timestamp": 17926300923563494,
+      "width": 1920,
+      "height": 1080,
+      "rate_n": 30000,
+      "rate_d": 1000
+    },
+    {
+      "timecode": 17926300924014483,
+      "sdk_timestamp": 17926300923905837,
+      "width": 1920,
+      "height": 1080,
+      "rate_n": 30000,
+      "rate_d": 1000
+    },
+    {
+      "timecode": 17926300924347816,
+      "sdk_timestamp": 17926300924254127,
+      "width": 1920,
+      "height": 1080,
+      "rate_n": 30000,
+      "rate_d": 1000
+    },
+    {
+      "timecode": 17926300924681149,
+      "sdk_timestamp": 17926300924610960,
+      "width": 1920,
+      "height": 1080,
+      "rate_n": 30000,
+      "rate_d": 1000
+    },
+    {
+      "timecode": 17926300925014482,
+      "sdk_timestamp": 17926300924942538,
+      "width": 1920,
+      "height": 1080,
+      "rate_n": 30000,
+      "rate_d": 1000
+    },
+    {
+      "timecode": 17926300925347815,
+      "sdk_timestamp": 17926300925334680,
+      "width": 1920,
+      "height": 1080,
+      "rate_n": 30000,
+      "rate_d": 1000
+    },
+    {
+      "timecode": 17926300925681148,
+      "sdk_timestamp": 17926300925671474,
+      "width": 1920,
+      "height": 1080,
+      "rate_n": 30000,
+      "rate_d": 1000
+    },
+    {
+      "timecode": 17926300926014481,
+      "sdk_timestamp": 17926300926009629,
+      "width": 1920,
+      "height": 1080,
+      "rate_n": 30000,
+      "rate_d": 1000
+    },
+    {
+      "timecode": 17926300926681147,
+      "sdk_timestamp": 17926300926387966,
+      "width": 1920,
+      "height": 1080,
+      "rate_n": 30000,
+      "rate_d": 1000
+    },
+    {
+      "timecode": 17926300927014480,
+      "sdk_timestamp": 17926300926735013,
+      "width": 1920,
+      "height": 1080,
+      "rate_n": 30000,
+      "rate_d": 1000
+    },
+    {
+      "timecode": 17926300927347813,
+      "sdk_timestamp": 17926300927078190,
+      "width": 1920,
+      "height": 1080,
+      "rate_n": 30000,
+      "rate_d": 1000
+    },
+    {
+      "timecode": 17926300927681146,
+      "sdk_timestamp": 17926300927424736,
+      "width": 1920,
+      "height": 1080,
+      "rate_n": 30000,
+      "rate_d": 1000
+    },
+    {
+      "timecode": 17926300928014479,
+      "sdk_timestamp": 17926300927774622,
+      "width": 1920,
+      "height": 1080,
+      "rate_n": 30000,
+      "rate_d": 1000
+    },
+    {
+      "timecode": 17926300928347812,
+      "sdk_timestamp": 17926300928109525,
+      "width": 1920,
+      "height": 1080,
+      "rate_n": 30000,
+      "rate_d": 1000
+    },
+    {
+      "timecode": 17926300928681145,
+      "sdk_timestamp": 17926300928436796,
+      "width": 1920,
+      "height": 1080,
+      "rate_n": 30000,
+      "rate_d": 1000
+    },
+    {
+      "timecode": 17926300929014478,
+      "sdk_timestamp": 17926300928783802,
+      "width": 1920,
+      "height": 1080,
+      "rate_n": 30000,
+      "rate_d": 1000
+    },
+    {
+      "timecode": 17926300929347811,
+      "sdk_timestamp": 17926300929092326,
+      "width": 1920,
+      "height": 1080,
+      "rate_n": 30000,
+      "rate_d": 1000
+    },
+    {
+      "timecode": 17926300929681144,
+      "sdk_timestamp": 17926300929450181,
+      "width": 1920,
+      "height": 1080,
+      "rate_n": 30000,
+      "rate_d": 1000
+    },
+    {
+      "timecode": 17926300930014477,
+      "sdk_timestamp": 17926300929767904,
+      "width": 1920,
+      "height": 1080,
+      "rate_n": 30000,
+      "rate_d": 1000
+    },
+    {
+      "timecode": 17926300930347810,
+      "sdk_timestamp": 17926300930135917,
+      "width": 1920,
+      "height": 1080,
+      "rate_n": 30000,
+      "rate_d": 1000
+    },
+    {
+      "timecode": 17926300930681143,
+      "sdk_timestamp": 17926300930491805,
+      "width": 1920,
+      "height": 1080,
+      "rate_n": 30000,
+      "rate_d": 1000
+    },
+    {
+      "timecode": 17926300931014476,
+      "sdk_timestamp": 17926300930839596,
+      "width": 1920,
+      "height": 1080,
+      "rate_n": 30000,
+      "rate_d": 1000
+    },
+    {
+      "timecode": 17926300931347809,
+      "sdk_timestamp": 17926300931180655,
+      "width": 1920,
+      "height": 1080,
+      "rate_n": 30000,
+      "rate_d": 1000
+    },
+    {
+      "timecode": 17926300931681142,
+      "sdk_timestamp": 17926300931518542,
+      "width": 1920,
+      "height": 1080,
+      "rate_n": 30000,
+      "rate_d": 1000
+    },
+    {
+      "timecode": 17926300932014475,
+      "sdk_timestamp": 17926300931849186,
+      "width": 1920,
+      "height": 1080,
+      "rate_n": 30000,
+      "rate_d": 1000
+    },
+    {
+      "timecode": 17926300932347808,
+      "sdk_timestamp": 17926300932207041,
+      "width": 1920,
+      "height": 1080,
+      "rate_n": 30000,
+      "rate_d": 1000
+    },
+    {
+      "timecode": 17926300932681141,
+      "sdk_timestamp": 17926300932556462,
+      "width": 1920,
+      "height": 1080,
+      "rate_n": 30000,
+      "rate_d": 1000
+    },
+    {
+      "timecode": 17926300933014474,
+      "sdk_timestamp": 17926300932882103,
+      "width": 1920,
+      "height": 1080,
+      "rate_n": 30000,
+      "rate_d": 1000
+    },
+    {
+      "timecode": 17926300933347807,
+      "sdk_timestamp": 17926300933248188,
+      "width": 1920,
+      "height": 1080,
+      "rate_n": 30000,
+      "rate_d": 1000
+    },
+    {
+      "timecode": 17926300933681140,
+      "sdk_timestamp": 17926300933591455,
+      "width": 1920,
+      "height": 1080,
+      "rate_n": 30000,
+      "rate_d": 1000
+    },
+    {
+      "timecode": 17926300934014473,
+      "sdk_timestamp": 17926300933942706,
+      "width": 1920,
+      "height": 1080,
+      "rate_n": 30000,
+      "rate_d": 1000
+    },
+    {
+      "timecode": 17926300934347806,
+      "sdk_timestamp": 17926300934302868,
+      "width": 1920,
+      "height": 1080,
+      "rate_n": 30000,
+      "rate_d": 1000
+    },
+    {
+      "timecode": 17926300934681139,
+      "sdk_timestamp": 17926300934645673,
+      "width": 1920,
+      "height": 1080,
+      "rate_n": 30000,
+      "rate_d": 1000
+    },
+    {
+      "timecode": 17926300935014472,
+      "sdk_timestamp": 17926300934991821,
+      "width": 1920,
+      "height": 1080,
+      "rate_n": 30000,
+      "rate_d": 1000
+    },
+    {
+      "timecode": 17926300935681138,
+      "sdk_timestamp": 17926300935349311,
+      "width": 1920,
+      "height": 1080,
+      "rate_n": 30000,
+      "rate_d": 1000
+    },
+    {
+      "timecode": 17926300936014471,
+      "sdk_timestamp": 17926300935683884,
+      "width": 1920,
+      "height": 1080,
+      "rate_n": 30000,
+      "rate_d": 1000
+    },
+    {
+      "timecode": 17926300936347804,
+      "sdk_timestamp": 17926300936032396,
+      "width": 1920,
+      "height": 1080,
+      "rate_n": 30000,
+      "rate_d": 1000
+    },
+    {
+      "timecode": 17926300936681137,
+      "sdk_timestamp": 17926300936403318,
+      "width": 1920,
+      "height": 1080,
+      "rate_n": 30000,
+      "rate_d": 1000
+    },
+    {
+      "timecode": 17926300937014470,
+      "sdk_timestamp": 17926300936749076,
+      "width": 1920,
+      "height": 1080,
+      "rate_n": 30000,
+      "rate_d": 1000
+    },
+    {
+      "timecode": 17926300937347803,
+      "sdk_timestamp": 17926300937092322,
+      "width": 1920,
+      "height": 1080,
+      "rate_n": 30000,
+      "rate_d": 1000
+    },
+    {
+      "timecode": 17926300937681136,
+      "sdk_timestamp": 17926300937425386,
+      "width": 1920,
+      "height": 1080,
+      "rate_n": 30000,
+      "rate_d": 1000
+    },
+    {
+      "timecode": 17926300938014469,
+      "sdk_timestamp": 17926300937778521,
+      "width": 1920,
+      "height": 1080,
+      "rate_n": 30000,
+      "rate_d": 1000
+    },
+    {
+      "timecode": 17926300938347802,
+      "sdk_timestamp": 17926300938115567,
+      "width": 1920,
+      "height": 1080,
+      "rate_n": 30000,
+      "rate_d": 1000
+    },
+    {
+      "timecode": 17926300938681135,
+      "sdk_timestamp": 17926300938449410,
+      "width": 1920,
+      "height": 1080,
+      "rate_n": 30000,
+      "rate_d": 1000
+    },
+    {
+      "timecode": 17926300939014468,
+      "sdk_timestamp": 17926300938795110,
+      "width": 1920,
+      "height": 1080,
+      "rate_n": 30000,
+      "rate_d": 1000
+    },
+    {
+      "timecode": 17926300939347801,
+      "sdk_timestamp": 17926300939126694,
+      "width": 1920,
+      "height": 1080,
+      "rate_n": 30000,
+      "rate_d": 1000
+    },
+    {
+      "timecode": 17926300939681134,
+      "sdk_timestamp": 17926300939453449,
+      "width": 1920,
+      "height": 1080,
+      "rate_n": 30000,
+      "rate_d": 1000
+    },
+    {
+      "timecode": 17926300940014467,
+      "sdk_timestamp": 17926300939804527,
+      "width": 1920,
+      "height": 1080,
+      "rate_n": 30000,
+      "rate_d": 1000
+    },
+    {
+      "timecode": 17926300940347800,
+      "sdk_timestamp": 17926300940191043,
+      "width": 1920,
+      "height": 1080,
+      "rate_n": 30000,
+      "rate_d": 1000
+    },
+    {
+      "timecode": 17926300940681133,
+      "sdk_timestamp": 17926300940565427,
+      "width": 1920,
+      "height": 1080,
+      "rate_n": 30000,
+      "rate_d": 1000
+    },
+    {
+      "timecode": 17926300941014466,
+      "sdk_timestamp": 17926300940955885,
+      "width": 1920,
+      "height": 1080,
+      "rate_n": 30000,
+      "rate_d": 1000
+    },
+    {
+      "timecode": 17926300941347799,
+      "sdk_timestamp": 17926300941287078,
+      "width": 1920,
+      "height": 1080,
+      "rate_n": 30000,
+      "rate_d": 1000
+    },
+    {
+      "timecode": 17926300941681132,
+      "sdk_timestamp": 17926300941630655,
+      "width": 1920,
+      "height": 1080,
+      "rate_n": 30000,
+      "rate_d": 1000
+    },
+    {
+      "timecode": 17926300942014465,
+      "sdk_timestamp": 17926300941982892,
+      "width": 1920,
+      "height": 1080,
+      "rate_n": 30000,
+      "rate_d": 1000
+    },
+    {
+      "timecode": 17926300942347798,
+      "sdk_timestamp": 17926300942347168,
+      "width": 1920,
+      "height": 1080,
+      "rate_n": 30000,
+      "rate_d": 1000
+    },
+    {
+      "timecode": 17926300942681131,
+      "sdk_timestamp": 17926300942670513,
+      "width": 1920,
+      "height": 1080,
+      "rate_n": 30000,
+      "rate_d": 1000
+    },
+    {
+      "timecode": 17926300943347797,
+      "sdk_timestamp": 17926300943023447,
+      "width": 1920,
+      "height": 1080,
+      "rate_n": 30000,
+      "rate_d": 1000
+    },
+    {
+      "timecode": 17926300943681130,
+      "sdk_timestamp": 17926300943365106,
+      "width": 1920,
+      "height": 1080,
+      "rate_n": 30000,
+      "rate_d": 1000
+    },
+    {
+      "timecode": 17926300944014463,
+      "sdk_timestamp": 17926300943749688,
+      "width": 1920,
+      "height": 1080,
+      "rate_n": 30000,
+      "rate_d": 1000
+    },
+    {
+      "timecode": 17926300944347796,
+      "sdk_timestamp": 17926300944092028,
+      "width": 1920,
+      "height": 1080,
+      "rate_n": 30000,
+      "rate_d": 1000
+    },
+    {
+      "timecode": 17926300944681129,
+      "sdk_timestamp": 17926300944435301,
+      "width": 1920,
+      "height": 1080,
+      "rate_n": 30000,
+      "rate_d": 1000
+    },
+    {
+      "timecode": 17926300945014462,
+      "sdk_timestamp": 17926300944776283,
+      "width": 1920,
+      "height": 1080,
+      "rate_n": 30000,
+      "rate_d": 1000
+    },
+    {
+      "timecode": 17926300945347795,
+      "sdk_timestamp": 17926300945124092,
+      "width": 1920,
+      "height": 1080,
+      "rate_n": 30000,
+      "rate_d": 1000
+    },
+    {
+      "timecode": 17926300945681128,
+      "sdk_timestamp": 17926300945441192,
+      "width": 1920,
+      "height": 1080,
+      "rate_n": 30000,
+      "rate_d": 1000
+    },
+    {
+      "timecode": 17926300946014461,
+      "sdk_timestamp": 17926300945810415,
+      "width": 1920,
+      "height": 1080,
+      "rate_n": 30000,
+      "rate_d": 1000
+    },
+    {
+      "timecode": 17926300946347794,
+      "sdk_timestamp": 17926300946163752,
+      "width": 1920,
+      "height": 1080,
+      "rate_n": 30000,
+      "rate_d": 1000
+    },
+    {
+      "timecode": 17926300946681127,
+      "sdk_timestamp": 17926300946504285,
+      "width": 1920,
+      "height": 1080,
+      "rate_n": 30000,
+      "rate_d": 1000
+    },
+    {
+      "timecode": 17926300947014460,
+      "sdk_timestamp": 17926300946852207,
+      "width": 1920,
+      "height": 1080,
+      "rate_n": 30000,
+      "rate_d": 1000
+    },
+    {
+      "timecode": 17926300947347793,
+      "sdk_timestamp": 17926300947195571,
+      "width": 1920,
+      "height": 1080,
+      "rate_n": 30000,
+      "rate_d": 1000
+    },
+    {
+      "timecode": 17926300947681126,
+      "sdk_timestamp": 17926300947543640,
+      "width": 1920,
+      "height": 1080,
+      "rate_n": 30000,
+      "rate_d": 1000
+    },
+    {
+      "timecode": 17926300948014459,
+      "sdk_timestamp": 17926300947893910,
+      "width": 1920,
+      "height": 1080,
+      "rate_n": 30000,
+      "rate_d": 1000
+    },
+    {
+      "timecode": 17926300948347792,
+      "sdk_timestamp": 17926300948248228,
+      "width": 1920,
+      "height": 1080,
+      "rate_n": 30000,
+      "rate_d": 1000
+    },
+    {
+      "timecode": 17926300948681125,
+      "sdk_timestamp": 17926300948617646,
+      "width": 1920,
+      "height": 1080,
+      "rate_n": 30000,
+      "rate_d": 1000
+    },
+    {
+      "timecode": 17926300949014458,
+      "sdk_timestamp": 17926300948933319,
+      "width": 1920,
+      "height": 1080,
+      "rate_n": 30000,
+      "rate_d": 1000
+    }
+  ],
+  "child_exit": 0,
+  "child_result": "D:\\REA - ENGENHARIA REVERSA\\targets\\mizin_playout\\evidence\\network-probe-startup-auto-0036.json",
+  "args": [
+    "D:\\REA - ENGENHARIA REVERSA\\targets\\mizin_playout\\dist\\MizinPlayout.exe",
+    "--network-test",
+    "--fixtures",
+    "D:\\REA - ENGENHARIA REVERSA\\targets\\mizin_playout\\binaries\\network-fixtures",
+    "--result",
+    "D:\\REA - ENGENHARIA REVERSA\\targets\\mizin_playout\\evidence\\network-probe-startup-auto-0036.json",
+    "--state-dir",
+    "D:\\REA - ENGENHARIA REVERSA\\targets\\mizin_playout\\binaries\\qa\\external-state-startup-auto-0036"
+  ],
+  "scope": "Independent receiver process on same Windows computer; not another LAN machine or physical AV-sync."
+}

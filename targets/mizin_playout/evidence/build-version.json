@@ -1,14 +1,14 @@
 {
-  "display": "v0.14.1 (build 0035)",
-  "previous": "v0.14.0 (build 0034)",
-  "source_commit": "18df4d67f50848be0c59f5b6cddd531d2a9125e1",
+  "display": "v0.15.5 (build 0041)",
+  "previous": "v0.15.4 (build 0040)",
+  "source_commit": "0d5195e313793c3999b637442a115fad16dd6976",
   "commits": [
     {
-      "sha": "18df4d67f50848be0c59f5b6cddd531d2a9125e1",
-      "subject": "fix: corrige comando de desinstalacao e valida registro e atalhos Windows",
+      "sha": "0d5195e313793c3999b637442a115fad16dd6976",
+      "subject": "fix: serializa reserva compilacao e implantacao do build nativo",
       "kind": "fix"
     }
   ],
-  "date": "2026-10-20",
+  "date": "2026-10-21",
   "build_status": "PASS"
 }

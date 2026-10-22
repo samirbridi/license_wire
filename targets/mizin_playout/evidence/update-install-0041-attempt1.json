@@ -1,0 +1,9 @@
+{
+  "version": "v0.15.5 (build 0041)",
+  "source_commit": "0d5195e313793c3999b637442a115fad16dd6976",
+  "result": "FAIL",
+  "failed_check": "restarted operator window is visible",
+  "observation": "The check sampled MainWindowHandle once, 2 s after the helper returned. The same restarted QA process (binaries/update-install-qa/434dba73a9834d7aa0f299619c59266b) was inspected moments later and had a visible window titled 'Mizin Playout — v0.15.5 (build 0041)'; it was then closed normally. Cause: startup takes longer than 2 s on this host (another session was rendering 4K at the time), not a missing window.",
+  "follow_up": "scripts/test-update-install.ps1 now polls for the window for up to 20 s and closes the isolated app before reporting. The rerun is evidence/update-install-0041.json (PASS, 11 checks).",
+  "scope": "First attempt record retained; the PASS rerun does not replace it."
+}

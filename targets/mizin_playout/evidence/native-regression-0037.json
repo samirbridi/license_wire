@@ -1,0 +1,51 @@
+[
+  {
+    "suite": "update",
+    "result": "PASS",
+    "checks": 22,
+    "exit": 0,
+    "file": "D:\\REA - ENGENHARIA REVERSA\\targets\\mizin_playout\\evidence\\update-0037.json"
+  },
+  {
+    "suite": "smoke",
+    "result": "PASS",
+    "checks": 7,
+    "exit": 0,
+    "file": "D:\\REA - ENGENHARIA REVERSA\\targets\\mizin_playout\\evidence\\smoke-0037.json"
+  },
+  {
+    "suite": "transport",
+    "result": "PASS",
+    "checks": 31,
+    "exit": 0,
+    "file": "D:\\REA - ENGENHARIA REVERSA\\targets\\mizin_playout\\evidence\\transport-0037.json"
+  },
+  {
+    "suite": "output",
+    "result": "PASS",
+    "checks": 19,
+    "exit": 0,
+    "file": "D:\\REA - ENGENHARIA REVERSA\\targets\\mizin_playout\\evidence\\output-0037.json"
+  },
+  {
+    "suite": "gpu",
+    "result": "PASS",
+    "checks": 21,
+    "exit": 0,
+    "file": "D:\\REA - ENGENHARIA REVERSA\\targets\\mizin_playout\\evidence\\gpu-0037.json"
+  },
+  {
+    "suite": "readiness",
+    "result": "PASS",
+    "checks": 24,
+    "exit": 0,
+    "file": "D:\\REA - ENGENHARIA REVERSA\\targets\\mizin_playout\\evidence\\readiness-0037.json"
+  },
+  {
+    "suite": "ui",
+    "result": "PASS",
+    "checks": 87,
+    "exit": 0,
+    "file": "D:\\REA - ENGENHARIA REVERSA\\targets\\mizin_playout\\evidence\\ui-0037.json"
+  }
+]

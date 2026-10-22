@@ -1,0 +1,1390 @@
+{
+    "audio_devices": [
+        {
+            "id": "ezAuMC4wLjAwMDAwMDAwfS57YTBlZWIyNmEtYTYwMC00OTJlLWIzN2EtYmEzMzA4MTFhMTc2fQ==",
+            "name": "Alto-falantes (Realtek(R) Audio)"
+        },
+        {
+            "id": "ezAuMC4wLjAwMDAwMDAwfS57YTMyYzgwNzYtZjU0ZS00ZDY3LWE5YzQtNzdmNzU1MDgxMGUyfQ==",
+            "name": "CABLE Input (VB-Audio Virtual Cable)"
+        },
+        {
+            "id": "ezAuMC4wLjAwMDAwMDAwfS57YTdkMzI3YzEtN2Q3Mi00ZDJkLWEzYTYtZTIzMzcxMmI2MWY0fQ==",
+            "name": "SONY TV (NVIDIA High Definition Audio)"
+        },
+        {
+            "id": "ezAuMC4wLjAwMDAwMDAwfS57YjgxNmU3OGQtMDQ1Ny00ZjI1LWE1NjgtNDhlOGRhYmVmOTMzfQ==",
+            "name": "CABLE-B Input (VB-Audio Cable B)"
+        },
+        {
+            "id": "ezAuMC4wLjAwMDAwMDAwfS57YzFlNDQ4MTMtZmJhNS00YmU2LTkzMWUtZDQxNzBhYWY4YWVhfQ==",
+            "name": "CABLE-A Input (VB-Audio Cable A)"
+        },
+        {
+            "id": "ezAuMC4wLjAwMDAwMDAwfS57ZmZkNThmZmEtYWY4OS00YzEzLWJhZmYtZWQ0OTk0ZWIyODgwfQ==",
+            "name": "CABLE In 16ch (VB-Audio Virtual Cable)"
+        }
+    ],
+    "loopback": [
+        {
+            "protocol": "NDI",
+            "statistics": {
+                "audio_packets": 4,
+                "connections": 4,
+                "dropped_audio": 0,
+                "error": "",
+                "ndi_timecode_policy": "SDK synthesis for audio/video; source sequence metadata distinguishes cached connection frames",
+                "running": true,
+                "source": "DESKTOP-BBB9G7I (Mizin QA NDI 26980)",
+                "superseded_video": 457,
+                "video_frames": 1039
+            }
+        },
+        {
+            "protocol": "OMT",
+            "statistics": {
+                "audio_packets": 4,
+                "connections": 2,
+                "dropped_audio": 0,
+                "error": "",
+                "ndi_timecode_policy": "SDK synthesis for audio/video; source sequence metadata distinguishes cached connection frames",
+                "running": true,
+                "source": "DESKTOP-BBB9G7I (Mizin QA OMT 26980)",
+                "superseded_video": 454,
+                "video_frames": 1040
+            }
+        }
+    ],
+    "mode": "auto",
+    "ndi_video_trace": [
+        {
+            "frame": 1,
+            "pixels_sha256": "a768381ae9cfcd2359ca50b8c76d81e15607a404c9347cb0e2a6d7f27529c3da",
+            "sdk_timestamp": "17926305767976604",
+            "sequence": "22",
+            "timecode": "17926305768009639"
+        },
+        {
+            "frame": 2,
+            "pixels_sha256": "44cb27ddc880822a1d5926eb7b3341dd6dbb6ca216c5c11ab43f66eb534a3a96",
+            "sdk_timestamp": "17926305773878802",
+            "sequence": "39",
+            "timecode": "17926305774009633"
+        },
+        {
+            "frame": 3,
+            "pixels_sha256": "708ebfa4fa4c4af62372dfc9f465e4a6d7b4bb847284beb353cbc9f76a9e0cc4",
+            "sdk_timestamp": "17926305781133119",
+            "sequence": "58",
+            "timecode": "17926305781342959"
+        },
+        {
+            "frame": 4,
+            "pixels_sha256": "eced4d1443748b3045e8436f05cd5dbe3ad51be08269a5f38811c5b35819347a",
+            "sdk_timestamp": "17926305786991356",
+            "sequence": "74",
+            "timecode": "17926305787009620"
+        },
+        {
+            "frame": 5,
+            "pixels_sha256": "81c51125257fa6ee3a21a159e89a183fe18308da4303231bcc2ed82af0d3e11f",
+            "sdk_timestamp": "17926305791864694",
+            "sequence": "88",
+            "timecode": "17926305792009615"
+        },
+        {
+            "frame": 6,
+            "pixels_sha256": "e16322bab75abd904904a6eaaf9574dc040580bc93316938db7cb777af4bbf1f",
+            "sdk_timestamp": "17926305796701747",
+            "sequence": "102",
+            "timecode": "17926305797009610"
+        },
+        {
+            "frame": 7,
+            "pixels_sha256": "15da6f90667b35ffe21c0c47eed080982fe95909b0ad09fe4f0231eaf2bc35d1",
+            "sdk_timestamp": "17926305800100831",
+            "sequence": "112",
+            "timecode": "17926305800342940"
+        },
+        {
+            "frame": 8,
+            "pixels_sha256": "8169b7dd9ff73cca247ab13480b3e9142d3eb2c387daa95afae9098337a37681",
+            "sdk_timestamp": "17926305803570158",
+            "sequence": "122",
+            "timecode": "17926305803676270"
+        },
+        {
+            "frame": 9,
+            "pixels_sha256": "9f3324830d11045d28a9a10de06b97f7fc3c9953c0c1971cc6aba91258c70660",
+            "sdk_timestamp": "17926305806971004",
+            "sequence": "132",
+            "timecode": "17926305807009600"
+        },
+        {
+            "frame": 10,
+            "pixels_sha256": "420aed3cc9bc41f117e95458f476aee670c429644a6cb43e099a43f6079ec0fb",
+            "sdk_timestamp": "17926305810125017",
+            "sequence": "141",
+            "timecode": "17926305810342930"
+        },
+        {
+            "frame": 11,
+            "pixels_sha256": "24d0065e92d79ec3d60b4fa4c64fffe18dc4d64479fe4579a09b558a8fa993a2",
+            "sdk_timestamp": "17926305812872263",
+            "sequence": "149",
+            "timecode": "17926305813009594"
+        },
+        {
+            "frame": 12,
+            "pixels_sha256": "c50202f12623e819a680d5afeb884c1bf75c0f23568fa9e9644fde2afdcb0757",
+            "sdk_timestamp": "17926305815268392",
+            "sequence": "156",
+            "timecode": "17926305815342925"
+        },
+        {
+            "frame": 13,
+            "pixels_sha256": "e26f9b0f0e54d71be0ecd1cdde949c83e85e412d67fe1ccac3101d90fbb9f6da",
+            "sdk_timestamp": "17926305818371071",
+            "sequence": "165",
+            "timecode": "17926305818655421"
+        },
+        {
+            "frame": 14,
+            "pixels_sha256": "91a089b0464efa1316ea1d8b9fd7aa32a5efc0b465eff044c57e5c5da498f04d",
+            "sdk_timestamp": "17926305822506199",
+            "sequence": "177",
+            "timecode": "17926305822655417"
+        },
+        {
+            "frame": 15,
+            "pixels_sha256": "319f334aa745f368e41f58879f57608756777cacd2fc442da3459cbe34146d9d",
+            "sdk_timestamp": "17926305827192874",
+            "sequence": "190",
+            "timecode": "17926305827322079"
+        },
+        {
+            "frame": 16,
+            "pixels_sha256": "b2c57ed773f45e76df82597aa399cab85bd3f2533fe4b059eb35af385f8ef465",
+            "sdk_timestamp": "17926305830054980",
+            "sequence": "198",
+            "timecode": "17926305830322076"
+        },
+        {
+            "frame": 17,
+            "pixels_sha256": "1a13ca36d9634c618e5644178151fea028029d77ed03eb48dfd18f43d3d33fa1",
+            "sdk_timestamp": "17926305832842611",
+            "sequence": "206",
+            "timecode": "17926305832988740"
+        },
+        {
+            "frame": 18,
+            "pixels_sha256": "1a13ca36d9634c618e5644178151fea028029d77ed03eb48dfd18f43d3d33fa1",
+            "sdk_timestamp": "17926305835976907",
+            "sequence": "215",
+            "timecode": "17926305835988737"
+        },
+        {
+            "frame": 19,
+            "pixels_sha256": "cd30267023f14386fa5777326628ff006770b0de6102a806933f2980cac0923b",
+            "sdk_timestamp": "17926305839863484",
+            "sequence": "226",
+            "timecode": "17926305839988733"
+        },
+        {
+            "frame": 20,
+            "pixels_sha256": "96b8ecead8ffcc9c75b1909d99ec0c148ea8ba2a35684cfd4abed42ab5c1529b",
+            "sdk_timestamp": "17926305842980472",
+            "sequence": "235",
+            "timecode": "17926305842988730"
+        },
+        {
+            "frame": 21,
+            "pixels_sha256": "8b4ca2301c76b5e4b171a66231c32641f72791dfee17dc5d8e4b68d4a9a70a86",
+            "sdk_timestamp": "17926305846165773",
+            "sequence": "244",
+            "timecode": "17926305846322060"
+        },
+        {
+            "frame": 22,
+            "pixels_sha256": "996f76c6f0808f8a1ee7bad1d160742f909af362411e314a9f66b91aaa25efba",
+            "sdk_timestamp": "17926305850076100",
+            "sequence": "255",
+            "timecode": "17926305850322056"
+        },
+        {
+            "frame": 23,
+            "pixels_sha256": "ce52b4c53efa3be611b9d01e087d283f1d2496463799a533e2b872d6a470e032",
+            "sdk_timestamp": "17926305854674571",
+            "sequence": "268",
+            "timecode": "17926305854988718"
+        },
+        {
+            "frame": 24,
+            "pixels_sha256": "4e79e708ba6f1ba0316fec880dd60a216a2cd7ed92625764ccf6f2d021a111ac",
+            "sdk_timestamp": "17926305858562530",
+            "sequence": "279",
+            "timecode": "17926305858655381"
+        },
+        {
+            "frame": 25,
+            "pixels_sha256": "0e3d48267d7257e78664f9b730ce25e6dcd25c2c85552c31d689e4fc91484174",
+            "sdk_timestamp": "17926305862736477",
+            "sequence": "291",
+            "timecode": "17926305862988710"
+        },
+        {
+            "frame": 26,
+            "pixels_sha256": "aa117870f2913267ffccb155c5009d5c11ecb5db8b9d6475ab79d757ba61b711",
+            "sdk_timestamp": "17926305866259074",
+            "sequence": "301",
+            "timecode": "17926305866322040"
+        },
+        {
+            "frame": 27,
+            "pixels_sha256": "eac48dcc565b6a111f5965c0f5b76f3d4585879353d61a8af60cf73ce3bd9b07",
+            "sdk_timestamp": "17926305869055845",
+            "sequence": "309",
+            "timecode": "17926305869322037"
+        },
+        {
+            "frame": 28,
+            "pixels_sha256": "3b7e619bde77e9fe6d157bfe3c58c5d95ef1cbfbbca2dcb555e2df95829edcf8",
+            "sdk_timestamp": "17926305871827622",
+            "sequence": "317",
+            "timecode": "17926305871988701"
+        },
+        {
+            "frame": 29,
+            "pixels_sha256": "4941127424936f8bca34b6ae39297d5c2e5f9f56fd5df2e12b68d7c84e0a66a7",
+            "sdk_timestamp": "17926305874622011",
+            "sequence": "325",
+            "timecode": "17926305874655365"
+        },
+        {
+            "frame": 30,
+            "pixels_sha256": "6c4cfa0532c9a2cf840566160229b89515e8ec8f50ddfc0acc3f8808c04d20e9",
+            "sdk_timestamp": "17926305877795100",
+            "sequence": "334",
+            "timecode": "17926305877988695"
+        },
+        {
+            "frame": 31,
+            "pixels_sha256": "d952d97ae6ca3c2d1fba8062e53f67bc7396778bab4a1620b3114fa78de01160",
+            "sdk_timestamp": "17926305881631215",
+            "sequence": "345",
+            "timecode": "17926305881655358"
+        },
+        {
+            "frame": 32,
+            "pixels_sha256": "49b20c01906cbf0d78d0437ecf7d394fa62dbe69b2c95161580524f451e84c27",
+            "sdk_timestamp": "17926305886912920",
+            "sequence": "360",
+            "timecode": "17926305886988686"
+        },
+        {
+            "frame": 33,
+            "pixels_sha256": "78ed205d10cc7ca388a4902ce4c6b8671f7bae706cef212df1a7a2f3a6e5da2f",
+            "sdk_timestamp": "17926305891995194",
+            "sequence": "374",
+            "timecode": "17926305892322014"
+        },
+        {
+            "frame": 34,
+            "pixels_sha256": "9f3324830d11045d28a9a10de06b97f7fc3c9953c0c1971cc6aba91258c70660",
+            "sdk_timestamp": "17926305895826678",
+            "sequence": "385",
+            "timecode": "17926305895988677"
+        },
+        {
+            "frame": 35,
+            "pixels_sha256": "420aed3cc9bc41f117e95458f476aee670c429644a6cb43e099a43f6079ec0fb",
+            "sdk_timestamp": "17926305898673316",
+            "sequence": "393",
+            "timecode": "17926305898988674"
+        },
+        {
+            "frame": 36,
+            "pixels_sha256": "ae4936487cb138a9f161af81b47d748530fce5723e57606c705ec36e88417f42",
+            "sdk_timestamp": "17926305901101758",
+            "sequence": "400",
+            "timecode": "17926305901322005"
+        },
+        {
+            "frame": 37,
+            "pixels_sha256": "cf6014fc3ec37b4f5ae3bac4eb55071ff4c5d03b738480217e16c1b5ff2cb699",
+            "sdk_timestamp": "17926305904213705",
+            "sequence": "409",
+            "timecode": "17926305904322002"
+        },
+        {
+            "frame": 38,
+            "pixels_sha256": "02121479977cc98d2bebcc61c001d6221b8eb46fd7a736ebcc2e564cbd259a0e",
+            "sdk_timestamp": "17926305909083935",
+            "sequence": "423",
+            "timecode": "17926305909301163"
+        },
+        {
+            "frame": 39,
+            "pixels_sha256": "bdef46c95e38f0a60dfcd2039aeadf03af2f7acfc339b7d90dfdb3b7d0194f4f",
+            "sdk_timestamp": "17926305914207421",
+            "sequence": "436",
+            "timecode": "17926305914301158"
+        },
+        {
+            "frame": 40,
+            "pixels_sha256": "319f334aa745f368e41f58879f57608756777cacd2fc442da3459cbe34146d9d",
+            "sdk_timestamp": "17926305916356599",
+            "sequence": "442",
+            "timecode": "17926305916634489"
+        },
+        {
+            "frame": 41,
+            "pixels_sha256": "4e3a898b680eb4e6e21e12e23dedf348857de4210d15b3d6c3a86bfc4975e640",
+            "sdk_timestamp": "17926305918744202",
+            "sequence": "449",
+            "timecode": "17926305918967820"
+        },
+        {
+            "frame": 42,
+            "pixels_sha256": "1a13ca36d9634c618e5644178151fea028029d77ed03eb48dfd18f43d3d33fa1",
+            "sdk_timestamp": "17926305921730149",
+            "sequence": "457",
+            "timecode": "17926305921967817"
+        },
+        {
+            "frame": 43,
+            "pixels_sha256": "a3d42d79e98ceca66b721ec9095d6324321bf500113c799a5a51a321a7d39c55",
+            "sdk_timestamp": "17926305924833420",
+            "sequence": "466",
+            "timecode": "17926305924967814"
+        },
+        {
+            "frame": 44,
+            "pixels_sha256": "acab257aa4e8d2dcfc40804ca0cd4053ec99602db43705fc0d7c4f25f21680b8",
+            "sdk_timestamp": "17926305928637832",
+            "sequence": "477",
+            "timecode": "17926305928967810"
+        },
+        {
+            "frame": 45,
+            "pixels_sha256": "8b4ca2301c76b5e4b171a66231c32641f72791dfee17dc5d8e4b68d4a9a70a86",
+            "sdk_timestamp": "17926305934412268",
+            "sequence": "493",
+            "timecode": "17926305934634471"
+        },
+        {
+            "frame": 46,
+            "pixels_sha256": "bc58f4ad1f38d0f3b5ef8352b59b05216b4489089b3cf19c1fba7efaa73edfac",
+            "sdk_timestamp": "17926305938557598",
+            "sequence": "505",
+            "timecode": "17926305938634467"
+        },
+        {
+            "frame": 47,
+            "pixels_sha256": "199f6110c76ac582939cfe6d4dff26f6db46c344f680e98b684d91b9efdd8223",
+            "sdk_timestamp": "17926305942016733",
+            "sequence": "515",
+            "timecode": "17926305942301130"
+        },
+        {
+            "frame": 48,
+            "pixels_sha256": "a70e9bb0130e4c31aa8f7c06f0a1fe8691dfd352d294e0bd155ce500395c77f2",
+            "sdk_timestamp": "17926305945493115",
+            "sequence": "525",
+            "timecode": "17926305945634460"
+        },
+        {
+            "frame": 49,
+            "pixels_sha256": "d99b4b937ff8adb9a02a141b693b2828a4b30eea12ec95888c7ab362ddef0e0f",
+            "sdk_timestamp": "17926305947583021",
+            "sequence": "531",
+            "timecode": "17926305947634458"
+        },
+        {
+            "frame": 50,
+            "pixels_sha256": "09087514efb7402758714421ad452e3780a871b8987dde17a35d7abaaf39e1ea",
+            "sdk_timestamp": "17926305953172526",
+            "sequence": "547",
+            "timecode": "17926305953301119"
+        },
+        {
+            "frame": 51,
+            "pixels_sha256": "c86f3be0ce0bc1b72f83d4e9a03bb4f267e0cf30bc513c41bc56f65e9341019a",
+            "sdk_timestamp": "17926305957671645",
+            "sequence": "560",
+            "timecode": "17926305957946947"
+        },
+        {
+            "frame": 52,
+            "pixels_sha256": "852c0ba3aff431fa11dda278651530165be7a06c03841bc9313fd2b13ce0fc2f",
+            "sdk_timestamp": "17926305959360523",
+            "sequence": "565",
+            "timecode": "17926305959613612"
+        },
+        {
+            "frame": 53,
+            "pixels_sha256": "72535f93191d76701b9077004755029733d36df40e79272aca70b371a9dce525",
+            "sdk_timestamp": "17926305963231895",
+            "sequence": "576",
+            "timecode": "17926305963280275"
+        },
+        {
+            "frame": 54,
+            "pixels_sha256": "8c7fa86b12340a9ec379504be8fc96d9d059e76e48c2a11d772ed5159ea643e5",
+            "sdk_timestamp": "17926305966681411",
+            "sequence": "586",
+            "timecode": "17926305966946938"
+        },
+        {
+            "frame": 55,
+            "pixels_sha256": "cb87bf6b42130a09a581695e126b8705cd2f00f69ac45cae210f0436e0835483",
+            "sdk_timestamp": "17926305968099562",
+            "sequence": "590",
+            "timecode": "17926305968280270"
+        },
+        {
+            "frame": 56,
+            "pixels_sha256": "3aa0da183efb9b8e173e0c10285b808d79df427225fecf12a9f898db71f30310",
+            "sdk_timestamp": "17926305972269242",
+            "sequence": "602",
+            "timecode": "17926305972280266"
+        },
+        {
+            "frame": 57,
+            "pixels_sha256": "7e05747943b29d9bbee25b55a25297521d0eb6599f71112c5cdb98c19606d9a5",
+            "sdk_timestamp": "17926305975392518",
+            "sequence": "611",
+            "timecode": "17926305975613596"
+        },
+        {
+            "frame": 58,
+            "pixels_sha256": "a6183302a09b0ed4654068a88a2c290894c7f57a348c03cc3d3e4e03522dd2f4",
+            "sdk_timestamp": "17926305978480881",
+            "sequence": "620",
+            "timecode": "17926305978613593"
+        },
+        {
+            "frame": 59,
+            "pixels_sha256": "68f94ac3437a6869b53a561c5fb23a904bcd427775a20a92a2902fadd989457a",
+            "sdk_timestamp": "17926305981237681",
+            "sequence": "628",
+            "timecode": "17926305981280257"
+        },
+        {
+            "frame": 60,
+            "pixels_sha256": "b5f2c87e9c0a7479100320602a4730d01b6962453ee827aeab84578bbdd275fd",
+            "sdk_timestamp": "17926305983970497",
+            "sequence": "636",
+            "timecode": "17926305984280254"
+        },
+        {
+            "frame": 61,
+            "pixels_sha256": "eec3d4125075f504090f187d124c6b0c7971f741cec3653b326c6032da23dfb1",
+            "sdk_timestamp": "17926305987798841",
+            "sequence": "647",
+            "timecode": "17926305987946917"
+        },
+        {
+            "frame": 62,
+            "pixels_sha256": "cf6014fc3ec37b4f5ae3bac4eb55071ff4c5d03b738480217e16c1b5ff2cb699",
+            "sdk_timestamp": "17926305993392106",
+            "sequence": "663",
+            "timecode": "17926305993613578"
+        },
+        {
+            "frame": 63,
+            "pixels_sha256": "4c35ee4046ab03d09372cf7ae121f4d7884ace752f0b015985f5c9fe4abb38a4",
+            "sdk_timestamp": "17926305997549026",
+            "sequence": "675",
+            "timecode": "17926305997613574"
+        },
+        {
+            "frame": 64,
+            "pixels_sha256": "319f334aa745f368e41f58879f57608756777cacd2fc442da3459cbe34146d9d",
+            "sdk_timestamp": "17926306001393233",
+            "sequence": "686",
+            "timecode": "17926306001613570"
+        },
+        {
+            "frame": 65,
+            "pixels_sha256": "e8ad1d2c718c0a871855f9760610e80a488f93aab6e1323a2b3e0e7a3f046e91",
+            "sdk_timestamp": "17926306002759328",
+            "sequence": "690",
+            "timecode": "17926306002946902"
+        },
+        {
+            "frame": 66,
+            "pixels_sha256": "e8ad1d2c718c0a871855f9760610e80a488f93aab6e1323a2b3e0e7a3f046e91",
+            "sdk_timestamp": "17926306005184029",
+            "sequence": "697",
+            "timecode": "17926306005280233"
+        },
+        {
+            "frame": 67,
+            "pixels_sha256": "e8ad1d2c718c0a871855f9760610e80a488f93aab6e1323a2b3e0e7a3f046e91",
+            "sdk_timestamp": "17926306008329584",
+            "sequence": "706",
+            "timecode": "17926306008613563"
+        },
+        {
+            "frame": 68,
+            "pixels_sha256": "e70991da7a762f091a6bf58276eb069b3c964de19cf6a6984e772f29a11c5e4d",
+            "sdk_timestamp": "17926306011555920",
+            "sequence": "715",
+            "timecode": "17926306011613560"
+        },
+        {
+            "frame": 69,
+            "pixels_sha256": "4ad60d648549f2481057b9a67075f77f10bbbdc0b98d7a09838b45676c18cba6",
+            "sdk_timestamp": "17926306014365277",
+            "sequence": "723",
+            "timecode": "17926306014613557"
+        },
+        {
+            "frame": 70,
+            "pixels_sha256": "73281e67585b0d068adbcd10134f9af80ebbcb6ee270510672dbcf2bd4b61f14",
+            "sdk_timestamp": "17926306016849465",
+            "sequence": "730",
+            "timecode": "17926306016946888"
+        },
+        {
+            "frame": 71,
+            "pixels_sha256": "927812dde88a71acca8cc633497a7dd828bcfc68514f0eed5ebdc4c211c9635e",
+            "sdk_timestamp": "17926306018922884",
+            "sequence": "736",
+            "timecode": "17926306018946886"
+        },
+        {
+            "frame": 72,
+            "pixels_sha256": "bc58f4ad1f38d0f3b5ef8352b59b05216b4489089b3cf19c1fba7efaa73edfac",
+            "sdk_timestamp": "17926306021352362",
+            "sequence": "743",
+            "timecode": "17926306021592716"
+        },
+        {
+            "frame": 73,
+            "pixels_sha256": "58f7581fc3a5c2c368f9f86c4de7a24e9dbc0e70b08c4c7a4a624da5310424a9",
+            "sdk_timestamp": "17926306024430476",
+            "sequence": "752",
+            "timecode": "17926306024592713"
+        },
+        {
+            "frame": 74,
+            "pixels_sha256": "56866db2383d0cfcba3dc7b890849ca4f68c82e611f40a9e0479c6d1fdc26fb3",
+            "sdk_timestamp": "17926306026854502",
+            "sequence": "759",
+            "timecode": "17926306026926044"
+        },
+        {
+            "frame": 75,
+            "pixels_sha256": "448d5fe2b71cdb567b7952aeca80e9d3224018d14e41e45f0630dbf9da4a0576",
+            "sdk_timestamp": "17926306028960504",
+            "sequence": "765",
+            "timecode": "17926306029259375"
+        },
+        {
+            "frame": 76,
+            "pixels_sha256": "0e3d48267d7257e78664f9b730ce25e6dcd25c2c85552c31d689e4fc91484174",
+            "sdk_timestamp": "17926306032062863",
+            "sequence": "774",
+            "timecode": "17926306032259372"
+        },
+        {
+            "frame": 77,
+            "pixels_sha256": "4fd39f1c8fa310811d5396e239ef8ecb8a07ab284e75b36326b2c015e1d75a35",
+            "sdk_timestamp": "17926306034465717",
+            "sequence": "781",
+            "timecode": "17926306034592703"
+        },
+        {
+            "frame": 78,
+            "pixels_sha256": "bc6b19ee34229b63ab97a4792224f8b105259fc9bfe8303cce160a34bce5ef3b",
+            "sdk_timestamp": "17926306037222230",
+            "sequence": "789",
+            "timecode": "17926306037259367"
+        },
+        {
+            "frame": 79,
+            "pixels_sha256": "c86f3be0ce0bc1b72f83d4e9a03bb4f267e0cf30bc513c41bc56f65e9341019a",
+            "sdk_timestamp": "17926306039685662",
+            "sequence": "796",
+            "timecode": "17926306039905197"
+        },
+        {
+            "frame": 80,
+            "pixels_sha256": "3b7e619bde77e9fe6d157bfe3c58c5d95ef1cbfbbca2dcb555e2df95829edcf8",
+            "sdk_timestamp": "17926306042113287",
+            "sequence": "803",
+            "timecode": "17926306042238528"
+        },
+        {
+            "frame": 81,
+            "pixels_sha256": "f3576869d8dfeee2d48e9dd87ff69bb86000e35c8541eddc319cbf4d55685bca",
+            "sdk_timestamp": "17926306043847927",
+            "sequence": "808",
+            "timecode": "17926306043905193"
+        },
+        {
+            "frame": 82,
+            "pixels_sha256": "b3becacd43a7df87cfd1308aa3f1c6ef918b141dd836c6003a075fa9e2570692",
+            "sdk_timestamp": "17926306045613009",
+            "sequence": "813",
+            "timecode": "17926306045905191"
+        },
+        {
+            "frame": 83,
+            "pixels_sha256": "0c03dc00f0a69084673714b25bd1ff8a3053538c4fb1c9b3985644ace821b17c",
+            "sdk_timestamp": "17926306047712724",
+            "sequence": "819",
+            "timecode": "17926306047905189"
+        },
+        {
+            "frame": 84,
+            "pixels_sha256": "4b197e98fedee24f3e3963d65c85fc810ecf4b11ab5d18df1b08043e9cd94c7b",
+            "sdk_timestamp": "17926306050143429",
+            "sequence": "826",
+            "timecode": "17926306050238520"
+        },
+        {
+            "frame": 85,
+            "pixels_sha256": "e16322bab75abd904904a6eaaf9574dc040580bc93316938db7cb777af4bbf1f",
+            "sdk_timestamp": "17926306052913863",
+            "sequence": "834",
+            "timecode": "17926306053238517"
+        },
+        {
+            "frame": 86,
+            "pixels_sha256": "6f24618d4902819a562fa63f67590f917de95843acb399a6adbbd38b09b252d3",
+            "sdk_timestamp": "17926306055010777",
+            "sequence": "840",
+            "timecode": "17926306055238515"
+        },
+        {
+            "frame": 87,
+            "pixels_sha256": "899fc2df0ccefeaf96416f8f30b8d6ecf3298dcd35d89c5a5b9967a02817b89b",
+            "sdk_timestamp": "17926306057097821",
+            "sequence": "846",
+            "timecode": "17926306057238513"
+        },
+        {
+            "frame": 88,
+            "pixels_sha256": "78ed205d10cc7ca388a4902ce4c6b8671f7bae706cef212df1a7a2f3a6e5da2f",
+            "sdk_timestamp": "17926306059905666",
+            "sequence": "854",
+            "timecode": "17926306060238510"
+        },
+        {
+            "frame": 89,
+            "pixels_sha256": "773133ef95d7d875b932457d53b12d4982c844d190ecfbccfadf1ddb59a3adc5",
+            "sdk_timestamp": "17926306062643415",
+            "sequence": "862",
+            "timecode": "17926306062884340"
+        },
+        {
+            "frame": 90,
+            "pixels_sha256": "93bb7f11d3a45ab198278925a5b5143e989f5c075c8220a763d0a557f8e12547",
+            "sdk_timestamp": "17926306065464706",
+            "sequence": "870",
+            "timecode": "17926306065551004"
+        },
+        {
+            "frame": 91,
+            "pixels_sha256": "a7b0d6abe1557b54b9e0054e1338eeb25154564cc3bbc9b807acd808e53d2fd8",
+            "sdk_timestamp": "17926306068190312",
+            "sequence": "878",
+            "timecode": "17926306068217668"
+        },
+        {
+            "frame": 92,
+            "pixels_sha256": "24d0065e92d79ec3d60b4fa4c64fffe18dc4d64479fe4579a09b558a8fa993a2",
+            "sdk_timestamp": "17926306070945990",
+            "sequence": "886",
+            "timecode": "17926306071217665"
+        },
+        {
+            "frame": 93,
+            "pixels_sha256": "3d3d5f50799efecda1579ccf36c37a423a557e9777a6289dc897fee21a03049a",
+            "sdk_timestamp": "17926306075109703",
+            "sequence": "898",
+            "timecode": "17926306075217661"
+        },
+        {
+            "frame": 94,
+            "pixels_sha256": "8ff0bf8005d24b56f59470af94321bbf55f9a40f3047b145e2ad688b8cd1d8a1",
+            "sdk_timestamp": "17926306079619284",
+            "sequence": "911",
+            "timecode": "17926306079884323"
+        },
+        {
+            "frame": 95,
+            "pixels_sha256": "ac1547c6df250cee567c410cc033f5c5173915cadd067cb6301fabc86437fa6a",
+            "sdk_timestamp": "17926306084869599",
+            "sequence": "926",
+            "timecode": "17926306084884318"
+        },
+        {
+            "frame": 96,
+            "pixels_sha256": "a872a545bfd4c8505acba572ddc465ab144802c3482e1e6ed7d617f02cad965a",
+            "sdk_timestamp": "17926306086978656",
+            "sequence": "932",
+            "timecode": "17926306087217649"
+        },
+        {
+            "frame": 97,
+            "pixels_sha256": "4e3a898b680eb4e6e21e12e23dedf348857de4210d15b3d6c3a86bfc4975e640",
+            "sdk_timestamp": "17926306089749876",
+            "sequence": "940",
+            "timecode": "17926306089884313"
+        },
+        {
+            "frame": 98,
+            "pixels_sha256": "6eaba3e0f813751b6db6eea014ee7ebe8d2f4935ad0a0039b466c9c331dc87b7",
+            "sdk_timestamp": "17926306124004821",
+            "sequence": "1032",
+            "timecode": "17926306124196778"
+        },
+        {
+            "frame": 99,
+            "pixels_sha256": "e28dff44de9d3ca7d5459ca6b38fc53277cca665ff4cc3760a85b08e504e05bf",
+            "sdk_timestamp": "17926306128052252",
+            "sequence": "1043",
+            "timecode": "17926306128196774"
+        },
+        {
+            "frame": 100,
+            "pixels_sha256": "bf99caa87e1744d6822c0b4722b56d7e67d8b6ecfd7fd199d102bfb29046dcd2",
+            "sdk_timestamp": "17926306129817294",
+            "sequence": "1048",
+            "timecode": "17926306129863439"
+        },
+        {
+            "frame": 101,
+            "pixels_sha256": "bf99caa87e1744d6822c0b4722b56d7e67d8b6ecfd7fd199d102bfb29046dcd2",
+            "sdk_timestamp": "17926306131564775",
+            "sequence": "1053",
+            "timecode": "17926306131863437"
+        }
+    ],
+    "omt_video_trace": [
+        {
+            "frame": 1,
+            "timecode": "21059260"
+        },
+        {
+            "frame": 2,
+            "timecode": "21396000"
+        },
+        {
+            "frame": 3,
+            "timecode": "21738650"
+        },
+        {
+            "frame": 4,
+            "timecode": "28341500"
+        },
+        {
+            "frame": 5,
+            "timecode": "34631710"
+        },
+        {
+            "frame": 6,
+            "timecode": "41907240"
+        },
+        {
+            "frame": 7,
+            "timecode": "47428760"
+        },
+        {
+            "frame": 8,
+            "timecode": "52289070"
+        },
+        {
+            "frame": 9,
+            "timecode": "56474810"
+        },
+        {
+            "frame": 10,
+            "timecode": "60328620"
+        },
+        {
+            "frame": 11,
+            "timecode": "63790830"
+        },
+        {
+            "frame": 12,
+            "timecode": "66932280"
+        },
+        {
+            "frame": 13,
+            "timecode": "70019260"
+        },
+        {
+            "frame": 14,
+            "timecode": "72446170"
+        },
+        {
+            "frame": 15,
+            "timecode": "75289230"
+        },
+        {
+            "frame": 16,
+            "timecode": "79101360"
+        },
+        {
+            "frame": 17,
+            "timecode": "82954380"
+        },
+        {
+            "frame": 18,
+            "timecode": "88543980"
+        },
+        {
+            "frame": 19,
+            "timecode": "91016380"
+        },
+        {
+            "frame": 20,
+            "timecode": "93102400"
+        },
+        {
+            "frame": 21,
+            "timecode": "96220870"
+        },
+        {
+            "frame": 22,
+            "timecode": "100075620"
+        },
+        {
+            "frame": 23,
+            "timecode": "103218050"
+        },
+        {
+            "frame": 24,
+            "timecode": "106766910"
+        },
+        {
+            "frame": 25,
+            "timecode": "110638190"
+        },
+        {
+            "frame": 26,
+            "timecode": "114844270"
+        },
+        {
+            "frame": 27,
+            "timecode": "118675420"
+        },
+        {
+            "frame": 28,
+            "timecode": "122845910"
+        },
+        {
+            "frame": 29,
+            "timecode": "125981310"
+        },
+        {
+            "frame": 30,
+            "timecode": "128775710"
+        },
+        {
+            "frame": 31,
+            "timecode": "131565400"
+        },
+        {
+            "frame": 32,
+            "timecode": "134665380"
+        },
+        {
+            "frame": 33,
+            "timecode": "138098340"
+        },
+        {
+            "frame": 34,
+            "timecode": "142323190"
+        },
+        {
+            "frame": 35,
+            "timecode": "147884790"
+        },
+        {
+            "frame": 36,
+            "timecode": "152036020"
+        },
+        {
+            "frame": 37,
+            "timecode": "155484910"
+        },
+        {
+            "frame": 38,
+            "timecode": "158272680"
+        },
+        {
+            "frame": 39,
+            "timecode": "161390090"
+        },
+        {
+            "frame": 40,
+            "timecode": "164916280"
+        },
+        {
+            "frame": 41,
+            "timecode": "170165550"
+        },
+        {
+            "frame": 42,
+            "timecode": "174292110"
+        },
+        {
+            "frame": 43,
+            "timecode": "177397360"
+        },
+        {
+            "frame": 44,
+            "timecode": "179134390"
+        },
+        {
+            "frame": 45,
+            "timecode": "181580630"
+        },
+        {
+            "frame": 46,
+            "timecode": "185041990"
+        },
+        {
+            "frame": 47,
+            "timecode": "190255490"
+        },
+        {
+            "frame": 48,
+            "timecode": "194446670"
+        },
+        {
+            "frame": 49,
+            "timecode": "198619570"
+        },
+        {
+            "frame": 50,
+            "timecode": "202105010"
+        },
+        {
+            "frame": 51,
+            "timecode": "205940180"
+        },
+        {
+            "frame": 52,
+            "timecode": "208394570"
+        },
+        {
+            "frame": 53,
+            "timecode": "213316170"
+        },
+        {
+            "frame": 54,
+            "timecode": "217871030"
+        },
+        {
+            "frame": 55,
+            "timecode": "219229380"
+        },
+        {
+            "frame": 56,
+            "timecode": "223331320"
+        },
+        {
+            "frame": 57,
+            "timecode": "226817700"
+        },
+        {
+            "frame": 58,
+            "timecode": "227855310"
+        },
+        {
+            "frame": 59,
+            "timecode": "232019330"
+        },
+        {
+            "frame": 60,
+            "timecode": "235096670"
+        },
+        {
+            "frame": 61,
+            "timecode": "238206670"
+        },
+        {
+            "frame": 62,
+            "timecode": "241010810"
+        },
+        {
+            "frame": 63,
+            "timecode": "243770950"
+        },
+        {
+            "frame": 64,
+            "timecode": "248630870"
+        },
+        {
+            "frame": 65,
+            "timecode": "253497740"
+        },
+        {
+            "frame": 66,
+            "timecode": "257635960"
+        },
+        {
+            "frame": 67,
+            "timecode": "261147100"
+        },
+        {
+            "frame": 68,
+            "timecode": "262894010"
+        },
+        {
+            "frame": 69,
+            "timecode": "265336020"
+        },
+        {
+            "frame": 70,
+            "timecode": "268511290"
+        },
+        {
+            "frame": 71,
+            "timecode": "271278320"
+        },
+        {
+            "frame": 72,
+            "timecode": "274010040"
+        },
+        {
+            "frame": 73,
+            "timecode": "276459690"
+        },
+        {
+            "frame": 74,
+            "timecode": "278901240"
+        },
+        {
+            "frame": 75,
+            "timecode": "281695610"
+        },
+        {
+            "frame": 76,
+            "timecode": "284130890"
+        },
+        {
+            "frame": 77,
+            "timecode": "286603220"
+        },
+        {
+            "frame": 78,
+            "timecode": "289025180"
+        },
+        {
+            "frame": 79,
+            "timecode": "291825540"
+        },
+        {
+            "frame": 80,
+            "timecode": "294601160"
+        },
+        {
+            "frame": 81,
+            "timecode": "297089030"
+        },
+        {
+            "frame": 82,
+            "timecode": "299507650"
+        },
+        {
+            "frame": 83,
+            "timecode": "301578590"
+        },
+        {
+            "frame": 84,
+            "timecode": "303297600"
+        },
+        {
+            "frame": 85,
+            "timecode": "305342800"
+        },
+        {
+            "frame": 86,
+            "timecode": "307465360"
+        },
+        {
+            "frame": 87,
+            "timecode": "309904470"
+        },
+        {
+            "frame": 88,
+            "timecode": "312277920"
+        },
+        {
+            "frame": 89,
+            "timecode": "314378960"
+        },
+        {
+            "frame": 90,
+            "timecode": "317139170"
+        },
+        {
+            "frame": 91,
+            "timecode": "319591430"
+        },
+        {
+            "frame": 92,
+            "timecode": "322329590"
+        },
+        {
+            "frame": 93,
+            "timecode": "325080000"
+        },
+        {
+            "frame": 94,
+            "timecode": "327808600"
+        },
+        {
+            "frame": 95,
+            "timecode": "331635730"
+        },
+        {
+            "frame": 96,
+            "timecode": "335491790"
+        },
+        {
+            "frame": 97,
+            "timecode": "340354550"
+        },
+        {
+            "frame": 98,
+            "timecode": "345290180"
+        },
+        {
+            "frame": 99,
+            "timecode": "348105330"
+        },
+        {
+            "frame": 100,
+            "timecode": "351221620"
+        },
+        {
+            "frame": 101,
+            "timecode": "384836820"
+        },
+        {
+            "frame": 102,
+            "timecode": "387925490"
+        }
+    ],
+    "result": "FAIL",
+    "scope": "Native audio buffers, controls and in-process SDK network loopback on Windows; not an independent LAN receiver, physical listening, AV-sync or multi-hour qualification",
+    "tests": [
+        {
+            "name": "ndi_order_accepts_exact_cache_replay",
+            "pass": true
+        },
+        {
+            "name": "ndi_order_rejects_content_change_under_same_id",
+            "pass": true
+        },
+        {
+            "name": "ndi_order_rejects_new_frame_with_reused_timecode",
+            "pass": true
+        },
+        {
+            "name": "ndi_order_rejects_source_sequence_regression",
+            "pass": true
+        },
+        {
+            "name": "ndi_order_rejects_delivery_timestamp_regression",
+            "pass": true
+        },
+        {
+            "name": "master_gain_preserves_stereo",
+            "pass": true
+        },
+        {
+            "name": "master_mute_is_silence",
+            "pass": true
+        },
+        {
+            "name": "decks_are_mixed_once",
+            "pass": true
+        },
+        {
+            "name": "sum_is_clipped_to_valid_pcm",
+            "pass": true
+        },
+        {
+            "name": "transport_planar_channel_layout",
+            "pass": true
+        },
+        {
+            "name": "overload_is_clipped_at_full_scale",
+            "pass": true
+        },
+        {
+            "name": "flush_removes_stale_samples",
+            "pass": true
+        },
+        {
+            "name": "ring_wrap_does_not_replay_old_tags",
+            "pass": true
+        },
+        {
+            "name": "fade_uses_audio_sample_time",
+            "pass": true
+        },
+        {
+            "name": "fade_black_holds_first_half",
+            "pass": true
+        },
+        {
+            "name": "pause_shift_preserves_envelope_phase",
+            "pass": true
+        },
+        {
+            "name": "exclusive_audio_out_is_silent",
+            "pass": true
+        },
+        {
+            "decoded_buffers": 12,
+            "name": "native_media_decodes_real_audio",
+            "nonzero_packets": 6,
+            "packet_count": 36,
+            "pass": true
+        },
+        {
+            "name": "native_mute_does_not_stop_video",
+            "pass": true
+        },
+        {
+            "name": "native_unmute_restores_pcm",
+            "pass": true
+        },
+        {
+            "name": "preview_never_publishes_audio",
+            "pass": true
+        },
+        {
+            "name": "missing_device_mutes_local_without_stopping_program",
+            "pass": true
+        },
+        {
+            "name": "default_device_can_be_restored",
+            "pass": true
+        },
+        {
+            "name": "pause_flushes_network_pcm",
+            "pass": true
+        },
+        {
+            "name": "resume_produces_new_audio",
+            "pass": true
+        },
+        {
+            "name": "seek_reanchors_audio_timeline",
+            "pass": true
+        },
+        {
+            "name": "program_audio_timestamps_stay_monotonic",
+            "pass": true
+        },
+        {
+            "name": "missing_runtime_fails_without_stopping_program",
+            "pass": true
+        },
+        {
+            "name": "empty_source_name_is_rejected",
+            "pass": true
+        },
+        {
+            "name": "missing_omt_codec_is_reported_before_sender_creation",
+            "pass": true
+        },
+        {
+            "error": "",
+            "name": "private_ndi_runtime_loaded",
+            "pass": true,
+            "path": "D:/REA - ENGENHARIA REVERSA/targets/mizin_playout/dist/Processing.NDI.Lib.x64.dll",
+            "version": "NDI SDK WIN64 16:08:06 Feb 17 2026 6.3.1.0"
+        },
+        {
+            "error": "",
+            "name": "packaged_omt_runtime_loaded",
+            "pass": true,
+            "path": "D:/REA - ENGENHARIA REVERSA/targets/mizin_playout/dist/libomt.dll"
+        },
+        {
+            "name": "network_senders_are_off_by_default",
+            "pass": true
+        },
+        {
+            "name": "both_protocols_start_on_one_program",
+            "pass": true
+        },
+        {
+            "audio_packets": 0,
+            "audio_peak": 0,
+            "name": "ndi_loopback_receives_native_video_and_audio",
+            "pass": false,
+            "video_frames": 48
+        },
+        {
+            "audio_packets": 0,
+            "audio_peak": 0,
+            "name": "omt_loopback_receives_native_video_and_audio",
+            "pass": false,
+            "video_frames": 49
+        },
+        {
+            "name": "master_mute_reaches_both_network_receivers",
+            "pass": false
+        },
+        {
+            "name": "master_unmute_restores_both_network_receivers",
+            "pass": false
+        },
+        {
+            "name": "network_audio_can_be_disabled_independently",
+            "pass": true
+        },
+        {
+            "name": "independent_program_b_has_its_own_sender",
+            "pass": true
+        },
+        {
+            "name": "black_reaches_both_network_outputs",
+            "native_frame_stays_invalid": true,
+            "ndi_black": true,
+            "ndi_fourcc": 1095911234,
+            "ndi_mean": 0.6666666666666666,
+            "omt_black": true,
+            "omt_codec": 1095911234,
+            "omt_mean": 0,
+            "pass": true
+        },
+        {
+            "audio_packets": 0,
+            "name": "ndi_source_frames_and_sdk_delivery_remain_strictly_in_order",
+            "pass": true,
+            "raw_timecode_repeats_or_regressions": 0,
+            "raw_timecode_strict": true,
+            "verified_exact_cache_repeats": 0,
+            "video_frames": 101
+        },
+        {
+            "name": "omt_video_timestamps_remain_strictly_increasing",
+            "pass": true,
+            "video_frames": 102,
+            "video_violations": 0
+        },
+        {
+            "name": "stopping_network_preserves_program",
+            "pass": true
+        },
+        {
+            "name": "black_flushes_audio",
+            "pass": true
+        }
+    ]
+}

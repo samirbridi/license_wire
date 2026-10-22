@@ -1,0 +1,2223 @@
+{
+    "audio_devices": [
+        {
+            "id": "ezAuMC4wLjAwMDAwMDAwfS57YTBlZWIyNmEtYTYwMC00OTJlLWIzN2EtYmEzMzA4MTFhMTc2fQ==",
+            "name": "Alto-falantes (Realtek(R) Audio)"
+        },
+        {
+            "id": "ezAuMC4wLjAwMDAwMDAwfS57YTMyYzgwNzYtZjU0ZS00ZDY3LWE5YzQtNzdmNzU1MDgxMGUyfQ==",
+            "name": "CABLE Input (VB-Audio Virtual Cable)"
+        },
+        {
+            "id": "ezAuMC4wLjAwMDAwMDAwfS57YTdkMzI3YzEtN2Q3Mi00ZDJkLWEzYTYtZTIzMzcxMmI2MWY0fQ==",
+            "name": "SONY TV (NVIDIA High Definition Audio)"
+        },
+        {
+            "id": "ezAuMC4wLjAwMDAwMDAwfS57YjgxNmU3OGQtMDQ1Ny00ZjI1LWE1NjgtNDhlOGRhYmVmOTMzfQ==",
+            "name": "CABLE-B Input (VB-Audio Cable B)"
+        },
+        {
+            "id": "ezAuMC4wLjAwMDAwMDAwfS57YzFlNDQ4MTMtZmJhNS00YmU2LTkzMWUtZDQxNzBhYWY4YWVhfQ==",
+            "name": "CABLE-A Input (VB-Audio Cable A)"
+        },
+        {
+            "id": "ezAuMC4wLjAwMDAwMDAwfS57ZmZkNThmZmEtYWY4OS00YzEzLWJhZmYtZWQ0OTk0ZWIyODgwfQ==",
+            "name": "CABLE In 16ch (VB-Audio Virtual Cable)"
+        }
+    ],
+    "loopback": [
+        {
+            "protocol": "NDI",
+            "statistics": {
+                "audio_packets": 398,
+                "connections": 4,
+                "dropped_audio": 57,
+                "error": "",
+                "ndi_timecode_policy": "SDK synthesis for audio/video; source sequence metadata distinguishes cached connection frames",
+                "running": true,
+                "source": "DESKTOP-BBB9G7I (Mizin QA NDI 21624)",
+                "superseded_video": 154,
+                "video_frames": 375
+            }
+        },
+        {
+            "protocol": "OMT",
+            "statistics": {
+                "audio_packets": 472,
+                "connections": 2,
+                "dropped_audio": 0,
+                "error": "",
+                "ndi_timecode_policy": "SDK synthesis for audio/video; source sequence metadata distinguishes cached connection frames",
+                "running": true,
+                "source": "DESKTOP-BBB9G7I (Mizin QA OMT 21624)",
+                "superseded_video": 111,
+                "video_frames": 402
+            }
+        }
+    ],
+    "mode": "cpu",
+    "ndi_video_trace": [
+        {
+            "frame": 1,
+            "sdk_timestamp": "17926330195445251",
+            "sequence": "56",
+            "timecode": "17926330195631044",
+            "verified_payload_bytes": 8294400
+        },
+        {
+            "frame": 2,
+            "sdk_timestamp": "17926330201898258",
+            "sequence": "73",
+            "timecode": "17926330202276870",
+            "verified_payload_bytes": 8294400
+        },
+        {
+            "frame": 3,
+            "sdk_timestamp": "17926330205870134",
+            "sequence": "84",
+            "timecode": "17926330205901865",
+            "verified_payload_bytes": 8294400
+        },
+        {
+            "frame": 4,
+            "sdk_timestamp": "17926330208888929",
+            "sequence": "92",
+            "timecode": "17926330208901862",
+            "verified_payload_bytes": 8294400
+        },
+        {
+            "frame": 5,
+            "sdk_timestamp": "17926330210897838",
+            "sequence": "97",
+            "timecode": "17926330210901860",
+            "verified_payload_bytes": 8294400
+        },
+        {
+            "frame": 6,
+            "sdk_timestamp": "17926330212449651",
+            "sequence": "101",
+            "timecode": "17926330212568525",
+            "verified_payload_bytes": 8294400
+        },
+        {
+            "frame": 7,
+            "sdk_timestamp": "17926330213511859",
+            "sequence": "104",
+            "timecode": "17926330213568524",
+            "verified_payload_bytes": 8294400
+        },
+        {
+            "frame": 8,
+            "sdk_timestamp": "17926330214245153",
+            "sequence": "106",
+            "timecode": "17926330214568523",
+            "verified_payload_bytes": 8294400
+        },
+        {
+            "frame": 9,
+            "sdk_timestamp": "17926330214917281",
+            "sequence": "108",
+            "timecode": "17926330215214355",
+            "verified_payload_bytes": 8294400
+        },
+        {
+            "frame": 10,
+            "sdk_timestamp": "17926330216004616",
+            "sequence": "111",
+            "timecode": "17926330216214354",
+            "verified_payload_bytes": 8294400
+        },
+        {
+            "frame": 11,
+            "sdk_timestamp": "17926330216688109",
+            "sequence": "113",
+            "timecode": "17926330216881020",
+            "verified_payload_bytes": 8294400
+        },
+        {
+            "frame": 12,
+            "sdk_timestamp": "17926330217013194",
+            "sequence": "114",
+            "timecode": "17926330217214353",
+            "verified_payload_bytes": 8294400
+        },
+        {
+            "frame": 13,
+            "sdk_timestamp": "17926330217900052",
+            "sequence": "116",
+            "timecode": "17926330218214352",
+            "verified_payload_bytes": 8294400
+        },
+        {
+            "frame": 14,
+            "sdk_timestamp": "17926330218293854",
+            "sequence": "117",
+            "timecode": "17926330218547685",
+            "verified_payload_bytes": 8294400
+        },
+        {
+            "frame": 15,
+            "sdk_timestamp": "17926330218585432",
+            "sequence": "118",
+            "timecode": "17926330218881018",
+            "verified_payload_bytes": 8294400
+        },
+        {
+            "frame": 16,
+            "sdk_timestamp": "17926330218960055",
+            "sequence": "119",
+            "timecode": "17926330219214351",
+            "verified_payload_bytes": 8294400
+        },
+        {
+            "frame": 17,
+            "sdk_timestamp": "17926330219748203",
+            "sequence": "121",
+            "timecode": "17926330219881017",
+            "verified_payload_bytes": 8294400
+        },
+        {
+            "frame": 18,
+            "sdk_timestamp": "17926330220230051",
+            "sequence": "122",
+            "timecode": "17926330220547683",
+            "verified_payload_bytes": 8294400
+        },
+        {
+            "frame": 19,
+            "sdk_timestamp": "17926330222280952",
+            "sequence": "126",
+            "timecode": "17926330222547681",
+            "verified_payload_bytes": 8294400
+        },
+        {
+            "frame": 20,
+            "sdk_timestamp": "17926330223070142",
+            "sequence": "128",
+            "timecode": "17926330223214347",
+            "verified_payload_bytes": 8294400
+        },
+        {
+            "frame": 21,
+            "sdk_timestamp": "17926330223779611",
+            "sequence": "130",
+            "timecode": "17926330223881013",
+            "verified_payload_bytes": 8294400
+        },
+        {
+            "frame": 22,
+            "sdk_timestamp": "17926330224201031",
+            "sequence": "131",
+            "timecode": "17926330224214346",
+            "verified_payload_bytes": 8294400
+        },
+        {
+            "frame": 23,
+            "sdk_timestamp": "17926330224572420",
+            "sequence": "132",
+            "timecode": "17926330224881012",
+            "verified_payload_bytes": 8294400
+        },
+        {
+            "frame": 24,
+            "sdk_timestamp": "17926330224958749",
+            "sequence": "133",
+            "timecode": "17926330225214345",
+            "verified_payload_bytes": 8294400
+        },
+        {
+            "frame": 25,
+            "sdk_timestamp": "17926330225350711",
+            "sequence": "134",
+            "timecode": "17926330225547678",
+            "verified_payload_bytes": 8294400
+        },
+        {
+            "frame": 26,
+            "sdk_timestamp": "17926330225671942",
+            "sequence": "135",
+            "timecode": "17926330225881011",
+            "verified_payload_bytes": 8294400
+        },
+        {
+            "frame": 27,
+            "sdk_timestamp": "17926330226021552",
+            "sequence": "136",
+            "timecode": "17926330226214344",
+            "verified_payload_bytes": 8294400
+        },
+        {
+            "frame": 28,
+            "sdk_timestamp": "17926330226728086",
+            "sequence": "138",
+            "timecode": "17926330226881010",
+            "verified_payload_bytes": 8294400
+        },
+        {
+            "frame": 29,
+            "sdk_timestamp": "17926330227195369",
+            "sequence": "139",
+            "timecode": "17926330227214343",
+            "verified_payload_bytes": 8294400
+        },
+        {
+            "frame": 30,
+            "sdk_timestamp": "17926330227601191",
+            "sequence": "140",
+            "timecode": "17926330227881009",
+            "verified_payload_bytes": 8294400
+        },
+        {
+            "frame": 31,
+            "sdk_timestamp": "17926330228047603",
+            "sequence": "141",
+            "timecode": "17926330228214342",
+            "verified_payload_bytes": 8294400
+        },
+        {
+            "frame": 32,
+            "sdk_timestamp": "17926330228413949",
+            "sequence": "142",
+            "timecode": "17926330228547675",
+            "verified_payload_bytes": 8294400
+        },
+        {
+            "frame": 33,
+            "sdk_timestamp": "17926330228867938",
+            "sequence": "143",
+            "timecode": "17926330228881008",
+            "verified_payload_bytes": 8294400
+        },
+        {
+            "frame": 34,
+            "sdk_timestamp": "17926330229576776",
+            "sequence": "145",
+            "timecode": "17926330229881007",
+            "verified_payload_bytes": 8294400
+        },
+        {
+            "frame": 35,
+            "sdk_timestamp": "17926330229911156",
+            "sequence": "146",
+            "timecode": "17926330230214340",
+            "verified_payload_bytes": 8294400
+        },
+        {
+            "frame": 36,
+            "sdk_timestamp": "17926330230269779",
+            "sequence": "147",
+            "timecode": "17926330230547673",
+            "verified_payload_bytes": 8294400
+        },
+        {
+            "frame": 37,
+            "sdk_timestamp": "17926330230686230",
+            "sequence": "148",
+            "timecode": "17926330230881006",
+            "verified_payload_bytes": 8294400
+        },
+        {
+            "frame": 38,
+            "sdk_timestamp": "17926330231072350",
+            "sequence": "149",
+            "timecode": "17926330231214339",
+            "verified_payload_bytes": 8294400
+        },
+        {
+            "frame": 39,
+            "sdk_timestamp": "17926330232128691",
+            "sequence": "151",
+            "timecode": "17926330232214338",
+            "verified_payload_bytes": 8294400
+        },
+        {
+            "frame": 40,
+            "sdk_timestamp": "17926330232561528",
+            "sequence": "152",
+            "timecode": "17926330232881004",
+            "verified_payload_bytes": 8294400
+        },
+        {
+            "frame": 41,
+            "sdk_timestamp": "17926330233210308",
+            "sequence": "154",
+            "timecode": "17926330233526836",
+            "verified_payload_bytes": 8294400
+        },
+        {
+            "frame": 42,
+            "sdk_timestamp": "17926330234089850",
+            "sequence": "156",
+            "timecode": "17926330234193502",
+            "verified_payload_bytes": 8294400
+        },
+        {
+            "frame": 43,
+            "sdk_timestamp": "17926330234912238",
+            "sequence": "158",
+            "timecode": "17926330235193501",
+            "verified_payload_bytes": 8294400
+        },
+        {
+            "frame": 44,
+            "sdk_timestamp": "17926330235297837",
+            "sequence": "159",
+            "timecode": "17926330235526834",
+            "verified_payload_bytes": 8294400
+        },
+        {
+            "frame": 45,
+            "sdk_timestamp": "17926330236503329",
+            "sequence": "161",
+            "timecode": "17926330236526833",
+            "verified_payload_bytes": 8294400
+        },
+        {
+            "frame": 46,
+            "sdk_timestamp": "17926330238007420",
+            "sequence": "165",
+            "timecode": "17926330238193498",
+            "verified_payload_bytes": 8294400
+        },
+        {
+            "frame": 47,
+            "sdk_timestamp": "17926330238383325",
+            "sequence": "166",
+            "timecode": "17926330238526831",
+            "verified_payload_bytes": 8294400
+        },
+        {
+            "frame": 48,
+            "sdk_timestamp": "17926330238769298",
+            "sequence": "167",
+            "timecode": "17926330238860164",
+            "verified_payload_bytes": 8294400
+        },
+        {
+            "frame": 49,
+            "sdk_timestamp": "17926330239475720",
+            "sequence": "169",
+            "timecode": "17926330239526830",
+            "verified_payload_bytes": 8294400
+        },
+        {
+            "frame": 50,
+            "sdk_timestamp": "17926330239968562",
+            "sequence": "170",
+            "timecode": "17926330240193496",
+            "verified_payload_bytes": 8294400
+        },
+        {
+            "frame": 51,
+            "sdk_timestamp": "17926330240318238",
+            "sequence": "171",
+            "timecode": "17926330240526829",
+            "verified_payload_bytes": 8294400
+        },
+        {
+            "frame": 52,
+            "sdk_timestamp": "17926330240689286",
+            "sequence": "172",
+            "timecode": "17926330240860162",
+            "verified_payload_bytes": 8294400
+        },
+        {
+            "frame": 53,
+            "sdk_timestamp": "17926330241071657",
+            "sequence": "173",
+            "timecode": "17926330241193495",
+            "verified_payload_bytes": 8294400
+        },
+        {
+            "frame": 54,
+            "sdk_timestamp": "17926330241447422",
+            "sequence": "174",
+            "timecode": "17926330241526828",
+            "verified_payload_bytes": 8294400
+        },
+        {
+            "frame": 55,
+            "sdk_timestamp": "17926330241824255",
+            "sequence": "175",
+            "timecode": "17926330241860161",
+            "verified_payload_bytes": 8294400
+        },
+        {
+            "frame": 56,
+            "sdk_timestamp": "17926330242190430",
+            "sequence": "176",
+            "timecode": "17926330242193494",
+            "verified_payload_bytes": 8294400
+        },
+        {
+            "frame": 57,
+            "sdk_timestamp": "17926330242583309",
+            "sequence": "177",
+            "timecode": "17926330242860160",
+            "verified_payload_bytes": 8294400
+        },
+        {
+            "frame": 58,
+            "sdk_timestamp": "17926330242951173",
+            "sequence": "178",
+            "timecode": "17926330243193493",
+            "verified_payload_bytes": 8294400
+        },
+        {
+            "frame": 59,
+            "sdk_timestamp": "17926330243336118",
+            "sequence": "179",
+            "timecode": "17926330243526826",
+            "verified_payload_bytes": 8294400
+        },
+        {
+            "frame": 60,
+            "sdk_timestamp": "17926330244004496",
+            "sequence": "180",
+            "timecode": "17926330244193492",
+            "verified_payload_bytes": 8294400
+        },
+        {
+            "frame": 61,
+            "sdk_timestamp": "17926330244632869",
+            "sequence": "181",
+            "timecode": "17926330244860158",
+            "verified_payload_bytes": 8294400
+        },
+        {
+            "frame": 62,
+            "sdk_timestamp": "17926330245477055",
+            "sequence": "183",
+            "timecode": "17926330245526824",
+            "verified_payload_bytes": 8294400
+        },
+        {
+            "frame": 63,
+            "sdk_timestamp": "17926330245829340",
+            "sequence": "184",
+            "timecode": "17926330245860157",
+            "verified_payload_bytes": 8294400
+        },
+        {
+            "frame": 64,
+            "sdk_timestamp": "17926330246233282",
+            "sequence": "185",
+            "timecode": "17926330246526823",
+            "verified_payload_bytes": 8294400
+        },
+        {
+            "frame": 65,
+            "sdk_timestamp": "17926330246770477",
+            "sequence": "186",
+            "timecode": "17926330246860156",
+            "verified_payload_bytes": 8294400
+        },
+        {
+            "frame": 66,
+            "sdk_timestamp": "17926330247167661",
+            "sequence": "187",
+            "timecode": "17926330247193489",
+            "verified_payload_bytes": 8294400
+        },
+        {
+            "frame": 67,
+            "sdk_timestamp": "17926330247888061",
+            "sequence": "189",
+            "timecode": "17926330248193488",
+            "verified_payload_bytes": 8294400
+        },
+        {
+            "frame": 68,
+            "sdk_timestamp": "17926330248548019",
+            "sequence": "191",
+            "timecode": "17926330248860154",
+            "verified_payload_bytes": 8294400
+        },
+        {
+            "frame": 69,
+            "sdk_timestamp": "17926330248910187",
+            "sequence": "192",
+            "timecode": "17926330249193487",
+            "verified_payload_bytes": 8294400
+        },
+        {
+            "frame": 70,
+            "sdk_timestamp": "17926330249291888",
+            "sequence": "193",
+            "timecode": "17926330249526820",
+            "verified_payload_bytes": 8294400
+        },
+        {
+            "frame": 71,
+            "sdk_timestamp": "17926330249661290",
+            "sequence": "194",
+            "timecode": "17926330249860153",
+            "verified_payload_bytes": 8294400
+        },
+        {
+            "frame": 72,
+            "sdk_timestamp": "17926330250033719",
+            "sequence": "195",
+            "timecode": "17926330250193486",
+            "verified_payload_bytes": 8294400
+        },
+        {
+            "frame": 73,
+            "sdk_timestamp": "17926330250402943",
+            "sequence": "196",
+            "timecode": "17926330250526819",
+            "verified_payload_bytes": 8294400
+        },
+        {
+            "frame": 74,
+            "sdk_timestamp": "17926330250742838",
+            "sequence": "197",
+            "timecode": "17926330250860152",
+            "verified_payload_bytes": 8294400
+        },
+        {
+            "frame": 75,
+            "sdk_timestamp": "17926330251053251",
+            "sequence": "198",
+            "timecode": "17926330251193485",
+            "verified_payload_bytes": 8294400
+        },
+        {
+            "frame": 76,
+            "sdk_timestamp": "17926330251409029",
+            "sequence": "199",
+            "timecode": "17926330251526818",
+            "verified_payload_bytes": 8294400
+        },
+        {
+            "frame": 77,
+            "sdk_timestamp": "17926330251766186",
+            "sequence": "200",
+            "timecode": "17926330251860151",
+            "verified_payload_bytes": 8294400
+        },
+        {
+            "frame": 78,
+            "sdk_timestamp": "17926330252136284",
+            "sequence": "201",
+            "timecode": "17926330252193484",
+            "verified_payload_bytes": 8294400
+        },
+        {
+            "frame": 79,
+            "sdk_timestamp": "17926330252490844",
+            "sequence": "202",
+            "timecode": "17926330252526817",
+            "verified_payload_bytes": 8294400
+        },
+        {
+            "frame": 80,
+            "sdk_timestamp": "17926330252890605",
+            "sequence": "203",
+            "timecode": "17926330253193483",
+            "verified_payload_bytes": 8294400
+        },
+        {
+            "frame": 81,
+            "sdk_timestamp": "17926330253347081",
+            "sequence": "204",
+            "timecode": "17926330253526816",
+            "verified_payload_bytes": 8294400
+        },
+        {
+            "frame": 82,
+            "sdk_timestamp": "17926330253560035",
+            "sequence": "205",
+            "timecode": "17926330253860149",
+            "verified_payload_bytes": 8294400
+        },
+        {
+            "frame": 83,
+            "sdk_timestamp": "17926330253956828",
+            "sequence": "206",
+            "timecode": "17926330254193482",
+            "verified_payload_bytes": 8294400
+        },
+        {
+            "frame": 84,
+            "sdk_timestamp": "17926330254302826",
+            "sequence": "207",
+            "timecode": "17926330254526815",
+            "verified_payload_bytes": 8294400
+        },
+        {
+            "frame": 85,
+            "sdk_timestamp": "17926330254640722",
+            "sequence": "208",
+            "timecode": "17926330254860148",
+            "verified_payload_bytes": 8294400
+        },
+        {
+            "frame": 86,
+            "sdk_timestamp": "17926330254979050",
+            "sequence": "209",
+            "timecode": "17926330255193481",
+            "verified_payload_bytes": 8294400
+        },
+        {
+            "frame": 87,
+            "sdk_timestamp": "17926330255792802",
+            "sequence": "210",
+            "timecode": "17926330255860147",
+            "verified_payload_bytes": 8294400
+        },
+        {
+            "frame": 88,
+            "sdk_timestamp": "17926330256189478",
+            "sequence": "211",
+            "timecode": "17926330256193480",
+            "verified_payload_bytes": 8294400
+        },
+        {
+            "frame": 89,
+            "sdk_timestamp": "17926330256669993",
+            "sequence": "212",
+            "timecode": "17926330256860146",
+            "verified_payload_bytes": 8294400
+        },
+        {
+            "frame": 90,
+            "sdk_timestamp": "17926330257075543",
+            "sequence": "213",
+            "timecode": "17926330257193479",
+            "verified_payload_bytes": 8294400
+        },
+        {
+            "frame": 91,
+            "sdk_timestamp": "17926330257909404",
+            "sequence": "214",
+            "timecode": "17926330258193478",
+            "verified_payload_bytes": 8294400
+        },
+        {
+            "frame": 92,
+            "sdk_timestamp": "17926330258132050",
+            "sequence": "215",
+            "timecode": "17926330258505977",
+            "verified_payload_bytes": 8294400
+        },
+        {
+            "frame": 93,
+            "sdk_timestamp": "17926330258691224",
+            "sequence": "216",
+            "timecode": "17926330258839310",
+            "verified_payload_bytes": 8294400
+        },
+        {
+            "frame": 94,
+            "sdk_timestamp": "17926330259063052",
+            "sequence": "217",
+            "timecode": "17926330259172643",
+            "verified_payload_bytes": 8294400
+        },
+        {
+            "frame": 95,
+            "sdk_timestamp": "17926330259862856",
+            "sequence": "219",
+            "timecode": "17926330260172642",
+            "verified_payload_bytes": 8294400
+        },
+        {
+            "frame": 96,
+            "sdk_timestamp": "17926330260236732",
+            "sequence": "220",
+            "timecode": "17926330260505975",
+            "verified_payload_bytes": 8294400
+        },
+        {
+            "frame": 97,
+            "sdk_timestamp": "17926330260560226",
+            "sequence": "221",
+            "timecode": "17926330260839308",
+            "verified_payload_bytes": 8294400
+        },
+        {
+            "frame": 98,
+            "sdk_timestamp": "17926330260910992",
+            "sequence": "222",
+            "timecode": "17926330261172641",
+            "verified_payload_bytes": 8294400
+        },
+        {
+            "frame": 99,
+            "sdk_timestamp": "17926330261338644",
+            "sequence": "223",
+            "timecode": "17926330261505974",
+            "verified_payload_bytes": 8294400
+        },
+        {
+            "frame": 100,
+            "sdk_timestamp": "17926330261813738",
+            "sequence": "224",
+            "timecode": "17926330261839307",
+            "verified_payload_bytes": 8294400
+        },
+        {
+            "frame": 101,
+            "sdk_timestamp": "17926330262176767",
+            "sequence": "225",
+            "timecode": "17926330262505973",
+            "verified_payload_bytes": 8294400
+        },
+        {
+            "frame": 102,
+            "sdk_timestamp": "17926330262720606",
+            "sequence": "226",
+            "timecode": "17926330262839306",
+            "verified_payload_bytes": 8294400
+        },
+        {
+            "frame": 103,
+            "sdk_timestamp": "17926330262970617",
+            "sequence": "227",
+            "timecode": "17926330263172639",
+            "verified_payload_bytes": 8294400
+        },
+        {
+            "frame": 104,
+            "sdk_timestamp": "17926330263678207",
+            "sequence": "229",
+            "timecode": "17926330263839305",
+            "verified_payload_bytes": 8294400
+        },
+        {
+            "frame": 105,
+            "sdk_timestamp": "17926330264371623",
+            "sequence": "231",
+            "timecode": "17926330264505971",
+            "verified_payload_bytes": 8294400
+        },
+        {
+            "frame": 106,
+            "sdk_timestamp": "17926330265065656",
+            "sequence": "233",
+            "timecode": "17926330265172637",
+            "verified_payload_bytes": 8294400
+        },
+        {
+            "frame": 107,
+            "sdk_timestamp": "17926330265404861",
+            "sequence": "234",
+            "timecode": "17926330265505970",
+            "verified_payload_bytes": 8294400
+        },
+        {
+            "frame": 108,
+            "sdk_timestamp": "17926330266101016",
+            "sequence": "236",
+            "timecode": "17926330266172636",
+            "verified_payload_bytes": 8294400
+        },
+        {
+            "frame": 109,
+            "sdk_timestamp": "17926330266859186",
+            "sequence": "238",
+            "timecode": "17926330267172635",
+            "verified_payload_bytes": 8294400
+        },
+        {
+            "frame": 110,
+            "sdk_timestamp": "17926330267797954",
+            "sequence": "240",
+            "timecode": "17926330268151800",
+            "verified_payload_bytes": 8294400
+        },
+        {
+            "frame": 111,
+            "sdk_timestamp": "17926330268324932",
+            "sequence": "241",
+            "timecode": "17926330268485133",
+            "verified_payload_bytes": 8294400
+        },
+        {
+            "frame": 112,
+            "sdk_timestamp": "17926330269031539",
+            "sequence": "242",
+            "timecode": "17926330269151799",
+            "verified_payload_bytes": 8294400
+        },
+        {
+            "frame": 113,
+            "sdk_timestamp": "17926330269691441",
+            "sequence": "243",
+            "timecode": "17926330269818465",
+            "verified_payload_bytes": 8294400
+        },
+        {
+            "frame": 114,
+            "sdk_timestamp": "17926330270535677",
+            "sequence": "244",
+            "timecode": "17926330270818464",
+            "verified_payload_bytes": 8294400
+        },
+        {
+            "frame": 115,
+            "sdk_timestamp": "17926330271846330",
+            "sequence": "246",
+            "timecode": "17926330272151796",
+            "verified_payload_bytes": 8294400
+        },
+        {
+            "frame": 116,
+            "sdk_timestamp": "17926330272523911",
+            "sequence": "247",
+            "timecode": "17926330272818462",
+            "verified_payload_bytes": 8294400
+        },
+        {
+            "frame": 117,
+            "sdk_timestamp": "17926330273353256",
+            "sequence": "248",
+            "timecode": "17926330273485128",
+            "verified_payload_bytes": 8294400
+        },
+        {
+            "frame": 118,
+            "sdk_timestamp": "17926330273645476",
+            "sequence": "249",
+            "timecode": "17926330273818461",
+            "verified_payload_bytes": 8294400
+        },
+        {
+            "frame": 119,
+            "sdk_timestamp": "17926330274876085",
+            "sequence": "251",
+            "timecode": "17926330275151793",
+            "verified_payload_bytes": 8294400
+        },
+        {
+            "frame": 120,
+            "sdk_timestamp": "17926330277344211",
+            "sequence": "254",
+            "timecode": "17926330277485124",
+            "verified_payload_bytes": 8294400
+        },
+        {
+            "frame": 121,
+            "sdk_timestamp": "17926330278726599",
+            "sequence": "256",
+            "timecode": "17926330278818456",
+            "verified_payload_bytes": 8294400
+        },
+        {
+            "frame": 122,
+            "sdk_timestamp": "17926330279972765",
+            "sequence": "259",
+            "timecode": "17926330280151788",
+            "verified_payload_bytes": 8294400
+        },
+        {
+            "frame": 123,
+            "sdk_timestamp": "17926330281549105",
+            "sequence": "262",
+            "timecode": "17926330281818453",
+            "verified_payload_bytes": 8294400
+        },
+        {
+            "frame": 124,
+            "sdk_timestamp": "17926330282539562",
+            "sequence": "264",
+            "timecode": "17926330282818452",
+            "verified_payload_bytes": 8294400
+        },
+        {
+            "frame": 125,
+            "sdk_timestamp": "17926330283669596",
+            "sequence": "266",
+            "timecode": "17926330283818451",
+            "verified_payload_bytes": 8294400
+        },
+        {
+            "frame": 126,
+            "sdk_timestamp": "17926330284092238",
+            "sequence": "267",
+            "timecode": "17926330284151784",
+            "verified_payload_bytes": 8294400
+        },
+        {
+            "frame": 127,
+            "sdk_timestamp": "17926330284446918",
+            "sequence": "268",
+            "timecode": "17926330284485117",
+            "verified_payload_bytes": 8294400
+        },
+        {
+            "frame": 128,
+            "sdk_timestamp": "17926330285514440",
+            "sequence": "271",
+            "timecode": "17926330285818449",
+            "verified_payload_bytes": 8294400
+        },
+        {
+            "frame": 129,
+            "sdk_timestamp": "17926330287076891",
+            "sequence": "274",
+            "timecode": "17926330287151781",
+            "verified_payload_bytes": 8294400
+        },
+        {
+            "frame": 130,
+            "sdk_timestamp": "17926330288443475",
+            "sequence": "276",
+            "timecode": "17926330288485113",
+            "verified_payload_bytes": 8294400
+        },
+        {
+            "frame": 131,
+            "sdk_timestamp": "17926330289433248",
+            "sequence": "278",
+            "timecode": "17926330289485112",
+            "verified_payload_bytes": 8294400
+        },
+        {
+            "frame": 132,
+            "sdk_timestamp": "17926330291289290",
+            "sequence": "283",
+            "timecode": "17926330291485110",
+            "verified_payload_bytes": 8294400
+        },
+        {
+            "frame": 133,
+            "sdk_timestamp": "17926330292322414",
+            "sequence": "285",
+            "timecode": "17926330292485109",
+            "verified_payload_bytes": 8294400
+        },
+        {
+            "frame": 134,
+            "sdk_timestamp": "17926330293174611",
+            "sequence": "287",
+            "timecode": "17926330293485108",
+            "verified_payload_bytes": 8294400
+        },
+        {
+            "frame": 135,
+            "sdk_timestamp": "17926330294369000",
+            "sequence": "290",
+            "timecode": "17926330294485107",
+            "verified_payload_bytes": 8294400
+        },
+        {
+            "frame": 136,
+            "sdk_timestamp": "17926330295936087",
+            "sequence": "293",
+            "timecode": "17926330296151772",
+            "verified_payload_bytes": 8294400
+        },
+        {
+            "frame": 137,
+            "sdk_timestamp": "17926330297537681",
+            "sequence": "295",
+            "timecode": "17926330297818437",
+            "verified_payload_bytes": 8294400
+        },
+        {
+            "frame": 138,
+            "sdk_timestamp": "17926330298785430",
+            "sequence": "298",
+            "timecode": "17926330298818436",
+            "verified_payload_bytes": 8294400
+        },
+        {
+            "frame": 139,
+            "sdk_timestamp": "17926330299218587",
+            "sequence": "299",
+            "timecode": "17926330299485102",
+            "verified_payload_bytes": 8294400
+        },
+        {
+            "frame": 140,
+            "sdk_timestamp": "17926330299923557",
+            "sequence": "301",
+            "timecode": "17926330300151768",
+            "verified_payload_bytes": 8294400
+        },
+        {
+            "frame": 141,
+            "sdk_timestamp": "17926330300634404",
+            "sequence": "303",
+            "timecode": "17926330300818434",
+            "verified_payload_bytes": 8294400
+        },
+        {
+            "frame": 142,
+            "sdk_timestamp": "17926330301065832",
+            "sequence": "304",
+            "timecode": "17926330301151767",
+            "verified_payload_bytes": 8294400
+        },
+        {
+            "frame": 143,
+            "sdk_timestamp": "17926330301777805",
+            "sequence": "306",
+            "timecode": "17926330301818433",
+            "verified_payload_bytes": 8294400
+        },
+        {
+            "frame": 144,
+            "sdk_timestamp": "17926330302107639",
+            "sequence": "307",
+            "timecode": "17926330302151766",
+            "verified_payload_bytes": 8294400
+        },
+        {
+            "frame": 145,
+            "sdk_timestamp": "17926330303076752",
+            "sequence": "309",
+            "timecode": "17926330303151765",
+            "verified_payload_bytes": 8294400
+        },
+        {
+            "frame": 146,
+            "sdk_timestamp": "17926330303440651",
+            "sequence": "310",
+            "timecode": "17926330303485098",
+            "verified_payload_bytes": 8294400
+        },
+        {
+            "frame": 147,
+            "sdk_timestamp": "17926330304237808",
+            "sequence": "312",
+            "timecode": "17926330304485097",
+            "verified_payload_bytes": 8294400
+        },
+        {
+            "frame": 148,
+            "sdk_timestamp": "17926330304900164",
+            "sequence": "314",
+            "timecode": "17926330305151763",
+            "verified_payload_bytes": 8294400
+        },
+        {
+            "frame": 149,
+            "sdk_timestamp": "17926330305718805",
+            "sequence": "316",
+            "timecode": "17926330305818429",
+            "verified_payload_bytes": 8294400
+        },
+        {
+            "frame": 150,
+            "sdk_timestamp": "17926330306019922",
+            "sequence": "317",
+            "timecode": "17926330306151762",
+            "verified_payload_bytes": 8294400
+        },
+        {
+            "frame": 151,
+            "sdk_timestamp": "17926330306775689",
+            "sequence": "319",
+            "timecode": "17926330306818428",
+            "verified_payload_bytes": 8294400
+        },
+        {
+            "frame": 152,
+            "sdk_timestamp": "17926330307902921",
+            "sequence": "322",
+            "timecode": "17926330308151760",
+            "verified_payload_bytes": 8294400
+        },
+        {
+            "frame": 153,
+            "sdk_timestamp": "17926330308251136",
+            "sequence": "323",
+            "timecode": "17926330308485093",
+            "verified_payload_bytes": 8294400
+        },
+        {
+            "frame": 154,
+            "sdk_timestamp": "17926330309093660",
+            "sequence": "325",
+            "timecode": "17926330309151759",
+            "verified_payload_bytes": 8294400
+        },
+        {
+            "frame": 155,
+            "sdk_timestamp": "17926330309634048",
+            "sequence": "326",
+            "timecode": "17926330309818425",
+            "verified_payload_bytes": 8294400
+        },
+        {
+            "frame": 156,
+            "sdk_timestamp": "17926330309928095",
+            "sequence": "327",
+            "timecode": "17926330310151758",
+            "verified_payload_bytes": 8294400
+        },
+        {
+            "frame": 157,
+            "sdk_timestamp": "17926330310651302",
+            "sequence": "329",
+            "timecode": "17926330310818424",
+            "verified_payload_bytes": 8294400
+        },
+        {
+            "frame": 158,
+            "sdk_timestamp": "17926330310951146",
+            "sequence": "330",
+            "timecode": "17926330311151757",
+            "verified_payload_bytes": 8294400
+        },
+        {
+            "frame": 159,
+            "sdk_timestamp": "17926330311781442",
+            "sequence": "332",
+            "timecode": "17926330311818423",
+            "verified_payload_bytes": 8294400
+        },
+        {
+            "frame": 160,
+            "sdk_timestamp": "17926330312112930",
+            "sequence": "333",
+            "timecode": "17926330312151756",
+            "verified_payload_bytes": 8294400
+        },
+        {
+            "frame": 161,
+            "sdk_timestamp": "17926330328312155",
+            "sequence": "368",
+            "timecode": "17926330328485073",
+            "verified_payload_bytes": 8294400
+        },
+        {
+            "frame": 162,
+            "sdk_timestamp": "17926330328932958",
+            "sequence": "369",
+            "timecode": "17926330329151739",
+            "verified_payload_bytes": 8294400
+        },
+        {
+            "frame": 163,
+            "sdk_timestamp": "17926330329323920",
+            "sequence": "370",
+            "timecode": "17926330329485072",
+            "verified_payload_bytes": 8294400
+        },
+        {
+            "frame": 164,
+            "sdk_timestamp": "17926330329806615",
+            "sequence": "371",
+            "timecode": "17926330329818405",
+            "verified_payload_bytes": 8294400
+        },
+        {
+            "frame": 165,
+            "sdk_timestamp": "17926330330129920",
+            "sequence": "372",
+            "timecode": "17926330330151738",
+            "verified_payload_bytes": 8294400
+        },
+        {
+            "frame": 166,
+            "sdk_timestamp": "17926330330466724",
+            "sequence": "373",
+            "timecode": "17926330330485071",
+            "verified_payload_bytes": 8294400
+        },
+        {
+            "frame": 167,
+            "sdk_timestamp": "17926330331565690",
+            "sequence": "375",
+            "timecode": "17926330331818403",
+            "verified_payload_bytes": 8294400
+        },
+        {
+            "frame": 168,
+            "sdk_timestamp": "17926330331882018",
+            "sequence": "376",
+            "timecode": "17926330332151736",
+            "verified_payload_bytes": 8294400
+        },
+        {
+            "frame": 169,
+            "sdk_timestamp": "17926330332219636",
+            "sequence": "377",
+            "timecode": "17926330332485069",
+            "verified_payload_bytes": 8294400
+        },
+        {
+            "frame": 170,
+            "sdk_timestamp": "17926330332570505",
+            "sequence": "378",
+            "timecode": "17926330332818402",
+            "verified_payload_bytes": 8294400
+        },
+        {
+            "frame": 171,
+            "sdk_timestamp": "17926330332927339",
+            "sequence": "379",
+            "timecode": "17926330333151735",
+            "verified_payload_bytes": 8294400
+        },
+        {
+            "frame": 172,
+            "sdk_timestamp": "17926330333273194",
+            "sequence": "380",
+            "timecode": "17926330333485068",
+            "verified_payload_bytes": 8294400
+        }
+    ],
+    "omt_video_trace": [
+        {
+            "frame": 1,
+            "timecode": "93238370"
+        },
+        {
+            "frame": 2,
+            "timecode": "93238380"
+        },
+        {
+            "frame": 3,
+            "timecode": "93238390"
+        },
+        {
+            "frame": 4,
+            "timecode": "103529920"
+        },
+        {
+            "frame": 5,
+            "timecode": "113086460"
+        },
+        {
+            "frame": 6,
+            "timecode": "113863260"
+        },
+        {
+            "frame": 7,
+            "timecode": "116863260"
+        },
+        {
+            "frame": 8,
+            "timecode": "120100260"
+        },
+        {
+            "frame": 9,
+            "timecode": "121121770"
+        },
+        {
+            "frame": 10,
+            "timecode": "121196590"
+        },
+        {
+            "frame": 11,
+            "timecode": "122196590"
+        },
+        {
+            "frame": 12,
+            "timecode": "123523290"
+        },
+        {
+            "frame": 13,
+            "timecode": "123863260"
+        },
+        {
+            "frame": 14,
+            "timecode": "124529920"
+        },
+        {
+            "frame": 15,
+            "timecode": "125196590"
+        },
+        {
+            "frame": 16,
+            "timecode": "125863260"
+        },
+        {
+            "frame": 17,
+            "timecode": "126196590"
+        },
+        {
+            "frame": 18,
+            "timecode": "126529920"
+        },
+        {
+            "frame": 19,
+            "timecode": "126863260"
+        },
+        {
+            "frame": 20,
+            "timecode": "127196590"
+        },
+        {
+            "frame": 21,
+            "timecode": "127529920"
+        },
+        {
+            "frame": 22,
+            "timecode": "127863260"
+        },
+        {
+            "frame": 23,
+            "timecode": "128196590"
+        },
+        {
+            "frame": 24,
+            "timecode": "128807190"
+        },
+        {
+            "frame": 25,
+            "timecode": "129494940"
+        },
+        {
+            "frame": 26,
+            "timecode": "129863260"
+        },
+        {
+            "frame": 27,
+            "timecode": "130863260"
+        },
+        {
+            "frame": 28,
+            "timecode": "131863260"
+        },
+        {
+            "frame": 29,
+            "timecode": "132196590"
+        },
+        {
+            "frame": 30,
+            "timecode": "132529920"
+        },
+        {
+            "frame": 31,
+            "timecode": "132863260"
+        },
+        {
+            "frame": 32,
+            "timecode": "133196590"
+        },
+        {
+            "frame": 33,
+            "timecode": "133668970"
+        },
+        {
+            "frame": 34,
+            "timecode": "133668980"
+        },
+        {
+            "frame": 35,
+            "timecode": "134196590"
+        },
+        {
+            "frame": 36,
+            "timecode": "134529920"
+        },
+        {
+            "frame": 37,
+            "timecode": "134863260"
+        },
+        {
+            "frame": 38,
+            "timecode": "135196590"
+        },
+        {
+            "frame": 39,
+            "timecode": "135529920"
+        },
+        {
+            "frame": 40,
+            "timecode": "136196590"
+        },
+        {
+            "frame": 41,
+            "timecode": "136529920"
+        },
+        {
+            "frame": 42,
+            "timecode": "137196590"
+        },
+        {
+            "frame": 43,
+            "timecode": "137529920"
+        },
+        {
+            "frame": 44,
+            "timecode": "137863260"
+        },
+        {
+            "frame": 45,
+            "timecode": "138196590"
+        },
+        {
+            "frame": 46,
+            "timecode": "138529920"
+        },
+        {
+            "frame": 47,
+            "timecode": "139487020"
+        },
+        {
+            "frame": 48,
+            "timecode": "139529920"
+        },
+        {
+            "frame": 49,
+            "timecode": "140971270"
+        },
+        {
+            "frame": 50,
+            "timecode": "140971290"
+        },
+        {
+            "frame": 51,
+            "timecode": "141863260"
+        },
+        {
+            "frame": 52,
+            "timecode": "142863260"
+        },
+        {
+            "frame": 53,
+            "timecode": "143196590"
+        },
+        {
+            "frame": 54,
+            "timecode": "144573300"
+        },
+        {
+            "frame": 55,
+            "timecode": "144863260"
+        },
+        {
+            "frame": 56,
+            "timecode": "145529920"
+        },
+        {
+            "frame": 57,
+            "timecode": "146196590"
+        },
+        {
+            "frame": 58,
+            "timecode": "146863260"
+        },
+        {
+            "frame": 59,
+            "timecode": "147393680"
+        },
+        {
+            "frame": 60,
+            "timecode": "148196590"
+        },
+        {
+            "frame": 61,
+            "timecode": "148529920"
+        },
+        {
+            "frame": 62,
+            "timecode": "148863260"
+        },
+        {
+            "frame": 63,
+            "timecode": "149196590"
+        },
+        {
+            "frame": 64,
+            "timecode": "149863260"
+        },
+        {
+            "frame": 65,
+            "timecode": "150196590"
+        },
+        {
+            "frame": 66,
+            "timecode": "150529920"
+        },
+        {
+            "frame": 67,
+            "timecode": "150863260"
+        },
+        {
+            "frame": 68,
+            "timecode": "151196590"
+        },
+        {
+            "frame": 69,
+            "timecode": "151529920"
+        },
+        {
+            "frame": 70,
+            "timecode": "151863260"
+        },
+        {
+            "frame": 71,
+            "timecode": "152196590"
+        },
+        {
+            "frame": 72,
+            "timecode": "152529920"
+        },
+        {
+            "frame": 73,
+            "timecode": "152863260"
+        },
+        {
+            "frame": 74,
+            "timecode": "153196590"
+        },
+        {
+            "frame": 75,
+            "timecode": "153529920"
+        },
+        {
+            "frame": 76,
+            "timecode": "153863260"
+        },
+        {
+            "frame": 77,
+            "timecode": "154196590"
+        },
+        {
+            "frame": 78,
+            "timecode": "154777080"
+        },
+        {
+            "frame": 79,
+            "timecode": "154863260"
+        },
+        {
+            "frame": 80,
+            "timecode": "155529920"
+        },
+        {
+            "frame": 81,
+            "timecode": "155863260"
+        },
+        {
+            "frame": 82,
+            "timecode": "156529920"
+        },
+        {
+            "frame": 83,
+            "timecode": "157196590"
+        },
+        {
+            "frame": 84,
+            "timecode": "157544860"
+        },
+        {
+            "frame": 85,
+            "timecode": "157544870"
+        },
+        {
+            "frame": 86,
+            "timecode": "157863260"
+        },
+        {
+            "frame": 87,
+            "timecode": "158610210"
+        },
+        {
+            "frame": 88,
+            "timecode": "159000240"
+        },
+        {
+            "frame": 89,
+            "timecode": "159333730"
+        },
+        {
+            "frame": 90,
+            "timecode": "159333740"
+        },
+        {
+            "frame": 91,
+            "timecode": "159552720"
+        },
+        {
+            "frame": 92,
+            "timecode": "160219390"
+        },
+        {
+            "frame": 93,
+            "timecode": "160886050"
+        },
+        {
+            "frame": 94,
+            "timecode": "161552720"
+        },
+        {
+            "frame": 95,
+            "timecode": "161886050"
+        },
+        {
+            "frame": 96,
+            "timecode": "162219390"
+        },
+        {
+            "frame": 97,
+            "timecode": "162552720"
+        },
+        {
+            "frame": 98,
+            "timecode": "162886050"
+        },
+        {
+            "frame": 99,
+            "timecode": "163219390"
+        },
+        {
+            "frame": 100,
+            "timecode": "163552720"
+        },
+        {
+            "frame": 101,
+            "timecode": "163886050"
+        },
+        {
+            "frame": 102,
+            "timecode": "164620200"
+        },
+        {
+            "frame": 103,
+            "timecode": "164620210"
+        },
+        {
+            "frame": 104,
+            "timecode": "164620220"
+        },
+        {
+            "frame": 105,
+            "timecode": "164886050"
+        },
+        {
+            "frame": 106,
+            "timecode": "165219390"
+        },
+        {
+            "frame": 107,
+            "timecode": "165552720"
+        },
+        {
+            "frame": 108,
+            "timecode": "165886050"
+        },
+        {
+            "frame": 109,
+            "timecode": "166219390"
+        },
+        {
+            "frame": 110,
+            "timecode": "166552720"
+        },
+        {
+            "frame": 111,
+            "timecode": "166886050"
+        },
+        {
+            "frame": 112,
+            "timecode": "167552720"
+        },
+        {
+            "frame": 113,
+            "timecode": "167886050"
+        },
+        {
+            "frame": 114,
+            "timecode": "168219390"
+        },
+        {
+            "frame": 115,
+            "timecode": "168552720"
+        },
+        {
+            "frame": 116,
+            "timecode": "168886050"
+        },
+        {
+            "frame": 117,
+            "timecode": "169219390"
+        },
+        {
+            "frame": 118,
+            "timecode": "169552720"
+        },
+        {
+            "frame": 119,
+            "timecode": "170579890"
+        },
+        {
+            "frame": 120,
+            "timecode": "170579900"
+        },
+        {
+            "frame": 121,
+            "timecode": "171633060"
+        },
+        {
+            "frame": 122,
+            "timecode": "171886050"
+        },
+        {
+            "frame": 123,
+            "timecode": "172886050"
+        },
+        {
+            "frame": 124,
+            "timecode": "175476780"
+        },
+        {
+            "frame": 125,
+            "timecode": "175476820"
+        },
+        {
+            "frame": 126,
+            "timecode": "177977660"
+        },
+        {
+            "frame": 127,
+            "timecode": "177977680"
+        },
+        {
+            "frame": 128,
+            "timecode": "178552720"
+        },
+        {
+            "frame": 129,
+            "timecode": "179725400"
+        },
+        {
+            "frame": 130,
+            "timecode": "180747500"
+        },
+        {
+            "frame": 131,
+            "timecode": "180886050"
+        },
+        {
+            "frame": 132,
+            "timecode": "181886050"
+        },
+        {
+            "frame": 133,
+            "timecode": "182552720"
+        },
+        {
+            "frame": 134,
+            "timecode": "183219390"
+        },
+        {
+            "frame": 135,
+            "timecode": "184643090"
+        },
+        {
+            "frame": 136,
+            "timecode": "186395560"
+        },
+        {
+            "frame": 137,
+            "timecode": "186395580"
+        },
+        {
+            "frame": 138,
+            "timecode": "187219390"
+        },
+        {
+            "frame": 139,
+            "timecode": "188552720"
+        },
+        {
+            "frame": 140,
+            "timecode": "191143090"
+        },
+        {
+            "frame": 141,
+            "timecode": "191143110"
+        },
+        {
+            "frame": 142,
+            "timecode": "191552720"
+        },
+        {
+            "frame": 143,
+            "timecode": "192219390"
+        },
+        {
+            "frame": 144,
+            "timecode": "193585740"
+        },
+        {
+            "frame": 145,
+            "timecode": "194219390"
+        },
+        {
+            "frame": 146,
+            "timecode": "196706080"
+        },
+        {
+            "frame": 147,
+            "timecode": "196706110"
+        },
+        {
+            "frame": 148,
+            "timecode": "198510810"
+        },
+        {
+            "frame": 149,
+            "timecode": "199219390"
+        },
+        {
+            "frame": 150,
+            "timecode": "200886050"
+        },
+        {
+            "frame": 151,
+            "timecode": "202219390"
+        },
+        {
+            "frame": 152,
+            "timecode": "203219390"
+        },
+        {
+            "frame": 153,
+            "timecode": "204219390"
+        },
+        {
+            "frame": 154,
+            "timecode": "205219390"
+        },
+        {
+            "frame": 155,
+            "timecode": "205886050"
+        },
+        {
+            "frame": 156,
+            "timecode": "207219390"
+        },
+        {
+            "frame": 157,
+            "timecode": "207552720"
+        },
+        {
+            "frame": 158,
+            "timecode": "208219390"
+        },
+        {
+            "frame": 159,
+            "timecode": "208886050"
+        },
+        {
+            "frame": 160,
+            "timecode": "209219390"
+        },
+        {
+            "frame": 161,
+            "timecode": "209886050"
+        },
+        {
+            "frame": 162,
+            "timecode": "210552720"
+        },
+        {
+            "frame": 163,
+            "timecode": "211219390"
+        },
+        {
+            "frame": 164,
+            "timecode": "212550640"
+        },
+        {
+            "frame": 165,
+            "timecode": "212550660"
+        },
+        {
+            "frame": 166,
+            "timecode": "212886050"
+        },
+        {
+            "frame": 167,
+            "timecode": "213886050"
+        },
+        {
+            "frame": 168,
+            "timecode": "214552720"
+        },
+        {
+            "frame": 169,
+            "timecode": "215219390"
+        },
+        {
+            "frame": 170,
+            "timecode": "215886050"
+        },
+        {
+            "frame": 171,
+            "timecode": "216552720"
+        },
+        {
+            "frame": 172,
+            "timecode": "217219390"
+        },
+        {
+            "frame": 173,
+            "timecode": "217886050"
+        },
+        {
+            "frame": 174,
+            "timecode": "218219390"
+        },
+        {
+            "frame": 175,
+            "timecode": "218886050"
+        },
+        {
+            "frame": 176,
+            "timecode": "219219390"
+        },
+        {
+            "frame": 177,
+            "timecode": "219552720"
+        },
+        {
+            "frame": 178,
+            "timecode": "236392150"
+        },
+        {
+            "frame": 179,
+            "timecode": "236597570"
+        },
+        {
+            "frame": 180,
+            "timecode": "237074900"
+        },
+        {
+            "frame": 181,
+            "timecode": "237483150"
+        },
+        {
+            "frame": 182,
+            "timecode": "237836300"
+        },
+        {
+            "frame": 183,
+            "timecode": "238195160"
+        },
+        {
+            "frame": 184,
+            "timecode": "238549080"
+        },
+        {
+            "frame": 185,
+            "timecode": "238884130"
+        },
+        {
+            "frame": 186,
+            "timecode": "239227470"
+        }
+    ],
+    "result": "FAIL",
+    "scope": "Native audio buffers, controls and in-process SDK network loopback on Windows; not an independent LAN receiver, physical listening, AV-sync or multi-hour qualification",
+    "tests": [
+        {
+            "name": "ndi_order_accepts_exact_cache_replay",
+            "pass": true
+        },
+        {
+            "name": "ndi_order_rejects_content_change_under_same_id",
+            "pass": true
+        },
+        {
+            "name": "ndi_order_rejects_new_frame_with_reused_timecode",
+            "pass": true
+        },
+        {
+            "name": "ndi_order_rejects_source_sequence_regression",
+            "pass": true
+        },
+        {
+            "name": "ndi_order_rejects_delivery_timestamp_regression",
+            "pass": true
+        },
+        {
+            "name": "master_gain_preserves_stereo",
+            "pass": true
+        },
+        {
+            "name": "master_mute_is_silence",
+            "pass": true
+        },
+        {
+            "name": "decks_are_mixed_once",
+            "pass": true
+        },
+        {
+            "name": "sum_is_clipped_to_valid_pcm",
+            "pass": true
+        },
+        {
+            "name": "transport_planar_channel_layout",
+            "pass": true
+        },
+        {
+            "name": "overload_is_clipped_at_full_scale",
+            "pass": true
+        },
+        {
+            "name": "flush_removes_stale_samples",
+            "pass": true
+        },
+        {
+            "name": "ring_wrap_does_not_replay_old_tags",
+            "pass": true
+        },
+        {
+            "name": "fade_uses_audio_sample_time",
+            "pass": true
+        },
+        {
+            "name": "fade_black_holds_first_half",
+            "pass": true
+        },
+        {
+            "name": "pause_shift_preserves_envelope_phase",
+            "pass": true
+        },
+        {
+            "name": "exclusive_audio_out_is_silent",
+            "pass": true
+        },
+        {
+            "decoded_buffers": 4,
+            "name": "native_media_decodes_real_audio",
+            "nonzero_packets": 6,
+            "packet_count": 29,
+            "pass": true
+        },
+        {
+            "name": "native_mute_does_not_stop_video",
+            "pass": true
+        },
+        {
+            "name": "native_unmute_restores_pcm",
+            "pass": true
+        },
+        {
+            "name": "preview_never_publishes_audio",
+            "pass": true
+        },
+        {
+            "name": "missing_device_mutes_local_without_stopping_program",
+            "pass": true
+        },
+        {
+            "name": "default_device_can_be_restored",
+            "pass": true
+        },
+        {
+            "name": "pause_flushes_network_pcm",
+            "pass": true
+        },
+        {
+            "name": "resume_produces_new_audio",
+            "pass": true
+        },
+        {
+            "name": "seek_reanchors_audio_timeline",
+            "pass": true
+        },
+        {
+            "name": "program_audio_timestamps_stay_monotonic",
+            "pass": true
+        },
+        {
+            "name": "missing_runtime_fails_without_stopping_program",
+            "pass": true
+        },
+        {
+            "name": "empty_source_name_is_rejected",
+            "pass": true
+        },
+        {
+            "name": "missing_omt_codec_is_reported_before_sender_creation",
+            "pass": true
+        },
+        {
+            "error": "",
+            "name": "private_ndi_runtime_loaded",
+            "pass": true,
+            "path": "D:/REA - ENGENHARIA REVERSA/targets/mizin_playout/dist/Processing.NDI.Lib.x64.dll",
+            "version": "NDI SDK WIN64 16:08:06 Feb 17 2026 6.3.1.0"
+        },
+        {
+            "error": "",
+            "name": "packaged_omt_runtime_loaded",
+            "pass": true,
+            "path": "D:/REA - ENGENHARIA REVERSA/targets/mizin_playout/dist/libomt.dll"
+        },
+        {
+            "name": "network_senders_are_off_by_default",
+            "pass": true
+        },
+        {
+            "name": "both_protocols_start_on_one_program",
+            "pass": true
+        },
+        {
+            "audio_packets": 17,
+            "audio_peak": 0.025068776682019234,
+            "name": "ndi_loopback_receives_native_video_and_audio",
+            "pass": true,
+            "video_frames": 78
+        },
+        {
+            "audio_packets": 8,
+            "audio_peak": 0.025040872395038605,
+            "name": "omt_loopback_receives_native_video_and_audio",
+            "pass": true,
+            "video_frames": 87
+        },
+        {
+            "name": "master_mute_reaches_both_network_receivers",
+            "pass": false
+        },
+        {
+            "name": "master_unmute_restores_both_network_receivers",
+            "pass": true
+        },
+        {
+            "name": "network_audio_can_be_disabled_independently",
+            "pass": true
+        },
+        {
+            "name": "independent_program_b_has_its_own_sender",
+            "pass": true
+        },
+        {
+            "name": "black_reaches_both_network_outputs",
+            "native_frame_stays_invalid": true,
+            "ndi_black": true,
+            "ndi_fourcc": 1095911234,
+            "ndi_mean": 0.6666666666666666,
+            "omt_black": true,
+            "omt_codec": 826363974,
+            "omt_mean": 0,
+            "pass": true
+        },
+        {
+            "audio_packets": 35,
+            "name": "ndi_source_frames_and_sdk_delivery_remain_strictly_in_order",
+            "pass": true,
+            "raw_timecode_repeats_or_regressions": 0,
+            "raw_timecode_strict": true,
+            "verified_exact_cache_repeats": 0,
+            "video_frames": 172
+        },
+        {
+            "name": "omt_video_timestamps_remain_strictly_increasing",
+            "pass": true,
+            "video_frames": 186,
+            "video_violations": 0
+        },
+        {
+            "name": "stopping_network_preserves_program",
+            "pass": true
+        },
+        {
+            "name": "black_flushes_audio",
+            "pass": true
+        }
+    ]
+}

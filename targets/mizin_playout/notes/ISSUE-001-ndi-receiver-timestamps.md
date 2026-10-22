@@ -1,5 +1,25 @@
 # ISSUE-001 — Intermittent NDI receiver video timestamps
 
+## Investigation on 2026-10-21
+
+An independent receiver process reproduced the failure on unchanged build 0035:
+89 video frames, 157 audio packets, nonzero audio; the first two video frames had
+the same application timecode `15698410`, while SDK timestamps advanced from
+`17926284475324225` to `17926284475657558` (one 30fps interval).
+See `evidence/ndi-external-baseline-0035.json` for the raw trace.
+
+A controlled SDK sender/cache experiment isolated connection-time replay of the
+initial frame: explicit timecodes with an already primed sender reproduced the
+duplicate; the documented `NDIlib_send_timecode_synthesize` policy did not.
+Explicit timecodes without priming also passed. Both modes sent/received real
+frames; `evidence/ndi-timecode-experiment-0035.json` retains the separate cases.
+
+The new implementation requests SDK synthesis for both video and audio, keeping
+the matched existing 40ms publication delay and OMT timestamps unchanged. Native
+tests now log bounded raw video traces, keep strict monotonic checks and verify
+the private bundled runtime path. Cold/late/reconnection validation is recorded
+separately below after execution. The historical observations below are retained.
+
 Status: OPEN. Observed during regression for event output configuration (builds 0025 and 0026). This has not been fixed by the output configuration or UI badge changes.
 
 The local NDI loopback test sometimes receives valid 1920×1080 video and stereo audio but fails strict receiver video timecode monotonicity. Build 0026 automatic mode recorded 11 video frames, 18 audio packets and a nonzero audio peak. Those values meet all other conditions in `ndi_loopback_receives_native_video_and_audio`; the remaining false condition is the receiver's strictly increasing video timecodes. Raw per-frame timecode pairs are not currently logged, so the precise duplicate/reordering/source cause is not established.
@@ -28,3 +48,14 @@ Build 0032 minimal-controls/resource-footer regression: no strict failure observ
 
 
 Build 0033 decimal-memory/DXGI footer regression: no strict failure observed in this bounded run; issue remains open. Results/exits remain in evidence/dynamic-program-suites-0033.json. No network timestamp implementation changed.
+
+Build 0041 external receiver probes (2026-10-21, Claude Code session, host under load: another
+session was rendering 4K with node/Chrome/ffmpeg, CPU ~81%): the NDI order checks this issue is
+about passed in all three runs (startup-auto, late-auto 0.7 s, reconnect-cpu): zero order errors,
+one verified exact cache repeat in reconnect-cpu. All three runs are still recorded FAIL because the
+child `--network-test` exited 2 on audio-timing checks: `master_mute_reaches_both_network_receivers`
+(all runs), `master_unmute_restores_both_network_receivers` (late-auto) and
+`omt_loopback_receives_native_video_and_audio` (startup-auto: 7 audio packets). Network/audio source
+is unchanged since build 0038, whose same probes passed. Not retried to replace the FAILs; repeat on
+an idle machine before treating the network suite as green. Evidence:
+`evidence/ndi-external-*-0041.json`, `evidence/network-probe-*-0041.json`.
