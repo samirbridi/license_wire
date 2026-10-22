@@ -59,3 +59,11 @@ child `--network-test` exited 2 on audio-timing checks: `master_mute_reaches_bot
 is unchanged since build 0038, whose same probes passed. Not retried to replace the FAILs; repeat on
 an idle machine before treating the network suite as green. Evidence:
 `evidence/ndi-external-*-0041.json`, `evidence/network-probe-*-0041.json`.
+
+Build 0044 (2026-10-22, host idle at ~10% CPU): the same three external probes (startup-auto,
+late-auto 0.7 s, reconnect-cpu) all PASS, child `--network-test` exit 0, including
+`master_mute_reaches_both_network_receivers`/`master_unmute_restores_both_network_receivers` and OMT
+audio. Network/audio source is unchanged since 0038, so the build 0041 audio FAILs are attributed to
+host load (4K renders) rather than a regression; they remain recorded. The audio mute checks are
+timing-sensitive under heavy CPU load, which is itself a note for show machines. Issue stays OPEN
+pending an independent LAN receiver. Evidence: `evidence/ndi-external-*-0044.json`.

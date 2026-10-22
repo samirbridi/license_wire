@@ -1,5 +1,19 @@
 # CHANGELOG — Mizin Playout
 
+## v0.17.0 (build 0044) - 2026-10-22
+
+### 💥 Breaking Changes
+- None.
+
+### ✨ Features
+- feat: adiciona monitor web WebRTC somente visualizacao com H.264 do Windows e Opus (8e06fcc8a58095a0bffe08d221e9c33312f0ed6e)
+
+### 🐛 Fixes
+- None.
+
+### ⚡ Improvements
+- improve: registra build 0043 com decks destacaveis e validacao do pacote (2e79de28131955d68a4c418aec81d8850f9f0686)
+
 ## v0.16.1 (build 0043) - 2026-10-21
 
 ### 💥 Breaking Changes
