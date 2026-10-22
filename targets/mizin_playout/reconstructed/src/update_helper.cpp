@@ -67,6 +67,9 @@ int WINAPI wWinMain(HINSTANCE instance,HINSTANCE,PWSTR,int){
     if(!finished)return failure(L"Installation is still running. Open Mizin Playout after it finishes.",7);
     if(exit!=0&&exit!=3010)return failure(L"The update installer could not finish. Your show files and preferences were kept.",8);
     if(!args.contains(L"--no-restart")){
+        // The installer is hidden; the operator's restarted application must
+        // receive its own visible startup state rather than inherit SW_HIDE.
+        startup.wShowWindow=SW_SHOWNORMAL;
         std::wstring launch=quote(restart)+L" --state-dir "+quote(args[L"--state-dir"]);if(args.contains(L"--portable"))launch+=L" --portable";
         if(!args[L"--show"].empty())launch+=L" --show "+quote(args[L"--show"]);if(!args[L"--lang"].empty())launch+=L" --lang "+quote(args[L"--lang"]);
         PROCESS_INFORMATION app{};if(!CreateProcessW(restart.c_str(),launch.data(),nullptr,nullptr,FALSE,0,nullptr,target.c_str(),&startup,&app))return failure(L"Update installed. Open Mizin Playout from its shortcut.",9);CloseHandle(app.hThread);CloseHandle(app.hProcess);

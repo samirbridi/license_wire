@@ -44,6 +44,7 @@ try{
  Start-Sleep -Seconds 2
  $restarted=@(Get-Process -Name MizinPlayout -ErrorAction SilentlyContinue | Where-Object {$_.Id -notin $before -and $_.Path -eq $exe})
  Check 'helper restarts exactly the isolated updated app' ($restarted.Count -eq 1)
+ Check 'restarted operator window is visible' ($restarted[0].MainWindowHandle -ne [IntPtr]::Zero)
  foreach($p in $restarted){$null=$p.CloseMainWindow();if(-not $p.WaitForExit(15000)){throw 'Restarted QA app did not close normally'}}
  Check 'profile survives actual restart' ((Get-FileHash -LiteralPath $sentinel).Hash -eq $sentinelHash)
  $ok=$true
