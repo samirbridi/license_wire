@@ -1,17 +1,22 @@
 {
-  "display": "v0.25.0 (build 0056)",
-  "previous": "v0.24.0 (build 0055)",
-  "source_commit": "101f363300e20d6975412b944c36d6ec790e3fe7",
+  "display": "v0.26.0 (build 0057)",
+  "previous": "v0.25.0 (build 0056)",
+  "source_commit": "d842bdce2710553f3e13352b03b97e18de11cd13",
   "commits": [
     {
-      "sha": "cb61e1f85b5be68b687e072bebeb20e7af89e7e9",
-      "subject": "improve: registra publicacao do build 0055 com principal mais reserva",
+      "sha": "998cc06cba5c8cd9cdb1c4ea30ffd3500811f1d9",
+      "subject": "improve: registra build 0056 nao publicado por instabilidade do VB-Cable exclusivo no host",
       "kind": "improve"
     },
     {
-      "sha": "101f363300e20d6975412b944c36d6ec790e3fe7",
-      "subject": "feat: adiciona disparo sincronizado entre varios PCs e area por saida para telao dividido",
+      "sha": "1df2dc36b9765d49373dd4eb755e961e694d2aba",
+      "subject": "feat: adiciona estacao de controle remoto no Mizin Link com operadores, PIN e permissoes",
       "kind": "feat"
+    },
+    {
+      "sha": "d842bdce2710553f3e13352b03b97e18de11cd13",
+      "subject": "improve: teste do VB-Cable exclusivo tenta de novo com buffer de 10 ms e registra os dois picos",
+      "kind": "improve"
     }
   ],
   "date": "2026-10-22",

@@ -1,15 +1,15 @@
 {
-  "version": "v0.24.0 (build 0055)",
+  "version": "v0.26.0 (build 0057)",
   "artifacts": {
     "setup": {
-      "url": "https://playoutmizin.pages.dev/updates/releases/MizinPlayout-0.24.0-build0055-windows-x64-preview/MizinPlayout-0.24.0-build0055-windows-x64-preview-setup.exe",
-      "bytes": 54664640,
-      "sha256": "48c03c97fb1204c8e1d53a813b2cffbbece3d421eb023a37d0f9c7c68b35c98c"
+      "url": "https://playoutmizin.pages.dev/updates/releases/MizinPlayout-0.26.0-build0057-windows-x64-preview/MizinPlayout-0.26.0-build0057-windows-x64-preview-setup.exe",
+      "bytes": 54744719,
+      "sha256": "4781a40ed00bc1e84fb2009e298b365f94ba2e6e5403c39159e774f6eda1a6e1"
     },
     "portable": {
-      "url": "https://playoutmizin.pages.dev/updates/releases/MizinPlayout-0.24.0-build0055-windows-x64-preview/MizinPlayout-0.24.0-build0055-windows-x64-preview-portable.zip",
-      "bytes": 54634076,
-      "sha256": "d30c9ce978162ceed3554b737439d11e3267fa7c112ec78b0bd089e71b92ae7d"
+      "url": "https://playoutmizin.pages.dev/updates/releases/MizinPlayout-0.26.0-build0057-windows-x64-preview/MizinPlayout-0.26.0-build0057-windows-x64-preview-portable.zip",
+      "bytes": 54709935,
+      "sha256": "cc76cbc8db91dd6630dcbdbc51f250d9da3f64496d41b010d7eca7ad9122a361"
     }
   }
 }

@@ -1,5 +1,20 @@
 # CHANGELOG — Mizin Playout
 
+## v0.26.0 (build 0057) - 2026-10-22
+
+### 💥 Breaking Changes
+- None.
+
+### ✨ Features
+- feat: adiciona estacao de controle remoto no Mizin Link com operadores, PIN e permissoes (1df2dc36b9765d49373dd4eb755e961e694d2aba)
+
+### 🐛 Fixes
+- None.
+
+### ⚡ Improvements
+- improve: registra build 0056 nao publicado por instabilidade do VB-Cable exclusivo no host (998cc06cba5c8cd9cdb1c4ea30ffd3500811f1d9)
+- improve: teste do VB-Cable exclusivo tenta de novo com buffer de 10 ms e registra os dois picos (d842bdce2710553f3e13352b03b97e18de11cd13)
+
 ## v0.25.0 (build 0056) - 2026-10-22
 
 ### 💥 Breaking Changes

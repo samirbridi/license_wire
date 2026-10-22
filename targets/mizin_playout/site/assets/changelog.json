@@ -1,5 +1,25 @@
 [
   {
+    "version": "v0.26.0 (build 0057)",
+    "date": "2026-10-22",
+    "notes": {
+      "en": [
+        "Mizin Link phase 3 — several PCs playing together: with \"Synchronized takes\" on the master, every CUT and FADE is prepared on all machines and fires at the same instant; followers hold sync by nudging playback speed instead of jumping.",
+        "New AREA per display output: halves, thirds, quarters or a custom area, to split one video across screens or PCs of an LED wall.",
+        "Mizin Link phase 4 — remote control: a control station signs in with the Link code plus an operator name and PIN and gets a Remote desk with every Program, what is on air and its playlist (CUT, FADE, BLACK, PAUSE).",
+        "Permissions on the master: operators command all or only some Programs, viewers only watch. The playout machine validates and logs every command; the PIN never travels and changing it signs the station out.",
+        "Remote takes respect Synchronized takes and are mirrored by backups like local ones."
+      ],
+      "pt-BR": [
+        "Mizin Link fase 3 — vários PCs tocando juntos: com \"Disparo sincronizado\" no mestre, cada CUT e FADE é preparado em todas as máquinas e dispara no mesmo instante; os seguidores mantêm a sincronia ajustando a velocidade em vez de pular.",
+        "Nova ÁREA por saída de tela: metades, terços, quartos ou área personalizada, para dividir um vídeo entre telas ou PCs de um telão de LED.",
+        "Mizin Link fase 4 — controle remoto: uma estação de controle entra com o código do Link mais nome de operador e PIN e ganha uma Mesa remota com cada Program, o que está no ar e a playlist (CUT, FADE, PRETO, PAUSA).",
+        "Permissões no mestre: operadores comandam todos ou só alguns Programs, observadores só assistem. A máquina de playout confere e registra cada comando; o PIN nunca trafega e trocá-lo desconecta a estação.",
+        "Disparos remotos respeitam o Disparo sincronizado e são espelhados pelas reservas como os locais."
+      ]
+    }
+  },
+  {
     "version": "v0.24.0 (build 0055)",
     "date": "2026-10-22",
     "notes": {
