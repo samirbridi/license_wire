@@ -1,0 +1,62 @@
+﻿{
+    "result":  "PASS",
+    "checks":  [
+                   {
+                       "name":  "release files are mapped",
+                       "pass":  true,
+                       "detail":  "MizinPlayout-0.22.0-build0053-windows-x64-preview-setup.exe | MizinPlayout-0.22.0-build0053-windows-x64-preview-portable.zip"
+                   },
+                   {
+                       "name":  "clean machine has no machine-wide VC++ runtime",
+                       "pass":  true,
+                       "detail":  "none"
+                   },
+                   {
+                       "name":  "setup exits successfully",
+                       "pass":  true,
+                       "detail":  "exit 0"
+                   },
+                   {
+                       "name":  "setup installed the app",
+                       "pass":  true,
+                       "detail":  "C:\\Users\\WDAGUtilityAccount\\AppData\\Local\\Programs\\Mizin Playout Preview"
+                   },
+                   {
+                       "name":  "app-local Microsoft runtime installed beside the app",
+                       "pass":  true,
+                       "detail":  ""
+                   },
+                   {
+                       "name":  "start menu shortcut created",
+                       "pass":  true,
+                       "detail":  ""
+                   },
+                   {
+                       "name":  "installed app starts on a clean machine",
+                       "pass":  true,
+                       "detail":  "exit 0"
+                   },
+                   {
+                       "name":  "installed app decodes the fixture media (CPU)",
+                       "pass":  true,
+                       "detail":  "exit 0"
+                   },
+                   {
+                       "name":  "installed app opens its window",
+                       "pass":  true,
+                       "detail":  "Mizin Playout — v0.22.0 (build 0053)"
+                   },
+                   {
+                       "name":  "uninstaller removes the app",
+                       "pass":  true,
+                       "detail":  "exit 0"
+                   },
+                   {
+                       "name":  "portable app starts on a clean machine",
+                       "pass":  true,
+                       "detail":  "exit 0"
+                   }
+               ],
+    "windows":  "Microsoft Windows 10 Enterprise 10.0.19041",
+    "scope":  "Windows Sandbox: clean Windows, no VC++ runtime/Qt/NDI preinstalled, software rendering. Not a physical display/GPU/NDI qualification."
+}

@@ -1,0 +1,20 @@
+{
+  "result": "PASS",
+  "version": "v0.22.0 (build 0053)",
+  "feed": "https://playoutmizin.pages.dev/updates/preview/latest.json",
+  "artifacts": {
+    "setup": {
+      "file": "releases/MizinPlayout-0.22.0-build0053-windows-x64-preview/MizinPlayout-0.22.0-build0053-windows-x64-preview-setup.exe",
+      "size": 54562880,
+      "sha256": "1a805bfcd65ef4852a0ce7e9bb915c49341fda759b2e3992d7db7b1a67b106f6"
+    },
+    "portable": {
+      "file": "releases/MizinPlayout-0.22.0-build0053-windows-x64-preview/MizinPlayout-0.22.0-build0053-windows-x64-preview-portable.zip",
+      "size": 54527662,
+      "sha256": "0c9523137f7a5939e239051f9461e45c32f1939cfd3f33d5363428c7b6e6f29b"
+    }
+  },
+  "sources": "https://playoutmizin.pages.dev/updates/sources/qt-6.10.2-ffmpeg-7.1.2/index.json",
+  "manifest_sha256": "739af5c41ddd79a1c5f058c5e5c52207302f5a0787ec12eebf0826d3ddc34bb0",
+  "scope": "Live readback through playoutmizin.pages.dev/updates (Pages Function over the playoutmizin-updates R2 bucket): artifacts and corresponding source archives before the signed latest pointer."
+}

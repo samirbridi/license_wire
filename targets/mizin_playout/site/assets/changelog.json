@@ -1,5 +1,19 @@
 [
   {
+    "version": "v0.22.0 (build 0053)",
+    "date": "2026-10-22",
+    "notes": {
+      "en": [
+        "Export show package (top bar): one folder with the show and all its media, with relative paths, ready to copy to another computer, drive or USB stick. Checks free space, shows progress and verifies every copy.",
+        "Shows whose media lives inside their own folder keep relative paths when saved, so the folder can be moved freely."
+      ],
+      "pt-BR": [
+        "Exportar pacote do show (no topo): uma pasta com o show e todas as mídias, com caminhos relativos, pronta para copiar para outro computador, HD ou pendrive. Confere o espaço livre, mostra o progresso e verifica cada cópia.",
+        "Shows com as mídias dentro da própria pasta mantêm os caminhos relativos ao salvar, então a pasta pode ser movida à vontade."
+      ]
+    }
+  },
+  {
     "version": "v0.21.0 (build 0052)",
     "date": "2026-10-22",
     "notes": {

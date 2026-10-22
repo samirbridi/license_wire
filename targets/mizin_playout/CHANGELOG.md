@@ -1,5 +1,19 @@
 # CHANGELOG — Mizin Playout
 
+## v0.22.0 (build 0053) - 2026-10-22
+
+### 💥 Breaking Changes
+- None.
+
+### ✨ Features
+- feat: exporta pacote portatil do show com midias e caminhos relativos (21911d4896362521460da10381e5a11f365c550c)
+
+### 🐛 Fixes
+- None.
+
+### ⚡ Improvements
+- improve: registra publicacao do build 0052 aprovado em Windows limpo (2e1532c375072915d26a5dddbd9de624922a5963)
+
 ## v0.21.0 (build 0052) - 2026-10-22
 
 ### 💥 Breaking Changes
