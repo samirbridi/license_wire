@@ -14,6 +14,7 @@
 #include "web_monitor.hpp"
 #include "local_audio.hpp"
 #include "aes67.hpp"
+#include "project_rate.hpp"
 #include "link.hpp"
 #include <QtWidgets>
 #include <QtConcurrent>
@@ -137,6 +138,14 @@ class MainWindow final : public QMainWindow {
     PlaylistController controllerA_{&programA_,this};
     NetworkBus networkA_{&programA_,this};
     QList<AudioPanel*> audioPanels_;
+    // Preview listening (PFL): one panel on the Audio page plus a toggle on every Preview deck.
+    AudioPanel* previewAudio_=nullptr;
+    QList<QPushButton*> previewListen_;
+    QList<QLabel*> previewMuted_;
+    void setPreviewListening(bool on){
+        if(previewAudio_&&previewAudio_->localBox()->isChecked()!=on){previewAudio_->localBox()->setChecked(on);return;}
+        for(auto* b:previewListen_){const QSignalBlocker block(b);b->setChecked(on);}for(auto* l:previewMuted_)l->setVisible(!on);
+    }
     QList<DigitalPanel*> digitalPanels_;
     QTabWidget* outputsTabs_=nullptr;
     QTabWidget* settingsTabs_=nullptr;
@@ -269,7 +278,7 @@ private:
         const int index=style=="preview"?0:style=="program"?1:2;
         auto* panel=new QFrame;panel->setObjectName("deck");panel->setProperty("channel",style);auto* l=new QVBoxLayout(panel);l->setContentsMargins(10,10,10,10);l->setSpacing(7);
         auto* header=new QHBoxLayout;auto* heading=label(title,"deckTitle");heading->setProperty("channel",style);header->addWidget(heading);header->addStretch();
-        if(dashboard&&index==0)header->addWidget(label("Muted","deckState"));
+        if(dashboard&&index==0){auto* muted=label("Muted","deckState");previewMuted_.append(muted);muted->setVisible(!preview_.localAudioEnabled());header->addWidget(muted);}
         auto* state=new QLabel;state->setObjectName("deckState");header->addWidget(state);if(dashboard)deckState_[index]=state;else state->setText(tx("Muted"));
         if(index<2)header->addWidget(detachButton(index==0?PreviewDeck:1));if(index==1)programDeck_=panel;l->addLayout(header);
         l->addWidget(index<2?deckSlot(index==0?PreviewDeck:1,monitor(channel,sample)):monitor(channel,sample),1);*name=new ElidedLabel;(*name)->setObjectName("mediaTitle");(*name)->setSizePolicy(QSizePolicy::Ignored,QSizePolicy::Fixed);l->addWidget(*name);
@@ -280,6 +289,8 @@ private:
         auto* play=iconButton("Play / pause",DeskIcon::Play);row->addWidget(play);connect(play,&QPushButton::clicked,this,[channel]{channel->togglePause();});if(dashboard)deckPlay_[index]=play;
         auto* stop=iconButton(index==0?"Clear Preview":"Black selected channel",DeskIcon::Stop);row->addWidget(stop);connect(stop,&QPushButton::clicked,this,[this,channel,index]{if(index==0){readiness_.clear();channel->black();cuedRow_=-1;}else if(index==1)controllerA_.stop();else targetController()->stop();});row->addStretch();
         if(index!=0){auto* audio=iconButton("Audio routing",DeskIcon::Audio);row->addWidget(audio);connect(audio,&QPushButton::clicked,this,[this]{selectPage(4);});}
+        else{auto* listen=iconButton("Listen to Preview",DeskIcon::Audio);listen->setObjectName("previewListen");listen->setCheckable(true);listen->setChecked(preview_.localAudioEnabled());row->addWidget(listen);previewListen_.append(listen);
+            connect(listen,&QPushButton::toggled,this,[this](bool on){setPreviewListening(on);});}
         l->addLayout(row);return panel;
     }
     QWidget* mainPage(){
@@ -432,7 +443,11 @@ private:
     QWidget* outputsPage(){
         outputsTabs_=new QTabWidget;outputsTabs_->addTab(scrollPage(physicalOutputsPage()),tx("Displays"));auto* digital=new QWidget;auto* l=new QVBoxLayout(digital);l->setContentsMargins(16,16,16,16);l->setSpacing(16);l->addWidget(label("Digital outputs","heading"));auto* panels=new QWidget;digitalLayout_=new QVBoxLayout(panels);digitalLayout_->setContentsMargins(0,0,0,0);l->addWidget(panels);auto* attribution=new QLabel("<a href=\"https://ndi.video/\">NDI® · ndi.video</a><br>NDI® is a registered trademark of Vizrt NDI AB.");attribution->setOpenExternalLinks(true);l->addWidget(attribution);l->addWidget(label("Network output starts only when requested. No remote control service is started.","muted"));l->addStretch();outputsTabs_->addTab(scrollPage(digital),tx("NDI / OMT"));outputsTabs_->addTab(scrollPage(webMonitorPage()),tx("Web monitor"));outputsTabs_->addTab(scrollPage(linkPage()),tx("Mizin Link"));return outputsTabs_;
     }
-    QWidget* audioPage(){auto* page=new QWidget;auto* l=new QVBoxLayout(page);l->setContentsMargins(0,0,0,0);l->setSpacing(16);l->addWidget(label("Audio routing","heading"));l->addWidget(localEnginePanel());auto* panels=new QWidget;audioLayout_=new QVBoxLayout(panels);audioLayout_->setContentsMargins(0,0,0,0);l->addWidget(panels);appendProgramPanels(0);l->addWidget(label("Preview stays muted. Mirrored video outputs do not duplicate local audio.","muted"));l->addStretch();return page;}
+    QWidget* audioPage(){auto* page=new QWidget;auto* l=new QVBoxLayout(page);l->setContentsMargins(0,0,0,0);l->setSpacing(16);l->addWidget(label("Audio routing","heading"));l->addWidget(localEnginePanel());
+        if(!demo_&&!settings_->contains("audioPreview/local"))settings_->setValue("audioPreview/local",false);
+        previewAudio_=new AudioPanel(&preview_,settings_.get(),"Preview",[this](const QString& key){return tx(key);},demo_);previewAudio_->setProperty("preview",true);previewAudio_->retranslate();l->addWidget(previewAudio_);
+        connect(previewAudio_->localBox(),&QCheckBox::toggled,this,[this](bool on){setPreviewListening(on);});setPreviewListening(preview_.localAudioEnabled());
+        auto* panels=new QWidget;audioLayout_=new QVBoxLayout(panels);audioLayout_->setContentsMargins(0,0,0,0);l->addWidget(panels);appendProgramPanels(0);l->addWidget(label("Mirrored video outputs do not duplicate local audio.","muted"));l->addStretch();return page;}
     QWidget* settingsPage(){settingsTabs_=new QTabWidget;settingsTabs_->addTab(playbackSettingsPage(),tx("Playback"));diagnosticsPanel_=new DiagnosticsPanel([this](const QString& key){return tx(key);},[this]{return diagnosticsReport();},demo_);settingsTabs_->addTab(diagnosticsPanel_,tx("Engine diagnostics"));updatePanel_=new UpdatePanel(updates_.get(),[this](const QString& key){return tx(key);},[this]{installUpdate();});settingsTabs_->addTab(updatePanel_,tx("Updates"));return settingsTabs_;}
     bool updatePlaybackBusy()const{
         for(int i=0;i<programCount_;++i){if(channelAt(i)->playing()||channelAt(i)->pending())return true;for(auto protocol:{NetworkProtocol::Ndi,NetworkProtocol::Omt})if(busAt(i)->sender(protocol).running())return true;}
@@ -448,7 +463,11 @@ private:
     QWidget* playbackSettingsPage(){auto* page=new QWidget;auto* l=new QVBoxLayout(page);l->setContentsMargins(12,12,12,12);l->setSpacing(18);l->addWidget(label("Playback preferences","heading"));
         auto* p=new QFrame;p->setObjectName("panel");auto* pl=new QVBoxLayout(p);pl->setContentsMargins(24,24,24,24);pl->setSpacing(14);pl->addWidget(label("DECODING","eyebrow"));pl->addWidget(label("Native FFmpeg backend","mediaTitle"));auto* decode=new QComboBox;decodingBox_=decode;decode->addItem(tx("Automatic hardware selection"),"auto");decode->addItem(tx("CPU decoding"),"cpu");decode->setCurrentIndex(settings_->value("decode","auto").toString()=="cpu"?1:0);pl->addWidget(decode);connect(decode,&QComboBox::currentIndexChanged,this,[this,decode]{if(!demo_)settings_->setValue("decode",decode->currentData());footer_->setText(tx("Restart the application to apply decoding preferences."));});
         pl->addWidget(label("Hardware support depends on codec, profile, driver and GPU.","muted"));l->addWidget(p);
-        auto* remote=new QFrame;remote->setObjectName("panel");auto* rl=new QVBoxLayout(remote);rl->setContentsMargins(24,24,24,24);rl->addWidget(label("REMOTE CONTROL","eyebrow"));rl->addWidget(label("Planned: authenticated operator and view-only monitor.","muted"));rl->addWidget(label("No network control service is started in this prototype.","muted"));l->addWidget(remote);
+        auto* rate=new QFrame;rate->setObjectName("panel");auto* rl=new QVBoxLayout(rate);rl->setContentsMargins(24,24,24,24);rl->setSpacing(10);rl->addWidget(label("PROJECT FRAME RATE","eyebrow"));
+        auto* fps=new QComboBox;fps->setObjectName("projectFps");fps->addItem(tx("Automatic (follow each video)"),0.0);for(const auto& [text,value]:{std::pair{"23.976",24000.0/1001},{"24",24.0},{"25",25.0},{"29.97",30000.0/1001},{"30",30.0},{"50",50.0},{"59.94",60000.0/1001},{"60",60.0}})fps->addItem(QString(text)+" fps",value);
+        const double saved=settings_->value("projectFps",0.0).toDouble();int row=0;for(int i=0;i<fps->count();++i)if(std::abs(fps->itemData(i).toDouble()-saved)<0.001)row=i;fps->setCurrentIndex(row);projectFrameRate()=fps->currentData().toDouble();rl->addWidget(fps);
+        connect(fps,&QComboBox::currentIndexChanged,this,[this,fps]{projectFrameRate()=fps->currentData().toDouble();if(!demo_)settings_->setValue("projectFps",fps->currentData().toDouble());});
+        auto* rateHint=label("NDI, OMT and the web monitor deliver a constant cadence at this rate, repeating or skipping frames of videos with another rate (the web monitor uses half of 50/59.94/60). Audio/video sync never depends on it. Display outputs follow the screen refresh.","muted");rateHint->setWordWrap(true);rl->addWidget(rateHint);l->addWidget(rate);
         l->addWidget(label("Prototype: trims, fades, sequential playback and independent Programs.","muted"));l->addWidget(label("Transitions currently use a shared CPU compositor. GPU composition, scheduling and remote access are future milestones.","muted"));l->addStretch();return page;}
     NativeChannel* channelAt(int index)const{return index==0?const_cast<NativeChannel*>(&programA_):&extraPrograms_.at(size_t(index-1))->channel;}
     PlaylistController* controllerAt(int index){return index==0?&controllerA_:&extraPrograms_.at(size_t(index-1))->controller;}
@@ -588,6 +607,7 @@ private:
         for(auto* action:findChildren<QAction*>()){const auto key=action->property("textKey").toString();if(!key.isEmpty())action->setText(tx(key));}
         if(settingsTabs_){settingsTabs_->setTabText(0,tx("Playback"));settingsTabs_->setTabText(1,tx("Engine diagnostics"));settingsTabs_->setTabText(2,tx("Updates"));}if(updatePanel_)updatePanel_->retranslate();if(updateBannerText_)updateBannerText_->setText(tx("Update available")+" · "+updates_->release().version);if(outputsTabs_){outputsTabs_->setTabText(0,tx("Displays"));outputsTabs_->setTabText(1,tx("NDI / OMT"));outputsTabs_->setTabText(2,tx("Web monitor"));outputsTabs_->setTabText(3,tx("Mizin Link"));}
         for(auto* widget:findChildren<QWidget*>()){const auto key=widget->property("tipKey").toString();if(!key.isEmpty()){widget->setToolTip(tx(key));widget->setAccessibleName(tx(key));}}
+        if(previewAudio_)previewAudio_->retranslate();
         for(int i=0;i<audioPanels_.size();++i){audioPanels_[i]->setProperty("programName",programDefinitions_[i].name);audioPanels_[i]->retranslate();digitalPanels_[i]->setProperty("programName",programDefinitions_[i].name);digitalPanels_[i]->retranslate();}
         for(const auto& binding:bindings_){if(auto* l=qobject_cast<QLabel*>(binding.widget.data()))l->setText(tx(binding.key));else if(auto* b=qobject_cast<QPushButton*>(binding.widget.data()))b->setText(tx(binding.key));else if(auto* c=qobject_cast<QCheckBox*>(binding.widget.data()))c->setText(tx(binding.key));else if(auto* e=qobject_cast<QLineEdit*>(binding.widget.data()))e->setPlaceholderText(tx(binding.key));}
         for(auto* mode:{manualMode_,sequentialMode_}){mode->ensurePolished();QFont font=mode->font();font.setWeight(QFont::DemiBold);mode->setMinimumWidth(qMax(80,QFontMetrics(font).horizontalAdvance(mode->text())+30));}

@@ -9,6 +9,7 @@
 #include <cmath>
 
 NativeChannel::NativeChannel(bool preview, QObject* parent) : QObject(parent), preview_(preview) {
+    localAudio_=!preview_; // Preview listening (PFL) starts off
     clock_.start();
     timeout_.setSingleShot(true);
     connect(&timeout_,&QTimer::timeout,this,[this]{reject(incoming_,"Media preparation timed out");});
@@ -210,7 +211,7 @@ void NativeChannel::setAudioDevice(const QByteArray& id){
 }
 void NativeChannel::mixLocal(qint64 first,int frames,float* out,int* missing)const{audioMix_.mixInto(first,frames,engineGain_.load(),engineSilent_.load(),out,missing);}
 void NativeChannel::setLocalEngine(bool owned){localEngine_=owned;applyLocalAudio();emit changed();}
-void NativeChannel::applyLocalAudio(){engineGain_=volume_;engineSilent_=preview_ || muted_ || !localAudio_;for(int i=0;i<2;++i){auto& d=decks_[i];d.audio->setVolume(qBound(0.0f,d.gain*volume_,1.0f));d.audio->setMuted(localEngine_ || preview_ || muted_ || !localAudio_ || !deviceAvailable_ || ended_ || (i!=active_ && i!=outgoing_));}}
+void NativeChannel::applyLocalAudio(){engineGain_=volume_;engineSilent_=preview_ || muted_ || !localAudio_;for(int i=0;i<2;++i){auto& d=decks_[i];d.audio->setVolume(qBound(0.0f,d.gain*volume_,1.0f));d.audio->setMuted(localEngine_ || muted_ || !localAudio_ || !deviceAvailable_ || ended_ || (i!=active_ && i!=outgoing_));}}
 void NativeChannel::syncAudioTimeline(int deck,qint64 mediaUs){
     const auto ringGuard=audioMix_.guard();auto& d=decks_[deck];d.offsetUs=programTimeUs()-mediaUs;audioMix_.clear(deck);auto& e=audioMix_.envelope[deck];e={};e.startUs=d.offsetUs+d.cue.in*1000;e.fadeInUs=blendMs_*1000;e.fadeBlackIn=blendType_==Transition::FadeBlack;e.cutoffUs=d.offsetUs+d.cue.end(d.player->duration())*1000;
 }

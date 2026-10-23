@@ -46,6 +46,8 @@ The web monitor never starts by itself at launch. **New code** replaces the code
 
 **Quality**: **Automatic** follows each Program's source (1080p stays 1080p, 4K is reduced to 1080p, smaller sources keep their size); **720p**, **1080p** and **4K** are fixed. Changes apply live. The graphics card's encoder (NVIDIA, Intel, AMD) is used when available; 4K needs it and a wired network (about 25 Mbit/s per watched Program).
 
+On the page, each viewer can also pick a **quality** next to the Sound button (App default, Auto up to 1080p, 720p, 1080p or 4K); the choice is remembered in that browser and viewers with the same choice share one encoder.
+
 ## Low-latency audio output
 
 In **Audio → Low-latency output**, choose the engine and device and click **Start low-latency output**. **WASAPI exclusive** talks directly to the driver (lowest delay; the device is reserved for Mizin). **WASAPI shared low-latency** lets other apps keep using the device. **ASIO** (Dante Virtual Soundcard, Behringer UMC, Blackmagic) is only available in the Steinberg-licensed build. In **Buffer**, "Device minimum" is the lowest delay; raise it if you hear clicks.
@@ -59,6 +61,14 @@ In **Audio → Low-latency output** choose the engine **AES67 network (Dante-com
 The stream is announced on the network (SAP), so it appears in **Dante Controller** as an AES67 flow and in other AES67 receivers. On Dante devices, enable **AES67 mode** in Dante Controller. The clock is PTPv2: the playout follows the network grandmaster (a Dante device in AES67 mode takes that role) and becomes the grandmaster itself when there is none. The status line shows the PTP state. Use a wired network; on managed switches allow multicast/IGMP and prioritise PTP and audio traffic.
 
 Native Dante (no virtual soundcard, the playout appearing as a Dante device) waits for Audinate's licence.
+
+### Listening to the Preview (PFL)
+
+Turn on **Listen to Preview** (headphones button on the PREVIEW deck, or the PREVIEW panel on the **Audio** page) and choose its device — usually headphones or a monitor speaker — to hear a cue before taking it. The Preview sound never goes to the Programs, NDI/OMT, AES67 or the web monitor.
+
+### Project frame rate
+
+In **Settings → Playback**, **Project frame rate** works like a composition rate: with a fixed rate (23.976, 24, 25, 29.97, 30, 50, 59.94 or 60), NDI, OMT and the web monitor deliver a constant cadence, repeating or skipping frames of videos with another rate (the web monitor uses half of 50/59.94/60). **Automatic** follows each video. Audio/video sync never depends on it — each Program keeps its own clock; display outputs follow the screen refresh. A fixed rate also lowers the work per frame for digital outputs.
 
 ## Autosave, recovery and missing media
 

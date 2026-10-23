@@ -46,6 +46,8 @@ O monitor web nunca liga sozinho ao abrir o aplicativo. **Novo código** troca o
 
 **Qualidade**: **Automática** segue a origem de cada Program (1080p continua 1080p, 4K é reduzido para 1080p, origens menores mantêm o tamanho); **720p**, **1080p** e **4K** são fixas. A troca vale na hora. O codificador da placa de vídeo (NVIDIA, Intel, AMD) é usado quando disponível; o 4K precisa dele e de rede cabeada (cerca de 25 Mbit/s por Program assistido).
 
+Na página, cada pessoa também pode escolher a **qualidade** ao lado do botão Som (Padrão do app, Auto até 1080p, 720p, 1080p ou 4K); a escolha fica salva naquele navegador e quem escolhe a mesma qualidade compartilha um codificador.
+
 ## Saída de áudio de baixa latência
 
 Em **Áudio → Saída de baixa latência**, escolha o motor e o dispositivo e clique em **Iniciar saída de baixa latência**. **WASAPI exclusivo** fala direto com o driver (menor atraso; o dispositivo fica reservado para o Mizin). **WASAPI compartilhado de baixa latência** deixa outros aplicativos usarem o mesmo dispositivo. **ASIO** (Dante Virtual Soundcard, Behringer UMC, Blackmagic) só aparece na versão com a licença Steinberg. Em **Buffer**, "Mínimo do dispositivo" é o menor atraso; aumente se ouvir estalos.
@@ -59,6 +61,14 @@ Em **Áudio → Saída de baixa latência** escolha o motor **Rede AES67 (compat
 O fluxo é anunciado na rede (SAP), então aparece no **Dante Controller** como fluxo AES67 e em outros receptores AES67. Nos equipamentos Dante, ative o **modo AES67** pelo Dante Controller. O relógio é PTPv2: o playout segue o grandmaster da rede (um equipamento Dante em AES67 assume esse papel) e, se não houver nenhum, ele mesmo vira grandmaster. A linha de status mostra o estado do PTP. Use rede cabeada; em redes gerenciadas, libere multicast/IGMP e priorize o tráfego PTP e de áudio.
 
 O Dante nativo (sem placa virtual, com o playout aparecendo como equipamento Dante) aguarda a licença da Audinate.
+
+### Ouvir o Preview (PFL)
+
+Ligue **Ouvir o Preview** (botão de fone no deck PREVIEW ou o painel PREVIEW na página **Áudio**) e escolha o dispositivo — normalmente o fone ou uma caixa de retorno — para ouvir o item antes de disparar. O som do Preview nunca vai para os Programs, NDI/OMT, AES67 ou monitor web.
+
+### Frame rate do projeto
+
+Em **Configurações → Reprodução**, o **Frame rate do projeto** funciona como a taxa de uma composição: com uma taxa fixa (23,976, 24, 25, 29,97, 30, 50, 59,94 ou 60), NDI, OMT e o monitor web entregam uma cadência constante, repetindo ou pulando quadros de vídeos com outra taxa (o monitor web usa a metade de 50/59,94/60). **Automático** segue cada vídeo. A sincronia de áudio e vídeo nunca depende disso — cada Program tem seu próprio relógio; as saídas de tela seguem a atualização do monitor. Uma taxa fixa também reduz o trabalho por quadro das saídas digitais.
 
 ## Salvamento automático, recuperação e mídias ausentes
 

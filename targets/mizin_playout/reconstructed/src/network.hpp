@@ -1,5 +1,6 @@
 #pragma once
 #include "channel.hpp"
+#include "project_rate.hpp"
 #include <QImage>
 #include <QJsonObject>
 #include <atomic>
@@ -61,5 +62,6 @@ private:
     QString lastWarning_;
     QSize lastSize_{1280,720};
     qreal lastFps_=30;
+    qint64 lastTick_=-1;
     void frame(const QVideoFrame& frame);
 };

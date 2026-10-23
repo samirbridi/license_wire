@@ -1,4 +1,5 @@
 #include "web_monitor.hpp"
+#include "project_rate.hpp"
 #include "web_encoder.hpp"
 #include <rtc/rtc.hpp>
 #include <QApplication>
@@ -81,6 +82,18 @@ int runWebTests(const QString& directory,const QString& resultPath){
             server.setQuality(3);const int framesBefore=first.video;const bool uhd=sized(3840,2160)&&waitUntil([&]{return first.video>=framesBefore+10;},20000);const auto uhdStats=streamStats();
             record("quality_4k_encodes_2160p",uhd&&first.profile==66,{{"stats",uhdStats},{"frames",first.video-framesBefore},{"profile_idc",first.profile.load()}});
             server.setQuality(0);sized(1920,1080);
+            // A viewer can choose its own quality on the page: it gets a separate 720p encoder; the default viewers keep 1080p.
+            const auto own=http(manager,"POST",base+"/api/session?k="+code+"&program=1&quality=720");const auto ownSession=QJsonDocument::fromJson(own.body).object()["session"].toString();
+            const bool separate=waitUntil([&]{return server.encoders()==2;},3000);auto has=[&](int w){for(const auto& v:server.statistics()["streams"].toArray())if(v.toObject()["width"].toInt()==w)return true;return false;};
+            const bool sizes=waitUntil([&]{return has(1920)&&has(1280)&&server.encoders()==2;},5000);
+            record("viewer_quality_gets_its_own_encoder",own.status==200&&separate&&sizes,{{"encoders",server.encoders()}});
+            http(manager,"POST",base+"/api/close?k="+code+"&session="+ownSession);waitUntil([&]{return server.encoders()==1;},3000);
+            // Project frame rate: exact NDI/OMT ratios, half rate for fast projects, and a 25 fps project paces the stream.
+            int n=0,d=0;frameRateRatio(24000.0/1001,n,d);bool ratios=n==24000&&d==1001;frameRateRatio(25,n,d);ratios&=n==25000&&d==1000;frameRateRatio(60000.0/1001,n,d);ratios&=n==60000&&d==1001;
+            projectFrameRate()=50;const bool half=std::abs(webFrameRate()-25)<.01;projectFrameRate()=24000.0/1001;const bool film=std::abs(webFrameRate()-23.976)<.01;
+            projectFrameRate()=25;waitUntil([]{return false;},1500);const double e0=streamStats()["encoded_frames"].toDouble();waitUntil([]{return false;},3000);const double rate=(streamStats()["encoded_frames"].toDouble()-e0)/3;
+            record("project_frame_rate_paces_the_web_monitor",ratios&&half&&film&&rate>=21&&rate<=26.5&&streamStats()["fps_limit"].toInt()==25,{{"encoded_per_s",rate},{"fps_limit",streamStats()["fps_limit"].toInt()}});
+            projectFrameRate()=0;
         }
         channel.togglePause();waitUntil([&]{return !channel.playing();},3000);const int before=first.video;QThread::msleep(10);waitUntil([]{return false;},1600);
         record("paused_program_keeps_viewers_fed",first.video-before>=2,{{"frames_while_paused",first.video-before}});channel.togglePause();

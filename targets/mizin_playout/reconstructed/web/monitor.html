@@ -33,6 +33,7 @@ button:disabled{opacity:.45;cursor:default}
 .player .bar b{margin-right:auto}
 .player video{display:block;width:100%;aspect-ratio:16/9;background:#000}
 .state{font-size:11px;color:var(--muted)}
+select{background:#162434;color:var(--text);border:1px solid #2e465d;border-radius:4px;padding:5px 6px;font:inherit}
 .stats{font-size:11px;color:var(--muted);padding:6px 10px;font-family:Consolas,monospace}
 form{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
 input{background:#0a121b;color:var(--text);border:1px solid #2e465d;border-radius:4px;padding:7px 10px;font:inherit}
@@ -49,8 +50,8 @@ input{background:#0a121b;color:var(--text);border:1px solid #2e465d;border-radiu
 </main>
 <script>
 const pt=(navigator.language||"").toLowerCase().startsWith("pt");
-const T=pt?{code:"Código de acesso",enter:"Entrar",watch:"Assistir",stop:"Fechar",sound:"Som",mute:"Mudo",full:"Tela cheia",air:"NO AR",off:"Fora do ar",connecting:"Conectando…",live:"Ao vivo",failed:"Falhou — tente de novo",wrong:"Código errado ou trocado no aplicativo.",offline:"Aplicativo não responde.",viewers:n=>n+" assistindo",note:"Somente visualização: nada aqui controla o playout. O áudio começa mudo (exigência do navegador)."}
-                :{code:"Access code",enter:"Enter",watch:"Watch",stop:"Close",sound:"Sound",mute:"Mute",full:"Fullscreen",air:"ON AIR",off:"Off air",connecting:"Connecting…",live:"Live",failed:"Failed — try again",wrong:"Wrong code, or it was changed in the app.",offline:"App is not responding.",viewers:n=>n+" watching",note:"View only: nothing here controls playout. Audio starts muted (browser rule)."};
+const T=pt?{quality:"Qualidade",qApp:"Padrão do app",qAuto:"Auto (até 1080p)",code:"Código de acesso",enter:"Entrar",watch:"Assistir",stop:"Fechar",sound:"Som",mute:"Mudo",full:"Tela cheia",air:"NO AR",off:"Fora do ar",connecting:"Conectando…",live:"Ao vivo",failed:"Falhou — tente de novo",wrong:"Código errado ou trocado no aplicativo.",offline:"Aplicativo não responde.",viewers:n=>n+" assistindo",note:"Somente visualização: nada aqui controla o playout. O áudio começa mudo (exigência do navegador)."}
+                :{quality:"Quality",qApp:"App default",qAuto:"Auto (up to 1080p)",code:"Access code",enter:"Enter",watch:"Watch",stop:"Close",sound:"Sound",mute:"Mute",full:"Fullscreen",air:"ON AIR",off:"Off air",connecting:"Connecting…",live:"Live",failed:"Failed — try again",wrong:"Wrong code, or it was changed in the app.",offline:"App is not responding.",viewers:n=>n+" watching",note:"View only: nothing here controls playout. Audio starts muted (browser rule)."};
 const params=new URLSearchParams(location.search);const key=params.get("k")||"";
 const $=id=>document.getElementById(id);const players=new Map();let programs=[],lastList="";
 $("note").textContent=T.note;$("codeLabel").textContent=T.code;$("enter").textContent=T.enter;
@@ -74,14 +75,18 @@ function waitGathering(pc){return new Promise(resolve=>{if(pc.iceGatheringState=
 async function open(p){
   const root=document.createElement("section");root.className="player";const bar=document.createElement("div");bar.className="bar";const title=document.createElement("b");title.textContent=p.name;
   const state=document.createElement("span");state.className="state";state.textContent=T.connecting;const sound=document.createElement("button");sound.textContent=T.sound;
-  const full=document.createElement("button");full.textContent=T.full;const close=document.createElement("button");close.textContent=T.stop;bar.append(title,state,sound,full,close);
+  const full=document.createElement("button");full.textContent=T.full;const close=document.createElement("button");close.textContent=T.stop;
+  // Each viewer picks a quality (remembered in this browser); viewers with the same choice share one encoder.
+  const quality=document.createElement("select");quality.title=T.quality;for(const [v,l] of [["",T.qApp],["auto",T.qAuto],["720","720p"],["1080","1080p"],["2160","4K"]]){const o=document.createElement("option");o.value=v;o.textContent=l;quality.append(o);}
+  let chosen="";try{chosen=localStorage.getItem("mizinQuality")||"";}catch(_){}quality.value=chosen;quality.onchange=()=>{try{localStorage.setItem("mizinQuality",quality.value);}catch(_){}stop(p.id);open(p);};
+  bar.append(title,state,quality,sound,full,close);
   const video=document.createElement("video");video.autoplay=true;video.muted=true;video.playsInline=true;const info=document.createElement("div");info.className="stats";root.append(bar,video,info);$("players").append(root);
   const player={root,title,pc:null,session:null,timer:0};players.set(p.id,player);render();
   sound.onclick=()=>{video.muted=!video.muted;sound.textContent=video.muted?T.sound:T.mute;video.play();};
   full.onclick=()=>(video.requestFullscreen||video.webkitEnterFullscreen||(()=>{})).call(video);
   close.onclick=()=>stop(p.id);
   try{
-    const r=await api("/api/session?program="+p.id,{method:"POST"});if(!r.ok)throw new Error(r.status);const offer=await r.json();player.session=offer.session;
+    const r=await api("/api/session?program="+p.id+(quality.value?"&quality="+quality.value:""),{method:"POST"});if(!r.ok)throw new Error(r.status);const offer=await r.json();player.session=offer.session;
     const pc=new RTCPeerConnection({iceServers:[]});player.pc=pc;
     pc.ontrack=e=>{try{e.receiver.playoutDelayHint=0;e.receiver.jitterBufferTarget=0;}catch(_){}const stream=e.streams[0]||new MediaStream([e.track]);if(video.srcObject!==stream){if(video.srcObject&&!e.streams[0])video.srcObject.addTrack(e.track);else video.srcObject=stream;}};
     pc.onconnectionstatechange=()=>{state.textContent=pc.connectionState==="connected"?T.live:pc.connectionState==="failed"?T.failed:T.connecting;};

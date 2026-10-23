@@ -60,7 +60,8 @@ private:
     void read(QTcpSocket* socket);
     void handle(QTcpSocket* socket,const Request& request);
     void respond(QTcpSocket* socket,int status,const QByteArray& type,const QByteArray& body);
-    void createSession(QTcpSocket* socket,int programId);
+    // Streams are keyed by Program and quality (programId*10 + quality; 9 = the app's default, which follows setQuality live).
+    void createSession(QTcpSocket* socket,int programId,const QString& quality);
     void closeSession(const QString& session);
     void closeAll();
 };

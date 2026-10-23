@@ -51,7 +51,7 @@ void NetworkSender::work(){
             else{OMTMediaFrame a={};a.Type=OMTFrameType_Audio;a.Codec=OMTCodec_FPA1;a.Timestamp=audioPacket.timestampUs*10;a.SampleRate=48000;a.Channels=2;a.SamplesPerChannel=audioPacket.frames();a.Data=planar.data();a.DataLength=int(planar.size());impl_->omt->send(impl_->omtSender,&a);}++audios_;
         }
         if(sendVideo){
-            int n=qRound(fps*1000),d=1000;if(qAbs(fps-29.97)<.01){n=30000;d=1001;}else if(qAbs(fps-59.94)<.01){n=60000;d=1001;}
+            int n=30000,d=1000;frameRateRatio(fps,n,d);
             if(impl_->ndi){NDIlib_video_frame_v2_t v={};v.xres=video.width();v.yres=video.height();v.FourCC=NDIlib_FourCC_video_type_BGRA;v.frame_rate_N=n;v.frame_rate_D=d;v.picture_aspect_ratio=float(video.width())/video.height();v.frame_format_type=NDIlib_frame_format_type_progressive;v.timecode=NDIlib_send_timecode_synthesize;const auto metadata=QByteArray("<mizin_frame sequence=\"")+QByteArray::number(videos_.load()+1)+"\" program_time_us=\""+QByteArray::number(pts)+"\"/>";v.p_metadata=metadata.constData();v.p_data=const_cast<uint8_t*>(video.constBits());v.line_stride_in_bytes=video.bytesPerLine();impl_->ndi->send_send_video_v2(impl_->ndiSender,&v);connections_=impl_->ndi->send_get_no_connections(impl_->ndiSender,0);}
             else{OMTMediaFrame v={};v.Type=OMTFrameType_Video;v.Codec=OMTCodec_BGRA;v.Timestamp=pts*10;v.Width=video.width();v.Height=video.height();v.Stride=video.bytesPerLine();v.FrameRateN=n;v.FrameRateD=d;v.AspectRatio=float(video.width())/video.height();v.ColorSpace=OMTColorSpace_BT709;v.Data=const_cast<uchar*>(video.constBits());v.DataLength=int(video.sizeInBytes());impl_->omt->send(impl_->omtSender,&v);connections_=impl_->omt->send_connections(impl_->omtSender);}lastPts=pts;sentVideoAt=now;++videos_;
         }
@@ -64,7 +64,12 @@ bool NetworkBus::start(NetworkProtocol p,const QString& name){auto& s=sender(p);
 void NetworkBus::stop(NetworkProtocol p){sender(p).stop();}
 void NetworkBus::setAudioEnabled(bool value){audioEnabled_=value;for(auto& sender:senders_)sender.setAudioEnabled(value);}
 void NetworkBus::frame(const QVideoFrame& frame){
-    if(!senders_[0].running() && !senders_[1].running())return;QImage image;QString note;
+    if(!senders_[0].running() && !senders_[1].running())return;
+    // With a project rate, only the first decoded frame of each output tick is converted (the conversion runs on the
+    // GUI thread); the sender repeats it until the next one, so receivers always see the project cadence.
+    const double project=projectFrameRate().load();
+    if(project>0&&frame.isValid()){const qint64 tick=qint64(std::floor(double(channel_->videoTimeUs())*project/1e6));if(tick==lastTick_)return;lastTick_=tick;}
+    QImage image;QString note;
     if(frame.isValid()){
         const auto f=frame.surfaceFormat();if(f.colorTransfer()==QVideoFrameFormat::ColorTransfer_ST2084 || f.colorTransfer()==QVideoFrameFormat::ColorTransfer_STD_B67){note="HDR network output requires tone mapping; sending black";}
         else if(frame.width()<=4096 && frame.height()<=4096 && qint64(frame.width())*frame.height()<=qint64(4096)*2160)image=frame.toImage().convertToFormat(QImage::Format_ARGB32);
@@ -72,6 +77,6 @@ void NetworkBus::frame(const QVideoFrame& frame){
     }
     if(note!=lastWarning_){lastWarning_=note;if(!note.isEmpty())emit warning(note);}
     if(image.isNull()){image=QImage(lastSize_,QImage::Format_ARGB32);image.fill(Qt::black);}else lastSize_=image.size();
-    const qreal rate=frame.streamFrameRate()>0?frame.streamFrameRate():frame.surfaceFormat().streamFrameRate();if(rate>0)lastFps_=rate;const qreal fps=lastFps_;
+    const qreal rate=frame.streamFrameRate()>0?frame.streamFrameRate():frame.surfaceFormat().streamFrameRate();if(rate>0)lastFps_=rate;const qreal fps=project>0?project:lastFps_;
     const qint64 time=frame.isValid()?channel_->videoTimeUs():channel_->programTimeUs();for(auto& sender:senders_)sender.video(image,time,fps);
 }

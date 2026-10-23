@@ -9,6 +9,7 @@ class AudioPanel final:public QFrame {
 public:
     AudioPanel(NativeChannel* channel,QSettings* settings,QString id,Translate translate,bool demo,QWidget* parent=nullptr);
     void retranslate();
+    QCheckBox* localBox()const{return local_;}
 private:
     NativeChannel* channel_;
     QSettings* settings_;
