@@ -1,0 +1,4 @@
+{
+  "accepted": false,
+  "reason": "Selection flow attribute did not deserialize as the required specialization; native output type became event/float. Stable source restored."
+}

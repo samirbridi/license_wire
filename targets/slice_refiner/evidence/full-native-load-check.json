@@ -1,0 +1,65 @@
+{
+  "pass": true,
+  "source_version": "v0.2.0 (build 0002)",
+  "source_graph_unchanged": true,
+  "scope": "Complete stable native graph, synthetic overlapping slice instances in Wire, 4K; not FPS or Arena proof",
+  "scene": "Four groups of grid_4x4 slices at identical positions; 144 case expands each group to 36 overlapping instances",
+  "runs": [
+    {
+      "slices": 64,
+      "mode": 0,
+      "repeat": 1,
+      "gpu_device_median_percent": 41.0,
+      "png_nonempty": true
+    },
+    {
+      "slices": 64,
+      "mode": 0,
+      "repeat": 2,
+      "gpu_device_median_percent": 43.5,
+      "png_nonempty": true
+    },
+    {
+      "slices": 64,
+      "mode": 1,
+      "repeat": 1,
+      "gpu_device_median_percent": 87.5,
+      "png_nonempty": true
+    },
+    {
+      "slices": 64,
+      "mode": 1,
+      "repeat": 2,
+      "gpu_device_median_percent": 89.0,
+      "png_nonempty": true
+    },
+    {
+      "slices": 64,
+      "mode": 2,
+      "repeat": 1,
+      "gpu_device_median_percent": 88.5,
+      "png_nonempty": true
+    },
+    {
+      "slices": 64,
+      "mode": 2,
+      "repeat": 2,
+      "gpu_device_median_percent": 45.0,
+      "png_nonempty": true
+    },
+    {
+      "slices": 144,
+      "mode": 0,
+      "repeat": 1,
+      "gpu_device_median_percent": 49.0,
+      "png_nonempty": true
+    },
+    {
+      "slices": 144,
+      "mode": 0,
+      "repeat": 2,
+      "gpu_device_median_percent": 45.5,
+      "png_nonempty": true
+    }
+  ]
+}

@@ -1,0 +1,149 @@
+{
+  "host": "Resolume Wire 7.28.1.26535",
+  "checks": [
+    {
+      "name": "reload_preserves_graph",
+      "pass": true,
+      "nodes": 227,
+      "connections": 333,
+      "missing": []
+    },
+    {
+      "name": "six_panel_groups",
+      "pass": true
+    },
+    {
+      "name": "outline_has_transparency",
+      "pass": true,
+      "nonzero_pixels": 18203
+    },
+    {
+      "name": "top_left_independent",
+      "pass": true,
+      "upper_left_max": 255,
+      "upper_right_max": 0
+    },
+    {
+      "name": "zero_opacity",
+      "pass": true
+    },
+    {
+      "name": "disabled_group",
+      "pass": true
+    },
+    {
+      "name": "zero_stroke",
+      "pass": true
+    },
+    {
+      "name": "degenerate_dimensions",
+      "pass": true
+    },
+    {
+      "name": "large_radii_finite",
+      "pass": true
+    },
+    {
+      "name": "opaque_background",
+      "pass": true
+    },
+    {
+      "name": "individual_edges_render",
+      "pass": true
+    },
+    {
+      "name": "soft_edges_change_mask",
+      "pass": true
+    },
+    {
+      "name": "animation_static",
+      "pass": true,
+      "pixel_difference": 0
+    },
+    {
+      "name": "animation_pulse",
+      "pass": true,
+      "pixel_difference": 656124
+    },
+    {
+      "name": "animation_chase",
+      "pass": true,
+      "pixel_difference": 3011445
+    },
+    {
+      "name": "animation_breathe",
+      "pass": true,
+      "pixel_difference": 23131416
+    },
+    {
+      "name": "animation_strobe",
+      "pass": true,
+      "pixel_difference": 3358382
+    },
+    {
+      "name": "animation_color_flow",
+      "pass": true,
+      "pixel_difference": 3954685
+    },
+    {
+      "name": "mixed_group_counts",
+      "pass": true,
+      "counts": [
+        5,
+        4,
+        9,
+        16
+      ]
+    },
+    {
+      "name": "properties_expand_to_34",
+      "pass": true,
+      "radii_count": 34,
+      "color_count": 34,
+      "group_colors": [
+        {
+          "r": 0.10000000149011612,
+          "g": 0.800000011920929,
+          "b": 1.0,
+          "a": 1.0
+        },
+        {
+          "r": 1.0,
+          "g": 0.30000001192092896,
+          "b": 0.10000000149011612,
+          "a": 1.0
+        },
+        {
+          "r": 0.699999988079071,
+          "g": 0.20000000298023224,
+          "b": 1.0,
+          "a": 1.0
+        },
+        {
+          "r": 0.20000000298023224,
+          "g": 1.0,
+          "b": 0.4000000059604645,
+          "a": 1.0
+        }
+      ]
+    },
+    {
+      "name": "group_two_color_isolated",
+      "pass": true
+    },
+    {
+      "name": "render_1080x1920",
+      "pass": true
+    },
+    {
+      "name": "render_3840x2160",
+      "pass": true
+    }
+  ],
+  "scope": "Native Wire graph, not Arena playback",
+  "source_sha256": "f01a16b9ba9852b7ce2fcef3029418cc9a80d063a0021687446b0adfdf105f1b",
+  "resource_sha256": {
+    "Resources/Mizin_Compositor.fs": "6dde07ca5a359d9a17e559e362b493cddbc0ece64a572a98db19b96e8bc933ac"
+  },
+  "pass": true
+}

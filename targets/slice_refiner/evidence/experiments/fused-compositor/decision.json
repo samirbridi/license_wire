@@ -1,0 +1,4 @@
+{
+  "accepted": false,
+  "reason": "Higher measured GPU occupancy in the main output mode; native alternative retained. Color equivalence alone did not justify adoption."
+}

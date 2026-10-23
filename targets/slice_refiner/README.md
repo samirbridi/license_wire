@@ -90,3 +90,10 @@ que alteraram este alvo, desde a última versão; cada compilação reserva um n
 
 Referências oficiais: [Slice Refiner](https://kpthippo.com/slice-refiner/),
 [compilação Wire](https://resolume.com/support/en/wire-saving-consolidating).
+
+## Nosso plugin e teste do efeito completo
+
+A implementação tem fonte e identidade próprias e funciona sem carregar o original.
+O grafo nativo completo também foi exercitado em 4K com 64 e 144 instâncias sintéticas sobrepostas.
+Esse ensaio confirma o processamento e a saída renderizada; não comprova FPS no Arena.
+A lógica estável foi preservada após avaliar alternativas. Detalhes em `notes/07_own_plugin.md`.
