@@ -17,27 +17,36 @@
 #include <atomic>
 #include <chrono>
 #include <condition_variable>
+#include <algorithm>
 #include <deque>
 #include <mutex>
 #include <thread>
 
 namespace {
-constexpr int Width=1280,Height=720,Fps=30,VideoBitrate=3500000,AudioBitrate=128000;
+constexpr int Fps=30,AudioBitrate=128000;
+// Quality 0 = automatic (the source size, at most 1920x1080), 1 = 720p, 2 = 1080p, 3 = 2160p (letterboxed in that box).
+QSize streamSize(int quality,QSize source){
+    const QSize box=quality==1?QSize(1280,720):quality==3?QSize(3840,2160):QSize(1920,1080);if(quality!=0)return box;
+    QSize size=source.isEmpty()?QSize(1280,720):source;if(size.width()>box.width()||size.height()>box.height())size=size.scaled(box,Qt::KeepAspectRatio);
+    return QSize(qMax(320,size.width()&~1),qMax(180,size.height()&~1));
+}
+// About 0.12 bit per pixel at 30 fps: 720p 3.3 Mbit/s, 1080p 7.5 Mbit/s, 2160p 25 Mbit/s.
+int streamBitrate(QSize size){return int(std::clamp<qint64>(qint64(size.width())*size.height()*Fps*12/100,1500000,25000000));}
 constexpr int VideoPayload=96,AudioPayload=111,PlayoutDelayExtension=6;
 constexpr int MaxRequestBytes=128*1024;
 void initLogger(){static std::once_flag once;std::call_once(once,[]{rtc::InitLogger(rtc::LogLevel::Warning);});}
 }
 
 // One encoder per watched Program, shared by every viewer of that Program. Frames are converted on
-// the GUI thread at <= 30 fps only while someone watches (as NetworkBus does), then letterboxed to
-// 1280x720 and encoded on a worker thread; the Program and GUI never wait for the network.
+// the GUI thread at <= 30 fps only while someone watches (as NetworkBus does), then scaled to the chosen quality
+// (automatic = source size up to 1080p) and encoded on a worker thread; the Program and GUI never wait for the network.
 class WebStream final : public QObject {
 public:
     struct Viewer {
         QString session;std::shared_ptr<rtc::PeerConnection> pc;std::shared_ptr<rtc::Track> video,audio;
         std::atomic<bool> videoOpen{false},audioOpen{false},connected{false};
     };
-    explicit WebStream(NativeChannel* channel):channel_(channel){
+    WebStream(NativeChannel* channel,std::shared_ptr<std::atomic<int>> quality):channel_(channel),quality_(std::move(quality)){
         clock_.start();
         connect(channel,&NativeChannel::frameReady,this,[this](const QVideoFrame& frame){this->frame(frame,false);});
         connect(channel,&NativeChannel::audioReady,this,[this](const AudioPacket& packet){if(!watching())return;std::lock_guard lock(mutex_);while(audio_.size()>=50){audio_.pop_front();++droppedAudio_;}audio_.push_back(packet);wake_.notify_one();});
@@ -52,7 +61,8 @@ public:
     std::shared_ptr<Viewer> addViewer(const QString& session,const rtc::Configuration& config,QObject* context,std::function<void(QString)> offer,std::function<void()> failed){
         auto viewer=std::make_shared<Viewer>();viewer->session=session;viewer->pc=std::make_shared<rtc::PeerConnection>(config);std::weak_ptr<Viewer> weak=viewer;auto keyframe=keyframe_;
         const uint32_t ssrc=QRandomGenerator::global()->generate()&0x7ffffffe;
-        rtc::Description::Video video("video",rtc::Description::Direction::SendOnly);video.addH264Codec(VideoPayload,"profile-level-id=42e01f;packetization-mode=1;level-asymmetry-allowed=1");video.addSSRC(ssrc,"mizin-video","mizin","mizin-video");
+        // H.264 Constrained Baseline offered up to level 5.1, so 2160p30 fits.
+        rtc::Description::Video video("video",rtc::Description::Direction::SendOnly);video.addH264Codec(VideoPayload,"profile-level-id=42e033;packetization-mode=1;level-asymmetry-allowed=1");video.addSSRC(ssrc,"mizin-video","mizin","mizin-video");
         video.addExtMap(rtc::Description::Entry::ExtMap(PlayoutDelayExtension,"http://www.webrtc.org/experiments/rtp-hdrext/playout-delay"));
         viewer->video=viewer->pc->addTrack(video);
         auto videoConfig=std::make_shared<rtc::RtpPacketizationConfig>(ssrc,"mizin",VideoPayload,rtc::H264RtpPacketizer::ClockRate);
@@ -88,7 +98,7 @@ public:
     int viewerCount()const{std::lock_guard lock(viewersMutex_);return int(viewers_.size());}
     QJsonObject statistics()const{
         std::lock_guard lock(statsMutex_);
-        return {{"viewers",viewerCount()},{"encoded_frames",encoded_.load()},{"keyframes",keyframes_.load()},{"superseded_frames",superseded_.load()},{"audio_packets",audioPackets_.load()},{"dropped_audio_packets",droppedAudio_.load()},{"encode_ms_last",encodeUs_.load()/1000.0},{"video_bytes",double(bytes_.load())},{"width",Width},{"height",Height},{"fps_limit",Fps},{"encoder",encoderError_.isEmpty()?QStringLiteral("Windows Media Foundation H.264 (software MFT)"):encoderError_},{"audio_codec","Opus 48 kHz stereo"}};
+        return {{"viewers",viewerCount()},{"encoded_frames",encoded_.load()},{"keyframes",keyframes_.load()},{"superseded_frames",superseded_.load()},{"audio_packets",audioPackets_.load()},{"dropped_audio_packets",droppedAudio_.load()},{"encode_ms_last",encodeUs_.load()/1000.0},{"video_bytes",double(bytes_.load())},{"width",width_.load()},{"height",height_.load()},{"bitrate",double(bitrate_.load())},{"fps_limit",Fps},{"hardware",hardware_.load()},{"encoder",encoderError_.isEmpty()?encoderName_:encoderError_},{"audio_codec","Opus 48 kHz stereo"}};
     }
 private:
     NativeChannel* channel_;
@@ -98,8 +108,9 @@ private:
     std::vector<std::shared_ptr<Viewer>> viewers_;
     QImage pending_;bool hasPending_=false,stopping_=false,resetAudio_=false;std::deque<AudioPacket> audio_;
     std::shared_ptr<std::atomic<bool>> keyframe_=std::make_shared<std::atomic<bool>>(true);
-    std::atomic<qint64> encoded_{0},keyframes_{0},superseded_{0},audioPackets_{0},droppedAudio_{0},encodeUs_{0},bytes_{0};
-    QString encoderError_;
+    std::atomic<qint64> encoded_{0},keyframes_{0},superseded_{0},audioPackets_{0},droppedAudio_{0},encodeUs_{0},bytes_{0},bitrate_{0};
+    std::shared_ptr<std::atomic<int>> quality_;std::atomic<int> width_{0},height_{0};std::atomic<bool> hardware_{false};
+    QString encoderError_,encoderName_;
     std::vector<std::shared_ptr<Viewer>> snapshot()const{std::lock_guard lock(viewersMutex_);return viewers_;}
     bool watching()const{for(const auto& viewer:snapshot())if(viewer->videoOpen||viewer->audioOpen)return true;return false;}
     double seconds()const{return clock_.nsecsElapsed()/1e9;}
@@ -114,9 +125,15 @@ private:
         try{track->sendFrame(reinterpret_cast<const rtc::byte*>(data.constData()),size_t(data.size()),rtc::FrameInfo(std::chrono::duration<double>(timestamp)));}catch(const std::exception&){}
     }
     void work(){
-        H264Encoder video;OpusAudioEncoder opus;const bool videoReady=video.open(Width,Height,Fps,VideoBitrate);opus.open(AudioBitrate);
-        if(!videoReady){std::lock_guard lock(statsMutex_);encoderError_=video.error();}
-        QImage canvas(Width,Height,QImage::Format_RGB32),last;double lastVideo=-1,audioClock=-1;std::vector<float> pcm;
+        H264Encoder video;OpusAudioEncoder opus;opus.open(AudioBitrate);bool videoReady=false,useHardware=true;QSize source;int quality=-1;
+        // (Re)opens the encoder when the quality or the source size changes; a failing hardware encoder falls back to software.
+        auto prepare=[&](QSize size){
+            if(videoReady&&size==QSize(width_.load(),height_.load())&&!video.failed())return;if(video.failed())useHardware=false;
+            const int bitrate=streamBitrate(size);videoReady=video.open(size.width(),size.height(),Fps,bitrate,useHardware);if(!videoReady&&useHardware){useHardware=false;videoReady=video.open(size.width(),size.height(),Fps,bitrate,false);}
+            width_=size.width();height_=size.height();bitrate_=bitrate;hardware_=videoReady&&video.hardware();*keyframe_=true;
+            std::lock_guard lock(statsMutex_);encoderError_=videoReady?QString():video.error();encoderName_=video.name();
+        };
+        QImage canvas,last;double lastVideo=-1,audioClock=-1;std::vector<float> pcm;
         for(;;){
             QImage image;std::deque<AudioPacket> audio;bool reset=false;
             {std::unique_lock lock(mutex_);wake_.wait_for(lock,std::chrono::milliseconds(100),[this]{return stopping_||hasPending_||!audio_.empty();});if(stopping_)break;
@@ -124,8 +141,13 @@ private:
             const double now=seconds();
             // Paused/black Programs publish no new frames: repeat the last picture twice per second so joining viewers get a keyframe.
             if(image.isNull()&&!last.isNull()&&now-lastVideo>.5)image=last;
+            // The 16x9 black placeholder (nothing on air) keeps the current size instead of shrinking the stream.
+            if(!image.isNull()&&image.size()!=QSize(16,9))source=image.size();
+            if(!image.isNull()&&(quality!=quality_->load()||!videoReady||video.failed()||streamSize(quality_->load(),source)!=QSize(width_.load(),height_.load()))){quality=quality_->load();prepare(streamSize(quality,source));}
             if(!image.isNull()&&videoReady){
-                last=image;canvas.fill(Qt::black);{QPainter painter(&canvas);painter.setRenderHint(QPainter::SmoothPixmapTransform);const QSize fit=image.size().scaled(Width,Height,Qt::KeepAspectRatio);painter.drawImage(QRect(QPoint((Width-fit.width())/2,(Height-fit.height())/2),fit),image);}
+                const int W=width_.load(),H=height_.load();if(canvas.size()!=QSize(W,H))canvas=QImage(W,H,QImage::Format_RGB32);
+                last=image;if(image.size()==QSize(W,H))canvas=image.format()==QImage::Format_RGB32?image:image.convertToFormat(QImage::Format_RGB32); // already the stream size: no scaling pass
+                else{if(canvas.size()!=QSize(W,H)||canvas.isDetached()==false)canvas=QImage(W,H,QImage::Format_RGB32);canvas.fill(Qt::black);QPainter painter(&canvas);painter.setRenderHint(QPainter::SmoothPixmapTransform);const QSize fit=image.size().scaled(W,H,Qt::KeepAspectRatio);painter.drawImage(QRect(QPoint((W-fit.width())/2,(H-fit.height())/2),fit),image);}
                 const bool force=keyframe_->exchange(false);bool key=false;QElapsedTimer timer;timer.start();const QByteArray unit=video.encode(canvas,qint64(now*1e6),force,&key);encodeUs_=timer.nsecsElapsed()/1000;
                 if(!unit.isEmpty()){++encoded_;bytes_+=unit.size();if(key)++keyframes_;lastVideo=qMax(now,lastVideo+.001);for(const auto& viewer:snapshot())if(viewer->videoOpen)send(viewer->video,unit,lastVideo);}
             }
@@ -207,7 +229,7 @@ void WebMonitorServer::handle(QTcpSocket* socket,const Request& request){
 void WebMonitorServer::createSession(QTcpSocket* socket,int programId){
     auto* channel=channel_(programId);if(!channel){respond(socket,404,"text/plain","Program not available");return;}
     if(viewers()>=16){respond(socket,503,"text/plain","Viewer limit reached");return;}
-    auto stream=streams_.value(programId);if(!stream){stream=std::make_shared<WebStream>(channel);streams_.insert(programId,stream);}
+    auto stream=streams_.value(programId);if(!stream){stream=std::make_shared<WebStream>(channel,quality_);streams_.insert(programId,stream);}
     QString session;for(int i=0;i<4;++i)session+=QString::number(QRandomGenerator::system()->generate(),16).rightJustified(8,'0');
     rtc::Configuration config;config.portRangeBegin=MediaPortFirst;config.portRangeEnd=MediaPortLast;if(!lan_)config.bindAddress="127.0.0.1";
     QPointer<QTcpSocket> reply=socket;sessions_.insert(session,programId);

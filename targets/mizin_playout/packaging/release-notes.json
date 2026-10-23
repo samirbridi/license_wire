@@ -1,14 +1,12 @@
 {
   "en": [
-    "AES67 network audio (Dante-compatible): the low-latency output can send every Program over the network as AES67 — up to 64 channels at 48 kHz/24-bit, 1 ms packets, announced by SAP so it appears in Dante Controller and other AES67 receivers.",
-    "Built-in PTPv2 clock: follows the network grandmaster (e.g. a Dante device in AES67 mode) or becomes the grandmaster when there is none; the status line shows the clock state.",
-    "Fix: after a loop or seek, Program audio could stay silent on the low-latency output, NDI/OMT and the web monitor when the player was slow to resume; the audio timeline now re-anchors on the first new audio.",
-    "Native Dante (Audinate licence) is prepared in the engine and listed as coming soon."
+    "Web monitor quality: Automatic follows each Program's source up to 1080p (no more fixed 720p), or choose 720p, 1080p or 4K (2160p); changes apply live for viewers already watching.",
+    "The web monitor now encodes on the graphics card (NVIDIA NVENC, Intel Quick Sync, AMD) when available, with automatic fallback to Windows software encoding; the status line shows resolution and encoder.",
+    "Bitrate follows the resolution: about 3.3 Mbit/s at 720p, 7.5 Mbit/s at 1080p and 25 Mbit/s at 4K."
   ],
   "pt-BR": [
-    "Áudio em rede AES67 (compatível com Dante): a saída de baixa latência pode enviar cada Program pela rede em AES67 — até 64 canais a 48 kHz/24 bits, pacotes de 1 ms, anunciados por SAP para aparecer no Dante Controller e em outros receptores AES67.",
-    "Relógio PTPv2 embutido: segue o grandmaster da rede (por exemplo, um equipamento Dante em modo AES67) ou vira o grandmaster quando não há nenhum; a linha de status mostra o estado do relógio.",
-    "Correção: depois de um loop ou seek, o áudio do Program podia ficar mudo na saída de baixa latência, no NDI/OMT e no monitor web quando o player demorava a retomar; a linha do tempo do áudio agora se realinha no primeiro áudio novo.",
-    "O Dante nativo (licença Audinate) está preparado no motor e aparece como em breve."
+    "Qualidade do monitor web: Automática segue a origem de cada Program até 1080p (não fica mais fixo em 720p), ou escolha 720p, 1080p ou 4K (2160p); a troca vale na hora para quem já está assistindo.",
+    "O monitor web agora codifica na placa de vídeo (NVIDIA NVENC, Intel Quick Sync, AMD) quando disponível, com volta automática para a codificação por software do Windows; a linha de status mostra resolução e codificador.",
+    "O bitrate acompanha a resolução: cerca de 3,3 Mbit/s em 720p, 7,5 Mbit/s em 1080p e 25 Mbit/s em 4K."
   ]
 }

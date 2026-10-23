@@ -59,3 +59,15 @@ Chrome Android.
 Measured (dev build, same PC, built-in Chromium browser pane): 1280×720 at 29 fps decoded, video
 jitter buffer 4–21 ms, audio jitter buffer ~57 ms, Opus negotiated stereo. Glass-to-glass latency on
 a real LAN/phone is not yet measured.
+
+## Quality and hardware encoding (2026-10-22, owner request)
+- Quality per server, live: 0 automatic = the Program's source size, at most 1920x1080 (smaller sources keep their size,
+  even dimensions, minimum 320x180); 1 = 720p, 2 = 1080p, 3 = 2160p, letterboxed in that box. The worker reopens the
+  encoder when the size or quality changes and forces a keyframe (new SPS); browsers follow the change on the same track.
+- Bitrate = 0.12 bit/pixel at 30 fps, clamped 1.5–25 Mbit/s. SDP offers Constrained Baseline level 5.1 (42e033).
+- Encoder: Media Foundation hardware MFT (async events; NVENC/Quick Sync/AMF) first, software MFT fallback. A hardware
+  encoder that fails or does not produce Baseline (profile_idc 66) is replaced by the software one automatically.
+  `MIZIN_WEB_SOFTWARE_ENCODER` forces software for diagnostics.
+- RGB→NV12 conversion runs in row bands over up to 8 cores; a source already at the stream size skips the scaling pass.
+- Measured on this computer (NVIDIA laptop, loopback viewer, frame conversion + encode): 1080p 11.5 ms NVENC / 24 ms
+  software; 2160p 44 ms NVENC (about 22 fps) / 108 ms software. Full 4K30 needs the conversion on the GPU (next step).

@@ -5,6 +5,7 @@
 #include <QObject>
 #include <QPointer>
 #include <QStringList>
+#include <atomic>
 #include <functional>
 #include <memory>
 
@@ -39,6 +40,9 @@ public:
     QString error()const{return error_;}
     QJsonObject statistics()const;
     void programRemoved(int id);
+    // 0 automatic (source size, at most 1080p), 1 720p, 2 1080p, 3 2160p. Applies live to every stream.
+    void setQuality(int quality){quality_->store(qBound(0,quality,3));}
+    int quality()const{return quality_->load();}
     static QString generateCode();
 signals:
     void changed();
@@ -49,6 +53,7 @@ private:
     QTcpServer* server_=nullptr;
     bool lan_=false;
     QString code_,error_;
+    std::shared_ptr<std::atomic<int>> quality_=std::make_shared<std::atomic<int>>(0);
     QHash<int,std::shared_ptr<WebStream>> streams_;
     QHash<QString,int> sessions_;
     QList<qint64> failures_;

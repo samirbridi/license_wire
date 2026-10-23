@@ -44,6 +44,8 @@ In **Outputs → Web monitor**, choose **Local network (LAN)** or **This compute
 
 The web monitor never starts by itself at launch. **New code** replaces the code and disconnects everyone. Each watched Program uses a single Windows H.264 encoder shared by all its viewers. Windows may ask to allow network access the first time; video uses UDP ports 50200–50399. Do not expose the port to the internet.
 
+**Quality**: **Automatic** follows each Program's source (1080p stays 1080p, 4K is reduced to 1080p, smaller sources keep their size); **720p**, **1080p** and **4K** are fixed. Changes apply live. The graphics card's encoder (NVIDIA, Intel, AMD) is used when available; 4K needs it and a wired network (about 25 Mbit/s per watched Program).
+
 ## Low-latency audio output
 
 In **Audio → Low-latency output**, choose the engine and device and click **Start low-latency output**. **WASAPI exclusive** talks directly to the driver (lowest delay; the device is reserved for Mizin). **WASAPI shared low-latency** lets other apps keep using the device. **ASIO** (Dante Virtual Soundcard, Behringer UMC, Blackmagic) is only available in the Steinberg-licensed build. In **Buffer**, "Device minimum" is the lowest delay; raise it if you hear clicks.

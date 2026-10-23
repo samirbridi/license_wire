@@ -44,6 +44,8 @@ Em **Saídas → Monitor web**, escolha **Rede local (LAN)** ou **Somente este c
 
 O monitor web nunca liga sozinho ao abrir o aplicativo. **Novo código** troca o código e desconecta todos. Cada Program assistido usa um único codificador H.264 do Windows, compartilhado por todos que o assistem. Na primeira vez o Windows pode pedir para liberar a rede; o vídeo usa as portas UDP 50200–50399. Não exponha a porta na internet.
 
+**Qualidade**: **Automática** segue a origem de cada Program (1080p continua 1080p, 4K é reduzido para 1080p, origens menores mantêm o tamanho); **720p**, **1080p** e **4K** são fixas. A troca vale na hora. O codificador da placa de vídeo (NVIDIA, Intel, AMD) é usado quando disponível; o 4K precisa dele e de rede cabeada (cerca de 25 Mbit/s por Program assistido).
+
 ## Saída de áudio de baixa latência
 
 Em **Áudio → Saída de baixa latência**, escolha o motor e o dispositivo e clique em **Iniciar saída de baixa latência**. **WASAPI exclusivo** fala direto com o driver (menor atraso; o dispositivo fica reservado para o Mizin). **WASAPI compartilhado de baixa latência** deixa outros aplicativos usarem o mesmo dispositivo. **ASIO** (Dante Virtual Soundcard, Behringer UMC, Blackmagic) só aparece na versão com a licença Steinberg. Em **Buffer**, "Mínimo do dispositivo" é o menor atraso; aumente se ouvir estalos.

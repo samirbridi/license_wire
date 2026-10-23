@@ -71,6 +71,17 @@ int runWebTests(const QString& directory,const QString& resultPath){
         record("stream_is_constrained_baseline_h264",first.profile==66,{{"profile_idc",first.profile.load()}});
         Client second;const bool secondNegotiated=second.connect(manager,base,code,1);const bool secondReceived=waitUntil([&]{return second.video>=10&&second.idr>=1;},15000);
         record("second_viewer_shares_one_encoder",secondNegotiated&&secondReceived&&server.viewers()==2&&server.encoders()==1,{{"viewers",server.viewers()},{"encoders",server.encoders()}});
+        {   // Quality: automatic follows the 1920x1080 fixture; 720p and 4K switch live for the viewers already watching.
+            auto streamStats=[&]{const auto streams=server.statistics()["streams"].toArray();return streams.isEmpty()?QJsonObject{}:streams[0].toObject();};
+            auto sized=[&](int w,int h){return waitUntil([&]{const auto s=streamStats();return s["width"].toInt()==w&&s["height"].toInt()==h;},10000);};
+            const bool automatic=sized(1920,1080);const auto autoStats=streamStats();
+            record("automatic_quality_follows_the_source",automatic&&autoStats["bitrate"].toDouble()>=6000000,{{"stats",autoStats}});
+            server.setQuality(1);const int spsBefore=first.sps;const bool hd=sized(1280,720)&&waitUntil([&]{return first.sps>spsBefore&&first.video>=5;},10000);
+            record("quality_720p_switches_live",hd,{{"stats",streamStats()}});
+            server.setQuality(3);const int framesBefore=first.video;const bool uhd=sized(3840,2160)&&waitUntil([&]{return first.video>=framesBefore+10;},20000);const auto uhdStats=streamStats();
+            record("quality_4k_encodes_2160p",uhd&&first.profile==66,{{"stats",uhdStats},{"frames",first.video-framesBefore},{"profile_idc",first.profile.load()}});
+            server.setQuality(0);sized(1920,1080);
+        }
         channel.togglePause();waitUntil([&]{return !channel.playing();},3000);const int before=first.video;QThread::msleep(10);waitUntil([]{return false;},1600);
         record("paused_program_keeps_viewers_fed",first.video-before>=2,{{"frames_while_paused",first.video-before}});channel.togglePause();
         server.setCode("newcode77");waitUntil([&]{return server.viewers()==0;},3000);
