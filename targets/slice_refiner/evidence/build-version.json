@@ -1,12 +1,17 @@
 {
-  "display": "v0.2.0 (build 0002)",
-  "previous": "v0.1.0 (build 1)",
-  "source_commit": "2dcdc26bdcaa8e6066f13c72128e3c6aa4312797",
+  "display": "v0.2.1 (build 0003)",
+  "previous": "v0.2.0 (build 0002)",
+  "source_commit": "460faccbfc2f84996b84fc3bdb7826a5af64140a",
   "commits": [
     {
-      "sha": "2dcdc26bdcaa8e6066f13c72128e3c6aa4312797",
-      "subject": "feat: reconstroi Slice Refine Pro com geometria 2D e controles por grupo",
-      "kind": "feat"
+      "sha": "9ea618a5c09696c74805acd5649c49e7ded3844e",
+      "subject": "improve: registra compilacao e validacao local do Slice Refine Pro",
+      "kind": "improve"
+    },
+    {
+      "sha": "460faccbfc2f84996b84fc3bdb7826a5af64140a",
+      "subject": "improve: valida plugin proprio com carga sintetica de 144 slices",
+      "kind": "improve"
     }
   ],
   "date": "2026-10-22",

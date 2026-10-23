@@ -1,30 +1,30 @@
 {
-  "version": "v0.2.0 (build 0002)",
-  "source_commit": "2dcdc26bdcaa8e6066f13c72128e3c6aa4312797",
+  "version": "v0.2.1 (build 0003)",
+  "source_commit": "460faccbfc2f84996b84fc3bdb7826a5af64140a",
   "compiler": "C:\\Program Files\\Resolume Wire\\Wire.exe",
   "compiler_version": "7.28.1.26535",
-  "editable": "D:\\REA - ENGENHARIA REVERSA\\targets\\slice_refiner\\reconstructed\\releases\\v0.2.0-build0002\\Slice Refine Pro by Mizin v0.2.0.wire",
-  "artifact": "D:\\REA - ENGENHARIA REVERSA\\targets\\slice_refiner\\reconstructed\\releases\\v0.2.0-build0002\\Slice Refine Pro by Mizin v0.2.0.cwired",
-  "editable_sha256": "f3c2c698588ab52bd7a6b1267cfa49d934762b1299b0e4f8091e2c3513f22b2d",
+  "editable": "D:\\REA - ENGENHARIA REVERSA\\targets\\slice_refiner\\reconstructed\\releases\\v0.2.1-build0003\\Slice Refine Pro by Mizin v0.2.1.wire",
+  "artifact": "D:\\REA - ENGENHARIA REVERSA\\targets\\slice_refiner\\reconstructed\\releases\\v0.2.1-build0003\\Slice Refine Pro by Mizin v0.2.1.cwired",
+  "editable_sha256": "29e4b70af605095ce9ab24d74eec377d26e0f47c240411c605df263d120923c4",
   "status": "PASS",
   "command": [
     "C:\\Program Files\\Resolume Wire\\Wire.exe",
     "compile",
-    "D:\\REA - ENGENHARIA REVERSA\\targets\\slice_refiner\\reconstructed\\releases\\v0.2.0-build0002\\Slice Refine Pro by Mizin v0.2.0.wire",
+    "D:\\REA - ENGENHARIA REVERSA\\targets\\slice_refiner\\reconstructed\\releases\\v0.2.1-build0003\\Slice Refine Pro by Mizin v0.2.1.wire",
     "--output",
-    "D:\\REA - ENGENHARIA REVERSA\\targets\\slice_refiner\\reconstructed\\releases\\v0.2.0-build0002\\Slice Refine Pro by Mizin v0.2.0.cwired"
+    "D:\\REA - ENGENHARIA REVERSA\\targets\\slice_refiner\\reconstructed\\releases\\v0.2.1-build0003\\Slice Refine Pro by Mizin v0.2.1.cwired"
   ],
   "exit_code": 0,
-  "sha256": "343799445e76cb415fa4ab1ed2757f11b844b48a7a2232370291286f43bc0e08",
+  "sha256": "f93aeafc250ed07c36f770fc37348006d12c659a4dba8897c971f5599b7f7639",
   "bytes": 184755,
   "nodes": 233,
   "connections": 331,
   "bundle": {
-    "container_sha256": "343799445e76cb415fa4ab1ed2757f11b844b48a7a2232370291286f43bc0e08",
+    "container_sha256": "f93aeafc250ed07c36f770fc37348006d12c659a4dba8897c971f5599b7f7639",
     "version": 1,
     "entry_count": 1,
     "table_size": 20,
-    "nonce_hex": "95a026a53507f331",
+    "nonce_hex": "d835e80ee28cafb7",
     "cipher": "Salsa20/20, absolute file offset",
     "key_derivation": "master XOR BLAKE2b-256(sourceeffectmixer) for .cwired",
     "entries": [
@@ -32,11 +32,11 @@
         "name": "patch.wire",
         "offset": 128,
         "size": 184627,
-        "sha256": "2de4bb3af8974ff41b1bbc31b0bd8e0cae3dd967680d1b7b21eb7ffcee455bf6"
+        "sha256": "4c3586e94fb21b51fb8682b279a4520adc993d59abfb8bd660784f36148c0344"
       }
     ]
   },
   "arena_playback": "PENDING",
-  "package": "D:\\REA - ENGENHARIA REVERSA\\targets\\slice_refiner\\reconstructed\\releases\\v0.2.0-build0002\\Slice Refine Pro by Mizin v0.2.0.zip",
-  "package_sha256": "5e538271ed3dc6131d240ba93b70e64a494b1dc1327992b74891664917b70def"
+  "package": "D:\\REA - ENGENHARIA REVERSA\\targets\\slice_refiner\\reconstructed\\releases\\v0.2.1-build0003\\Slice Refine Pro by Mizin v0.2.1.zip",
+  "package_sha256": "0cd53e7717b742973095b470c75f5ac7ce516bc51a15137156f959a1d6e83a94"
 }

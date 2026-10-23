@@ -2,7 +2,7 @@
 
 Reconstrução independente em Resolume Wire, baseada na análise do **SLICE REFINER v2.0**, de kpt hippo.
 Formato preservado: fonte editável `.wire` e efeito compilado `.cwired`.
-Versão calculada pelos commits: **v0.2.0 (build 0002)**. Compilação: **PASS**. QA no Wire: **PASS**.
+Versão calculada pelos commits: **v0.2.1 (build 0003)**. Compilação: **PASS**. QA no Wire: **PASS**.
 
 ## O que foi entregue
 

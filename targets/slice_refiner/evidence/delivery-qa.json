@@ -1,22 +1,24 @@
 {
-  "checks": {
-    "original_unchanged": true,
-    "evidence_copy_unchanged": true,
-    "artifact_hash": true,
-    "editable_hash": true,
-    "package_hash": true,
-    "package_crc": true,
-    "package_only_own_release": true,
-    "compiler_success": true
-  },
+  "version": "v0.2.1 (build 0003)",
   "pass": true,
+  "checks": {
+    "compiler_pass": true,
+    "same_validated_native_graph": true,
+    "package_crc": true,
+    "artifact_sha256": true,
+    "package_sha256": true,
+    "original_unchanged": true,
+    "previous_artifact_unchanged": true,
+    "previous_package_unchanged": true,
+    "no_experimental_resources": true
+  },
   "package_files": [
-    "Slice Refine Pro by Mizin v0.2.0.wire",
-    "Slice Refine Pro by Mizin v0.2.0.cwired",
+    "Slice Refine Pro by Mizin v0.2.1.wire",
+    "Slice Refine Pro by Mizin v0.2.1.cwired",
     "README.md",
     "CHANGELOG.md",
     "VERSION",
     "BUILD.json"
   ],
-  "artifact_bytes": 184755
+  "logic_changes": "None; stable native graph preserved; load validation and documentation expanded"
 }
