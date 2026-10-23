@@ -1,5 +1,21 @@
 [
   {
+    "version": "v0.29.0 (build 0060)",
+    "date": "2026-10-22",
+    "notes": {
+      "en": [
+        "Listen to the Preview (PFL): a headphones button on the PREVIEW deck and a PREVIEW panel on the Audio page play the cued media on its own device, to check it before taking it; it never reaches the Programs or any network output.",
+        "Project frame rate (Settings → Playback): fixed 23.976–60 fps or Automatic. NDI, OMT and the web monitor deliver a constant cadence at that rate, converting only one frame per tick (lighter on the CPU).",
+        "Web monitor page: each viewer can choose its quality (App default, Auto, 720p, 1080p, 4K); viewers with the same choice share one encoder."
+      ],
+      "pt-BR": [
+        "Ouvir o Preview (PFL): botão de fone no deck PREVIEW e painel PREVIEW na página Áudio tocam o item em preparo num dispositivo próprio, para conferir antes de disparar; nunca chega aos Programs nem às saídas de rede.",
+        "Frame rate do projeto (Configurações → Reprodução): 23,976–60 fps fixo ou Automático. NDI, OMT e o monitor web entregam cadência constante nessa taxa, convertendo só um quadro por intervalo (mais leve para a CPU).",
+        "Página do monitor web: cada pessoa escolhe a qualidade (Padrão do app, Auto, 720p, 1080p, 4K); quem escolhe a mesma compartilha um codificador."
+      ]
+    }
+  },
+  {
     "version": "v0.28.0 (build 0059)",
     "date": "2026-10-22",
     "notes": {

@@ -1060,5 +1060,24 @@
     ],
     "date": "2026-10-22",
     "build_status": "PASS"
+  },
+  {
+    "display": "v0.29.0 (build 0060)",
+    "previous": "v0.28.0 (build 0059)",
+    "source_commit": "47722b5fcb9d6a5bd122414035ab29bc3a18d137",
+    "commits": [
+      {
+        "sha": "b4afe5e76303d309fc56088b8b19b39ab52cd539",
+        "subject": "improve: registra publicacao do build 0059 com qualidade do monitor web",
+        "kind": "improve"
+      },
+      {
+        "sha": "47722b5fcb9d6a5bd122414035ab29bc3a18d137",
+        "subject": "feat: adiciona escuta do Preview, frame rate do projeto e qualidade por viewer no monitor web",
+        "kind": "feat"
+      }
+    ],
+    "date": "2026-10-22",
+    "build_status": "PASS"
   }
 ]
