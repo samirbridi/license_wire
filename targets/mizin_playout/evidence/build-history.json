@@ -1041,5 +1041,24 @@
     ],
     "date": "2026-10-22",
     "build_status": "PASS"
+  },
+  {
+    "display": "v0.28.0 (build 0059)",
+    "previous": "v0.27.0 (build 0058)",
+    "source_commit": "81556e7b049c3caa013b2d667fb72e32b6def06a",
+    "commits": [
+      {
+        "sha": "4361a26d583071c55ec8dd3614193223a12b6601",
+        "subject": "improve: registra publicacao do build 0058 com audio em rede AES67",
+        "kind": "improve"
+      },
+      {
+        "sha": "81556e7b049c3caa013b2d667fb72e32b6def06a",
+        "subject": "feat: monitor web com qualidade automatica ate 1080p, 720p, 1080p ou 4K e codificacao na placa de video",
+        "kind": "feat"
+      }
+    ],
+    "date": "2026-10-22",
+    "build_status": "PASS"
   }
 ]

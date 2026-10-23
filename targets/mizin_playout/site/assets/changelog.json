@@ -1,5 +1,21 @@
 [
   {
+    "version": "v0.28.0 (build 0059)",
+    "date": "2026-10-22",
+    "notes": {
+      "en": [
+        "Web monitor quality: Automatic follows each Program's source up to 1080p (no more fixed 720p), or choose 720p, 1080p or 4K (2160p); changes apply live for viewers already watching.",
+        "The web monitor now encodes on the graphics card (NVIDIA NVENC, Intel Quick Sync, AMD) when available, with automatic fallback to Windows software encoding; the status line shows resolution and encoder.",
+        "Bitrate follows the resolution: about 3.3 Mbit/s at 720p, 7.5 Mbit/s at 1080p and 25 Mbit/s at 4K."
+      ],
+      "pt-BR": [
+        "Qualidade do monitor web: Automática segue a origem de cada Program até 1080p (não fica mais fixo em 720p), ou escolha 720p, 1080p ou 4K (2160p); a troca vale na hora para quem já está assistindo.",
+        "O monitor web agora codifica na placa de vídeo (NVIDIA NVENC, Intel Quick Sync, AMD) quando disponível, com volta automática para a codificação por software do Windows; a linha de status mostra resolução e codificador.",
+        "O bitrate acompanha a resolução: cerca de 3,3 Mbit/s em 720p, 7,5 Mbit/s em 1080p e 25 Mbit/s em 4K."
+      ]
+    }
+  },
+  {
     "version": "v0.27.0 (build 0058)",
     "date": "2026-10-22",
     "notes": {

@@ -1,5 +1,19 @@
 # CHANGELOG — Mizin Playout
 
+## v0.28.0 (build 0059) - 2026-10-22
+
+### 💥 Breaking Changes
+- None.
+
+### ✨ Features
+- feat: monitor web com qualidade automatica ate 1080p, 720p, 1080p ou 4K e codificacao na placa de video (81556e7b049c3caa013b2d667fb72e32b6def06a)
+
+### 🐛 Fixes
+- None.
+
+### ⚡ Improvements
+- improve: registra publicacao do build 0058 com audio em rede AES67 (4361a26d583071c55ec8dd3614193223a12b6601)
+
 ## v0.27.0 (build 0058) - 2026-10-22
 
 ### 💥 Breaking Changes

@@ -1,26 +1,16 @@
 {
-  "display": "v0.27.0 (build 0058)",
-  "previous": "v0.26.0 (build 0057)",
-  "source_commit": "0c63052aaab90832fad8989eddae5b3b554fad14",
+  "display": "v0.28.0 (build 0059)",
+  "previous": "v0.27.0 (build 0058)",
+  "source_commit": "81556e7b049c3caa013b2d667fb72e32b6def06a",
   "commits": [
     {
-      "sha": "ead4c8528e5f9b662b8de09b1bccbd3d28771169",
-      "subject": "improve: registra publicacao do build 0057 com disparo sincronizado, area por saida e controle remoto",
+      "sha": "4361a26d583071c55ec8dd3614193223a12b6601",
+      "subject": "improve: registra publicacao do build 0058 com audio em rede AES67",
       "kind": "improve"
     },
     {
-      "sha": "4d53f6409248c2ba3c7cb8c4364fafbdf5def38b",
-      "subject": "improve: site corrige proximos passos com controle remoto ja entregue e Dante via ASIO ou nativo",
-      "kind": "improve"
-    },
-    {
-      "sha": "26c75f2ffcb7d2562c653505df1be56cf94220c2",
-      "subject": "improve: registra plano do Dante nativo via Dante Application Library",
-      "kind": "improve"
-    },
-    {
-      "sha": "0c63052aaab90832fad8989eddae5b3b554fad14",
-      "subject": "feat: adiciona saida de audio em rede AES67 compativel com Dante com relogio PTPv2",
+      "sha": "81556e7b049c3caa013b2d667fb72e32b6def06a",
+      "subject": "feat: monitor web com qualidade automatica ate 1080p, 720p, 1080p ou 4K e codificacao na placa de video",
       "kind": "feat"
     }
   ],
