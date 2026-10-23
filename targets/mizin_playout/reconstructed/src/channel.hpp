@@ -98,6 +98,10 @@ private:
         QVideoFrame last;
         int frames = 0;
         bool seekSet = false;
+        // After a seek or loop wrap the player needs time before audio flows again; the audio timeline is
+        // re-anchored on the first buffer that arrives, at the position the player is actually presenting.
+        bool realign = false;
+        qint64 realignTargetUs = 0;
         bool sourceLoaded = false;
         float gain=0;
         qint64 offsetUs=0;

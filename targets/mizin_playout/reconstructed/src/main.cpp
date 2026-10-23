@@ -13,6 +13,7 @@
 #include "updates.hpp"
 #include "web_monitor.hpp"
 #include "local_audio.hpp"
+#include "aes67.hpp"
 #include "link.hpp"
 #include <QtWidgets>
 #include <QtConcurrent>
@@ -736,6 +737,7 @@ int main(int argc,char** argv){
     parser.addOption(QCommandLineOption(QStringLiteral("link-mirror-test"),QStringLiteral("Test Mizin Link backup mirroring end to end")));
     parser.addOption(QCommandLineOption(QStringLiteral("link-test"),QStringLiteral("Test Mizin Link discovery, pairing and distribution")));
     parser.addOption(QCommandLineOption(QStringLiteral("audio-engine-test"),QStringLiteral("Test the low-latency local audio engine")));
+    parser.addOption(QCommandLineOption(QStringLiteral("aes67-test"),QStringLiteral("Test AES67 network audio (PTP, RTP, SAP)")));
     parser.addOption(QCommandLineOption(QStringLiteral("web-test"),QStringLiteral("Test the local WebRTC web monitor")));
     parser.addOption(QCommandLineOption(QStringLiteral("network-test"),QStringLiteral("Test audio mixing and native NDI/OMT loopback")));
     parser.addOption(QCommandLineOption(QStringLiteral("capture-link"),QStringLiteral("Capture the Mizin Link tab")));
@@ -758,6 +760,7 @@ int main(int argc,char** argv){
     if(parser.isSet("network-test"))return runNetworkTests(parser.value("fixtures"),parser.value("result"));
     if(parser.isSet("web-test"))return runWebTests(parser.value("fixtures"),parser.value("result"));
     if(parser.isSet("audio-engine-test"))return runAudioEngineTests(parser.value("fixtures"),parser.value("result"));
+    if(parser.isSet("aes67-test"))return runAes67Tests(parser.value("fixtures"),parser.value("result"));
     if(parser.isSet("link-test"))return runLinkTests(parser.value("fixtures"),parser.value("result"));
     if(parser.isSet("gpu-test"))return runGpuTests(parser.value("fixtures"),parser.value("result"));
     if(parser.isSet("output-test"))return runOutputTests(parser.value("fixtures"),parser.value("result"));

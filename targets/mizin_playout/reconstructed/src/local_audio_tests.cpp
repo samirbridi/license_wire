@@ -73,6 +73,10 @@ int runAudioEngineTests(const QString& directory,const QString& resultPath){
     engine.setOffsetMs(40);levels=drive(engine,8,1500);stats=engine.statistics();const double shifted=stats["routes"].toArray()[0].toObject()["sync_delay_ms"].toDouble();
     const double expected=qMax(headroom,40+qMax(0.0,lag)-latency);record("operator_offset_delays_audio",std::abs(shifted-expected)<4&&shifted>delay,{{"before_ms",delay},{"after_ms",shifted},{"expected_ms",expected}});engine.setOffsetMs(0);
     record("render_thread_cost_is_small",stats["render_ms_max"].toDouble()<3,{{"render_ms_max",stats["render_ms_max"].toDouble()},{"late_samples",stats["late_samples"].toDouble()},{"reanchors",stats["reanchors"].toDouble()}});
+    {   // The 8 s fixture loops while the engine owns the output: audio must continue across the wrap.
+        QJsonArray perSecond;bool continuous=true;for(int s=0;s<11;++s){const auto l=drive(engine,8,1000);perSecond.append(l.peak[0]);continuous&=l.peak[0]>.005;}
+        record("looping_program_keeps_engine_audio_after_wrapping",continuous,{{"peak_per_second",perSecond}});
+    }
     engine.setRoutes({});levels=drive(engine,8,300);record("removed_routes_are_silent",levels.peak[0]==0&&levels.peak[2]==0);
     engine.stop();a.setLocalEngine(false);b.setLocalEngine(false);record("stopping_returns_output_to_qt",!engine.running()&&!a.qtSinksMuted());
     const auto wasapi=LocalAudioEngine::devices(AudioBackend::Wasapi);QJsonArray names;for(const auto& d:wasapi)names.append(d.name+" ("+QString::number(d.channels)+" ch)");

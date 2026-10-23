@@ -13,7 +13,9 @@
 // playback clock); while the engine runs, their Qt sinks are muted and the engine pulls each Program's
 // mix directly from the ring on a real-time thread, writes it to a chosen stereo pair of one device
 // and delays it just enough to land with the published video (plus an operator offset for the display).
-enum class AudioBackend {Wasapi,WasapiShared,Asio,Test};
+// Aes67: network audio (ADR-021). Dante: native Dante through the Audinate Dante Application Library (ADR-020),
+// only in builds made after Audinate's licence; until then it is listed but unavailable.
+enum class AudioBackend {Wasapi,WasapiShared,Asio,Test,Aes67,Dante};
 
 struct AudioDeviceInfo {AudioBackend backend=AudioBackend::Wasapi;QString id,name;int channels=2;};
 
@@ -28,6 +30,7 @@ public:
     ~LocalAudioEngine() override;
     static QList<AudioDeviceInfo> devices(AudioBackend backend);
     static bool asioAvailable();
+    static bool danteAvailable();
     static QString backendName(AudioBackend backend);
     bool start(AudioBackend backend,const QString& deviceId,int bufferFrames);
     void stop();
@@ -38,6 +41,9 @@ public:
     void setOffsetMs(int ms){offsetUs_=qint64(qBound(-200,ms,500))*1000;}
     void setAutoSync(bool enabled){autoSync_=enabled;}
     QJsonObject statistics()const;
+    // Settings a backend reads when it opens (AES67: stream name, channels, multicast, latency, PTP).
+    void setBackendOptions(const QJsonObject& options){backendOptions_=options;}
+    QJsonObject backendOptions()const{return backendOptions_;}
     // Called by backends on their audio thread: fill frames x channels interleaved float.
     void render(float* out,int frames,int channels,qint64 deviceLatencyFrames);
     // Test backend support: open a backend that only calls render when asked.
@@ -51,6 +57,7 @@ private:
     std::atomic<int> deviceChannels_{0};
     std::atomic<qint64> offsetUs_{0};
     QString error_;
+    QJsonObject backendOptions_;
     struct Live {QPointer<NativeChannel> channel;NativeChannel* raw=nullptr;int firstChannel=0;qint64 cursor=-1;qint64 delayUs=0;};
     mutable std::mutex routesMutex_;
     std::vector<Live> routes_;
@@ -70,6 +77,8 @@ public:
     virtual int channels()const=0;
     virtual int bufferFrames()const=0;
     virtual QString description()const=0;
+    // Backend-specific live status for the UI and tests (AES67: streams and PTP).
+    virtual QJsonObject details()const{return {};}
 protected:
     LocalAudioEngine* engine_;
     void fail(const QString& message){QMetaObject::invokeMethod(engine_,[engine=QPointer<LocalAudioEngine>(engine_),message]{if(engine)engine->handleBackendFailure(message);},Qt::QueuedConnection);}

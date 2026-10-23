@@ -50,6 +50,14 @@ In **Audio → Low-latency output**, choose the engine and device and click **St
 
 Pick each Program's output pair (e.g. A on 1–2, B on 3–4) — useful on multi-output interfaces such as Dante. Each Program's volume, mute and Local monitoring still apply. **Sync with the video automatically** measures how late video frames are published and delays the audio only as needed; use **Fine adjust** (ms) for projector/LED processor delay. If the device fails or is unplugged, every Program falls back to its normal output automatically. NDI, OMT and the web monitor are not affected.
 
+### AES67 network audio (Dante-compatible)
+
+In **Audio → Low-latency output** choose the engine **AES67 network (Dante-compatible)** and the network adapter. Set the **stream name**, how many **channels** (up to 64; every 8 channels form one multicast stream), the **multicast address** (automatic 239.69.x.y) and the **receiver latency** (use the same on the receivers). Each Program goes to its channel pair, as on an interface.
+
+The stream is announced on the network (SAP), so it appears in **Dante Controller** as an AES67 flow and in other AES67 receivers. On Dante devices, enable **AES67 mode** in Dante Controller. The clock is PTPv2: the playout follows the network grandmaster (a Dante device in AES67 mode takes that role) and becomes the grandmaster itself when there is none. The status line shows the PTP state. Use a wired network; on managed switches allow multicast/IGMP and prioritise PTP and audio traffic.
+
+Native Dante (no virtual soundcard, the playout appearing as a Dante device) waits for Audinate's licence.
+
 ## Autosave, recovery and missing media
 
 While there are unsaved changes, Mizin Playout writes an automatic copy of the show every few seconds to its settings folder. If the app closes without saving (crash, power cut), the next start asks whether to restore that copy; the show comes back marked as unsaved so you can save it. A discarded copy is kept in `recovery/` (latest 5), never deleted silently. When you save over a show, the previous version stays next to it as `.mizinshow.bak`.

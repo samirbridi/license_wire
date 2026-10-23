@@ -22,6 +22,9 @@ using Microsoft::WRL::ComPtr;
 std::unique_ptr<AudioOutputBackend> makeAsioBackend(LocalAudioEngine* engine);
 QList<AudioDeviceInfo> asioDevices();
 bool asioCompiled();
+// AES67 lives in local_audio_aes67.cpp; native Dante waits for the Audinate DAL licence (ADR-020).
+std::unique_ptr<AudioOutputBackend> makeAes67Backend(LocalAudioEngine* engine);
+QList<AudioDeviceInfo> aes67Devices();
 
 namespace {
 class TestBackend final : public AudioOutputBackend {
@@ -146,9 +149,10 @@ QList<AudioDeviceInfo> wasapiDevices(AudioBackend backend){
 LocalAudioEngine::LocalAudioEngine(QObject* parent):QObject(parent){scratch_.resize(size_t(MaxFrames)*2);}
 LocalAudioEngine::~LocalAudioEngine(){stop();}
 bool LocalAudioEngine::asioAvailable(){return asioCompiled();}
-QString LocalAudioEngine::backendName(AudioBackend backend){switch(backend){case AudioBackend::Wasapi:return "WASAPI exclusive";case AudioBackend::WasapiShared:return "WASAPI shared low-latency";case AudioBackend::Asio:return "ASIO";case AudioBackend::Test:return "Test";}return {};}
+bool LocalAudioEngine::danteAvailable(){return false;}
+QString LocalAudioEngine::backendName(AudioBackend backend){switch(backend){case AudioBackend::Wasapi:return "WASAPI exclusive";case AudioBackend::WasapiShared:return "WASAPI shared low-latency";case AudioBackend::Asio:return "ASIO";case AudioBackend::Test:return "Test";case AudioBackend::Aes67:return "AES67";case AudioBackend::Dante:return "Dante";}return {};}
 QList<AudioDeviceInfo> LocalAudioEngine::devices(AudioBackend backend){
-    if(backend==AudioBackend::Asio)return asioDevices();if(backend==AudioBackend::Test)return {{AudioBackend::Test,"8","Test (no device)",8}};
+    if(backend==AudioBackend::Asio)return asioDevices();if(backend==AudioBackend::Aes67)return aes67Devices();if(backend==AudioBackend::Dante)return {};if(backend==AudioBackend::Test)return {{AudioBackend::Test,"8","Test (no device)",8}};
 #ifdef Q_OS_WIN
     return wasapiDevices(backend);
 #else
@@ -160,10 +164,12 @@ bool LocalAudioEngine::start(AudioBackend backend,const QString& deviceId,int bu
     std::unique_ptr<AudioOutputBackend> created;
     if(backend==AudioBackend::Test)created=std::make_unique<TestBackend>(this);
     else if(backend==AudioBackend::Asio)created=makeAsioBackend(this);
+    else if(backend==AudioBackend::Aes67)created=makeAes67Backend(this);
+    else if(backend==AudioBackend::Dante)created=nullptr;
 #ifdef Q_OS_WIN
     else created=std::make_unique<WasapiBackend>(this,backend==AudioBackend::Wasapi);
 #endif
-    if(!created){error_=backend==AudioBackend::Asio?QStringLiteral("ASIO support is not included in this build"):QStringLiteral("Backend unavailable");emit stateChanged();return false;}
+    if(!created){error_=backend==AudioBackend::Asio?QStringLiteral("ASIO support is not included in this build"):backend==AudioBackend::Dante?QStringLiteral("Native Dante needs the Audinate licence build"):QStringLiteral("Backend unavailable");emit stateChanged();return false;}
     callbacks_=0;lateSamples_=0;corrections_=0;reanchors_=0;headroomUs_=10000;renderMsMax_=0;
     {std::lock_guard lock(routesMutex_);for(auto& route:routes_)route.cursor=-1;}
     running_=true;
@@ -208,7 +214,7 @@ QJsonObject LocalAudioEngine::statistics()const{
     QJsonArray routes;{std::lock_guard lock(routesMutex_);for(const auto& route:routes_)routes.append(QJsonObject{{"first_channel",route.firstChannel+1},{"sync_delay_ms",route.delayUs/1000.0},{"video_lag_ms",route.raw?route.raw->videoLagUs()/1000.0:-1}});}
     const double bufferMs=bufferFrames_.load()*1000.0/SampleRate,latencyMs=deviceLatencyFrames_.load()*1000.0/SampleRate;
     return {{"running",running()},{"device",backend_?backend_->description():QString()},{"channels",deviceChannels()},{"buffer_frames",double(bufferFrames_.load())},{"buffer_ms",bufferMs},{"device_latency_ms",latencyMs},
-        {"headroom_ms",headroomUs_.load()/1000.0},{"callbacks",double(callbacks_.load())},{"late_samples",double(lateSamples_.load())},{"drift_corrections",double(corrections_.load())},{"reanchors",double(reanchors_.load())},{"render_ms_max",renderMsMax_.load()},{"routes",routes},{"error",error_}};
+        {"headroom_ms",headroomUs_.load()/1000.0},{"callbacks",double(callbacks_.load())},{"late_samples",double(lateSamples_.load())},{"drift_corrections",double(corrections_.load())},{"reanchors",double(reanchors_.load())},{"render_ms_max",renderMsMax_.load()},{"routes",routes},{"error",error_},{"network",backend_?backend_->details():QJsonObject{}}};
 }
 
 #ifndef MIZIN_ENABLE_ASIO

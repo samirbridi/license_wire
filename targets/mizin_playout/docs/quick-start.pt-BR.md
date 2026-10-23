@@ -50,6 +50,14 @@ Em **Áudio → Saída de baixa latência**, escolha o motor e o dispositivo e c
 
 Escolha o par de saídas de cada Program (ex.: A em 1–2, B em 3–4) — útil em interfaces com muitas saídas, como Dante. Volume, mudo e Monitoramento local de cada Program continuam valendo. **Sincronizar com o vídeo automaticamente** mede o atraso com que o vídeo é publicado e atrasa o áudio só o necessário; use **Ajuste fino** (ms) para compensar projetor/processador de LED. Se o dispositivo falhar ou for desconectado, os Programs voltam sozinhos para a saída normal. As saídas NDI, OMT e o monitor web não mudam.
 
+### Áudio em rede AES67 (compatível com Dante)
+
+Em **Áudio → Saída de baixa latência** escolha o motor **Rede AES67 (compatível com Dante)** e a placa de rede. Defina o **nome do fluxo**, quantos **canais** (até 64; cada 8 canais formam um fluxo multicast), o **endereço multicast** (automático 239.69.x.y) e a **latência do receptor** (use a mesma nos receptores). Cada Program vai para o seu par de canais, como numa interface.
+
+O fluxo é anunciado na rede (SAP), então aparece no **Dante Controller** como fluxo AES67 e em outros receptores AES67. Nos equipamentos Dante, ative o **modo AES67** pelo Dante Controller. O relógio é PTPv2: o playout segue o grandmaster da rede (um equipamento Dante em AES67 assume esse papel) e, se não houver nenhum, ele mesmo vira grandmaster. A linha de status mostra o estado do PTP. Use rede cabeada; em redes gerenciadas, libere multicast/IGMP e priorize o tráfego PTP e de áudio.
+
+O Dante nativo (sem placa virtual, com o playout aparecendo como equipamento Dante) aguarda a licença da Audinate.
+
 ## Salvamento automático, recuperação e mídias ausentes
 
 Enquanto houver alterações não salvas, o Mizin Playout grava uma cópia automática do show a cada poucos segundos na pasta de configurações. Se o aplicativo fechar sem salvar (queda, falta de energia), na próxima abertura ele pergunta se você quer restaurar essa cópia; o show volta marcado como não salvo para você salvar. Uma cópia descartada é guardada em `recovery/` (as 5 mais recentes), nunca apagada sem aviso. Ao salvar por cima de um show, a versão anterior fica ao lado como `.mizinshow.bak`.

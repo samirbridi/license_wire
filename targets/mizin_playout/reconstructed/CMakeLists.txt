@@ -30,6 +30,11 @@ if(WIN32)
 endif()
 # ADR-018 low-latency local audio (WASAPI always; ASIO only with the Steinberg SDK and its licence).
 target_sources(MizinPlayout PRIVATE src/local_audio.hpp src/local_audio.cpp src/local_audio_asio.cpp src/local_audio_tests.cpp)
+# ADR-021 AES67 network audio (PTPv2 + RTP L24 + SAP/SDP); ADR-020 keeps native Dante for the Audinate licence build.
+target_sources(MizinPlayout PRIVATE src/aes67.hpp src/aes67.cpp src/local_audio_aes67.cpp src/aes67_tests.cpp)
+if(WIN32)
+  target_link_libraries(MizinPlayout PRIVATE ws2_32 winmm)
+endif()
 # ADR-019 Mizin Link (multi-machine).
 target_sources(MizinPlayout PRIVATE src/link.hpp src/link.cpp src/link_tests.cpp)
 if(WIN32)

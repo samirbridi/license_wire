@@ -143,7 +143,7 @@ void NativeChannel::finishRange() {
     if (!preview_ && cue().exitMs>0 && !ready_) {output_={};emit frameReady(output_);}
     if (loop_) {
         ended_=false;decks_[active_].player->setPosition(cue().in);decks_[active_].audio->setMuted(true);decks_[active_].player->play();
-        syncAudioTimeline(active_,cue().in*1000);applyLocalAudio();
+        syncAudioTimeline(active_,cue().in*1000);decks_[active_].realign=true;decks_[active_].realignTargetUs=cue().in*1000;applyLocalAudio();
     } else emit rangeEnded();
     emit changed();
 }
@@ -165,8 +165,8 @@ void NativeChannel::togglePause() {
 }
 void NativeChannel::seek(qint64 ms) {
     if (path().isEmpty() || !decks_[active_].player->isSeekable()) return;
-    stopOutgoing();ended_=false;decks_[active_].player->setPosition(qBound(cue().in,ms,qMax(cue().in,rangeEnd()-1)));
-    flushAudio();syncAudioTimeline(active_,decks_[active_].player->position()*1000);
+    const qint64 target=qBound(cue().in,ms,qMax(cue().in,rangeEnd()-1));stopOutgoing();ended_=false;decks_[active_].player->setPosition(target);
+    flushAudio();syncAudioTimeline(active_,decks_[active_].player->position()*1000);decks_[active_].realign=true;decks_[active_].realignTargetUs=target*1000;
 }
 void NativeChannel::black() {
     cancelPrepared();outgoing_=-1;ended_=false;pausedAtUs_=-1;
@@ -218,7 +218,13 @@ void NativeChannel::flushAudio(){audioMix_.clear();emit audioReset();}
 void NativeChannel::receiveAudio(int i,const QAudioBuffer& b){
     if(preview_ || !b.isValid() || ended_ || (i!=active_ && i!=outgoing_) || decks_[i].player->playbackState()!=QMediaPlayer::PlayingState)return;
     const auto f=b.format();if(f.sampleRate()!=48000 || f.channelCount()!=2 || f.sampleFormat()!=QAudioFormat::Float){emit audioWarning("Unsupported decoded audio format; network audio requires stereo float 48 kHz");return;}
-    const auto& d=decks_[i];const qint64 start=b.startTime()>=0?b.startTime():d.player->position()*1000;
+    const qint64 start=b.startTime()>=0?b.startTime():decks_[i].player->position()*1000;
+    // Buffers decoded before the seek can still arrive (and position() can still report the old place): only a buffer
+    // from the seek target re-anchors the timeline, at the presented position when that is already updated.
+    if(decks_[i].realign){const qint64 target=decks_[i].realignTargetUs;if(start<target-50000||start>target+2000000)return;
+        // Never anchor this buffer in the past (the engine would read a gap and raise its headroom for good).
+        qint64 media=decks_[i].player->position()*1000;if(media<target-50000||media>start)media=start;decks_[i].realign=false;syncAudioTimeline(i,media);}
+    const auto& d=decks_[i];
     const int first=int(qMax<qint64>(0,(d.cue.in*1000-start)*48/1000));const int end=qMin(b.frameCount(),int(qMax<qint64>(0,(d.cue.end(d.player->duration())*1000-start)*48/1000)));
     if(first>=end)return;const qint64 firstSample=(d.offsetUs+start)*48/1000+first;
     if(firstSample>audioCursor_+AudioMixRing::capacity || firstSample+end-first<audioCursor_)return;
