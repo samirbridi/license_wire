@@ -1,5 +1,21 @@
 # CHANGELOG — Mizin Playout
 
+## v0.27.0 (build 0058) - 2026-10-22
+
+### 💥 Breaking Changes
+- None.
+
+### ✨ Features
+- feat: adiciona saida de audio em rede AES67 compativel com Dante com relogio PTPv2 (0c63052aaab90832fad8989eddae5b3b554fad14)
+
+### 🐛 Fixes
+- None.
+
+### ⚡ Improvements
+- improve: registra publicacao do build 0057 com disparo sincronizado, area por saida e controle remoto (ead4c8528e5f9b662b8de09b1bccbd3d28771169)
+- improve: site corrige proximos passos com controle remoto ja entregue e Dante via ASIO ou nativo (4d53f6409248c2ba3c7cb8c4364fafbdf5def38b)
+- improve: registra plano do Dante nativo via Dante Application Library (26c75f2ffcb7d2562c653505df1be56cf94220c2)
+
 ## v0.26.0 (build 0057) - 2026-10-22
 
 ### 💥 Breaking Changes

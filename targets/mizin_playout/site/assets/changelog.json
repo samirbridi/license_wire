@@ -1,5 +1,23 @@
 [
   {
+    "version": "v0.27.0 (build 0058)",
+    "date": "2026-10-22",
+    "notes": {
+      "en": [
+        "AES67 network audio (Dante-compatible): the low-latency output can send every Program over the network as AES67 — up to 64 channels at 48 kHz/24-bit, 1 ms packets, announced by SAP so it appears in Dante Controller and other AES67 receivers.",
+        "Built-in PTPv2 clock: follows the network grandmaster (e.g. a Dante device in AES67 mode) or becomes the grandmaster when there is none; the status line shows the clock state.",
+        "Fix: after a loop or seek, Program audio could stay silent on the low-latency output, NDI/OMT and the web monitor when the player was slow to resume; the audio timeline now re-anchors on the first new audio.",
+        "Native Dante (Audinate licence) is prepared in the engine and listed as coming soon."
+      ],
+      "pt-BR": [
+        "Áudio em rede AES67 (compatível com Dante): a saída de baixa latência pode enviar cada Program pela rede em AES67 — até 64 canais a 48 kHz/24 bits, pacotes de 1 ms, anunciados por SAP para aparecer no Dante Controller e em outros receptores AES67.",
+        "Relógio PTPv2 embutido: segue o grandmaster da rede (por exemplo, um equipamento Dante em modo AES67) ou vira o grandmaster quando não há nenhum; a linha de status mostra o estado do relógio.",
+        "Correção: depois de um loop ou seek, o áudio do Program podia ficar mudo na saída de baixa latência, no NDI/OMT e no monitor web quando o player demorava a retomar; a linha do tempo do áudio agora se realinha no primeiro áudio novo.",
+        "O Dante nativo (licença Audinate) está preparado no motor e aparece como em breve."
+      ]
+    }
+  },
+  {
     "version": "v0.26.0 (build 0057)",
     "date": "2026-10-22",
     "notes": {
