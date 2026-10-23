@@ -1,0 +1,73 @@
+{
+  "name": "Slice",
+  "class_id": "77697265-e3c1-924b-ae61-f4cb3f3f3ce9",
+  "color": 0,
+  "main_inlet": "input",
+  "main_outlet": "output",
+  "inlets": [
+    {
+      "id": "instances",
+      "name": "Instances",
+      "description": null,
+      "bundle": {
+        "data_type": "int",
+        "flow": "attribute",
+        "dimensions": []
+      },
+      "connectable": false,
+      "read_only": false,
+      "is_main": false,
+      "visible": false,
+      "value": 1,
+      "unit": "none",
+      "precision": 6,
+      "increment": 0.005,
+      "number_view": "slider",
+      "bool_view": "toggle",
+      "option_set_view": "buttons",
+      "is_multi_line": true,
+      "range": {
+        "min": 1,
+        "max": null
+      },
+      "choices": null
+    },
+    {
+      "id": "input",
+      "name": "Slice",
+      "description": "The value to pass through as a Slice.",
+      "bundle": {
+        "data_type": "slice",
+        "flow": "signal",
+        "dimensions": []
+      },
+      "connectable": true,
+      "read_only": false,
+      "is_main": true,
+      "visible": true,
+      "value": null,
+      "unit": "none",
+      "precision": 6,
+      "increment": 0.005,
+      "number_view": "slider",
+      "bool_view": "toggle",
+      "option_set_view": "buttons",
+      "is_multi_line": true
+    }
+  ],
+  "outlets": [
+    {
+      "id": "output",
+      "name": "Output",
+      "description": "The value as a Slice.",
+      "bundle": {
+        "data_type": "slice",
+        "flow": "signal",
+        "dimensions": []
+      },
+      "connectable": true,
+      "is_main": true,
+      "visible": true
+    }
+  ]
+}

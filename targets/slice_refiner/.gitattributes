@@ -1,0 +1,2 @@
+# Preserve raw decompiler formatting, including its trailing whitespace.
+evidence/bundle-*.c -whitespace

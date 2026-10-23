@@ -1,0 +1,62 @@
+{
+  "name": "Patch Info",
+  "class_id": "77697265-ec64-44f7-b446-de2a0220c5b8",
+  "color": 0,
+  "main_inlet": null,
+  "main_outlet": null,
+  "inlets": [],
+  "outlets": [
+    {
+      "id": "name",
+      "name": "Name",
+      "description": "Patch display name.",
+      "bundle": {
+        "data_type": "string",
+        "flow": "signal",
+        "dimensions": []
+      },
+      "connectable": true,
+      "is_main": false,
+      "visible": true
+    },
+    {
+      "id": "resolution",
+      "name": "Resolution",
+      "description": "Video resolution in pixels (width, height).",
+      "bundle": {
+        "data_type": "float_2",
+        "flow": "signal",
+        "dimensions": []
+      },
+      "connectable": true,
+      "is_main": false,
+      "visible": true
+    },
+    {
+      "id": "aspectratio",
+      "name": "Aspect Ratio",
+      "description": "Width divided by height.",
+      "bundle": {
+        "data_type": "float",
+        "flow": "signal",
+        "dimensions": []
+      },
+      "connectable": true,
+      "is_main": false,
+      "visible": true
+    },
+    {
+      "id": "bitDepth",
+      "name": "Bit Depth",
+      "description": "Bits per color channel.",
+      "bundle": {
+        "data_type": "int",
+        "flow": "signal",
+        "dimensions": []
+      },
+      "connectable": true,
+      "is_main": false,
+      "visible": true
+    }
+  ]
+}

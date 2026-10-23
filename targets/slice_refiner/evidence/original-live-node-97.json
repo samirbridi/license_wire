@@ -1,0 +1,624 @@
+{
+  "id": 97,
+  "position": {
+    "x": 3540.09912109375,
+    "y": 2439.524169921875
+  },
+  "size": {
+    "width": 195.0,
+    "height": 154.0
+  },
+  "name": "Slice Render",
+  "class_id": "77697265-e8ec-4f1b-901a-cffc174d3b07",
+  "color": 0,
+  "main_inlet": "slice",
+  "main_outlet": "output0",
+  "inlets": [
+    {
+      "id": "slice-dimensions",
+      "name": "Slice Dimensions",
+      "description": null,
+      "bundle": {
+        "data_type": "int",
+        "flow": "attribute",
+        "dimensions": []
+      },
+      "connectable": false,
+      "read_only": true,
+      "is_main": false,
+      "visible": false,
+      "value": 8,
+      "unit": "none",
+      "precision": 6,
+      "increment": 0.005,
+      "number_view": "slider",
+      "bool_view": "toggle",
+      "option_set_view": "buttons",
+      "is_multi_line": true,
+      "range": {
+        "min": null,
+        "max": null
+      },
+      "choices": null
+    },
+    {
+      "id": "material-dimensions",
+      "name": "Material Dimensions",
+      "description": null,
+      "bundle": {
+        "data_type": "int",
+        "flow": "attribute",
+        "dimensions": []
+      },
+      "connectable": false,
+      "read_only": true,
+      "is_main": false,
+      "visible": false,
+      "value": 1,
+      "unit": "none",
+      "precision": 6,
+      "increment": 0.005,
+      "number_view": "slider",
+      "bool_view": "toggle",
+      "option_set_view": "buttons",
+      "is_multi_line": true,
+      "range": {
+        "min": null,
+        "max": null
+      },
+      "choices": null
+    },
+    {
+      "id": "mode-dimensions",
+      "name": "Mode Dimensions",
+      "description": null,
+      "bundle": {
+        "data_type": "int",
+        "flow": "attribute",
+        "dimensions": []
+      },
+      "connectable": false,
+      "read_only": true,
+      "is_main": false,
+      "visible": false,
+      "value": 1,
+      "unit": "none",
+      "precision": 6,
+      "increment": 0.005,
+      "number_view": "slider",
+      "bool_view": "toggle",
+      "option_set_view": "buttons",
+      "is_multi_line": true,
+      "range": {
+        "min": null,
+        "max": null
+      },
+      "choices": null
+    },
+    {
+      "id": "tex-mode-dimensions",
+      "name": "Scaling Dimensions",
+      "description": null,
+      "bundle": {
+        "data_type": "int",
+        "flow": "attribute",
+        "dimensions": []
+      },
+      "connectable": false,
+      "read_only": true,
+      "is_main": false,
+      "visible": false,
+      "value": 1,
+      "unit": "none",
+      "precision": 6,
+      "increment": 0.005,
+      "number_view": "slider",
+      "bool_view": "toggle",
+      "option_set_view": "buttons",
+      "is_multi_line": true,
+      "range": {
+        "min": null,
+        "max": null
+      },
+      "choices": null
+    },
+    {
+      "id": "slice",
+      "name": "Slice",
+      "description": "The slice(s) to render.",
+      "bundle": {
+        "data_type": "slice",
+        "flow": "signal",
+        "dimensions": [
+          {
+            "type": "static",
+            "value": 8
+          }
+        ]
+      },
+      "connectable": true,
+      "read_only": false,
+      "is_main": true,
+      "visible": true,
+      "value": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "unit": "none",
+      "precision": 6,
+      "increment": 0.005,
+      "number_view": "slider",
+      "bool_view": "toggle",
+      "option_set_view": "buttons",
+      "is_multi_line": true
+    },
+    {
+      "id": "material",
+      "name": "Material",
+      "description": "The material applied to the rendered slice(s).",
+      "bundle": {
+        "data_type": "material",
+        "flow": "signal",
+        "dimensions": []
+      },
+      "connectable": true,
+      "read_only": false,
+      "is_main": false,
+      "visible": true,
+      "value": null,
+      "unit": "none",
+      "precision": 6,
+      "increment": 0.005,
+      "number_view": "slider",
+      "bool_view": "toggle",
+      "option_set_view": "buttons",
+      "is_multi_line": true
+    },
+    {
+      "id": "mode",
+      "name": "Mode",
+      "description": "Whether to include the slice's mask when rendering.",
+      "bundle": {
+        "data_type": "int",
+        "flow": "attribute",
+        "dimensions": []
+      },
+      "connectable": true,
+      "read_only": false,
+      "is_main": false,
+      "visible": true,
+      "value": 1,
+      "unit": "none",
+      "precision": 6,
+      "increment": 0.005,
+      "number_view": "slider",
+      "bool_view": "toggle",
+      "option_set_view": "buttons",
+      "is_multi_line": true,
+      "range": {
+        "min": null,
+        "max": null
+      },
+      "choices": [
+        {
+          "label": "Auto",
+          "value": 0
+        },
+        {
+          "label": "Ignore Mask",
+          "value": 1
+        }
+      ]
+    },
+    {
+      "id": "tex-mode",
+      "name": "Scaling",
+      "description": "How the material texture is fitted to the slice.",
+      "bundle": {
+        "data_type": "int",
+        "flow": "signal",
+        "dimensions": []
+      },
+      "connectable": true,
+      "read_only": false,
+      "is_main": false,
+      "visible": true,
+      "value": 0,
+      "unit": "none",
+      "precision": 6,
+      "increment": 0.005,
+      "number_view": "slider",
+      "bool_view": "toggle",
+      "option_set_view": "dropdown",
+      "is_multi_line": true,
+      "range": {
+        "min": null,
+        "max": null
+      },
+      "choices": [
+        {
+          "label": "None",
+          "value": 0
+        },
+        {
+          "label": "Fit",
+          "value": 1
+        },
+        {
+          "label": "Fill",
+          "value": 2
+        },
+        {
+          "label": "Stretch",
+          "value": 3
+        }
+      ]
+    },
+    {
+      "id": "resolution-mode",
+      "name": "Resolution Mode",
+      "description": null,
+      "bundle": {
+        "data_type": "int",
+        "flow": "attribute",
+        "dimensions": []
+      },
+      "connectable": false,
+      "read_only": false,
+      "is_main": false,
+      "visible": false,
+      "value": 0,
+      "unit": "none",
+      "precision": 6,
+      "increment": 0.005,
+      "number_view": "slider",
+      "bool_view": "toggle",
+      "option_set_view": "buttons",
+      "is_multi_line": true,
+      "range": {
+        "min": 0,
+        "max": 1
+      },
+      "choices": [
+        {
+          "label": "Relative",
+          "value": 0
+        },
+        {
+          "label": "Absolute",
+          "value": 1
+        }
+      ]
+    },
+    {
+      "id": "resolution-relative",
+      "name": "Resolution",
+      "description": null,
+      "bundle": {
+        "data_type": "float_2",
+        "flow": "attribute",
+        "dimensions": []
+      },
+      "connectable": true,
+      "read_only": false,
+      "is_main": false,
+      "visible": true,
+      "value": {
+        "x": 1.0,
+        "y": 1.0
+      },
+      "unit": "factor",
+      "precision": 6,
+      "increment": 0.005,
+      "number_view": "slider",
+      "bool_view": "toggle",
+      "option_set_view": "menu",
+      "is_multi_line": true,
+      "range": {
+        "min": {
+          "x": 0.0010000000474974513,
+          "y": 0.0010000000474974513
+        },
+        "max": null
+      },
+      "choices": [
+        {
+          "label": "Patch Size",
+          "value": {
+            "x": 1.0,
+            "y": 1.0
+          }
+        },
+        {
+          "label": "1/8 Patch Size",
+          "value": {
+            "x": 0.125,
+            "y": 0.125
+          }
+        },
+        {
+          "label": "1/4 Patch Size",
+          "value": {
+            "x": 0.25,
+            "y": 0.25
+          }
+        },
+        {
+          "label": "1/2 Patch Size",
+          "value": {
+            "x": 0.5,
+            "y": 0.5
+          }
+        },
+        {
+          "label": "2x Patch Size",
+          "value": {
+            "x": 2.0,
+            "y": 2.0
+          }
+        },
+        {
+          "label": "4x Patch Size",
+          "value": {
+            "x": 4.0,
+            "y": 4.0
+          }
+        },
+        {
+          "label": "8x Patch Size",
+          "value": {
+            "x": 8.0,
+            "y": 8.0
+          }
+        }
+      ]
+    },
+    {
+      "id": "resolution-absolute",
+      "name": "Resolution",
+      "description": null,
+      "bundle": {
+        "data_type": "float_2",
+        "flow": "attribute",
+        "dimensions": []
+      },
+      "connectable": false,
+      "read_only": true,
+      "is_main": false,
+      "visible": false,
+      "value": {
+        "x": 1920.0,
+        "y": 1080.0
+      },
+      "unit": "pixels",
+      "precision": 0,
+      "increment": 0.005,
+      "number_view": "slider",
+      "bool_view": "toggle",
+      "option_set_view": "menu",
+      "is_multi_line": true,
+      "range": {
+        "min": {
+          "x": 1.0,
+          "y": 1.0
+        },
+        "max": {
+          "x": 32768.0,
+          "y": 32768.0
+        }
+      },
+      "choices": [
+        {
+          "label": "7680 x 4320 (8K Ultra HD)",
+          "value": {
+            "x": 7680.0,
+            "y": 4320.0
+          }
+        },
+        {
+          "label": "5120 x 2880 (5K Ultra HD)",
+          "value": {
+            "x": 5120.0,
+            "y": 2880.0
+          }
+        },
+        {
+          "label": "3840 x 2160 (4K Ultra HD)",
+          "value": {
+            "x": 3840.0,
+            "y": 2160.0
+          }
+        },
+        {
+          "label": "2560 x 1440 (1440p, Quad HD)",
+          "value": {
+            "x": 2560.0,
+            "y": 1440.0
+          }
+        },
+        {
+          "label": "1920 x 1200 (WUXGA)",
+          "value": {
+            "x": 1920.0,
+            "y": 1200.0
+          }
+        },
+        {
+          "label": "1920 x 1080 (1080p, Full HD)",
+          "value": {
+            "x": 1920.0,
+            "y": 1080.0
+          }
+        },
+        {
+          "label": "1600 x 1200 (UXGA)",
+          "value": {
+            "x": 1600.0,
+            "y": 1200.0
+          }
+        },
+        {
+          "label": "1600 x 900 (HD+)",
+          "value": {
+            "x": 1600.0,
+            "y": 900.0
+          }
+        },
+        {
+          "label": "1366 x 768 (FWXGA)",
+          "value": {
+            "x": 1366.0,
+            "y": 768.0
+          }
+        },
+        {
+          "label": "1280 x 1024 (SXGA)",
+          "value": {
+            "x": 1280.0,
+            "y": 1024.0
+          }
+        },
+        {
+          "label": "1280 x 800 (WXGA)",
+          "value": {
+            "x": 1280.0,
+            "y": 800.0
+          }
+        },
+        {
+          "label": "1280 x 720 (720p, HD)",
+          "value": {
+            "x": 1280.0,
+            "y": 720.0
+          }
+        },
+        {
+          "label": "1024 x 768 (XGA)",
+          "value": {
+            "x": 1024.0,
+            "y": 768.0
+          }
+        },
+        {
+          "label": "960 x 540 (qHD)",
+          "value": {
+            "x": 960.0,
+            "y": 540.0
+          }
+        },
+        {
+          "label": "800 x 600 (SVGA)",
+          "value": {
+            "x": 800.0,
+            "y": 600.0
+          }
+        },
+        {
+          "label": "640 x 480 (VGA)",
+          "value": {
+            "x": 640.0,
+            "y": 480.0
+          }
+        },
+        {
+          "label": "640 x 360 (nHD)",
+          "value": {
+            "x": 640.0,
+            "y": 360.0
+          }
+        }
+      ]
+    },
+    {
+      "id": "bitdepth",
+      "name": "Bit Depth",
+      "description": null,
+      "bundle": {
+        "data_type": "int",
+        "flow": "attribute",
+        "dimensions": []
+      },
+      "connectable": true,
+      "read_only": false,
+      "is_main": false,
+      "visible": true,
+      "value": 0,
+      "unit": "none",
+      "precision": 6,
+      "increment": 0.005,
+      "number_view": "slider",
+      "bool_view": "toggle",
+      "option_set_view": "buttons",
+      "is_multi_line": true,
+      "range": {
+        "min": 0,
+        "max": 4
+      },
+      "choices": [
+        {
+          "label": "Patch Bit Depth",
+          "value": 0
+        },
+        {
+          "label": "8bpc (int)",
+          "value": 1
+        },
+        {
+          "label": "16bpc (int)",
+          "value": 2
+        },
+        {
+          "label": "16bpc (float)",
+          "value": 3
+        },
+        {
+          "label": "32bpc (float)",
+          "value": 4
+        }
+      ]
+    },
+    {
+      "id": "reduce",
+      "name": "Instanced Output",
+      "description": null,
+      "bundle": {
+        "data_type": "bool",
+        "flow": "attribute",
+        "dimensions": []
+      },
+      "connectable": true,
+      "read_only": false,
+      "is_main": false,
+      "visible": false,
+      "value": false,
+      "unit": "none",
+      "precision": 6,
+      "increment": 0.005,
+      "number_view": "slider",
+      "bool_view": "toggle",
+      "option_set_view": "buttons",
+      "is_multi_line": true
+    }
+  ],
+  "outlets": [
+    {
+      "id": "output0",
+      "name": "Output",
+      "description": "The rendered frame.",
+      "bundle": {
+        "data_type": "texture_2d_rgba",
+        "flow": "signal",
+        "dimensions": []
+      },
+      "connectable": true,
+      "is_main": true,
+      "visible": true
+    }
+  ]
+}

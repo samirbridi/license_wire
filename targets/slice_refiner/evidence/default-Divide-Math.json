@@ -1,0 +1,278 @@
+{
+  "name": "Divide",
+  "class_id": "77697265-0d55-485e-813d-706dd5dfe88d",
+  "color": 0,
+  "main_inlet": null,
+  "main_outlet": "output0",
+  "inlets": [
+    {
+      "id": "flow",
+      "name": "Flow",
+      "description": null,
+      "bundle": {
+        "data_type": "flow",
+        "flow": "attribute",
+        "dimensions": []
+      },
+      "connectable": false,
+      "read_only": true,
+      "is_main": false,
+      "visible": false,
+      "value": "event",
+      "unit": "none",
+      "precision": 6,
+      "increment": 0.005,
+      "number_view": "slider",
+      "bool_view": "toggle",
+      "option_set_view": "buttons",
+      "is_multi_line": true,
+      "choices": null
+    },
+    {
+      "id": "size",
+      "name": "Inputs",
+      "description": null,
+      "bundle": {
+        "data_type": "int",
+        "flow": "attribute",
+        "dimensions": []
+      },
+      "connectable": false,
+      "read_only": false,
+      "is_main": false,
+      "visible": false,
+      "value": 2,
+      "unit": "none",
+      "precision": 6,
+      "increment": 0.005,
+      "number_view": "spinner",
+      "bool_view": "toggle",
+      "option_set_view": "buttons",
+      "is_multi_line": true,
+      "range": {
+        "min": 2,
+        "max": 25
+      },
+      "choices": null
+    },
+    {
+      "id": "input0",
+      "name": "Numerator",
+      "description": "The numerator to be divided",
+      "bundle": {
+        "data_type": "float",
+        "flow": "event",
+        "dimensions": []
+      },
+      "connectable": true,
+      "read_only": false,
+      "is_main": false,
+      "visible": true,
+      "value": 1.0,
+      "unit": "none",
+      "precision": 6,
+      "increment": 0.005,
+      "number_view": "slider",
+      "bool_view": "toggle",
+      "option_set_view": "buttons",
+      "is_multi_line": true,
+      "range": {
+        "min": null,
+        "max": null
+      },
+      "choices": null
+    },
+    {
+      "id": "input0-dimensions",
+      "name": "Input 0 Dimensions",
+      "description": null,
+      "bundle": {
+        "data_type": "int",
+        "flow": "attribute",
+        "dimensions": []
+      },
+      "connectable": false,
+      "read_only": true,
+      "is_main": false,
+      "visible": false,
+      "value": 1,
+      "unit": "none",
+      "precision": 6,
+      "increment": 0.005,
+      "number_view": "slider",
+      "bool_view": "toggle",
+      "option_set_view": "buttons",
+      "is_multi_line": true,
+      "range": {
+        "min": null,
+        "max": null
+      },
+      "choices": null
+    },
+    {
+      "id": "type0",
+      "name": "Input Type 0",
+      "description": null,
+      "bundle": {
+        "data_type": "data_type",
+        "flow": "attribute",
+        "dimensions": []
+      },
+      "connectable": false,
+      "read_only": true,
+      "is_main": false,
+      "visible": false,
+      "value": "float",
+      "unit": "none",
+      "precision": 6,
+      "increment": 0.005,
+      "number_view": "slider",
+      "bool_view": "toggle",
+      "option_set_view": "buttons",
+      "is_multi_line": true,
+      "choices": [
+        {
+          "label": "Float",
+          "value": "float"
+        },
+        {
+          "label": "Float2",
+          "value": "float_2"
+        },
+        {
+          "label": "Float3",
+          "value": "float_3"
+        },
+        {
+          "label": "Float4",
+          "value": "float_4"
+        },
+        {
+          "label": "Texture2d Channel",
+          "value": "texture_2d_r"
+        },
+        {
+          "label": "Texture2d RGBA",
+          "value": "texture_2d_rgba"
+        }
+      ]
+    },
+    {
+      "id": "input1",
+      "name": "Denominator",
+      "description": "The denominator to divide by",
+      "bundle": {
+        "data_type": "float",
+        "flow": "event",
+        "dimensions": []
+      },
+      "connectable": true,
+      "read_only": false,
+      "is_main": false,
+      "visible": true,
+      "value": 1.0,
+      "unit": "none",
+      "precision": 6,
+      "increment": 0.005,
+      "number_view": "slider",
+      "bool_view": "toggle",
+      "option_set_view": "buttons",
+      "is_multi_line": true,
+      "range": {
+        "min": null,
+        "max": null
+      },
+      "choices": null
+    },
+    {
+      "id": "input1-dimensions",
+      "name": "Input 1 Dimensions",
+      "description": null,
+      "bundle": {
+        "data_type": "int",
+        "flow": "attribute",
+        "dimensions": []
+      },
+      "connectable": false,
+      "read_only": true,
+      "is_main": false,
+      "visible": false,
+      "value": 1,
+      "unit": "none",
+      "precision": 6,
+      "increment": 0.005,
+      "number_view": "slider",
+      "bool_view": "toggle",
+      "option_set_view": "buttons",
+      "is_multi_line": true,
+      "range": {
+        "min": null,
+        "max": null
+      },
+      "choices": null
+    },
+    {
+      "id": "type1",
+      "name": "Input Type 1",
+      "description": null,
+      "bundle": {
+        "data_type": "data_type",
+        "flow": "attribute",
+        "dimensions": []
+      },
+      "connectable": false,
+      "read_only": true,
+      "is_main": false,
+      "visible": false,
+      "value": "float",
+      "unit": "none",
+      "precision": 6,
+      "increment": 0.005,
+      "number_view": "slider",
+      "bool_view": "toggle",
+      "option_set_view": "buttons",
+      "is_multi_line": true,
+      "choices": [
+        {
+          "label": "Float",
+          "value": "float"
+        },
+        {
+          "label": "Float2",
+          "value": "float_2"
+        },
+        {
+          "label": "Float3",
+          "value": "float_3"
+        },
+        {
+          "label": "Float4",
+          "value": "float_4"
+        },
+        {
+          "label": "Texture2d Channel",
+          "value": "texture_2d_r"
+        },
+        {
+          "label": "Texture2d RGBA",
+          "value": "texture_2d_rgba"
+        }
+      ]
+    }
+  ],
+  "outlets": [
+    {
+      "id": "output0",
+      "name": "Output",
+      "description": "The result of the division",
+      "bundle": {
+        "data_type": "float",
+        "flow": "event",
+        "dimensions": []
+      },
+      "connectable": true,
+      "is_main": true,
+      "visible": true
+    }
+  ]
+}

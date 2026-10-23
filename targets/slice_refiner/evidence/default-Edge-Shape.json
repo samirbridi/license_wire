@@ -1,0 +1,140 @@
+{
+  "name": "Edge",
+  "class_id": "77697265-ab950887-37ee-4fd2-9487-c856b6b75c83",
+  "color": 0,
+  "main_inlet": "input",
+  "main_outlet": "output",
+  "inlets": [
+    {
+      "id": "instances",
+      "name": "Instances",
+      "description": null,
+      "bundle": {
+        "data_type": "int",
+        "flow": "attribute",
+        "dimensions": []
+      },
+      "connectable": false,
+      "read_only": true,
+      "is_main": false,
+      "visible": false,
+      "value": 1,
+      "unit": "none",
+      "precision": 6,
+      "increment": 0.005,
+      "number_view": "slider",
+      "bool_view": "toggle",
+      "option_set_view": "buttons",
+      "is_multi_line": true,
+      "range": {
+        "min": 1,
+        "max": null
+      },
+      "choices": null
+    },
+    {
+      "id": "mode",
+      "name": "Mode",
+      "description": "Where the edge is placed relative to the shape boundary.",
+      "bundle": {
+        "data_type": "int",
+        "flow": "attribute",
+        "dimensions": []
+      },
+      "connectable": true,
+      "read_only": false,
+      "is_main": false,
+      "visible": false,
+      "value": 0,
+      "unit": "none",
+      "precision": 6,
+      "increment": 0.005,
+      "number_view": "slider",
+      "bool_view": "toggle",
+      "option_set_view": "buttons",
+      "is_multi_line": true,
+      "range": {
+        "min": 0,
+        "max": 2
+      },
+      "choices": [
+        {
+          "label": "Inner",
+          "value": 0
+        },
+        {
+          "label": "Outer",
+          "value": 1
+        },
+        {
+          "label": "Both",
+          "value": 2
+        }
+      ]
+    },
+    {
+      "id": "input",
+      "name": "Input",
+      "description": "The shape to extract edges from.",
+      "bundle": {
+        "data_type": "procedural",
+        "flow": "signal",
+        "dimensions": []
+      },
+      "connectable": true,
+      "read_only": false,
+      "is_main": true,
+      "visible": true,
+      "value": null,
+      "unit": "none",
+      "precision": 6,
+      "increment": 0.005,
+      "number_view": "slider",
+      "bool_view": "toggle",
+      "option_set_view": "buttons",
+      "is_multi_line": true
+    },
+    {
+      "id": "thickness",
+      "name": "Thickness",
+      "description": "The width of the edge stroke.",
+      "bundle": {
+        "data_type": "float",
+        "flow": "signal",
+        "dimensions": []
+      },
+      "connectable": true,
+      "read_only": false,
+      "is_main": false,
+      "visible": true,
+      "value": 0.05000000074505806,
+      "unit": "none",
+      "precision": 6,
+      "increment": 0.005,
+      "number_view": "slider",
+      "bool_view": "toggle",
+      "option_set_view": "buttons",
+      "is_multi_line": true,
+      "range": {
+        "min": 0.0,
+        "max": 1.0
+      },
+      "choices": null
+    }
+  ],
+  "outlets": [
+    {
+      "id": "output",
+      "name": "Output",
+      "description": "The edge outline of the shape.",
+      "bundle": {
+        "data_type": "procedural",
+        "flow": "signal",
+        "dimensions": []
+      },
+      "connectable": true,
+      "is_main": true,
+      "visible": true
+    }
+  ]
+}

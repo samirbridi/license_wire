@@ -1,0 +1,175 @@
+{
+  "name": "Color",
+  "class_id": "77697265-8035-4fab-a688-52338c6b4748",
+  "color": 0,
+  "main_inlet": null,
+  "main_outlet": "output0",
+  "inlets": [
+    {
+      "id": "input0-type",
+      "name": "Input Type",
+      "description": null,
+      "bundle": {
+        "data_type": "data_type",
+        "flow": "attribute",
+        "dimensions": []
+      },
+      "connectable": false,
+      "read_only": true,
+      "is_main": false,
+      "visible": false,
+      "value": "color",
+      "unit": "none",
+      "precision": 6,
+      "increment": 0.005,
+      "number_view": "slider",
+      "bool_view": "toggle",
+      "option_set_view": "buttons",
+      "is_multi_line": true,
+      "choices": [
+        {
+          "label": "Color",
+          "value": "color"
+        },
+        {
+          "label": "String",
+          "value": "string"
+        }
+      ]
+    },
+    {
+      "id": "input1-type",
+      "name": "Default Type",
+      "description": null,
+      "bundle": {
+        "data_type": "data_type",
+        "flow": "attribute",
+        "dimensions": []
+      },
+      "connectable": false,
+      "read_only": true,
+      "is_main": false,
+      "visible": false,
+      "value": "nil",
+      "unit": "none",
+      "precision": 6,
+      "increment": 0.005,
+      "number_view": "slider",
+      "bool_view": "toggle",
+      "option_set_view": "buttons",
+      "is_multi_line": true,
+      "choices": [
+        {
+          "label": "Color",
+          "value": "color"
+        }
+      ]
+    },
+    {
+      "id": "flow",
+      "name": "Flow",
+      "description": null,
+      "bundle": {
+        "data_type": "flow",
+        "flow": "attribute",
+        "dimensions": []
+      },
+      "connectable": false,
+      "read_only": false,
+      "is_main": false,
+      "visible": false,
+      "value": "signal",
+      "unit": "none",
+      "precision": 6,
+      "increment": 0.005,
+      "number_view": "slider",
+      "bool_view": "toggle",
+      "option_set_view": "buttons",
+      "is_multi_line": true,
+      "choices": [
+        {
+          "label": "Event",
+          "value": "event"
+        },
+        {
+          "label": "Signal",
+          "value": "signal"
+        },
+        {
+          "label": "Attribute",
+          "value": "attribute"
+        }
+      ]
+    },
+    {
+      "id": "instances",
+      "name": "Instances",
+      "description": null,
+      "bundle": {
+        "data_type": "int",
+        "flow": "attribute",
+        "dimensions": []
+      },
+      "connectable": false,
+      "read_only": false,
+      "is_main": false,
+      "visible": false,
+      "value": 1,
+      "unit": "none",
+      "precision": 6,
+      "increment": 0.005,
+      "number_view": "slider",
+      "bool_view": "toggle",
+      "option_set_view": "buttons",
+      "is_multi_line": true,
+      "range": {
+        "min": 1,
+        "max": null
+      },
+      "choices": null
+    },
+    {
+      "id": "input0",
+      "name": "Input",
+      "description": "The color value to pass through, or a hex string to parse.",
+      "bundle": {
+        "data_type": "color",
+        "flow": "signal",
+        "dimensions": []
+      },
+      "connectable": true,
+      "read_only": false,
+      "is_main": false,
+      "visible": true,
+      "value": {
+        "r": 1.0,
+        "g": 1.0,
+        "b": 1.0,
+        "a": 1.0
+      },
+      "unit": "none",
+      "precision": 6,
+      "increment": 0.005,
+      "number_view": "slider",
+      "bool_view": "toggle",
+      "option_set_view": "buttons",
+      "is_multi_line": true,
+      "choices": null
+    }
+  ],
+  "outlets": [
+    {
+      "id": "output0",
+      "name": "Output",
+      "description": "The color.",
+      "bundle": {
+        "data_type": "color",
+        "flow": "signal",
+        "dimensions": []
+      },
+      "connectable": true,
+      "is_main": true,
+      "visible": true
+    }
+  ]
+}

@@ -1,0 +1,27 @@
+{
+  "description": "",
+  "display_name": "",
+  "category": "none",
+  "video": {
+    "resolution": {
+      "width": 1920,
+      "height": 1080
+    }
+  },
+  "credits": {
+    "author": "Mizin",
+    "vendor": "",
+    "email": "",
+    "url": ""
+  },
+  "license": {
+    "name": "",
+    "file": ""
+  },
+  "identifier": "cf6abb1b-30f7-469e-894b-dd76e37176ba",
+  "note": {
+    "text": "",
+    "size": 3,
+    "color": 1
+  }
+}

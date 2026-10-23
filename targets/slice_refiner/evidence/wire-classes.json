@@ -1,0 +1,4095 @@
+{
+  "total": 377,
+  "offset": 0,
+  "limit": 2000,
+  "items": [
+    {
+      "id": "15e12d26-5333-4c76-a442-6d142de00cfb",
+      "name": "Factorial",
+      "description": "Outputs x!, the product of all integers from 1 to x.",
+      "category": "Math",
+      "tags": [
+        "math"
+      ],
+      "version": 0
+    },
+    {
+      "id": "33227265-633d-4354-bed8-73cdee0337c7",
+      "name": "Grid Pattern",
+      "description": "Outputs a grid of 2D points or boxes, arranged in rows by columns.",
+      "category": "Pattern",
+      "tags": [],
+      "version": 3
+    },
+    {
+      "id": "33227265-633d-4354-bed8-73e0d30337c7",
+      "name": "Circle Pattern",
+      "description": "Outputs a set of 2D points evenly spaced along a circular arc. Angle sets how much of the full circle the arc spans. Start Angle rotates the first point.",
+      "category": "Pattern",
+      "tags": [],
+      "version": 2
+    },
+    {
+      "id": "676d9dbb-0197-4b23-a215-73d8467ad98e",
+      "name": "Box 2D",
+      "description": "Outputs a box defined by two corner points. Used wherever a node needs a 2D region, like a camera viewport or UV rectangle.",
+      "category": "2D",
+      "tags": [
+        "bounding",
+        "box",
+        "2d",
+        "renderer",
+        "geometry"
+      ],
+      "version": 1
+    },
+    {
+      "id": "676d9dbb-9f0c-4090-a7bd-520dd46be378",
+      "name": "Intersect",
+      "description": "Tests whether two boxes overlap. Useful for collision detection and region tests.",
+      "category": "2D",
+      "tags": [
+        "bounding",
+        "box",
+        "2d",
+        "intersect",
+        "overlap"
+      ],
+      "version": 0
+    },
+    {
+      "id": "77694265-7251-7953-aeec-73e2a4786801",
+      "name": "Smooth Step",
+      "description": "Outputs a smooth Hermite interpolation between 0 and 1 as the input crosses between two edge values.",
+      "category": "Math",
+      "tags": [
+        "math"
+      ],
+      "version": 2
+    },
+    {
+      "id": "77694265-7257-4953-aeec-73e2a9786804",
+      "name": "Step",
+      "description": "Outputs 0 when the value is below the edge, 1 otherwise.",
+      "category": "Math",
+      "tags": [
+        "math"
+      ],
+      "version": 2
+    },
+    {
+      "id": "77697265-00a6-4163-bdaa-2edc1f62ada4",
+      "name": "Grid",
+      "description": "Outputs a grid of horizontal and vertical lines.",
+      "category": "Video Source",
+      "tags": [
+        "video",
+        "effect",
+        "lines",
+        "raster"
+      ],
+      "version": 4
+    },
+    {
+      "id": "77697265-023c-4656-9097-769d0bea2617",
+      "name": "Meta Shape",
+      "description": "Maps the input onto a grid of geometric shapes, with each cell's size and form driven by the brightness of the source.",
+      "category": "Video Effect",
+      "tags": [
+        "video",
+        "effect"
+      ],
+      "version": 1
+    },
+    {
+      "id": "77697265-0268-4502-cd91-75396c01aeb2",
+      "name": "MIDI Voices",
+      "description": "Routes each incoming note to a separate output channel (a voice), allowing multiple notes to be handled in parallel. When all voices are in use, the longest-silent one is reused.",
+      "category": "MIDI",
+      "tags": [
+        "midi"
+      ],
+      "version": 1
+    },
+    {
+      "id": "77697265-0268-4522-cd91-75396c01aeb2",
+      "name": "Circulate",
+      "description": "Distributes incoming events across output instances one at a time, cycling through each instance in turn.",
+      "category": "Logic",
+      "tags": [
+        "logic"
+      ],
+      "version": 3
+    },
+    {
+      "id": "77697265-0291-4fc4-bcc1-b1afd136f507",
+      "name": "Metaballs",
+      "description": "Outputs a grid of metaballs: soft blob shapes that merge smoothly when they get close together. Each cell contains one animated ball.",
+      "category": "Video Source",
+      "tags": [
+        "video",
+        "generator"
+      ],
+      "version": 4
+    },
+    {
+      "id": "77697265-043d-4f1c-8478-d31cc38e6338",
+      "name": "Twisted",
+      "description": "Distorts a texture with a wavy twisting motion, shifting pixels in swirling patterns.",
+      "category": "Video Effect",
+      "tags": [
+        "video",
+        "effect"
+      ],
+      "version": 2
+    },
+    {
+      "id": "77697265-04fb-4ec2-96e0-6a3e243f0683",
+      "name": "Swap",
+      "description": "Swaps two items in a collection.",
+      "category": "Collection",
+      "tags": [],
+      "version": 1
+    },
+    {
+      "id": "77697265-05d4-4efb-ac04-c85c73fd09f7",
+      "name": "Hexagram",
+      "description": "Outputs a filled hexagram, a six-pointed star made from two overlapping triangles, centered at the origin.",
+      "category": "Shape",
+      "tags": [
+        "video",
+        "generator"
+      ],
+      "version": 1
+    },
+    {
+      "id": "77697265-05ef-4f13-af29-f7478fc4dcb0",
+      "name": "Sample Texture",
+      "description": "Samples a color from a texture at a given position, optionally averaging over a pixel radius.",
+      "category": "Video",
+      "tags": [
+        "video",
+        "effect"
+      ],
+      "version": 0
+    },
+    {
+      "id": "77697265-0615-4c58-8300-ab77e1917bd2",
+      "name": "Spiral",
+      "description": "Outputs an animated spiral pattern with configurable arms, windings, and distortion.",
+      "category": "Video Source",
+      "tags": [
+        "video",
+        "generator"
+      ],
+      "version": 2
+    },
+    {
+      "id": "77697265-0a11-4e95-9584-4ece0708b834",
+      "name": "Int",
+      "description": "Converts a value to an integer.",
+      "category": "Math",
+      "tags": [
+        "math",
+        "number"
+      ],
+      "version": 2
+    },
+    {
+      "id": "77697265-0a80-43b9-9f2d-05fe02c3447c",
+      "name": "Suckr",
+      "description": "Pinches or bulges the texture radially around its center, like being sucked into a vortex or pushed outward.",
+      "category": "Video Effect",
+      "tags": [
+        "video",
+        "effect"
+      ],
+      "version": 1
+    },
+    {
+      "id": "77697265-0acf-46d5-93cb-6a2d3e4cd7a2",
+      "name": "Reverse",
+      "description": "Reverses a collection.",
+      "category": "Collection",
+      "tags": [
+        "math",
+        "flip",
+        "mirror",
+        "not",
+        "negate"
+      ],
+      "version": 2
+    },
+    {
+      "id": "77697265-0b02-4616-ba51-0318a0d55a80",
+      "name": "Fract",
+      "description": "Outputs the fractional part of the input.",
+      "category": "Math",
+      "tags": [
+        "math"
+      ],
+      "version": 0
+    },
+    {
+      "id": "77697265-0b02-4616-ba51-e019536d979b",
+      "name": "Asin",
+      "description": "Outputs the arc sine (inverse sine) of the input.",
+      "category": "Math",
+      "tags": [
+        "math"
+      ],
+      "version": 1
+    },
+    {
+      "id": "77697265-0b51-496e-a02a-4269686cb551",
+      "name": "Spectrum In",
+      "description": "Receives a magnitude spectrum",
+      "category": "Input",
+      "tags": [
+        "fft",
+        "input"
+      ],
+      "version": 2
+    },
+    {
+      "id": "77697265-0b6e-4121-bc74-01d626012364",
+      "name": "Collapse Triggers",
+      "description": "Merges multiple triggers on the same frame into a single trigger.",
+      "category": "Logic",
+      "tags": [
+        "event"
+      ],
+      "version": 0
+    },
+    {
+      "id": "77697265-0d55-485e-813d-706dd5dfe88d",
+      "name": "Divide",
+      "description": "Outputs the first input divided by each additional input.",
+      "category": "Math",
+      "tags": [
+        "math"
+      ],
+      "version": 1
+    },
+    {
+      "id": "77697265-0d5a-4bfd-b136-e4f58a8cc463",
+      "name": "Mirror",
+      "description": "Reflects a shape across a horizontal or vertical axis.",
+      "category": "Shape",
+      "tags": [
+        "video"
+      ],
+      "version": 2
+    },
+    {
+      "id": "77697265-0dc0-4a06-9f1b-7319f8ed272a",
+      "name": "Color from RGB",
+      "description": "Creates a color from red, green, blue, and alpha channel values.",
+      "category": "Video",
+      "tags": [
+        "video",
+        "effect"
+      ],
+      "version": 0
+    },
+    {
+      "id": "77697265-0e5a-4bfd-b136-e4f68p3cc463",
+      "name": "Move",
+      "description": "Shifts the input by a given offset.",
+      "category": "Shape",
+      "tags": [
+        "video"
+      ],
+      "version": 3
+    },
+    {
+      "id": "77697265-0fd7-4cd3-8203-ecebfee0aa1a",
+      "name": "Parallelogram",
+      "description": "Outputs a filled parallelogram, a rectangle slanted sideways, centered at the origin.",
+      "category": "Shape",
+      "tags": [
+        "video",
+        "generator"
+      ],
+      "version": 0
+    },
+    {
+      "id": "77697265-1042-4e8d-b724-4040bdf7f711",
+      "name": "Program Change",
+      "description": "Outputs the program number and channel from a MIDI Program Change message.",
+      "category": "MIDI",
+      "tags": [
+        "midi"
+      ],
+      "version": 1
+    },
+    {
+      "id": "77697265-1047-431e-9384-811bd3ea9ddd",
+      "name": "Is Inf",
+      "description": "Outputs true when the input is infinite.",
+      "category": "Math",
+      "tags": [
+        "math"
+      ],
+      "version": 1
+    },
+    {
+      "id": "77697265-11de-4f22-b268-c050b2c2bb30",
+      "name": "Hue Rotate",
+      "description": "Shifts the hue of all colors around the color wheel by a chosen amount.",
+      "category": "Video Effect",
+      "tags": [
+        "video",
+        "effect",
+        "color"
+      ],
+      "version": 2
+    },
+    {
+      "id": "77697265-1212-49bf-9f6f-ec725c2f7c10",
+      "name": "Slice to Shape",
+      "description": "Outputs a slice as a shape. Auto draws the mask polygon if the slice has one, else the main polygon; Ignore Mask always draws the main polygon.",
+      "category": "Slice",
+      "tags": [
+        "slice, shape"
+      ],
+      "version": 1
+    },
+    {
+      "id": "77697265-1296-4264-a646-5ce3be529286",
+      "name": "Negate",
+      "description": "Outputs the input with its sign flipped.",
+      "category": "Math",
+      "tags": [
+        "math",
+        "not",
+        "reverse"
+      ],
+      "version": 1
+    },
+    {
+      "id": "77697265-1332-40a0-9dbf-da3f3a445fa1",
+      "name": "Checkerboard",
+      "description": "Outputs a checkerboard texture with Rows by Columns cells in two alternating colors.",
+      "category": "Video Source",
+      "tags": [
+        "video",
+        "generator"
+      ],
+      "version": 2
+    },
+    {
+      "id": "77697265-1493-477d-981b-735fe719a4db",
+      "name": "System Time",
+      "description": "Outputs the current local time as hours, minutes, seconds, and milliseconds.",
+      "category": "System",
+      "tags": [
+        "math"
+      ],
+      "version": 1
+    },
+    {
+      "id": "77697265-14e8-4c51-958c-950b50c10c70",
+      "name": "Texture from Data",
+      "description": "Converts a list of values into a texture, where each value becomes one pixel.",
+      "category": "Video",
+      "tags": [
+        "upload",
+        "to texture",
+        "1d",
+        "2dpalette"
+      ],
+      "version": 1
+    },
+    {
+      "id": "77697265-1554-43c8-b8a2-b984d7f64b09",
+      "name": "CC Controller",
+      "description": "Outputs the controller number from a MIDI CC message.",
+      "category": "MIDI",
+      "tags": [
+        "midi"
+      ],
+      "version": 1
+    },
+    {
+      "id": "77697265-1628-4761-aa89-5ddd7c13dd73",
+      "name": "Local Max",
+      "description": "Outputs the maximum value in a collection and its index.",
+      "category": "Math",
+      "tags": [
+        "math"
+      ],
+      "version": 2
+    },
+    {
+      "id": "77697265-1687-4e44-afdb-302b2ee936b3",
+      "name": "Less",
+      "description": "Outputs true when the left value is less than the right.",
+      "category": "Logic",
+      "tags": [
+        "math",
+        "<",
+        "lower",
+        "smaller"
+      ],
+      "version": 1
+    },
+    {
+      "id": "77697265-16eb-4643-98c2-7a8867e00fa1",
+      "name": "From Spherical",
+      "description": "Takes 3D spherical coordinates Magnitude (distance to center), Angle X (around the center on the XZ plane) and Angle Y (around the center on the YZ plane) and converts them to 3D cartesian coordinates X, Y and Z.",
+      "category": "Math",
+      "tags": [
+        "math",
+        "to",
+        "cartesian",
+        "coordinates",
+        "from",
+        "spherical",
+        "vec3"
+      ],
+      "version": 0
+    },
+    {
+      "id": "77697265-179a-4261-9a86-5924adcb97e2",
+      "name": "Is Note",
+      "description": "Tests whether a MIDI message is a Note On or Note Off.",
+      "category": "MIDI",
+      "tags": [
+        "midi"
+      ],
+      "version": 1
+    },
+    {
+      "id": "77697265-19e0-4717-bd17-6c7d4a9252c4",
+      "name": "Float4",
+      "description": "Builds a 4D vector from component values.",
+      "category": "Math",
+      "tags": [
+        "math",
+        "pack",
+        "vec4"
+      ],
+      "version": 1
+    },
+    {
+      "id": "77697265-1fcd-42d8-9bd0-054ad36c5e87",
+      "name": "PolarKaleido",
+      "description": "Combines polar distortion and kaleidoscope reflection, wrapping and mirroring a texture around a center point.",
+      "category": "Video Effect",
+      "tags": [
+        "video",
+        "effect"
+      ],
+      "version": 1
+    },
+    {
+      "id": "77697265-20e6-481d-9c08-abc4294e2ef1",
+      "name": "UV Map",
+      "description": "Remaps a texture's pixels using a UV map, where each pixel's red value gives the horizontal position and green gives the vertical position to sample from the Beauty texture.",
+      "category": "Video",
+      "tags": [
+        "video",
+        "effect"
+      ],
+      "version": 2
+    },
+    {
+      "id": "77697265-22a1-4bcb-9a36-34b74a7d238b",
+      "name": "Sqrt",
+      "description": "Outputs the square root of the input.",
+      "category": "Math",
+      "tags": [
+        "math"
+      ],
+      "version": 1
+    },
+    {
+      "id": "77697265-233d-4d71-83cb-af0ced52bcaa",
+      "name": "Raster",
+      "description": "Keeps every Nth pixel of a texture and blacks out the rest, creating a sparse dotted or scanline look.",
+      "category": "Video Effect",
+      "tags": [
+        "video",
+        "effect"
+      ],
+      "version": 1
+    },
+    {
+      "id": "77697265-2449-4cc3-bdce-bef250835a26",
+      "name": "Subtract",
+      "description": "Outputs the first input minus each additional input.",
+      "category": "Math",
+      "tags": [
+        "math"
+      ],
+      "version": 1
+    },
+    {
+      "id": "77697265-2508-4167-ba4c-c6ae0b3138fb",
+      "name": "Trim",
+      "description": "Crops a texture to a rectangular pixel region defined by left, right, top, and bottom edges.",
+      "category": "Video",
+      "tags": [
+        "video",
+        "effect",
+        "trim",
+        "crop"
+      ],
+      "version": 2
+    },
+    {
+      "id": "77697265-2589-46d3-843a-9312283307e4",
+      "name": "Fill Fit Stretch",
+      "description": "Fits one dimension into another using Fill, Fit, or Stretch. The Mode attribute controls whether the output is a scale factor or the resulting dimension.",
+      "category": "Math",
+      "tags": [
+        "math"
+      ],
+      "version": 2
+    },
+    {
+      "id": "77697265-2617-43bb-907f-09cafc41f88f",
+      "name": "Element",
+      "description": "Outputs a single component of a vector, color, or other composite value.",
+      "category": "Logic",
+      "tags": [
+        "float2",
+        "float3",
+        "float4",
+        "texture"
+      ],
+      "version": 1
+    },
+    {
+      "id": "77697265-2641-42da-883e-b641d4a49224",
+      "name": "Pass N",
+      "description": "Passes a limited number of events through, then blocks until reset.",
+      "category": "Logic",
+      "tags": [
+        "math"
+      ],
+      "version": 3
+    },
+    {
+      "id": "77697265-2649-4abb-b38f-4e1005183415",
+      "name": "Int In",
+      "description": "Takes an int event into the patch",
+      "category": "Input",
+      "tags": [
+        "choice",
+        "number",
+        "input"
+      ],
+      "version": 3
+    },
+    {
+      "id": "77697265-270b-46dd-b8e0-8a823cf161bc",
+      "name": "Accumulate",
+      "description": "Outputs the running integral of the input over time.",
+      "category": "Math",
+      "tags": [
+        "math",
+        "integration"
+      ],
+      "version": 3
+    },
+    {
+      "id": "77697265-273b-4659-b9d6-0e73d151fb54",
+      "name": "Polar",
+      "description": "Wraps a texture around a central point, turning horizontal lines into circles.",
+      "category": "Video Effect",
+      "tags": [
+        "video",
+        "effect"
+      ],
+      "version": 3
+    },
+    {
+      "id": "77697265-28ed-4edb-a802-d92fa904cbe9",
+      "name": "Converge",
+      "description": "Takes several parallel event streams and combines them into one, so events from all channels flow through a single connection.",
+      "category": "Collection",
+      "tags": [
+        "video"
+      ],
+      "version": 2
+    },
+    {
+      "id": "77697265-2aba-4990-bcaf-110556be8fd6",
+      "name": "Align",
+      "description": "Positions a texture within the composition at one of nine alignment points: corners, edges, or center.",
+      "category": "Video",
+      "tags": [
+        "video",
+        "effect"
+      ],
+      "version": 2
+    },
+    {
+      "id": "77697265-2c73-40a1-9b86-c626915a9f8e",
+      "name": "Log",
+      "description": "Outputs the logarithm of the first input with the second input as the base.",
+      "category": "Math",
+      "tags": [
+        "math"
+      ],
+      "version": 1
+    },
+    {
+      "id": "77697265-2f2c-47a5-8da4-065dae816ab2",
+      "name": "Filter CC",
+      "description": "Outputs the value from a MIDI CC message, only when its controller and channel match.",
+      "category": "MIDI",
+      "tags": [
+        "midi"
+      ],
+      "version": 1
+    },
+    {
+      "id": "77697265-2f93-4176-b1f9-774b39ec25f5",
+      "name": "Repeat",
+      "description": "Tiles a texture horizontally and vertically into a grid of repeating copies, with optional flipping.",
+      "category": "Video Effect",
+      "tags": [
+        "video",
+        "effect"
+      ],
+      "version": 3
+    },
+    {
+      "id": "77697265-3134-4762-b142-7e5a06a0d579",
+      "name": "Frequency to Bpm",
+      "description": "Converts a frequency in Hertz to beats-per-minute.",
+      "category": "Math",
+      "tags": [
+        "math"
+      ],
+      "version": 1
+    },
+    {
+      "id": "77697265-322c-4965-83ae-e73bc6e4069c",
+      "name": "Is CC",
+      "description": "Tests whether a MIDI message is a Control Change.",
+      "category": "MIDI",
+      "tags": [
+        "midi"
+      ],
+      "version": 1
+    },
+    {
+      "id": "77697265-326f-4351-83fc-7a7fcfedaffc",
+      "name": "1 - x",
+      "description": "Outputs one minus the input. For a probability, gives the complementary probability.",
+      "category": "Math",
+      "tags": [
+        "math"
+      ],
+      "version": 1
+    },
+    {
+      "id": "77697265-34e1-46a2-96a8-320483b3d840",
+      "name": "Ring Buffer",
+      "description": "Keeps a fixed number of recent values in a rotating set of slots, overwriting the oldest whenever a new value arrives.",
+      "category": "Collection",
+      "tags": [
+        "delay",
+        "collection",
+        "fifo",
+        "buffer"
+      ],
+      "version": 2
+    },
+    {
+      "id": "77697265-3532-45c9-bac8-3b5b308921b3",
+      "name": "Running Total",
+      "description": "Outputs the running total (cumulative sum) of the input values.",
+      "category": "Math",
+      "tags": [
+        "math"
+      ],
+      "version": 1
+    },
+    {
+      "id": "77697265-3595-4107-a14b-9348570db50b",
+      "name": "Power",
+      "description": "Outputs the first input raised to the power of the second.",
+      "category": "Math",
+      "tags": [
+        "math"
+      ],
+      "version": 1
+    },
+    {
+      "id": "77697265-35f6-4155-b67c-44f7fb36b455",
+      "name": "Find",
+      "description": "Outputs the position of a substring in a string.",
+      "category": "Collection",
+      "tags": [],
+      "version": 2
+    },
+    {
+      "id": "77697265-366b-4570-833a-d9f433415b8f",
+      "name": "Transformation 2D",
+      "description": "Outputs a 2D transformation that combines position, rotation, and scale. Feed it to any node that places or moves objects in 2D.",
+      "category": "2D",
+      "tags": [
+        "transform",
+        "3d",
+        "renderer",
+        "geometry"
+      ],
+      "version": 2
+    },
+    {
+      "id": "77697265-3683-409b-8c89-43afaea9a2b0",
+      "name": "Image",
+      "description": "Loads an image file and outputs it as a texture.",
+      "category": "Video",
+      "tags": [
+        "video",
+        "generator"
+      ],
+      "version": 3
+    },
+    {
+      "id": "77697265-3732-42da-653e-b641d4a49224",
+      "name": "Join",
+      "description": "Joins multiple inputs into a single collection.",
+      "category": "Collection",
+      "tags": [
+        "math"
+      ],
+      "version": 2
+    },
+    {
+      "id": "77697265-3732-42da-773e-b531e4a49224",
+      "name": "Expand",
+      "description": "Resizes a collection to a new size by looping, reflecting, or clamping the input values.",
+      "category": "Collection",
+      "tags": [
+        "math"
+      ],
+      "version": 2
+    },
+    {
+      "id": "77697265-3732-42da-883e-b641d4a49224",
+      "name": "Split",
+      "description": "Splits a collection into its individual elements, one per output.",
+      "category": "Collection",
+      "tags": [
+        "math"
+      ],
+      "version": 3
+    },
+    {
+      "id": "77697265-377a-4bca-b170-b551f980f7be",
+      "name": "Sin",
+      "description": "Outputs the sine of the input.",
+      "category": "Math",
+      "tags": [
+        "math"
+      ],
+      "version": 2
+    },
+    {
+      "id": "77697265-387c-4c9f-9474-08f81aa89c5a",
+      "name": "Phi",
+      "description": "Outputs the golden ratio.",
+      "category": "Math",
+      "tags": [
+        "math"
+      ],
+      "version": 2
+    },
+    {
+      "id": "77697265-3929-2f3f-95e8-49036f686474",
+      "name": "Merge",
+      "description": "Combines multiple inputs into one: blends textures, unions shapes, concatenates strings, or merges boxes.",
+      "category": "Video",
+      "tags": [
+        "video",
+        "concatenate"
+      ],
+      "version": 4
+    },
+    {
+      "id": "77697265-39d3-41b8-bece-237802f83e9f",
+      "name": "Slice Info",
+      "description": "Outputs a slice's name, pixel dimensions, center, rotation, shape, and mask.",
+      "category": "Slice",
+      "tags": [
+        "slice",
+        "mask"
+      ],
+      "version": 1
+    },
+    {
+      "id": "77697265-3a24-4ef8-a45e-affb4358d7cf",
+      "name": "Greater",
+      "description": "Outputs true when the left value is greater than the right.",
+      "category": "Logic",
+      "tags": [
+        "math",
+        "larger",
+        ">",
+        "bigger",
+        "higher"
+      ],
+      "version": 1
+    },
+    {
+      "id": "77697265-3c1d-467d-a722-0fc566538374",
+      "name": "Comment",
+      "description": "A graphical label to show comments in your patch",
+      "category": "UI",
+      "tags": [
+        "ui"
+      ],
+      "version": 1
+    },
+    {
+      "id": "77697265-3c24-4bc5-82fe-f67fd4e25272",
+      "name": "Flip",
+      "description": "Mirrors a texture horizontally, vertically, or both.",
+      "category": "Video Effect",
+      "tags": [
+        "video",
+        "effect"
+      ],
+      "version": 2
+    },
+    {
+      "id": "77697265-3c24-8bc5-82fe-f67ed1e25252",
+      "name": "Pixel Gradient",
+      "description": "Outputs how much the brightness changes between neighboring pixels, highlighting areas of rapid change.",
+      "category": "Video Effect",
+      "tags": [
+        "video",
+        "effect"
+      ],
+      "version": 1
+    },
+    {
+      "id": "77697265-3c98-46c4-a916-70a46cf25308",
+      "name": "Round",
+      "description": "Outputs the nearest integer to the input.",
+      "category": "Math",
+      "tags": [
+        "math"
+      ],
+      "version": 1
+    },
+    {
+      "id": "77697265-3d51-4b4e-a18d-58e3ef5049c7",
+      "name": "Rhombus",
+      "description": "Outputs a filled rhombus, a four-sided diamond shape where all sides have the same length, centered at the origin.",
+      "category": "Shape",
+      "tags": [
+        "video",
+        "generator"
+      ],
+      "version": 1
+    },
+    {
+      "id": "77697265-3dd1-42a6-bbc6-e51edf805fc5",
+      "name": "Is Pitch Bend",
+      "description": "Tests whether a MIDI message is a Pitch Bend.",
+      "category": "MIDI",
+      "tags": [
+        "midi"
+      ],
+      "version": 1
+    },
+    {
+      "id": "77697265-3e17-44a9-9ec5-a2e6e0425edb",
+      "name": "Dot Product",
+      "description": "Outputs the dot product of two vectors.",
+      "category": "Math",
+      "tags": [
+        "math"
+      ],
+      "version": 2
+    },
+    {
+      "id": "77697265-3e50-4ae2-97e3-039801daf268",
+      "name": "Local Min",
+      "description": "Outputs the minimum value in a collection and its index.",
+      "category": "Math",
+      "tags": [
+        "math"
+      ],
+      "version": 2
+    },
+    {
+      "id": "77697265-3e8a-4e7e-90cd-3d361d1934f5",
+      "name": "Color Mask",
+      "description": "Turns individual red, green, blue, or alpha channels on or off, zeroing out the disabled ones.",
+      "category": "Video Effect",
+      "tags": [
+        "video",
+        "mask",
+        "effect"
+      ],
+      "version": 1
+    },
+    {
+      "id": "77697265-3eef-4319-b4c3-f19aef81a594",
+      "name": "Sqrt2",
+      "description": "Outputs the square root of two.",
+      "category": "Math",
+      "tags": [
+        "math"
+      ],
+      "version": 2
+    },
+    {
+      "id": "77697265-40dd-4e36-a520-b74ca1003c1f",
+      "name": "Not Equal",
+      "description": "Outputs true when two values are not equal.",
+      "category": "Logic",
+      "tags": [
+        "math",
+        "logic",
+        "compare",
+        "!="
+      ],
+      "version": 2
+    },
+    {
+      "id": "77697265-42d6-4b0e-8768-840ffc440408",
+      "name": "Exclude",
+      "description": "Outputs the non-overlapping parts of two shapes, keeping everything except where they overlap.",
+      "category": "Shape",
+      "tags": [
+        "video"
+      ],
+      "version": 1
+    },
+    {
+      "id": "77697265-4576-4c11-899b-6f11f3275d36",
+      "name": "ISF",
+      "description": "Loads an ISF fragment shader and runs it, outputting the result as a texture.",
+      "category": "Video",
+      "tags": [
+        "video",
+        "generator",
+        "glsl"
+      ],
+      "version": 4
+    },
+    {
+      "id": "77697265-47c9-4552-b279-6b9eb397418e",
+      "name": "Triangle",
+      "description": "Outputs a filled triangle defined by three points.",
+      "category": "Shape",
+      "tags": [
+        "video",
+        "generator"
+      ],
+      "version": 2
+    },
+    {
+      "id": "77697265-48c4-40c4-a756-81d6711cd472",
+      "name": "Read OSC",
+      "description": "Splits an incoming OSC message into a trigger and one output per argument, each matching its data type. Addresses can match specific paths or wildcard patterns.",
+      "category": "OSC",
+      "tags": [
+        "osc"
+      ],
+      "version": 2
+    },
+    {
+      "id": "77697265-48f0-48c6-93df-afe8984d360b",
+      "name": "Intersection",
+      "description": "Outputs only the region where two shapes overlap, with optional smoothing at the boundary.",
+      "category": "Shape",
+      "tags": [
+        "video"
+      ],
+      "version": 1
+    },
+    {
+      "id": "77697265-4909-4e2f-aee4-292b37a149c8",
+      "name": "Demultiply Alpha",
+      "description": "Extracts the original color from pixels where transparency has been pre-mixed in, making partially transparent pixels bright again.",
+      "category": "Video",
+      "tags": [
+        "video",
+        "alpha"
+      ],
+      "version": 1
+    },
+    {
+      "id": "77697265-4964-4cf1-b815-58b3975a79f1",
+      "name": "Angle Converter",
+      "description": "Converts an angle between Degree, Radian, and Period units.",
+      "category": "Math",
+      "tags": [
+        "math"
+      ],
+      "version": 2
+    },
+    {
+      "id": "77697265-4b9a-a7f6-922d96685f6c",
+      "name": "If",
+      "description": "Sends a trigger on the True or False output depending on the condition.",
+      "category": "Logic",
+      "tags": [
+        "math"
+      ],
+      "version": 1
+    },
+    {
+      "id": "77697265-4b9a-a7f6-922e86685f6c",
+      "name": "Sequence",
+      "description": "Outputs a collection of values starting at Begin and incrementing by Step.",
+      "category": "Pattern",
+      "tags": [
+        "math"
+      ],
+      "version": 2
+    },
+    {
+      "id": "77697265-4bee-483f-9f28-1ba5f21193db",
+      "name": "Delay",
+      "description": "Delays the incoming signal or event stream.",
+      "category": "Logic",
+      "tags": [],
+      "version": 5
+    },
+    {
+      "id": "77697265-4bee-483f-9f28-1ba5f29e93db",
+      "name": "Dimension",
+      "description": "Outputs the width and height of an object.",
+      "category": "Logic",
+      "tags": [],
+      "version": 2
+    },
+    {
+      "id": "77697265-4bp6-4573-8aa7-42362bc44931",
+      "name": "Distance Lines",
+      "description": "Outputs concentric outline copies of a shape at regular intervals, like contour lines on a map.",
+      "category": "Shape",
+      "tags": [
+        "video",
+        "generator"
+      ],
+      "version": 1
+    },
+    {
+      "id": "77697265-4c9e-4f75-b4f0-5415b713ea1b",
+      "name": "Color In",
+      "description": "Takes a float4 into the patch as color",
+      "category": "Input",
+      "tags": [
+        "input"
+      ],
+      "version": 4
+    },
+    {
+      "id": "77697265-4cfb-4b81-8952-3f8553540aa2",
+      "name": "LoRez",
+      "description": "Reduces a texture to a lower resolution, giving it a blocky pixelated look.",
+      "category": "Video Effect",
+      "tags": [
+        "video",
+        "effect"
+      ],
+      "version": 1
+    },
+    {
+      "id": "77697265-4db6-4573-8aa7-42362bc44931",
+      "name": "Rectangle",
+      "description": "Outputs a filled rectangle centered at the origin, with optional per-corner rounding.",
+      "category": "Shape",
+      "tags": [
+        "video",
+        "generator"
+      ],
+      "version": 2
+    },
+    {
+      "id": "77697265-4dd4-47e0-b704-9f9757b6c4ec",
+      "name": "Read Note Off",
+      "description": "Outputs the pitch, velocity, and channel from a MIDI Note Off message.",
+      "category": "MIDI",
+      "tags": [
+        "midi"
+      ],
+      "version": 1
+    },
+    {
+      "id": "77697265-4de6-4e40-979b-b2617a6bae4a",
+      "name": "Toggle",
+      "description": "Outputs a boolean that flips between true and false on each trigger.",
+      "category": "Logic",
+      "tags": [
+        "math"
+      ],
+      "version": 2
+    },
+    {
+      "id": "77697265-4fa1-4d8d-a8a5-5eb67377db3b",
+      "name": "Kuwahara",
+      "description": "Smooths a texture while keeping edges sharp, giving it a painterly look.",
+      "category": "Video Effect",
+      "tags": [
+        "video",
+        "effect"
+      ],
+      "version": 0
+    },
+    {
+      "id": "77697265-50ef-40db-a842-fc0550b76e77",
+      "name": "Depth Estimation",
+      "description": "Tip! Feed at native resolution, before scaling or display transforms.\nGenerates a depth mask from a texture.",
+      "category": "AI",
+      "tags": [
+        "video",
+        "effect",
+        "ai",
+        "vision"
+      ],
+      "version": 0
+    },
+    {
+      "id": "77697265-50ff-43ef-978e-217ad290cd17",
+      "name": "Hold",
+      "description": "Captures the main input value on Arm, and sends it out on Release.",
+      "category": "Logic",
+      "tags": [
+        "logic"
+      ],
+      "version": 2
+    },
+    {
+      "id": "77697265-5120-4bdb-bec6-3e93d876c1a5",
+      "name": "CC Value",
+      "description": "Outputs the value from a MIDI CC message.",
+      "category": "MIDI",
+      "tags": [
+        "midi"
+      ],
+      "version": 1
+    },
+    {
+      "id": "77697265-5275-4bb0-97b0-dbeefd85997b",
+      "name": "MIDI In",
+      "description": "Takes MIDI into the patch",
+      "category": "Input",
+      "tags": [
+        "input"
+      ],
+      "version": 1
+    },
+    {
+      "id": "77697265-527a-4310-a05e-3499b2a0bff1",
+      "name": "Perlin",
+      "description": "Outputs a smooth pseudo-random value that varies continuously with the input. Nearby inputs produce nearby outputs, and the same input always produces the same output.",
+      "category": "Math",
+      "tags": [
+        "math",
+        "generator",
+        "random"
+      ],
+      "version": 0
+    },
+    {
+      "id": "77697265-5351-4e59-9b74-4e1a26f95a9e",
+      "name": "Mirror Quad",
+      "description": "Reflects a texture into four quadrants, creating a symmetric pattern with horizontal and vertical mirroring.",
+      "category": "Video Effect",
+      "tags": [
+        "video",
+        "effect"
+      ],
+      "version": 2
+    },
+    {
+      "id": "77697265-536a-4bc1-b8ed-cef8dfc41231",
+      "name": "Complementary Colors",
+      "description": "Outputs a collection of colors with hues spread evenly around the complement of a base color.",
+      "category": "Pattern",
+      "tags": [
+        "gradient",
+        "color",
+        "palette"
+      ],
+      "version": 0
+    },
+    {
+      "id": "77697265-53ce-4fdd-bfce-5f8269aa39db",
+      "name": "Static",
+      "description": "Outputs per-pixel random static noise in color, grayscale, or two-tone mode.",
+      "category": "Video Source",
+      "tags": [
+        "video",
+        "generator",
+        "noise"
+      ],
+      "version": 1
+    },
+    {
+      "id": "77697265-5475-4496-86d8-70f549e3a23b",
+      "name": "Heart",
+      "description": "Outputs a filled heart with fixed aspect, centered above the origin.",
+      "category": "Shape",
+      "tags": [
+        "video",
+        "generator"
+      ],
+      "version": 0
+    },
+    {
+      "id": "77697265-548f-4ef6-9b00-f3005fec8687",
+      "name": "Quantize",
+      "description": "Snaps the input to the nearest multiple of a step value.",
+      "category": "Math",
+      "tags": [
+        "math",
+        "discrete",
+        "discretization",
+        "levels",
+        "posterize",
+        "threshold"
+      ],
+      "version": 1
+    },
+    {
+      "id": "77697265-5581-4721-8519-0b8fa3d68b4d",
+      "name": "Random",
+      "description": "Generates random values of a selected type.",
+      "category": "Math",
+      "tags": [
+        "pattern"
+      ],
+      "version": 2
+    },
+    {
+      "id": "77697265-55da-4477-8768-27d1655f9738",
+      "name": "Posterize",
+      "description": "Reduces the number of distinct colors in a texture, giving it a flat poster-like look.",
+      "category": "Video Effect",
+      "tags": [
+        "video",
+        "effect",
+        "threshold",
+        "quantize"
+      ],
+      "version": 1
+    },
+    {
+      "id": "77697265-55e9-439a-ab90-91c440b87887",
+      "name": "Is Program Change",
+      "description": "Tests whether a MIDI message is a Program Change.",
+      "category": "MIDI",
+      "tags": [
+        "midi"
+      ],
+      "version": 1
+    },
+    {
+      "id": "77697265-563a-4a01-9307-a1f9684fd027",
+      "name": "Tau",
+      "description": "Outputs the ratio of a circle's circumference to its radius.",
+      "category": "Math",
+      "tags": [
+        "math"
+      ],
+      "version": 2
+    },
+    {
+      "id": "77697265-56bc-4715-aada-9f84718996a2",
+      "name": "Read Note On",
+      "description": "Outputs the pitch, velocity, and channel from a MIDI Note On message.",
+      "category": "MIDI",
+      "tags": [
+        "midi"
+      ],
+      "version": 1
+    },
+    {
+      "id": "77697265-56d6-449f-b6b5-9d50a2f9a4d8",
+      "name": "Mode",
+      "description": "Outputs the value that appears most often in a collection, known as the mode.",
+      "category": "Math",
+      "tags": [
+        "math"
+      ],
+      "version": 1
+    },
+    {
+      "id": "77697265-573f-4ea0-9784-14b18e41d243",
+      "name": "From Polar",
+      "description": "Takes 2D polar coordinates Magnitude (distance to center) and Angle (around the center) and converts them to 2D cartesian coordinates X and Y.",
+      "category": "Math",
+      "tags": [
+        "math",
+        "cartesian",
+        "coordinates",
+        "from",
+        "polar",
+        "convert",
+        "vec2",
+        "2d",
+        "position",
+        "vector"
+      ],
+      "version": 0
+    },
+    {
+      "id": "77697265-5743-430b-b5cd-a1f981ffbebf",
+      "name": "MIDI Out",
+      "description": "Sends a MIDI message out of the patch",
+      "category": "Output",
+      "tags": [
+        "output"
+      ],
+      "version": 1
+    },
+    {
+      "id": "77697265-5852-33ab-89e5-f52a24ca2d50",
+      "name": "Concatenate",
+      "description": "Joins multiple strings into one, with an optional separator between each.",
+      "category": "Collection",
+      "tags": [],
+      "version": 1
+    },
+    {
+      "id": "77697265-5852-3bab-89e5-f25a24ca2d50",
+      "name": "Substring",
+      "description": "Outputs part of a string, starting at a given character position and continuing for a given length.",
+      "category": "Collection",
+      "tags": [],
+      "version": 3
+    },
+    {
+      "id": "77697265-5852-4454-89e5-61a24cea2d50",
+      "name": "String",
+      "description": "Converts a value to a string.",
+      "category": "Collection",
+      "tags": [],
+      "version": 2
+    },
+    {
+      "id": "77697265-5852-4454-89e5-e61a24ca2d50",
+      "name": "Bool",
+      "description": "Converts a value to a boolean.",
+      "category": "Logic",
+      "tags": [
+        "button"
+      ],
+      "version": 1
+    },
+    {
+      "id": "77697265-5852-44ab-89e5-f52a24ca2d50",
+      "name": "Replace",
+      "description": "Replaces matching parts of a string with a new string.",
+      "category": "Collection",
+      "tags": [],
+      "version": 2
+    },
+    {
+      "id": "77697265-58fc-4e73-b329-6b850606e6fc",
+      "name": "Analogous Colors",
+      "description": "Outputs a collection of colors with hues spread evenly around a base color.",
+      "category": "Pattern",
+      "tags": [
+        "gradient",
+        "color",
+        "palette"
+      ],
+      "version": 0
+    },
+    {
+      "id": "77697265-5b59-4fd5-b374-c7ca941ce21e",
+      "name": "OSC Out",
+      "description": "Sends an OSC message out of the patch",
+      "category": "Output",
+      "tags": [
+        "output"
+      ],
+      "version": 1
+    },
+    {
+      "id": "77697265-5d88-450e-a676-b1f7ee6df30f",
+      "name": "Distance",
+      "description": "Outputs the distance between two vectors.",
+      "category": "Math",
+      "tags": [
+        "math"
+      ],
+      "version": 0
+    },
+    {
+      "id": "77697265-5f11-465d-9e83-a3cf5a50d8e8",
+      "name": "Blur",
+      "description": "Softens a texture by averaging each pixel with nearby pixels, creating a fuzzy out-of-focus look. Adjustable amount, direction, and falloff shape.",
+      "category": "Video Effect",
+      "tags": [
+        "video",
+        "effect"
+      ],
+      "version": 2
+    },
+    {
+      "id": "77697265-5f3d-4773-84b5-4dc15e53ea72",
+      "name": "Xor",
+      "description": "Outputs true when an odd number of inputs are true.",
+      "category": "Logic",
+      "tags": [
+        "math"
+      ],
+      "version": 3
+    },
+    {
+      "id": "77697265-5f58-4439-9a96-809989a9e66e",
+      "name": "Length",
+      "description": "Outputs the number of characters in a string.",
+      "category": "Collection",
+      "tags": [],
+      "version": 2
+    },
+    {
+      "id": "77697265-5f58-4439-9b31-329931a9e66e",
+      "name": "Read Line",
+      "description": "Outputs the line at a given index in a string.",
+      "category": "Collection",
+      "tags": [],
+      "version": 1
+    },
+    {
+      "id": "77697265-5f58-4439-9b31-802231a9e66e",
+      "name": "Read Word",
+      "description": "Outputs the word at a given index in a string.",
+      "category": "Collection",
+      "tags": [],
+      "version": 1
+    },
+    {
+      "id": "77697265-5f58-4439-9b31-809989a9e66e",
+      "name": "Count Lines",
+      "description": "Outputs the number of lines in a string.",
+      "category": "Collection",
+      "tags": [],
+      "version": 1
+    },
+    {
+      "id": "77697265-5f58-4439-9b31-832589a9e66e",
+      "name": "Count Words",
+      "description": "Outputs the number of words in a string.",
+      "category": "Collection",
+      "tags": [],
+      "version": 1
+    },
+    {
+      "id": "77697265-60e0-4877-b0f9-c5a66a4ffd56",
+      "name": "Furthest",
+      "description": "Outputs the index of the collection element with the greatest distance from the search value.",
+      "category": "Collection",
+      "tags": [],
+      "version": 2
+    },
+    {
+      "id": "77697265-6240-42c7-80d3-d1c09c65ed8f",
+      "name": "Invert RGB",
+      "description": "Inverts color channels so each color becomes its complement: red becomes cyan, green becomes magenta, blue becomes yellow.",
+      "category": "Video Effect",
+      "tags": [
+        "video",
+        "effect"
+      ],
+      "version": 3
+    },
+    {
+      "id": "77697265-6256-4856-911c-5465ae6bf656",
+      "name": "Square Oscillator",
+      "description": "Generates a square wave that jumps instantly between high and low values, with no smoothing in between.",
+      "category": "Oscillator",
+      "tags": [
+        "audio",
+        "math",
+        "generator",
+        "waveform"
+      ],
+      "version": 1
+    },
+    {
+      "id": "77697265-633d-4354-bed8-73e0d30337c7",
+      "name": "Buffer",
+      "description": "Records the most recent values as they arrive, keeping a fixed number of them at all times.",
+      "category": "Collection",
+      "tags": [
+        "collection",
+        "delay"
+      ],
+      "version": 2
+    },
+    {
+      "id": "77697265-6449-430c-9f15-c4b272f4b1ce",
+      "name": "Date",
+      "description": "Outputs the current local date as year, month, week, day, and weekday.",
+      "category": "System",
+      "tags": [
+        "math"
+      ],
+      "version": 1
+    },
+    {
+      "id": "77697265-6489-4b7e-a024-a50a1f4c47e4",
+      "name": "OSC In",
+      "description": "Takes OSC into the patch",
+      "category": "Input",
+      "tags": [
+        "input"
+      ],
+      "version": 1
+    },
+    {
+      "id": "77697265-660c-4a38-a338-e9024cb100d1",
+      "name": "Pitch Bend",
+      "description": "Outputs the pitch bend amount from a MIDI Pitch Bend message, a signed value from -1 (full down) to +1 (full up).",
+      "category": "MIDI",
+      "tags": [
+        "midi"
+      ],
+      "version": 1
+    },
+    {
+      "id": "77697265-66b1-4c28-a5a9-1f64026d769b",
+      "name": "Transport Info",
+      "description": "Outputs the host transport's BPM, beat count, and time signature.",
+      "category": "Time",
+      "tags": [
+        "transport"
+      ],
+      "version": 0
+    },
+    {
+      "id": "77697265-6707-4a3c-9dfb-0df782b8db95",
+      "name": "Transport Beat",
+      "description": "Outputs beat counts at eight bar subdivisions (1/1 through 1/16), driven by the host's transport.",
+      "category": "Time",
+      "tags": [
+        "transport"
+      ],
+      "version": 3
+    },
+    {
+      "id": "77697265-6761-41f7-a820-afe1f4c94c01",
+      "name": "To Float4",
+      "description": "Converts a value to a 4D vector.",
+      "category": "Math",
+      "tags": [
+        "math"
+      ],
+      "version": 2
+    },
+    {
+      "id": "77697265-6799-4c3c-81e5-3af690418f94",
+      "name": "To Polar",
+      "description": "Converts a 2D position into distance from the center (Magnitude) and angle around the center (Angle).",
+      "category": "Math",
+      "tags": [
+        "math",
+        "cartesian",
+        "coordinates",
+        "to",
+        "polar",
+        "convert",
+        "vec2",
+        "2d",
+        "position",
+        "vector"
+      ],
+      "version": 0
+    },
+    {
+      "id": "77697265-67e3-4bd0-8b7d-65126a6c6dbd",
+      "name": "Saturation",
+      "description": "Adjusts how vivid or washed-out colors appear, from full greyscale to over-saturated.",
+      "category": "Video Effect",
+      "tags": [
+        "video",
+        "effect",
+        "greyscale",
+        "color"
+      ],
+      "version": 2
+    },
+    {
+      "id": "77697265-6811-4c1f-b896-fdab8bb6ed26",
+      "name": "Transport Play",
+      "description": "Fires triggers on host transport play, pause, and stop events, and outputs the current playing state.",
+      "category": "Time",
+      "tags": [
+        "transport",
+        "start",
+        "stop",
+        "pause",
+        "play",
+        "begin"
+      ],
+      "version": 0
+    },
+    {
+      "id": "77697265-6864-486c-9417-67a804589062",
+      "name": "Min",
+      "description": "Outputs the minimum value in a collection.",
+      "category": "Math",
+      "tags": [
+        "math"
+      ],
+      "version": 1
+    },
+    {
+      "id": "77697265-6899-4a9c-82ab-949346033440",
+      "name": "Switch",
+      "description": "Takes several cases and selects one of them for output through the selection input. The selection input determines when a case value will be sent out to the output.",
+      "category": "Logic",
+      "tags": [
+        "logic"
+      ],
+      "version": 4
+    },
+    {
+      "id": "77697265-6899-4a9c-82ab-949716033440",
+      "name": "Gate",
+      "description": "Takes several cases and passes through one of them based on the selection. The selection input determines which of the cases will be passed through.",
+      "category": "Logic",
+      "tags": [
+        "logic"
+      ],
+      "version": 3
+    },
+    {
+      "id": "77697265-6928-4ce0-a145-5ed69d347dd0",
+      "name": "Pentagon",
+      "description": "Outputs a filled regular pentagon with five equal sides, centered at the origin.",
+      "category": "Shape",
+      "tags": [
+        "video",
+        "generator"
+      ],
+      "version": 1
+    },
+    {
+      "id": "77697265-69d4-4a91-8d4e-21a342c9a121",
+      "name": "Trigger",
+      "description": "Emits a trigger when any event is received.",
+      "category": "Logic",
+      "tags": [
+        "button"
+      ],
+      "version": 1
+    },
+    {
+      "id": "77697265-6a6-4071-8774-4eb17208ef11",
+      "name": "Max",
+      "description": "Outputs the maximum value in a collection.",
+      "category": "Math",
+      "tags": [
+        "math"
+      ],
+      "version": 1
+    },
+    {
+      "id": "77697265-6ce8-4d04-8de0-785a13505e92",
+      "name": "Pitch",
+      "description": "Outputs the pitch from a MIDI Note message.",
+      "category": "MIDI",
+      "tags": [
+        "midi"
+      ],
+      "version": 1
+    },
+    {
+      "id": "77697265-6f0c-4ac1-a6e6-ae7ddf629b00",
+      "name": "LUT 3D Resource",
+      "description": "Outputs a 3D LUT resource, a reference to a 3D lookup table file used by color-grading nodes to remap colors.",
+      "category": "Resource",
+      "tags": [],
+      "version": 0
+    },
+    {
+      "id": "77697265-6f62-4e6d-aaa5-ebeff44f276b",
+      "name": "To Float3",
+      "description": "Converts a value to a 3D vector.",
+      "category": "Math",
+      "tags": [
+        "math"
+      ],
+      "version": 1
+    },
+    {
+      "id": "77697265-7011-4d68-af23-3b173ce93724",
+      "name": "LUT 3D In",
+      "description": "Takes a LUT 3D Resource into the patch",
+      "category": "Input",
+      "tags": [
+        "input"
+      ],
+      "version": 0
+    },
+    {
+      "id": "77697265-71b0-4da9-9d20-ac0aefd39314",
+      "name": "Pitch to Frequency",
+      "description": "Outputs the frequency in Hz for a MIDI pitch.",
+      "category": "MIDI",
+      "tags": [
+        "midi",
+        "math",
+        "pitch"
+      ],
+      "version": 2
+    },
+    {
+      "id": "77697265-7557-4053-abec-73e2a9786804",
+      "name": "Clamp",
+      "description": "Restricts a value to a range. Values inside the range pass through unchanged; values outside are snapped to the nearest bound.",
+      "category": "Math",
+      "tags": [
+        "math"
+      ],
+      "version": 2
+    },
+    {
+      "id": "77697265-7819-4c94-bc33-725a34429325",
+      "name": "Star",
+      "description": "Outputs a filled pointy star with a configurable number of points.",
+      "category": "Shape",
+      "tags": [
+        "video",
+        "generator"
+      ],
+      "version": 1
+    },
+    {
+      "id": "77697265-78af-4b14-b720-a03b0808dbc7",
+      "name": "Pixel Blur",
+      "description": "Softens a texture using a high-quality blur that averages nearby pixels.",
+      "category": "Video Effect",
+      "tags": [
+        "video",
+        "effect"
+      ],
+      "version": 1
+    },
+    {
+      "id": "77697265-7945-45e5-af4d-e138f8dc377e",
+      "name": "Hexagon",
+      "description": "Outputs a filled regular hexagon with six equal sides, centered at the origin.",
+      "category": "Shape",
+      "tags": [
+        "video",
+        "generator"
+      ],
+      "version": 1
+    },
+    {
+      "id": "77697265-79ce-45c1-b21b-113c165955bb",
+      "name": "None",
+      "description": "Outputs true when every element in a collection is false.",
+      "category": "Logic",
+      "tags": [
+        "math"
+      ],
+      "version": 1
+    },
+    {
+      "id": "77697265-79ce-45c1-b21b-912c165955bb",
+      "name": "All",
+      "description": "Outputs true when all elements in a collection are true.",
+      "category": "Logic",
+      "tags": [
+        "math"
+      ],
+      "version": 1
+    },
+    {
+      "id": "77697265-79d8-4464-8c7f-db2a865b2e8d",
+      "name": "Ceil",
+      "description": "Outputs the smallest integer greater than or equal to the input.",
+      "category": "Math",
+      "tags": [
+        "math"
+      ],
+      "version": 1
+    },
+    {
+      "id": "77697265-79ef-41c8-a5bc-33f60687e5b6",
+      "name": "Host Info",
+      "description": "Outputs the host application's name, vendor, and whether it's running in editor mode.",
+      "category": "System",
+      "tags": [
+        "host"
+      ],
+      "version": 0
+    },
+    {
+      "id": "77697265-7a3d-4390-812e-11de31e7a433",
+      "name": "Octagon",
+      "description": "Outputs a filled regular octagon with eight equal sides, centered at the origin.",
+      "category": "Shape",
+      "tags": [
+        "video",
+        "generator"
+      ],
+      "version": 1
+    },
+    {
+      "id": "77697265-7a56-4237-8a5c-6a4090f67b52",
+      "name": "Derivative",
+      "description": "Outputs the rate of change of the input over time.",
+      "category": "Math",
+      "tags": [
+        "math"
+      ],
+      "version": 1
+    },
+    {
+      "id": "77697265-7ab6-4cfb-a7de-15850425f630",
+      "name": "Modulo",
+      "description": "Outputs the remainder of the first input divided by the second.",
+      "category": "Math",
+      "tags": [
+        "math"
+      ],
+      "version": 1
+    },
+    {
+      "id": "77697265-7baa-481b-8f7c-a32f6dbe1518",
+      "name": "Cross Fader",
+      "description": "Blends between two inputs based on a mix value, from fully Input 1 at 0 to fully Input 2 at 1.",
+      "category": "Video",
+      "tags": [
+        "video",
+        "blend",
+        "effect",
+        "lerp",
+        "mix",
+        "interpolate"
+      ],
+      "version": 3
+    },
+    {
+      "id": "77697265-7bab-426b-1f7c-a32f6fbe1518",
+      "name": "Transition",
+      "description": "Fades between two textures, with a choice of how the pixels of the two combine.",
+      "category": "Video",
+      "tags": [
+        "video",
+        "blend",
+        "effect",
+        "luma",
+        "add",
+        "transition",
+        "multiply",
+        "difference",
+        "subtract",
+        "lighten",
+        "darken",
+        "burn",
+        "dodge"
+      ],
+      "version": 1
+    },
+    {
+      "id": "77697265-7bfa-44f2-a6d4-ae62b9fcc325",
+      "name": "Pi",
+      "description": "Outputs the ratio of a circle's circumference to its diameter.",
+      "category": "Math",
+      "tags": [
+        "math"
+      ],
+      "version": 2
+    },
+    {
+      "id": "77697265-7ed6-4662-9eee-a624eb168a19",
+      "name": "Image Resource",
+      "description": "Outputs an image resource, a reference to an image file. Other nodes can use it to access the image, or it can be stored in a collection.",
+      "category": "Resource",
+      "tags": [],
+      "version": 0
+    },
+    {
+      "id": "77697265-7f4f-47a6-baa9-c64bf7ea372a",
+      "name": "Or",
+      "description": "Outputs true when at least one input is true.",
+      "category": "Logic",
+      "tags": [
+        "math",
+        "|"
+      ],
+      "version": 3
+    },
+    {
+      "id": "77697265-7fd0-4b80-aab4-797eee9a99f6",
+      "name": "Auto Mask",
+      "description": "Makes the texture transparent based on the brightness of the image or a chosen color channel.",
+      "category": "Video Effect",
+      "tags": [
+        "video",
+        "effect"
+      ],
+      "version": 1
+    },
+    {
+      "id": "77697265-8035-4fab-a688-52338c6b4748",
+      "name": "Color",
+      "description": "Outputs a color, either from a color value or by parsing a hex string.",
+      "category": "Video",
+      "tags": [],
+      "version": 2
+    },
+    {
+      "id": "77697265-8061-467f-b375-db03fff5ed40",
+      "name": "1 / x",
+      "description": "Outputs the reciprocal of the input (one divided by the input).",
+      "category": "Math",
+      "tags": [
+        "math",
+        "reciprocal"
+      ],
+      "version": 1
+    },
+    {
+      "id": "77697265-8283-4072-8ebe-60bad8ca9b7a",
+      "name": "Write Note On",
+      "description": "Outputs a MIDI Note On message on each Write trigger, or a Note Off when velocity is 0 and Vel. 0 = Off is on.",
+      "category": "MIDI",
+      "tags": [
+        "midi"
+      ],
+      "version": 1
+    },
+    {
+      "id": "77697265-848e-4e09-a073-c07ffdeb6f18",
+      "name": "Write Program Change",
+      "description": "Outputs a MIDI Program Change message on each Write trigger.",
+      "category": "MIDI",
+      "tags": [
+        "midi"
+      ],
+      "version": 1
+    },
+    {
+      "id": "77697265-86ce-4e85-a02d-34f915fca74e",
+      "name": "Smooth",
+      "description": "Outputs a smoothed version of the input signal, following it with a configurable response time.",
+      "category": "Math",
+      "tags": [
+        "logic"
+      ],
+      "version": 5
+    },
+    {
+      "id": "77697265-871e-4ca0-ad94-acbed0c09f9d",
+      "name": "Acos",
+      "description": "Outputs the arc cosine (inverse cosine) of the input.",
+      "category": "Math",
+      "tags": [
+        "math"
+      ],
+      "version": 1
+    },
+    {
+      "id": "77697265-874e-4236-b2ee-9fba175489d2",
+      "name": "Any",
+      "description": "Outputs true when at least one element in a collection is true.",
+      "category": "Logic",
+      "tags": [
+        "math"
+      ],
+      "version": 1
+    },
+    {
+      "id": "77697265-881a-4260-857b-250526b62562",
+      "name": "Average",
+      "description": "Outputs the average of the values in a collection.",
+      "category": "Math",
+      "tags": [
+        "math"
+      ],
+      "version": 2
+    },
+    {
+      "id": "77697265-8888-4ee6-83b9-2b12ff2a116b",
+      "name": "Timeline",
+      "description": "Ramps from Start Value to End Value over Duration seconds. Play, Pause, Stop, Restart, and Rewind control playback.",
+      "category": "Time",
+      "tags": [
+        "math"
+      ],
+      "version": 1
+    },
+    {
+      "id": "77697265-896f-4c6d-af54-35624f8e23d8",
+      "name": "Transport Time",
+      "description": "Outputs the host transport's elapsed seconds, bars, and beats.",
+      "category": "Time",
+      "tags": [
+        "transport"
+      ],
+      "version": 0
+    },
+    {
+      "id": "77697265-8a9c-42da-b4e8-8ac4e40879f9",
+      "name": "Greyscale",
+      "description": "Removes all color from a texture, leaving only shades of grey, using one of several methods.",
+      "category": "Video Effect",
+      "tags": [
+        "video",
+        "effect",
+        "luminance",
+        "desaturate"
+      ],
+      "version": 4
+    },
+    {
+      "id": "77697265-8b96-4d66-bf59-c726226f8f9c",
+      "name": "Write OSC",
+      "description": "Builds an OSC message from an address and an optional typed value, emitted each time Write triggers.",
+      "category": "OSC",
+      "tags": [
+        "osc"
+      ],
+      "version": 2
+    },
+    {
+      "id": "77697265-8b97-4252-9a93-bf8028c5edec",
+      "name": "Color Offset",
+      "description": "Shifts the red, green, and blue channels by separate amounts, creating a chromatic aberration effect.",
+      "category": "Video Effect",
+      "tags": [
+        "video",
+        "mask",
+        "alpha",
+        "effect",
+        "rgb"
+      ],
+      "version": 2
+    },
+    {
+      "id": "77697265-8ba2-4adf-bc01-1d09c0445054",
+      "name": "Difference",
+      "description": "Outputs the transformation that maps one box to another.",
+      "category": "Math",
+      "tags": [
+        "math",
+        "map"
+      ],
+      "version": 0
+    },
+    {
+      "id": "77697265-8be9-4fe7-8055-32bca1f93cda",
+      "name": "Chevron",
+      "description": "Outputs a filled chevron, shaped like an arrow or a V, centered at the origin.",
+      "category": "Shape",
+      "tags": [
+        "video",
+        "generator"
+      ],
+      "version": 1
+    },
+    {
+      "id": "77697265-8c38-4571-885a-7edf323f3437",
+      "name": "Image In",
+      "description": "Takes an Image Resource into the patch",
+      "category": "Input",
+      "tags": [
+        "input"
+      ],
+      "version": 0
+    },
+    {
+      "id": "77697265-8d15-4841-b221-2a18bb517fa4",
+      "name": "Count",
+      "description": "Counts how many elements in a collection match a value.",
+      "category": "Collection",
+      "tags": [],
+      "version": 0
+    },
+    {
+      "id": "77697265-8d55-4b7f-9cb9-082cb9daf253",
+      "name": "Replace NaN",
+      "description": "Replaces any NaN input value with a fallback value.",
+      "category": "Math",
+      "tags": [
+        "math"
+      ],
+      "version": 0
+    },
+    {
+      "id": "77697265-8db1-4550-bfa4-642dddb5840d",
+      "name": "Exposure",
+      "description": "Brightens or darkens a texture like adjusting a camera's exposure, boosting or dimming all pixels while keeping their relative differences.",
+      "category": "Video Effect",
+      "tags": [
+        "video",
+        "effect"
+      ],
+      "version": 1
+    },
+    {
+      "id": "77697265-8e6d-44ec-90f7-1p7d7b577d64",
+      "name": "Tan",
+      "description": "Outputs the tangent of the input.",
+      "category": "Math",
+      "tags": [
+        "math"
+      ],
+      "version": 1
+    },
+    {
+      "id": "77697265-8e6d-44ec-90f7-7e7d7b577d64",
+      "name": "Atan",
+      "description": "Outputs the arc tangent (inverse tangent) of the input.",
+      "category": "Math",
+      "tags": [
+        "math"
+      ],
+      "version": 1
+    },
+    {
+      "id": "77697265-8e76-4d11-8420-0a3f4cf72566",
+      "name": "Camera 2D",
+      "description": "Defines the viewport for 2D rendering. The viewport is the area of the scene that will be visible. Aspect Ratio mode matches the output's aspect ratio. Absolute mode uses a fixed rectangular area.",
+      "category": "2D",
+      "tags": [
+        "camera",
+        "2d",
+        "renderer",
+        "geometry"
+      ],
+      "version": 0
+    },
+    {
+      "id": "77697265-8eb5-47b2-91a4-32d5c49d8141",
+      "name": "Floor",
+      "description": "Outputs the largest integer less than or equal to the input.",
+      "category": "Math",
+      "tags": [
+        "math"
+      ],
+      "version": 1
+    },
+    {
+      "id": "77697265-919f-4354-88b1-b64e31661470",
+      "name": "Texture from Channels",
+      "description": "Packs four single-channel textures into a combined RGBA texture.",
+      "category": "Video",
+      "tags": [
+        "math",
+        "pack"
+      ],
+      "version": 1
+    },
+    {
+      "id": "77697265-91ed-4ff7-ae24-eafefbbbd3ae",
+      "name": "Read CC",
+      "description": "Outputs the controller, channel, and value from a MIDI CC message.",
+      "category": "MIDI",
+      "tags": [
+        "midi"
+      ],
+      "version": 1
+    },
+    {
+      "id": "77697265-9225-4009-9d2d-5f898e94cc33",
+      "name": "Transform",
+      "description": "Translates, scales, and rotates a texture, shape, point, box, mesh, or slice.",
+      "category": "Video",
+      "tags": [
+        "video",
+        "effect"
+      ],
+      "version": 4
+    },
+    {
+      "id": "77697265-92d9-4ede-9783-e9705eb355f2",
+      "name": "Spokes",
+      "description": "Outputs filled radial bars extending from the origin like wheel spokes, with adjustable count and thickness.",
+      "category": "Shape",
+      "tags": [
+        "video",
+        "generator"
+      ],
+      "version": 1
+    },
+    {
+      "id": "77697265-9518-4e69-899b-66b8c527c6eb",
+      "name": "Colorize",
+      "description": "Tints a texture based on its brightness, using either a single color or a color palette.",
+      "category": "Video Effect",
+      "tags": [
+        "video",
+        "effect"
+      ],
+      "version": 3
+    },
+    {
+      "id": "77697265-95ed-4bcb-8315-eb06e585dfd0",
+      "name": "Truncate",
+      "description": "Outputs the input with its fractional part dropped (rounded toward zero).",
+      "category": "Math",
+      "tags": [
+        "math"
+      ],
+      "version": 1
+    },
+    {
+      "id": "77697265-96ae-4474-bc88-541ccd2761ce",
+      "name": "Triangulate",
+      "description": "Divides a texture into triangular patches of averaged color, giving it a low-poly or mosaic look.",
+      "category": "Video Effect",
+      "tags": [
+        "video",
+        "effect"
+      ],
+      "version": 1
+    },
+    {
+      "id": "77697265-973e-4c5a-818f-0ec53ea70b59",
+      "name": "Kaleidoscope",
+      "description": "Reflects a texture repeatedly around a center point, creating a symmetric kaleidoscope pattern.",
+      "category": "Video Effect",
+      "tags": [
+        "video",
+        "effect"
+      ],
+      "version": 0
+    },
+    {
+      "id": "77697265-974b-4c09-a806-ea8d80fcf53f",
+      "name": "Tint",
+      "description": "Remaps the dark and light areas of a texture to two chosen colors, replacing the original color range.",
+      "category": "Video Effect",
+      "tags": [
+        "video",
+        "effect"
+      ],
+      "version": 2
+    },
+    {
+      "id": "77697265-97f1-4a79-b933-c6296476edc4",
+      "name": "Nearest",
+      "description": "Outputs the index of the collection element with the smallest distance from the search value.",
+      "category": "Collection",
+      "tags": [],
+      "version": 2
+    },
+    {
+      "id": "77697265-9890-41dc-a93d-9f3913a78feb",
+      "name": "Triangle Oscillator",
+      "description": "Generates a triangle wave that ramps linearly up, then linearly back down, creating a zigzag pattern.",
+      "category": "Oscillator",
+      "tags": [
+        "audio",
+        "math",
+        "generator",
+        "waveform"
+      ],
+      "version": 1
+    },
+    {
+      "id": "77697265-9891-4736-98d7-a43bd7874aee",
+      "name": "Polkadot",
+      "description": "Replaces a texture with a repeating pattern of dots whose size depends on the original brightness.",
+      "category": "Video Effect",
+      "tags": [
+        "video",
+        "effect"
+      ],
+      "version": 1
+    },
+    {
+      "id": "77697265-98c2-4279-a71f-7f54e14c6e43",
+      "name": "Absolute",
+      "description": "Outputs the absolute value of the input.",
+      "category": "Math",
+      "tags": [
+        "math"
+      ],
+      "version": 1
+    },
+    {
+      "id": "77697265-98e3-48c7-b23b-62988189c707",
+      "name": "UV Texture",
+      "description": "Outputs a texture where each pixel's red channel stores its own horizontal position and green stores its vertical position. Useful as a starting point for effects that remap pixels using UV coordinates.",
+      "category": "Video Source",
+      "tags": [
+        "video",
+        "generator"
+      ],
+      "version": 1
+    },
+    {
+      "id": "77697265-992d-4044-82dc-d2e0d30df78e",
+      "name": "Map",
+      "description": "Remaps a value from one range to another. For example, 10 in the range (0, 100) mapped to (50, 60) becomes 51.",
+      "category": "Math",
+      "tags": [
+        "math"
+      ],
+      "version": 1
+    },
+    {
+      "id": "77697265-999c-4f8b-8b9d-3646dc68aa69",
+      "name": "Bool In",
+      "description": "Takes a boolean into the patch",
+      "category": "Input",
+      "tags": [
+        "button",
+        "input"
+      ],
+      "version": 2
+    },
+    {
+      "id": "77697265-9b82-4a91-95e6-6757d94596d4",
+      "name": "Velocity",
+      "description": "Outputs the velocity from a MIDI Note message.",
+      "category": "MIDI",
+      "tags": [
+        "midi"
+      ],
+      "version": 1
+    },
+    {
+      "id": "77697265-9cb5-4e81-a52d-1fe82d9ba401",
+      "name": "Replace Inf",
+      "description": "Replaces any infinite input value with a fallback value.",
+      "category": "Math",
+      "tags": [
+        "math"
+      ],
+      "version": 0
+    },
+    {
+      "id": "77697265-9db0-46aa-9442-63bde366b630",
+      "name": "Subtract",
+      "description": "Cuts one or more shapes away from a base shape.",
+      "category": "Shape",
+      "tags": [
+        "video"
+      ],
+      "version": 1
+    },
+    {
+      "id": "77697265-9df3-4b94-a36d-42f1c6fbe997",
+      "name": "Edge Detection",
+      "description": "Detects and highlights edges in a texture, the places where neighboring pixels have very different colors or brightness.",
+      "category": "Video Effect",
+      "tags": [
+        "video",
+        "effect"
+      ],
+      "version": 3
+    },
+    {
+      "id": "77697265-9f07-49db-b974-c6df65c8163d",
+      "name": "Hatched",
+      "description": "Replaces the texture with a cross-hatched line pattern whose density follows the original brightness.",
+      "category": "Video Effect",
+      "tags": [
+        "video",
+        "effect"
+      ],
+      "version": 2
+    },
+    {
+      "id": "77697265-a065-4224-89ea-5aac5b0bc8e2",
+      "name": "Crop",
+      "description": "Crops a texture to a rectangular region defined by left, right, top, and bottom edges.",
+      "category": "Video",
+      "tags": [
+        "video",
+        "effect",
+        "crop"
+      ],
+      "version": 2
+    },
+    {
+      "id": "77697265-a0d8-429a-a558-69bc58d0d425",
+      "name": "Multiply",
+      "description": "Outputs the product of the input values.",
+      "category": "Math",
+      "tags": [
+        "math"
+      ],
+      "version": 1
+    },
+    {
+      "id": "77697265-a131-43e9-9f43-726f8c860d12",
+      "name": "Is NaN",
+      "description": "Outputs true when the input is NaN (not a number).",
+      "category": "Math",
+      "tags": [
+        "math"
+      ],
+      "version": 1
+    },
+    {
+      "id": "77697265-a270-4d60-911c-a88b1be6369a",
+      "name": "Video Mixer",
+      "description": "Combines multiple texture layers into one, where each layer's opacity controls how much it mixes in and a blend mode chooses how its pixels combine with the layers under it.",
+      "category": "Video",
+      "tags": [
+        "video",
+        "blend",
+        "mixer",
+        "effect",
+        "layers",
+        "add",
+        "burn",
+        "difference",
+        "distance",
+        "dodge",
+        "lighten",
+        "mask",
+        "multiply",
+        "overlay",
+        "subtract",
+        "add",
+        "alpha",
+        "burn",
+        "cut",
+        "darken",
+        "difference",
+        "displace",
+        "dodge",
+        "exclusion",
+        "hard light",
+        "lighten",
+        "luma",
+        "multiply",
+        "overlay",
+        "screen"
+      ],
+      "version": 3
+    },
+    {
+      "id": "77697265-a2ef-44da-9a81-bb0385c1948c",
+      "name": "Perlin Generator",
+      "description": "Generates a smoothly varying random signal. Unlike white noise, consecutive values are correlated, giving gradual natural-feeling variation.",
+      "category": "Oscillator",
+      "tags": [
+        "math",
+        "generator",
+        "oscillator",
+        "random"
+      ],
+      "version": 1
+    },
+    {
+      "id": "77697265-a388-4204-a27b-db435e5f7608",
+      "name": "Euler",
+      "description": "Outputs the base of the natural logarithm.",
+      "category": "Math",
+      "tags": [
+        "math"
+      ],
+      "version": 2
+    },
+    {
+      "id": "77697265-a41c-46c0-b134-867786760bd4",
+      "name": "Repeat",
+      "description": "Tiles a shape into a grid of repeating copies.",
+      "category": "Shape",
+      "tags": [
+        "video"
+      ],
+      "version": 1
+    },
+    {
+      "id": "77697265-a477-4205-bcfa-147fdd471716",
+      "name": "Exp",
+      "description": "Outputs e raised to the power of the input.",
+      "category": "Math",
+      "tags": [
+        "math"
+      ],
+      "version": 1
+    },
+    {
+      "id": "77697265-a48b-4af9-8975-e3063b037d4c",
+      "name": "Linear",
+      "description": "Outputs a collection of evenly spaced values between Min and Max.",
+      "category": "Pattern",
+      "tags": [
+        "gradient",
+        "palette"
+      ],
+      "version": 3
+    },
+    {
+      "id": "77697265-a4a8-48f8-ab7c-62f764a7f419",
+      "name": "Add Subtract",
+      "description": "Adds or subtracts color values per channel, shifting the red, green, and blue of each pixel.",
+      "category": "Video Effect",
+      "tags": [
+        "video",
+        "effect"
+      ],
+      "version": 3
+    },
+    {
+      "id": "77697265-a4ae-41fa-8316-8c0d54bc55b7",
+      "name": "To Texture",
+      "description": "Converts a shape or another texture into a Texture2D with a chosen resolution and filtering.",
+      "category": "Video",
+      "tags": [
+        "video",
+        "generator"
+      ],
+      "version": 2
+    },
+    {
+      "id": "77697265-a625-4499-8ad1-5b39452172ab",
+      "name": "Video Resource",
+      "description": "Outputs a video resource, a reference to a video file. Other nodes can use it to play or sample the video, or it can be stored in a collection.",
+      "category": "Resource",
+      "tags": [],
+      "version": 0
+    },
+    {
+      "id": "77697265-a665-4a94-af9b-68ba3616cc10",
+      "name": "Outside",
+      "description": "Outputs true when the input falls outside the range or bounding area.",
+      "category": "Logic",
+      "tags": [
+        "math"
+      ],
+      "version": 2
+    },
+    {
+      "id": "77697265-a66a-497e-ad3e-99abdbf06d6d",
+      "name": "Is Note On",
+      "description": "Tests whether a MIDI message is a Note On.",
+      "category": "MIDI",
+      "tags": [
+        "midi"
+      ],
+      "version": 1
+    },
+    {
+      "id": "77697265-a6da-4134-9334-7b771649ed34123456789",
+      "name": "Curve",
+      "description": "Applies an easing curve to an input between 0 and 1, shaping the linear progression.",
+      "category": "Math",
+      "tags": [
+        "math",
+        "ease",
+        "exponential",
+        "linear",
+        "bounce",
+        "quadratic",
+        "sine",
+        "interpolation",
+        "easing",
+        "smoothing",
+        "envelope"
+      ],
+      "version": 1
+    },
+    {
+      "id": "77697265-a712-4c94-96ed-3a1a9756ea6a",
+      "name": "Size",
+      "description": "Outputs the size of a collection.",
+      "category": "Collection",
+      "tags": [],
+      "version": 2
+    },
+    {
+      "id": "77697265-a712-4c94-96ed-3a1e3756ea6a",
+      "name": "Indices",
+      "description": "Outputs a collection of integer indices, one per element of the input collection.",
+      "category": "Collection",
+      "tags": [],
+      "version": 3
+    },
+    {
+      "id": "77697265-a7dd-4c94-96ed-321e3756ea6a",
+      "name": "Span",
+      "description": "Outputs a portion of a collection, starting at a given position and continuing for a given length.",
+      "category": "Collection",
+      "tags": [],
+      "version": 3
+    },
+    {
+      "id": "77697265-a7dd-4c94-96ed-33ae3756ea6a",
+      "name": "Shuffle",
+      "description": "Outputs a collection in a random order.",
+      "category": "Collection",
+      "tags": [],
+      "version": 3
+    },
+    {
+      "id": "77697265-a7dd-4c94-96ed-4a4a3756ea6a",
+      "name": "Write",
+      "description": "Outputs a collection with a value written at a given position.",
+      "category": "Collection",
+      "tags": [],
+      "version": 3
+    },
+    {
+      "id": "77697265-a7dd-4c94-96ed-4a5e3756ea6a",
+      "name": "Read",
+      "description": "Outputs the element of a collection at a given position.",
+      "category": "Collection",
+      "tags": [],
+      "version": 4
+    },
+    {
+      "id": "77697265-a7dd-4c94-96ed-51ae37azea6a",
+      "name": "Shift",
+      "description": "Shifts the elements of a collection by an offset.",
+      "category": "Collection",
+      "tags": [],
+      "version": 3
+    },
+    {
+      "id": "77697265-a7dd-4c94-98ed-39ae37azea6a",
+      "name": "Insert",
+      "description": "Inserts one or more elements into a collection at a given position.",
+      "category": "Collection",
+      "tags": [],
+      "version": 3
+    },
+    {
+      "id": "77697265-a80a-433d-a399-d4c4c5b43d0d",
+      "name": "Filter Note On",
+      "description": "Outputs the velocity from a MIDI Note On message, only when its pitch and channel match.",
+      "category": "MIDI",
+      "tags": [
+        "midi"
+      ],
+      "version": 1
+    },
+    {
+      "id": "77697265-a9af-4cb4-b10f-3966436bb63b",
+      "name": "Sum",
+      "description": "Outputs the sum of the values in a collection.",
+      "category": "Math",
+      "tags": [
+        "math"
+      ],
+      "version": 1
+    },
+    {
+      "id": "77697265-a9af-4cb4-b10f-3968b36bb63b",
+      "name": "Add",
+      "description": "Outputs the sum of the input values.",
+      "category": "Math",
+      "tags": [
+        "math",
+        "+"
+      ],
+      "version": 1
+    },
+    {
+      "id": "77697265-aa35-4502-b350-34d27a583d51",
+      "name": "Magnitude",
+      "description": "Outputs the magnitude of a value, such as the length of a vector.",
+      "category": "Math",
+      "tags": [
+        "math",
+        "length"
+      ],
+      "version": 1
+    },
+    {
+      "id": "77697265-aa7d-4308-a9d4-4fd047db8b02",
+      "name": "LUT",
+      "description": "Applies a 3D lookup table to remap the colors of a texture, commonly used for color grading.",
+      "category": "Video Effect",
+      "tags": [
+        "video",
+        "effect",
+        "cube",
+        "lut",
+        "lookup",
+        "table",
+        "color",
+        "grading"
+      ],
+      "version": 0
+    },
+    {
+      "id": "77697265-ab950887-37ee-4fd2-9487-c856b6b75c83",
+      "name": "Edge",
+      "description": "Turns a filled shape into an outline stroke of a given thickness.",
+      "category": "Shape",
+      "tags": [
+        "video",
+        "outline"
+      ],
+      "version": 2
+    },
+    {
+      "id": "77697265-ac08-41dc-9ffe-0db582cee573",
+      "name": "Moon",
+      "description": "Outputs a filled crescent moon with adjustable radii and separation.",
+      "category": "Shape",
+      "tags": [
+        "video",
+        "generator"
+      ],
+      "version": 0
+    },
+    {
+      "id": "77697265-acd2-4541-b139-88756dc29ca7",
+      "name": "Pixelate",
+      "description": "Reduces a texture to blocks of solid color, creating a pixelated retro look.",
+      "category": "Video Effect",
+      "tags": [
+        "video",
+        "effect"
+      ],
+      "version": 2
+    },
+    {
+      "id": "77697265-ad7a-4f41-8d67-612cd29f2ea4",
+      "name": "Polygon",
+      "description": "Outputs a filled polygon defined by a list of points connected in order.",
+      "category": "Shape",
+      "tags": [
+        "video",
+        "generator"
+      ],
+      "version": 2
+    },
+    {
+      "id": "77697265-ad7a-4f41-8d67-643bf49f2ea4",
+      "name": "Line",
+      "description": "Outputs a line segment between two points.",
+      "category": "Shape",
+      "tags": [
+        "video",
+        "generator"
+      ],
+      "version": 2
+    },
+    {
+      "id": "77697265-aee3-4b9d-bbd5-6ad4bbd5db30",
+      "name": "Not",
+      "description": "Outputs the logical negation of a boolean.",
+      "category": "Logic",
+      "tags": [
+        "math",
+        "negate",
+        "reverse"
+      ],
+      "version": 1
+    },
+    {
+      "id": "77697265-aee3-4b9d-bbd5-6ae4ccd5ab30",
+      "name": "Hub",
+      "description": "Forwards the incoming value to its output.",
+      "category": "Logic",
+      "tags": [
+        "logic",
+        "null"
+      ],
+      "version": 2
+    },
+    {
+      "id": "77697265-aef0-47b2-939f-7247f15866bf",
+      "name": "Filter Note Off",
+      "description": "Outputs the velocity from a MIDI Note Off message, only when its pitch and channel match.",
+      "category": "MIDI",
+      "tags": [
+        "midi"
+      ],
+      "version": 1
+    },
+    {
+      "id": "77697265-b0de-439b-ad50-a2d41d612872",
+      "name": "Time",
+      "description": "Splits a time in seconds into hours, minutes, seconds, and milliseconds components.",
+      "category": "Time",
+      "tags": [
+        "math"
+      ],
+      "version": 2
+    },
+    {
+      "id": "77697265-b166-458b-ae8f-366ddbe6e5ad",
+      "name": "Normalize",
+      "description": "Outputs a vector scaled to length 1, preserving its direction.",
+      "category": "Math",
+      "tags": [
+        "math"
+      ],
+      "version": 0
+    },
+    {
+      "id": "77697265-b2a2-4c1c-8c4c-2915d78cc8e9",
+      "name": "Texture In",
+      "description": "Takes a texture signal into the patch",
+      "category": "Input",
+      "tags": [
+        "input"
+      ],
+      "version": 1
+    },
+    {
+      "id": "77697265-b3c4-4f37-aec0-66e02885b0e1",
+      "name": "Nor",
+      "description": "Outputs true only when all inputs are false.",
+      "category": "Logic",
+      "tags": [
+        "math"
+      ],
+      "version": 3
+    },
+    {
+      "id": "77697265-b4a0-4565-8190-16b4fcf07c2a",
+      "name": "To Float2",
+      "description": "Converts a value to a 2D vector.",
+      "category": "Math",
+      "tags": [
+        "math"
+      ],
+      "version": 1
+    },
+    {
+      "id": "77697265-b79f-4513-a041-6d94cbf95962",
+      "name": "Duration",
+      "description": "Outputs the duration of a video or audio resource, in seconds.",
+      "category": "Time",
+      "tags": [],
+      "version": 1
+    },
+    {
+      "id": "77697265-b7d0-445b-831a-da787ea65a54",
+      "name": "Equilateral Triangle",
+      "description": "Outputs a filled equilateral triangle with three equal sides, centered at the origin.",
+      "category": "Shape",
+      "tags": [
+        "video",
+        "generator"
+      ],
+      "version": 1
+    },
+    {
+      "id": "77697265-b836-49f0-bb1e-f5d3f4ff5680",
+      "name": "Round",
+      "description": "Grows a shape outward by a given amount, rounding its corners in the process.",
+      "category": "Shape",
+      "tags": [
+        "video"
+      ],
+      "version": 1
+    },
+    {
+      "id": "77697265-b994-4a9a-94e7-b4e0fa77d8af",
+      "name": "Bloom",
+      "description": "Makes bright areas of a texture glow outward, like a camera overexposing highlights.",
+      "category": "Video Effect",
+      "tags": [
+        "video",
+        "effect"
+      ],
+      "version": 2
+    },
+    {
+      "id": "77697265-ba58-48c7-8f03-906c6ad9ca5a",
+      "name": "Fallback",
+      "description": "Tracks the peak of the input and decays back down to a fallback value over a given duration.",
+      "category": "Math",
+      "tags": [
+        "math"
+      ],
+      "version": 2
+    },
+    {
+      "id": "77697265-ba5e-46c5-baf6-33c56a5fbf44",
+      "name": "Equal",
+      "description": "Outputs true when two values are equal.",
+      "category": "Logic",
+      "tags": [
+        "math",
+        "logic",
+        "compare",
+        "=="
+      ],
+      "version": 2
+    },
+    {
+      "id": "77697265-baa4-4624-b7a1-a9f98b245d77",
+      "name": "Bendoscope",
+      "description": "Distorts a texture in a polar, kaleidoscope-like pattern with adjustable angular repetitions.",
+      "category": "Video Effect",
+      "tags": [
+        "video",
+        "effect"
+      ],
+      "version": 2
+    },
+    {
+      "id": "77697265-bb9a-4b13-83f3-d0e4da6cff86",
+      "name": "Resize",
+      "description": "Resizes a texture to a target resolution, with options for how to fit it.",
+      "category": "Video",
+      "tags": [
+        "video",
+        "effect"
+      ],
+      "version": 2
+    },
+    {
+      "id": "77697265-bb9a-4b60-83f3-d0e4da6cff86",
+      "name": "UV Offset",
+      "description": "Distorts a texture by shifting each pixel's sampling position based on a second texture's color values.",
+      "category": "Video Effect",
+      "tags": [
+        "video",
+        "effect"
+      ],
+      "version": 3
+    },
+    {
+      "id": "77697265-bba3-45b1-ad28-262ea3b88f55",
+      "name": "Radar",
+      "description": "Sweeps a rotating line across the texture like a radar scanner, revealing pixels as it passes.",
+      "category": "Video Effect",
+      "tags": [
+        "video",
+        "effect"
+      ],
+      "version": 1
+    },
+    {
+      "id": "77697265-bbc2-49ec-bdac-5b38bdb4a6a1",
+      "name": "Sort",
+      "description": "Outputs the input collection sorted in ascending or descending order.",
+      "category": "Math",
+      "tags": [
+        "math"
+      ],
+      "version": 3
+    },
+    {
+      "id": "77697265-bbce-4a91-aa48-52a04b0ad059",
+      "name": "Cross Product",
+      "description": "Outputs the cross product of two vectors.",
+      "category": "Math",
+      "tags": [
+        "math"
+      ],
+      "version": 2
+    },
+    {
+      "id": "77697265-bc76-4025-8195-07b2aa065e67",
+      "name": "Threshold",
+      "description": "Replaces each pixel with one of two colors based on whether its brightness is above or below a threshold.",
+      "category": "Video Effect",
+      "tags": [
+        "video",
+        "effect",
+        "posterize",
+        "quantize"
+      ],
+      "version": 3
+    },
+    {
+      "id": "77697265-bd5b-4cf1-8a09-5cc9e622f691",
+      "name": "Tile",
+      "description": "Tiles and skews a texture into a repeating pattern.",
+      "category": "Video Effect",
+      "tags": [
+        "video",
+        "effect"
+      ],
+      "version": 2
+    },
+    {
+      "id": "77697265-bd7b-4691-b967-c0c06f459894",
+      "name": "Bright.Contrast",
+      "description": "Lightens or darkens a texture, and strengthens or weakens the difference between its light and dark areas.",
+      "category": "Video Effect",
+      "tags": [
+        "video",
+        "effect"
+      ],
+      "version": 2
+    },
+    {
+      "id": "77697265-bd8c-4955-b266-b17c8122de60",
+      "name": "Envelope Follower",
+      "description": "Outputs a smoothed signal that tracks the amplitude of the input.",
+      "category": "Math",
+      "tags": [
+        "math"
+      ],
+      "version": 1
+    },
+    {
+      "id": "77697265-be96-4efe-93c1-ff4752ed8250",
+      "name": "Sign",
+      "description": "Outputs -1, 0, or 1 depending on the sign of the input.",
+      "category": "Math",
+      "tags": [
+        "math"
+      ],
+      "version": 0
+    },
+    {
+      "id": "77697265-beea-4d38-8ee5-0eba4cbd0aee",
+      "name": "Texture Out",
+      "description": "Sends a texture out of the patch",
+      "category": "Output",
+      "tags": [
+        "output"
+      ],
+      "version": 1
+    },
+    {
+      "id": "77697265-c315-4537-b4f2-d5c8ba23a69f",
+      "name": "Displace",
+      "description": "Outputs a shape whose outline falls roughly midway between the outlines of two input shapes, mixing features from both.",
+      "category": "Shape",
+      "tags": [
+        "video"
+      ],
+      "version": 1
+    },
+    {
+      "id": "77697265-c34f-4db5-b405-d9f5764f42fb",
+      "name": "ISF Resource",
+      "description": "Outputs an ISF resource, a reference to an ISF fragment shader file that shader-running nodes can execute.",
+      "category": "Resource",
+      "tags": [],
+      "version": 0
+    },
+    {
+      "id": "77697265-c45e-4f95-94f5-4b4e183dd76f",
+      "name": "Trapezoid",
+      "description": "Outputs a filled trapezoid, a four-sided shape with parallel top and bottom edges of different widths, centered at the origin.",
+      "category": "Shape",
+      "tags": [
+        "video",
+        "generator"
+      ],
+      "version": 1
+    },
+    {
+      "id": "77697265-c5b1-46d5-8fb1-6a348a474bcf",
+      "name": "Cross",
+      "description": "Outputs a filled plus-sign cross with adjustable arm thickness and corner rounding, centered at the origin.",
+      "category": "Shape",
+      "tags": [
+        "video",
+        "generator"
+      ],
+      "version": 1
+    },
+    {
+      "id": "77697265-c628-478c-8f3d-3608d19084f5",
+      "name": "Write Note Off",
+      "description": "Outputs a MIDI Note Off message on each Write trigger.",
+      "category": "MIDI",
+      "tags": [
+        "midi"
+      ],
+      "version": 1
+    },
+    {
+      "id": "77697265-c83b-4c68-a045-212c81fd4114",
+      "name": "Levels",
+      "description": "Adjusts the dark and light points of a texture, controlling its overall brightness and contrast like a photo levels adjustment.",
+      "category": "Video Effect",
+      "tags": [
+        "video",
+        "effect"
+      ],
+      "version": 1
+    },
+    {
+      "id": "77697265-c95a-4a63-a7ad-97c8c09c73cb",
+      "name": "Noise Generator",
+      "description": "Outputs independent random values at every sample, like static or the hiss of white noise.",
+      "category": "Oscillator",
+      "tags": [
+        "math"
+      ],
+      "version": 0
+    },
+    {
+      "id": "77697265-cb2b-414c-96f3-11a8e6ec8d29",
+      "name": "Replace Alpha",
+      "description": "Replaces the alpha channel of a texture or color with a given value.",
+      "category": "Video",
+      "tags": [
+        "video",
+        "effect",
+        "alpha",
+        "opacity"
+      ],
+      "version": 2
+    },
+    {
+      "id": "77697265-cb54-4a51-a719-a1d4b4d8d5fb",
+      "name": "And",
+      "description": "Outputs true only when all inputs are true.",
+      "category": "Logic",
+      "tags": [
+        "math",
+        "&"
+      ],
+      "version": 3
+    },
+    {
+      "id": "77697265-cb86-4a6f-aaba-009c4c8bb5c1",
+      "name": "Mask",
+      "description": "Uses one texture as a mask to control the visibility of another texture, multiplying them together.",
+      "category": "Video Effect",
+      "tags": [
+        "video",
+        "mask",
+        "alpha",
+        "effect"
+      ],
+      "version": 2
+    },
+    {
+      "id": "77697265-cd40-419e-a3e4-84b7cba9e961",
+      "name": "Float3",
+      "description": "Builds a 3D vector from component values.",
+      "category": "Math",
+      "tags": [
+        "math",
+        "pack",
+        "vec3"
+      ],
+      "version": 1
+    },
+    {
+      "id": "77697265-cd66-44d5-b414-74e8c11c805c",
+      "name": "Pie",
+      "description": "Outputs a filled pie-slice wedge with adjustable radius and opening angle, centered at the origin.",
+      "category": "Shape",
+      "tags": [
+        "video",
+        "generator"
+      ],
+      "version": 1
+    },
+    {
+      "id": "77697265-cd8c-4e66-8603-3011d462906c",
+      "name": "Counter",
+      "description": "Outputs a counter that starts at Start and advances by Step on each Trigger. Reset returns it to Start.",
+      "category": "Pattern",
+      "tags": [
+        "pattern"
+      ],
+      "version": 2
+    },
+    {
+      "id": "77697265-cd95-4980-a405-432b71d79d35",
+      "name": "Vibrance",
+      "description": "Increases the intensity of muted, less-saturated colors while leaving already-vivid colors mostly unchanged.",
+      "category": "Video Effect",
+      "tags": [
+        "video",
+        "effect"
+      ],
+      "version": 0
+    },
+    {
+      "id": "77697265-ce82-4714-8023-1953d9fab7a9",
+      "name": "Vignette",
+      "description": "Darkens or colors the corners of a texture, fading inward toward the center like a photo vignette.",
+      "category": "Video Effect",
+      "tags": [
+        "video",
+        "effect"
+      ],
+      "version": 2
+    },
+    {
+      "id": "77697265-d054-4243-9640-61d187129f6c",
+      "name": "Mask Blend",
+      "description": "Mixes two textures together, with a third mask texture deciding where each one shows through.",
+      "category": "Video Effect",
+      "tags": [
+        "video",
+        "blend",
+        "alpha",
+        "effect"
+      ],
+      "version": 1
+    },
+    {
+      "id": "77697265-d235-4a6a-b661-02abe55c72ff",
+      "name": "Float In",
+      "description": "Takes a float event into the patch",
+      "category": "Input",
+      "tags": [
+        "number",
+        "input"
+      ],
+      "version": 4
+    },
+    {
+      "id": "77697265-d3fa-491a-8ed3-712025f8f381",
+      "name": "Fader",
+      "description": "Fades a texture in or out by scaling all its channels by a gain value.",
+      "category": "Video",
+      "tags": [
+        "video"
+      ],
+      "version": 1
+    },
+    {
+      "id": "77697265-d619-42bf-b61d-4c9a7dcd6c2a",
+      "name": "Union",
+      "description": "Combines multiple shapes into one merged surface, with a choice of smooth, stepped, or beveled seams where they meet.",
+      "category": "Shape",
+      "tags": [
+        "video"
+      ],
+      "version": 2
+    },
+    {
+      "id": "77697265-d650-4adb-be52-b00f8fb46a0e",
+      "name": "Snapshot",
+      "description": "Emits the current signal value as an event when triggered.",
+      "category": "Logic",
+      "tags": [
+        "logic"
+      ],
+      "version": 2
+    },
+    {
+      "id": "77697265-d65d-4bfe-aad6-882493b313fd",
+      "name": "Ripple",
+      "description": "Distorts a texture with circular waves emanating from a center point, like ripples on water.",
+      "category": "Video Effect",
+      "tags": [
+        "video",
+        "effect"
+      ],
+      "version": 2
+    },
+    {
+      "id": "77697265-d6a0-423f-99f8-608fa5e03e97",
+      "name": "Bpm to Frequency",
+      "description": "Converts beats-per-minute to frequency in Hertz.",
+      "category": "Math",
+      "tags": [
+        "math"
+      ],
+      "version": 1
+    },
+    {
+      "id": "77697265-d718-44e4-a96a-f8eab05c7b56",
+      "name": "Video In",
+      "description": "Takes a Video Resource into the patch",
+      "category": "Input",
+      "tags": [
+        "input"
+      ],
+      "version": 0
+    },
+    {
+      "id": "77697265-d822-4abe-9a4a-5693e1b92151",
+      "name": "Texture Material",
+      "description": "Creates a 2D material that bundles a texture, tint color, and rendering settings, defining how a 2D mesh will look when drawn.",
+      "category": "Video",
+      "tags": [
+        "2d"
+      ],
+      "version": 4
+    },
+    {
+      "id": "77697265-d980-43b3-9237-6683b154a5b0",
+      "name": "Attack Release",
+      "description": "Outputs a value that rises from 0 to 1 over Attack Time when triggered, then falls back to 0 over Release Time, like a fade-in fade-out shape.",
+      "category": "Time",
+      "tags": [
+        "audio",
+        "generator",
+        "attack",
+        "envelope",
+        "release",
+        "ar"
+      ],
+      "version": 1
+    },
+    {
+      "id": "77697265-da9f-4f4d-8b3e-9f4deeec55db",
+      "name": "Vesica",
+      "description": "Outputs a filled vesica, a lens or eye shape formed by the overlap of two circles, centered at the origin.",
+      "category": "Shape",
+      "tags": [
+        "video",
+        "generator"
+      ],
+      "version": 0
+    },
+    {
+      "id": "77697265-db42-47ed-90db-acc22da3ec32",
+      "name": "Unpack",
+      "description": "Outputs each component of a vector, color, or texture on a separate output.",
+      "category": "Logic",
+      "tags": [
+        "float2",
+        "float3",
+        "float4",
+        "texture"
+      ],
+      "version": 3
+    },
+    {
+      "id": "77697265-dc55-4cec-b225-5e3f6c3fb206",
+      "name": "To Cylindrical",
+      "description": "Converts a 3D position into distance from the center (Magnitude), angle around the center on the XY plane (Angle) and height along the Y axis (Height).",
+      "category": "Math",
+      "tags": [
+        "math",
+        "to",
+        "cylindrical",
+        "coordinates",
+        "vec3"
+      ],
+      "version": 0
+    },
+    {
+      "id": "77697265-dd11-4afa-849e-4cba176b3049",
+      "name": "Bag",
+      "description": "Outputs a random integer each Trigger. Each value in the bag appears exactly once before the bag reshuffles and starts over.",
+      "category": "Pattern",
+      "tags": [
+        "pattern"
+      ],
+      "version": 2
+    },
+    {
+      "id": "77697265-df63-4b6e-9c24-50dce048c0cb",
+      "name": "To Spherical",
+      "description": "Converts a 3D position into distance from the center (Magnitude), angle around the center on the XZ plane (Angle X) and angle around the center on the YZ plane (Angle Y).",
+      "category": "Math",
+      "tags": [
+        "math",
+        "to",
+        "spherical",
+        "coordinates",
+        "vec3"
+      ],
+      "version": 0
+    },
+    {
+      "id": "77697265-dfa7-4fa5-9029-400865650233",
+      "name": "Within",
+      "description": "Outputs true when the input falls within the range or bounding area.",
+      "category": "Logic",
+      "tags": [
+        "math"
+      ],
+      "version": 3
+    },
+    {
+      "id": "77697265-e0d2-4bc1-ad94-5016a7bef889",
+      "name": "ChromaKey",
+      "description": "Makes pixels matching a chosen color transparent, commonly used to remove a green or blue screen background.",
+      "category": "Video Effect",
+      "tags": [
+        "video",
+        "effect"
+      ],
+      "version": 1
+    },
+    {
+      "id": "77697265-e0df-4123-9f7e-399b2c0e4fcc",
+      "name": "Channel",
+      "description": "Outputs the channel number from a MIDI message.",
+      "category": "MIDI",
+      "tags": [
+        "midi"
+      ],
+      "version": 1
+    },
+    {
+      "id": "77697265-e0f2-45b2-95b2-15ff79a07845",
+      "name": "Write CC",
+      "description": "Outputs a MIDI CC message on each Write trigger.",
+      "category": "MIDI",
+      "tags": [
+        "midi"
+      ],
+      "version": 1
+    },
+    {
+      "id": "77697265-e0f7-42c0-a0a4-669d80299ff7",
+      "name": "Nand",
+      "description": "Outputs true except when all inputs are true.",
+      "category": "Logic",
+      "tags": [
+        "math"
+      ],
+      "version": 3
+    },
+    {
+      "id": "77697265-e166-45aa-ad5c-314582e985b4",
+      "name": "Mirror",
+      "description": "Reflects one half of a texture over the other, making the output symmetric along a chosen axis.",
+      "category": "Video Effect",
+      "tags": [
+        "video",
+        "effect"
+      ],
+      "version": 2
+    },
+    {
+      "id": "77697265-e2ec-4f1b-901a-cefc474d3c07",
+      "name": "Text Render",
+      "description": "Renders text to a texture. With Instanced Output on, each text instance becomes its own output texture.",
+      "category": "Video Source",
+      "tags": [
+        "video",
+        "generator",
+        "shape"
+      ],
+      "version": 5
+    },
+    {
+      "id": "77697265-e31a-44e2-8f72-d863cf0ec996",
+      "name": "Stack",
+      "description": "Stores values that you push onto it. Pop removes the most recent one, like a stack of plates where you can only take from the top.",
+      "category": "Collection",
+      "tags": [
+        "filo",
+        "lifo",
+        "collection",
+        "delay"
+      ],
+      "version": 2
+    },
+    {
+      "id": "77697265-e3c1-921b-ae21-f4cb0f1f0ce3",
+      "name": "Rotation",
+      "description": "Outputs the rotation of a slice, in turns.",
+      "category": "Slice",
+      "tags": [
+        "slice",
+        "rotate",
+        "rotation"
+      ],
+      "version": 1
+    },
+    {
+      "id": "77697265-e3c1-921b-ce21-f4cb0f1f0ce3",
+      "name": "Center",
+      "description": "Outputs the center of a slice or box.",
+      "category": "Slice",
+      "tags": [
+        "slice",
+        "center"
+      ],
+      "version": 2
+    },
+    {
+      "id": "77697265-e3c1-924b-ae61-f4cb0f3f0ce9",
+      "name": "Slice Mask",
+      "description": "Outputs a slice's mask as a shape.",
+      "category": "Slice",
+      "tags": [
+        "slice",
+        "mask"
+      ],
+      "version": 1
+    },
+    {
+      "id": "77697265-e3c1-924b-ae61-f4cb3f3f3ce9",
+      "name": "Slice",
+      "description": "Converts the input into a Slice. A slice is a rectangular region of the composition with its own position, rotation, and mask, typically used for mapping the output onto physical surfaces.",
+      "category": "Slice",
+      "tags": [
+        "slice"
+      ],
+      "version": 1
+    },
+    {
+      "id": "77697265-e404-464f-a4c8-ff262ab15588",
+      "name": "Fractal Noise",
+      "description": "Outputs a cloud-like noise texture made by layering smooth random noise at multiple scales on top of each other, giving natural-looking detail.",
+      "category": "Video Source",
+      "tags": [
+        "video",
+        "generator",
+        "noise",
+        "fractal"
+      ],
+      "version": 1
+    },
+    {
+      "id": "77697265-e5c4-924b-be62-f4fb3f2f3ca9",
+      "name": "Circle",
+      "description": "Outputs a circle as 2D geometry. Combine with a 2D transform and a material to make it renderable.",
+      "category": "2D",
+      "tags": [
+        "circle",
+        "mesh",
+        "2d"
+      ],
+      "version": 1
+    },
+    {
+      "id": "77697265-e61f-42c0-812a-0dca04e74562",
+      "name": "Slice In",
+      "description": "Takes a slice signal into the patch",
+      "category": "Input",
+      "tags": [
+        "input"
+      ],
+      "version": 2
+    },
+    {
+      "id": "77697265-e61f-42c0-862a-0dca04e14569",
+      "name": "Trigger In",
+      "description": "Takes a trigger event into the patch",
+      "category": "Input",
+      "tags": [
+        "button",
+        "input"
+      ],
+      "version": 1
+    },
+    {
+      "id": "77697265-e6b2-4921-9ff4-cb3a0a78697d",
+      "name": "On Change",
+      "description": "Emits an event when the input signal value changes.",
+      "category": "Logic",
+      "tags": [
+        "logic"
+      ],
+      "version": 2
+    },
+    {
+      "id": "77697265-e753-41c2-b8b9-ddbc4c196c83",
+      "name": "Find Replace",
+      "description": "Replaces all matching values in a collection with a new value.",
+      "category": "Collection",
+      "tags": [],
+      "version": 1
+    },
+    {
+      "id": "77697265-e757-402b-b580-440ed3e93c4a",
+      "name": "Is Note Off",
+      "description": "Tests whether a MIDI message is a Note Off.",
+      "category": "MIDI",
+      "tags": [
+        "midi"
+      ],
+      "version": 1
+    },
+    {
+      "id": "77697265-e77f-458c-88f7-71c9e15f5bd9",
+      "name": "Drop Shadow",
+      "description": "Draws a colored copy of the texture offset behind it as a shadow.",
+      "category": "Video Effect",
+      "tags": [
+        "video",
+        "effect"
+      ],
+      "version": 2
+    },
+    {
+      "id": "77697265-e7ef-4944-8fc2-d808ee0433cb",
+      "name": "Float2",
+      "description": "Builds a 2D vector from component values.",
+      "category": "Math",
+      "tags": [
+        "math",
+        "pack",
+        "vec2"
+      ],
+      "version": 1
+    },
+    {
+      "id": "77697265-e7f4-4c62-85a1-104819d1f0b1",
+      "name": "Slide",
+      "description": "Scrolls the texture horizontally and vertically, wrapping around at the edges.",
+      "category": "Video Effect",
+      "tags": [
+        "video",
+        "effect",
+        "scroll"
+      ],
+      "version": 3
+    },
+    {
+      "id": "77697265-e87a-43b7-a55e-41cb8e521848",
+      "name": "Dilate",
+      "description": "Expands the bright or dark regions of a texture, growing them outward.",
+      "category": "Video Effect",
+      "tags": [
+        "video",
+        "effect"
+      ],
+      "version": 0
+    },
+    {
+      "id": "77697265-e8c1-11ec-8fea-0242ac120002",
+      "name": "Mesh 2D",
+      "description": "Combines 2D geometry with a transform that positions it and a material that gives it color and texture, producing a complete 2D mesh ready to render.",
+      "category": "2D",
+      "tags": [
+        "2d",
+        "mesh"
+      ],
+      "version": 1
+    },
+    {
+      "id": "77697265-e8ec-4f1b-901a-cffc104d3b07",
+      "name": "Solid Color",
+      "description": "Outputs a texture filled with a single color.",
+      "category": "Video Source",
+      "tags": [
+        "video",
+        "generator"
+      ],
+      "version": 2
+    },
+    {
+      "id": "77697265-e8ec-4f1b-901a-cffc174d3b07",
+      "name": "Slice Render",
+      "description": "Renders one or more slices to a texture. With Instanced Output on, each slice becomes its own texture.",
+      "category": "Slice",
+      "tags": [
+        "video",
+        "generator",
+        "shape",
+        "slice"
+      ],
+      "version": 3
+    },
+    {
+      "id": "77697265-e8ec-7a1g-901a-cfec174d3b67",
+      "name": "2D Render",
+      "description": "Renders 2D meshes into a texture using a camera viewport. By default all meshes combine into one texture. Enable Instanced Output to produce one texture per mesh instance.",
+      "category": "2D",
+      "tags": [
+        "video",
+        "generator",
+        "geometry",
+        "2d"
+      ],
+      "version": 2
+    },
+    {
+      "id": "77697265-e9c4-924b-be62-f4fb3f2f3ce9",
+      "name": "Rectangle",
+      "description": "Outputs a rectangle as 2D geometry. Combine with a 2D transform and a material to make it renderable.",
+      "category": "2D",
+      "tags": [
+        "quad"
+      ],
+      "version": 3
+    },
+    {
+      "id": "77697265-e9c4-988b-be62-f4fb3f2f3ce9",
+      "name": "Equilateral Triangle",
+      "description": "Outputs an equilateral triangle as 2D geometry. Combine with a 2D transform and a material to make it renderable.",
+      "category": "2D",
+      "tags": [
+        "triangle",
+        "mesh",
+        "2d"
+      ],
+      "version": 0
+    },
+    {
+      "id": "77697265-e9e1-4bac-9742-265e5207a103",
+      "name": "Float",
+      "description": "Converts a value to a float.",
+      "category": "Math",
+      "tags": [
+        "math",
+        "number"
+      ],
+      "version": 2
+    },
+    {
+      "id": "77697265-ea26-47d6-985a-b4caec314bf7",
+      "name": "Circle",
+      "description": "Outputs a filled circle centered at the origin.",
+      "category": "Shape",
+      "tags": [
+        "video",
+        "generator"
+      ],
+      "version": 1
+    },
+    {
+      "id": "77697265-ea26-47d6-985a-b4d5dc314bf7",
+      "name": "Shape Render",
+      "description": "Renders one or more shapes to a texture with a given fill color.",
+      "category": "Shape",
+      "tags": [
+        "video",
+        "generator"
+      ],
+      "version": 4
+    },
+    {
+      "id": "77697265-ec31-4779-b633-c22923fba7d5",
+      "name": "Change Case",
+      "description": "Outputs a string in lowercase or uppercase.",
+      "category": "Collection",
+      "tags": [],
+      "version": 1
+    },
+    {
+      "id": "77697265-ec64-44f7-b446-de2a0220c5b8",
+      "name": "Patch Info",
+      "description": "Outputs the host's current patch name, video resolution, aspect ratio, and bit depth.",
+      "category": "System",
+      "tags": [
+        "patch"
+      ],
+      "version": 0
+    },
+    {
+      "id": "77697265-ed9b-4bec-b3d4-43ac04731cba",
+      "name": "Sine Oscillator",
+      "description": "Generates a smoothly oscillating sine wave, like a pendulum or ocean waves rising and falling.",
+      "category": "Oscillator",
+      "tags": [
+        "audio",
+        "math",
+        "generator",
+        "waveform"
+      ],
+      "version": 1
+    },
+    {
+      "id": "77697265-ee7b-495f-97de-f384d8f0e008",
+      "name": "Transpose",
+      "description": "Outputs the transpose of the input matrix.",
+      "category": "Math",
+      "tags": [
+        "math"
+      ],
+      "version": 1
+    },
+    {
+      "id": "77697265-eebf-4cda-aa6e-56148421f0c3",
+      "name": "Color from HSB",
+      "description": "Creates a color from hue, saturation, brightness, and alpha values.",
+      "category": "Video",
+      "tags": [
+        "video",
+        "effect"
+      ],
+      "version": 0
+    },
+    {
+      "id": "77697265-eedf-4363-87c6-9067955f3112",
+      "name": "Sharpen",
+      "description": "Enhances edges in a texture to make details appear crisper and more defined.",
+      "category": "Video Effect",
+      "tags": [
+        "video",
+        "effect"
+      ],
+      "version": 1
+    },
+    {
+      "id": "77697265-f084-4abb-9828-42a21fff07a2",
+      "name": "Dot Screen",
+      "description": "Renders a texture as a halftone pattern of dots, like old newspaper printing.",
+      "category": "Video Effect",
+      "tags": [
+        "video",
+        "effect"
+      ],
+      "version": 1
+    },
+    {
+      "id": "77697265-f134-401c-a103-29479d1c4a9a",
+      "name": "Median",
+      "description": "Outputs the middle value of a collection when sorted, known as the median.",
+      "category": "Math",
+      "tags": [
+        "math"
+      ],
+      "version": 1
+    },
+    {
+      "id": "77697265-f177-44a3-8b0d-7683c5f645d1",
+      "name": "Rings",
+      "description": "Outputs concentric rings or arcs. Color interpolates from Color 1 at the inner ring to Color 2 at the outer ring. Style picks filled, stroked, or alternating.",
+      "category": "Video Source",
+      "tags": [
+        "video",
+        "generator"
+      ],
+      "version": 2
+    },
+    {
+      "id": "77697265-f1a4-4afc-b3f6-5635dc6fe964",
+      "name": "Premultiply Alpha",
+      "description": "Pre-mixes transparency into each pixel's color: partially transparent pixels become darker. Many renderers require this for correct blending.",
+      "category": "Video",
+      "tags": [
+        "video",
+        "alpha"
+      ],
+      "version": 1
+    },
+    {
+      "id": "77697265-f1bb-4a7e-bf04-7d544e0e2d62",
+      "name": "Cos",
+      "description": "Outputs the cosine of the input.",
+      "category": "Math",
+      "tags": [
+        "math"
+      ],
+      "version": 2
+    },
+    {
+      "id": "77697265-f1f9-4ef5-a79f-7585c73412b8",
+      "name": "Color Pass",
+      "description": "Keeps pixels whose hue falls within a chosen range in color, and desaturates everything else to grey.",
+      "category": "Video Effect",
+      "tags": [
+        "video",
+        "effect"
+      ],
+      "version": 1
+    },
+    {
+      "id": "77697265-f20a-4e52-b34f-6bc85d544470",
+      "name": "Fish Eye",
+      "description": "Distorts a texture into a spherical bulge, like looking through a fisheye camera lens.",
+      "category": "Video Effect",
+      "tags": [
+        "video",
+        "effect"
+      ],
+      "version": 1
+    },
+    {
+      "id": "77697265-f20a-4e52-b34f-6bc85d544471",
+      "name": "Human Segmentation",
+      "description": "Tip! Feed at native resolution, before scaling or display transforms.\nGenerates a mask of human subjects in a texture.",
+      "category": "AI",
+      "tags": [
+        "video",
+        "effect",
+        "background",
+        "remove",
+        "ai",
+        "vision"
+      ],
+      "version": 0
+    },
+    {
+      "id": "77697265-f216-49a7-a987-fcbdd35cb98c",
+      "name": "Dither",
+      "description": "Converts a texture to a dotted pattern where each pixel is either its original color or black, based on brightness.",
+      "category": "Video Effect",
+      "tags": [
+        "video",
+        "effect"
+      ],
+      "version": 1
+    },
+    {
+      "id": "77697265-f29f-45e9-a833-21e09c750ba7",
+      "name": "String In",
+      "description": "Takes text into the patch",
+      "category": "Input",
+      "tags": [
+        "input"
+      ],
+      "version": 3
+    },
+    {
+      "id": "77697265-f546-4065-a3e6-800a77976726",
+      "name": "Anchor Point",
+      "description": "Outputs a corner, edge midpoint, or center of a 2D object's bounding box.",
+      "category": "Logic",
+      "tags": [
+        "2d",
+        "mesh"
+      ],
+      "version": 1
+    },
+    {
+      "id": "77697265-f707-4bc6-938a-e12b41dea0d9",
+      "name": "Displace",
+      "description": "Shifts each pixel by an amount based on its brightness, creating a distortion effect.",
+      "category": "Video Effect",
+      "tags": [
+        "video",
+        "effect"
+      ],
+      "version": 3
+    },
+    {
+      "id": "77697265-f7c8-4e20-8fef-7247a316623a",
+      "name": "Write Pitch Bend",
+      "description": "Outputs a MIDI Pitch Bend message on each Write trigger.",
+      "category": "MIDI",
+      "tags": [
+        "midi"
+      ],
+      "version": 1
+    },
+    {
+      "id": "77697265-f7e6-4c91-9abb-9d10217ab4b7",
+      "name": "From Cylindrical",
+      "description": "Takes 3D cylindrical coordinates Magnitude (distance to center), Angle (around the center on the XY plane) and Height (along the Y axis) and converts them to 3D cartesian coordinates X, Y and Z.",
+      "category": "Math",
+      "tags": [
+        "math",
+        "to",
+        "cartesian",
+        "coordinates",
+        "from",
+        "cylindrical",
+        "vec3"
+      ],
+      "version": 0
+    },
+    {
+      "id": "77697265-f908-4914-895c-3dc683d52bce",
+      "name": "Bounding Box",
+      "description": "Outputs the smallest box that fully contains an object. Useful for measuring size, position, or overlap.",
+      "category": "2D",
+      "tags": [
+        "math",
+        "box",
+        "2d"
+      ],
+      "version": 1
+    },
+    {
+      "id": "77697265-f95d-4bf9-94b0-3336465deefc",
+      "name": "Transport Tick",
+      "description": "Fires a tick on each beat scaled by Multiplier, and outputs the number of ticks per bar.",
+      "category": "Time",
+      "tags": [
+        "transport"
+      ],
+      "version": 3
+    },
+    {
+      "id": "77697265-f95f-41d8-8fc4-df0dc56e1051",
+      "name": "Saw Oscillator",
+      "description": "Generates a sawtooth wave that ramps up smoothly from low to high, then instantly drops back to low, like a saw blade's teeth.",
+      "category": "Oscillator",
+      "tags": [
+        "audio",
+        "math",
+        "generator",
+        "waveform"
+      ],
+      "version": 1
+    },
+    {
+      "id": "77697265-fa15-4549-9eb5-f5886253a470",
+      "name": "Video Sampler",
+      "description": "Outputs a single frame of a video at a chosen position, from 0 (start) to 1 (end).",
+      "category": "Video",
+      "tags": [
+        "video",
+        "generator"
+      ],
+      "version": 3
+    },
+    {
+      "id": "77697265-fa5b-44cb-8dfc-7fb417096882",
+      "name": "Twirl",
+      "description": "Twists a texture around a center point, creating a spiral swirl effect.",
+      "category": "Video Effect",
+      "tags": [
+        "video",
+        "effect"
+      ],
+      "version": 2
+    },
+    {
+      "id": "77697265-faa6-42c8-82f1-30611ada2636",
+      "name": "Print",
+      "description": "Prints each incoming value to Wire's log.",
+      "category": "System",
+      "tags": [],
+      "version": 3
+    },
+    {
+      "id": "77697265-fac7-4c36-a875-edd168592d79",
+      "name": "Atan2",
+      "description": "Computes the arc tangent of y/x using the signs of the given input to determine the correct quadrant.",
+      "category": "Math",
+      "tags": [
+        "math"
+      ],
+      "version": 1
+    },
+    {
+      "id": "77697265-fce2-4ebe-8c81-99c578524a24",
+      "name": "Gradient",
+      "description": "Outputs a gradient texture. Method picks two-color or palette. Type picks horizontal, vertical, radial, or angular. Mode toggles smooth or stepped.",
+      "category": "Video Source",
+      "tags": [
+        "video",
+        "generator"
+      ],
+      "version": 3
+    },
+    {
+      "id": "77697265-fd4a-443b-89f6-7ffabc07edab",
+      "name": "Wrap",
+      "description": "Wraps a number into a range, cycling back to the start when it exceeds either bound.",
+      "category": "Math",
+      "tags": [
+        "math"
+      ],
+      "version": 1
+    },
+    {
+      "id": "77697265-fd65-470f-9f75-ed878267980e",
+      "name": "Metronome",
+      "description": "Fires a trigger at a steady rate set by Frequency. Also outputs a ramping phase and a running count.",
+      "category": "Time",
+      "tags": [
+        "math"
+      ],
+      "version": 1
+    },
+    {
+      "id": "77697265-ffc7-467f-8d2e-a1fa56e464a8",
+      "name": "Video Player",
+      "description": "Plays a video file, with controls for play, pause, stop, speed, and looping.",
+      "category": "Video",
+      "tags": [
+        "video",
+        "generator"
+      ],
+      "version": 3
+    },
+    {
+      "id": "b55460fd-1174-4729-889a-c3fbef363d50",
+      "name": "Gaussian",
+      "description": "Outputs the bell-curve function value for an input, optionally normalized.",
+      "category": "Math",
+      "tags": [
+        "math",
+        "gaussian",
+        "function",
+        "distribution",
+        "probability",
+        "bell",
+        "deviation",
+        "variance"
+      ],
+      "version": 0
+    }
+  ]
+}

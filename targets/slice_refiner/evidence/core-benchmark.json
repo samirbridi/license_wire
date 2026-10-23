@@ -1,0 +1,420 @@
+{
+  "resolution": [
+    3840,
+    2160
+  ],
+  "metric": "whole-device NVIDIA utilization, not per-process GPU time or FPS",
+  "scope": "equivalent core rounded rectangles only; excludes complete plugin effects, slices binding and host playback",
+  "samples": [
+    {
+      "kind": "sdf",
+      "slices": 16,
+      "repeat": 1,
+      "samples": [
+        {
+          "gpu_device_percent": 12.0,
+          "memory_controller_percent": 1.0,
+          "device_memory_mib": 1972.0
+        },
+        {
+          "gpu_device_percent": 10.0,
+          "memory_controller_percent": 1.0,
+          "device_memory_mib": 1972.0
+        },
+        {
+          "gpu_device_percent": 11.0,
+          "memory_controller_percent": 1.0,
+          "device_memory_mib": 1972.0
+        },
+        {
+          "gpu_device_percent": 12.0,
+          "memory_controller_percent": 1.0,
+          "device_memory_mib": 1972.0
+        },
+        {
+          "gpu_device_percent": 15.0,
+          "memory_controller_percent": 1.0,
+          "device_memory_mib": 1972.0
+        }
+      ],
+      "gpu_device_median_percent": 12.0,
+      "snapshot": "D:\\REA - ENGENHARIA REVERSA\\targets\\slice_refiner\\evidence\\benchmarks\\isolated-sdf-16-1.png"
+    },
+    {
+      "kind": "mesh",
+      "slices": 16,
+      "repeat": 1,
+      "samples": [
+        {
+          "gpu_device_percent": 9.0,
+          "memory_controller_percent": 2.0,
+          "device_memory_mib": 2115.0
+        },
+        {
+          "gpu_device_percent": 9.0,
+          "memory_controller_percent": 2.0,
+          "device_memory_mib": 2115.0
+        },
+        {
+          "gpu_device_percent": 12.0,
+          "memory_controller_percent": 2.0,
+          "device_memory_mib": 2115.0
+        },
+        {
+          "gpu_device_percent": 13.0,
+          "memory_controller_percent": 2.0,
+          "device_memory_mib": 2115.0
+        },
+        {
+          "gpu_device_percent": 11.0,
+          "memory_controller_percent": 2.0,
+          "device_memory_mib": 2115.0
+        }
+      ],
+      "gpu_device_median_percent": 11.0,
+      "snapshot": "D:\\REA - ENGENHARIA REVERSA\\targets\\slice_refiner\\evidence\\benchmarks\\isolated-mesh-16-1.png"
+    },
+    {
+      "kind": "mesh",
+      "slices": 16,
+      "repeat": 2,
+      "samples": [
+        {
+          "gpu_device_percent": 8.0,
+          "memory_controller_percent": 1.0,
+          "device_memory_mib": 2178.0
+        },
+        {
+          "gpu_device_percent": 9.0,
+          "memory_controller_percent": 2.0,
+          "device_memory_mib": 2178.0
+        },
+        {
+          "gpu_device_percent": 10.0,
+          "memory_controller_percent": 2.0,
+          "device_memory_mib": 2178.0
+        },
+        {
+          "gpu_device_percent": 12.0,
+          "memory_controller_percent": 2.0,
+          "device_memory_mib": 2178.0
+        },
+        {
+          "gpu_device_percent": 11.0,
+          "memory_controller_percent": 2.0,
+          "device_memory_mib": 2147.0
+        }
+      ],
+      "gpu_device_median_percent": 10.0,
+      "snapshot": "D:\\REA - ENGENHARIA REVERSA\\targets\\slice_refiner\\evidence\\benchmarks\\isolated-mesh-16-2.png"
+    },
+    {
+      "kind": "sdf",
+      "slices": 16,
+      "repeat": 2,
+      "samples": [
+        {
+          "gpu_device_percent": 12.0,
+          "memory_controller_percent": 1.0,
+          "device_memory_mib": 2147.0
+        },
+        {
+          "gpu_device_percent": 14.0,
+          "memory_controller_percent": 1.0,
+          "device_memory_mib": 2147.0
+        },
+        {
+          "gpu_device_percent": 14.0,
+          "memory_controller_percent": 1.0,
+          "device_memory_mib": 2147.0
+        },
+        {
+          "gpu_device_percent": 13.0,
+          "memory_controller_percent": 1.0,
+          "device_memory_mib": 2147.0
+        },
+        {
+          "gpu_device_percent": 15.0,
+          "memory_controller_percent": 1.0,
+          "device_memory_mib": 2147.0
+        }
+      ],
+      "gpu_device_median_percent": 14.0,
+      "snapshot": "D:\\REA - ENGENHARIA REVERSA\\targets\\slice_refiner\\evidence\\benchmarks\\isolated-sdf-16-2.png"
+    },
+    {
+      "kind": "sdf",
+      "slices": 64,
+      "repeat": 1,
+      "samples": [
+        {
+          "gpu_device_percent": 82.0,
+          "memory_controller_percent": 1.0,
+          "device_memory_mib": 1893.0
+        },
+        {
+          "gpu_device_percent": 73.0,
+          "memory_controller_percent": 1.0,
+          "device_memory_mib": 1893.0
+        },
+        {
+          "gpu_device_percent": 89.0,
+          "memory_controller_percent": 1.0,
+          "device_memory_mib": 1868.0
+        },
+        {
+          "gpu_device_percent": 73.0,
+          "memory_controller_percent": 1.0,
+          "device_memory_mib": 1826.0
+        },
+        {
+          "gpu_device_percent": 83.0,
+          "memory_controller_percent": 1.0,
+          "device_memory_mib": 1826.0
+        }
+      ],
+      "gpu_device_median_percent": 82.0,
+      "snapshot": "D:\\REA - ENGENHARIA REVERSA\\targets\\slice_refiner\\evidence\\benchmarks\\isolated-sdf-64-1.png"
+    },
+    {
+      "kind": "mesh",
+      "slices": 64,
+      "repeat": 1,
+      "samples": [
+        {
+          "gpu_device_percent": 10.0,
+          "memory_controller_percent": 2.0,
+          "device_memory_mib": 1890.0
+        },
+        {
+          "gpu_device_percent": 11.0,
+          "memory_controller_percent": 2.0,
+          "device_memory_mib": 1890.0
+        },
+        {
+          "gpu_device_percent": 9.0,
+          "memory_controller_percent": 2.0,
+          "device_memory_mib": 1890.0
+        },
+        {
+          "gpu_device_percent": 11.0,
+          "memory_controller_percent": 2.0,
+          "device_memory_mib": 1890.0
+        },
+        {
+          "gpu_device_percent": 11.0,
+          "memory_controller_percent": 2.0,
+          "device_memory_mib": 1890.0
+        }
+      ],
+      "gpu_device_median_percent": 11.0,
+      "snapshot": "D:\\REA - ENGENHARIA REVERSA\\targets\\slice_refiner\\evidence\\benchmarks\\isolated-mesh-64-1.png"
+    },
+    {
+      "kind": "mesh",
+      "slices": 64,
+      "repeat": 2,
+      "samples": [
+        {
+          "gpu_device_percent": 11.0,
+          "memory_controller_percent": 2.0,
+          "device_memory_mib": 1953.0
+        },
+        {
+          "gpu_device_percent": 12.0,
+          "memory_controller_percent": 2.0,
+          "device_memory_mib": 1953.0
+        },
+        {
+          "gpu_device_percent": 12.0,
+          "memory_controller_percent": 2.0,
+          "device_memory_mib": 1953.0
+        },
+        {
+          "gpu_device_percent": 13.0,
+          "memory_controller_percent": 2.0,
+          "device_memory_mib": 1953.0
+        },
+        {
+          "gpu_device_percent": 12.0,
+          "memory_controller_percent": 2.0,
+          "device_memory_mib": 1953.0
+        }
+      ],
+      "gpu_device_median_percent": 12.0,
+      "snapshot": "D:\\REA - ENGENHARIA REVERSA\\targets\\slice_refiner\\evidence\\benchmarks\\isolated-mesh-64-2.png"
+    },
+    {
+      "kind": "sdf",
+      "slices": 64,
+      "repeat": 2,
+      "samples": [
+        {
+          "gpu_device_percent": 90.0,
+          "memory_controller_percent": 1.0,
+          "device_memory_mib": 1953.0
+        },
+        {
+          "gpu_device_percent": 77.0,
+          "memory_controller_percent": 1.0,
+          "device_memory_mib": 1953.0
+        },
+        {
+          "gpu_device_percent": 79.0,
+          "memory_controller_percent": 1.0,
+          "device_memory_mib": 1953.0
+        },
+        {
+          "gpu_device_percent": 65.0,
+          "memory_controller_percent": 1.0,
+          "device_memory_mib": 1953.0
+        },
+        {
+          "gpu_device_percent": 77.0,
+          "memory_controller_percent": 1.0,
+          "device_memory_mib": 1953.0
+        }
+      ],
+      "gpu_device_median_percent": 77.0,
+      "snapshot": "D:\\REA - ENGENHARIA REVERSA\\targets\\slice_refiner\\evidence\\benchmarks\\isolated-sdf-64-2.png"
+    },
+    {
+      "kind": "sdf",
+      "slices": 144,
+      "repeat": 1,
+      "samples": [
+        {
+          "gpu_device_percent": 98.0,
+          "memory_controller_percent": 0.0,
+          "device_memory_mib": 1953.0
+        },
+        {
+          "gpu_device_percent": 97.0,
+          "memory_controller_percent": 0.0,
+          "device_memory_mib": 1922.0
+        },
+        {
+          "gpu_device_percent": 97.0,
+          "memory_controller_percent": 0.0,
+          "device_memory_mib": 1922.0
+        },
+        {
+          "gpu_device_percent": 97.0,
+          "memory_controller_percent": 0.0,
+          "device_memory_mib": 1922.0
+        },
+        {
+          "gpu_device_percent": 96.0,
+          "memory_controller_percent": 0.0,
+          "device_memory_mib": 1922.0
+        }
+      ],
+      "gpu_device_median_percent": 97.0,
+      "snapshot": "D:\\REA - ENGENHARIA REVERSA\\targets\\slice_refiner\\evidence\\benchmarks\\isolated-sdf-144-1.png"
+    },
+    {
+      "kind": "mesh",
+      "slices": 144,
+      "repeat": 1,
+      "samples": [
+        {
+          "gpu_device_percent": 9.0,
+          "memory_controller_percent": 2.0,
+          "device_memory_mib": 1985.0
+        },
+        {
+          "gpu_device_percent": 9.0,
+          "memory_controller_percent": 2.0,
+          "device_memory_mib": 1985.0
+        },
+        {
+          "gpu_device_percent": 8.0,
+          "memory_controller_percent": 2.0,
+          "device_memory_mib": 1985.0
+        },
+        {
+          "gpu_device_percent": 9.0,
+          "memory_controller_percent": 2.0,
+          "device_memory_mib": 1985.0
+        },
+        {
+          "gpu_device_percent": 11.0,
+          "memory_controller_percent": 2.0,
+          "device_memory_mib": 1985.0
+        }
+      ],
+      "gpu_device_median_percent": 9.0,
+      "snapshot": "D:\\REA - ENGENHARIA REVERSA\\targets\\slice_refiner\\evidence\\benchmarks\\isolated-mesh-144-1.png"
+    },
+    {
+      "kind": "mesh",
+      "slices": 144,
+      "repeat": 2,
+      "samples": [
+        {
+          "gpu_device_percent": 10.0,
+          "memory_controller_percent": 2.0,
+          "device_memory_mib": 2049.0
+        },
+        {
+          "gpu_device_percent": 11.0,
+          "memory_controller_percent": 2.0,
+          "device_memory_mib": 2049.0
+        },
+        {
+          "gpu_device_percent": 11.0,
+          "memory_controller_percent": 2.0,
+          "device_memory_mib": 2049.0
+        },
+        {
+          "gpu_device_percent": 8.0,
+          "memory_controller_percent": 2.0,
+          "device_memory_mib": 2049.0
+        },
+        {
+          "gpu_device_percent": 6.0,
+          "memory_controller_percent": 1.0,
+          "device_memory_mib": 2049.0
+        }
+      ],
+      "gpu_device_median_percent": 10.0,
+      "snapshot": "D:\\REA - ENGENHARIA REVERSA\\targets\\slice_refiner\\evidence\\benchmarks\\isolated-mesh-144-2.png"
+    },
+    {
+      "kind": "sdf",
+      "slices": 144,
+      "repeat": 2,
+      "samples": [
+        {
+          "gpu_device_percent": 98.0,
+          "memory_controller_percent": 0.0,
+          "device_memory_mib": 2049.0
+        },
+        {
+          "gpu_device_percent": 97.0,
+          "memory_controller_percent": 0.0,
+          "device_memory_mib": 2049.0
+        },
+        {
+          "gpu_device_percent": 96.0,
+          "memory_controller_percent": 0.0,
+          "device_memory_mib": 2049.0
+        },
+        {
+          "gpu_device_percent": 97.0,
+          "memory_controller_percent": 0.0,
+          "device_memory_mib": 2049.0
+        },
+        {
+          "gpu_device_percent": 97.0,
+          "memory_controller_percent": 0.0,
+          "device_memory_mib": 2049.0
+        }
+      ],
+      "gpu_device_median_percent": 97.0,
+      "snapshot": "D:\\REA - ENGENHARIA REVERSA\\targets\\slice_refiner\\evidence\\benchmarks\\isolated-sdf-144-2.png"
+    }
+  ],
+  "radius_probe_iou": 0.9936832433674055,
+  "radius_formula": "sdf round = 4*physical_radius/(width+height), verified by image overlap"
+}

@@ -1,0 +1,3527 @@
+{
+	"formatVersion": {
+		"major": 1,
+		"minor": 1,
+		"patch": 0
+	},
+	"patch": {
+		"connections": [
+			{
+				"from": [
+					1,
+					"output"
+				],
+				"to": [
+					4,
+					"translation"
+				]
+			},
+			{
+				"from": [
+					3,
+					"output"
+				],
+				"to": [
+					5,
+					"geometry"
+				]
+			},
+			{
+				"from": [
+					4,
+					"output0"
+				],
+				"to": [
+					5,
+					"transformation"
+				]
+			},
+			{
+				"from": [
+					2,
+					"output0"
+				],
+				"to": [
+					5,
+					"material"
+				]
+			},
+			{
+				"from": [
+					5,
+					"output0"
+				],
+				"to": [
+					7,
+					"mesh"
+				]
+			},
+			{
+				"from": [
+					6,
+					"output"
+				],
+				"to": [
+					7,
+					"camera"
+				]
+			},
+			{
+				"from": [
+					8,
+					"output"
+				],
+				"to": [
+					9,
+					"input"
+				]
+			},
+			{
+				"from": [
+					1,
+					"output"
+				],
+				"to": [
+					9,
+					"translation"
+				]
+			},
+			{
+				"from": [
+					9,
+					"output0"
+				],
+				"to": [
+					10,
+					"shape"
+				]
+			},
+			{
+				"from": [
+					2,
+					"output0"
+				],
+				"to": [
+					10,
+					"material"
+				]
+			},
+			{
+				"from": [
+					7,
+					"output0"
+				],
+				"to": [
+					11,
+					"input"
+				]
+			}
+		],
+		"inputOrder": {
+			"groups": {},
+			"roots": []
+		},
+		"meta": {
+			"author": "Mizin",
+			"category": "effect",
+			"deploymentTarget": {
+				"branch": "",
+				"name": "Wire",
+				"version": {
+					"major": 7,
+					"minor": 25,
+					"patch": 0
+				}
+			},
+			"description": "Mesh slice refinement with independent pixel corners and group animation.",
+			"displayName": "Core comparison 64",
+			"identifier": "4c13d7fe-8506-5f66-bc59-2e6665c3ac4c",
+			"licenseName": "",
+			"mail": "",
+			"note": {
+				"text": "",
+				"textColorIndex": 1,
+				"textSizeMultiplier": 3
+			},
+			"originalTarget": {
+				"branch": "",
+				"name": "Wire",
+				"version": {
+					"major": 7,
+					"minor": 28,
+					"patch": 1
+				}
+			},
+			"quality": 32856,
+			"resolution": {
+				"height": 2160,
+				"width": 3840
+			},
+			"saveTarget": {
+				"branch": "",
+				"name": "Wire",
+				"version": {
+					"major": 7,
+					"minor": 28,
+					"patch": 1
+				}
+			},
+			"thumbnail": "",
+			"url": "",
+			"vendor": "Mizin"
+		},
+		"nextNodeId": 12,
+		"nodes": {
+			"1": {
+				"attributes": {
+					"flow": {
+						"type": "flow",
+						"value": "signal"
+					},
+					"instances": {
+						"type": "integer",
+						"value": 64
+					}
+				},
+				"bounds": {
+					"height": 82,
+					"width": 195,
+					"x": 0,
+					"y": 0
+				},
+				"class": {
+					"id": "77697265-E7EF-4944-8FC2-D808EE0433CB",
+					"version": 1
+				},
+				"clock": "video",
+				"color": "ffff6a00",
+				"constants": {
+					"input0": {
+						"type": "float",
+						"value": [
+							-1.5,
+							-1.07142853736877441,
+							-0.6428571343421936,
+							-0.2142857164144516,
+							0.2142857164144516,
+							0.6428571343421936,
+							1.07142853736877441,
+							1.5,
+							-1.5,
+							-1.07142853736877441,
+							-0.6428571343421936,
+							-0.2142857164144516,
+							0.2142857164144516,
+							0.6428571343421936,
+							1.07142853736877441,
+							1.5,
+							-1.5,
+							-1.07142853736877441,
+							-0.6428571343421936,
+							-0.2142857164144516,
+							0.2142857164144516,
+							0.6428571343421936,
+							1.07142853736877441,
+							1.5,
+							-1.5,
+							-1.07142853736877441,
+							-0.6428571343421936,
+							-0.2142857164144516,
+							0.2142857164144516,
+							0.6428571343421936,
+							1.07142853736877441,
+							1.5,
+							-1.5,
+							-1.07142853736877441,
+							-0.6428571343421936,
+							-0.2142857164144516,
+							0.2142857164144516,
+							0.6428571343421936,
+							1.07142853736877441,
+							1.5,
+							-1.5,
+							-1.07142853736877441,
+							-0.6428571343421936,
+							-0.2142857164144516,
+							0.2142857164144516,
+							0.6428571343421936,
+							1.07142853736877441,
+							1.5,
+							-1.5,
+							-1.07142853736877441,
+							-0.6428571343421936,
+							-0.2142857164144516,
+							0.2142857164144516,
+							0.6428571343421936,
+							1.07142853736877441,
+							1.5,
+							-1.5,
+							-1.07142853736877441,
+							-0.6428571343421936,
+							-0.2142857164144516,
+							0.2142857164144516,
+							0.6428571343421936,
+							1.07142853736877441,
+							1.5
+						]
+					},
+					"input1": {
+						"type": "float",
+						"value": [
+							-0.82999998331069946,
+							-0.82999998331069946,
+							-0.82999998331069946,
+							-0.82999998331069946,
+							-0.82999998331069946,
+							-0.82999998331069946,
+							-0.82999998331069946,
+							-0.82999998331069946,
+							-0.59285712242126465,
+							-0.59285712242126465,
+							-0.59285712242126465,
+							-0.59285712242126465,
+							-0.59285712242126465,
+							-0.59285712242126465,
+							-0.59285712242126465,
+							-0.59285712242126465,
+							-0.35571429133415222,
+							-0.35571429133415222,
+							-0.35571429133415222,
+							-0.35571429133415222,
+							-0.35571429133415222,
+							-0.35571429133415222,
+							-0.35571429133415222,
+							-0.35571429133415222,
+							-0.11857143044471741,
+							-0.11857143044471741,
+							-0.11857143044471741,
+							-0.11857143044471741,
+							-0.11857143044471741,
+							-0.11857143044471741,
+							-0.11857143044471741,
+							-0.11857143044471741,
+							0.11857143044471741,
+							0.11857143044471741,
+							0.11857143044471741,
+							0.11857143044471741,
+							0.11857143044471741,
+							0.11857143044471741,
+							0.11857143044471741,
+							0.11857143044471741,
+							0.35571429133415222,
+							0.35571429133415222,
+							0.35571429133415222,
+							0.35571429133415222,
+							0.35571429133415222,
+							0.35571429133415222,
+							0.35571429133415222,
+							0.35571429133415222,
+							0.59285712242126465,
+							0.59285712242126465,
+							0.59285712242126465,
+							0.59285712242126465,
+							0.59285712242126465,
+							0.59285712242126465,
+							0.59285712242126465,
+							0.59285712242126465,
+							0.82999998331069946,
+							0.82999998331069946,
+							0.82999998331069946,
+							0.82999998331069946,
+							0.82999998331069946,
+							0.82999998331069946,
+							0.82999998331069946,
+							0.82999998331069946
+						]
+					}
+				},
+				"hidden": [
+					"flow",
+					"instances"
+				],
+				"name": "Float2",
+				"thumbnail_visible": true
+			},
+			"10": {
+				"attributes": {
+					"antialising-direction": {
+						"type": "integer",
+						"value": 0
+					},
+					"bitdepth": {
+						"type": "integer",
+						"value": 0
+					},
+					"material-dimensions": {
+						"type": "integer",
+						"value": 1
+					},
+					"reduce": {
+						"type": "bool",
+						"value": false
+					},
+					"resolution-absolute": {
+						"type": "float2",
+						"value": [
+							1920,
+							1080
+						]
+					},
+					"resolution-mode": {
+						"type": "integer",
+						"value": 0
+					},
+					"resolution-relative": {
+						"type": "float2",
+						"value": [
+							1,
+							1
+						]
+					},
+					"shape-dimensions": {
+						"type": "integer",
+						"value": 64
+					}
+				},
+				"bounds": {
+					"height": 82,
+					"width": 195,
+					"x": 2340,
+					"y": 0
+				},
+				"class": {
+					"id": "77697265-EA26-47D6-985A-B4D5DC314BF7",
+					"version": 4
+				},
+				"clock": "video",
+				"color": "ffff6a00",
+				"constants": {
+					"antialiasing": {
+						"type": "float",
+						"value": 4
+					},
+					"camera": {
+						"type": "camera2d",
+						"value": {
+							"view": [
+								1,
+								0,
+								0,
+								0,
+								0,
+								1,
+								0,
+								0,
+								0,
+								0,
+								1,
+								0,
+								0,
+								0,
+								0,
+								1
+							],
+							"viewport": {
+								"max": [
+									1,
+									1
+								],
+								"min": [
+									-1,
+									-1
+								]
+							}
+						}
+					},
+					"material": {
+						"type": "color",
+						"value": [
+							1,
+							1,
+							1,
+							1
+						]
+					},
+					"shape": {
+						"type": "procedural",
+						"value": [
+							null,
+							null,
+							null,
+							null,
+							null,
+							null,
+							null,
+							null,
+							null,
+							null,
+							null,
+							null,
+							null,
+							null,
+							null,
+							null,
+							null,
+							null,
+							null,
+							null,
+							null,
+							null,
+							null,
+							null,
+							null,
+							null,
+							null,
+							null,
+							null,
+							null,
+							null,
+							null,
+							null,
+							null,
+							null,
+							null,
+							null,
+							null,
+							null,
+							null,
+							null,
+							null,
+							null,
+							null,
+							null,
+							null,
+							null,
+							null,
+							null,
+							null,
+							null,
+							null,
+							null,
+							null,
+							null,
+							null,
+							null,
+							null,
+							null,
+							null,
+							null,
+							null,
+							null,
+							null
+						]
+					}
+				},
+				"hidden": [
+					"antialiasing",
+					"antialising-direction",
+					"bitdepth",
+					"material-dimensions",
+					"reduce",
+					"resolution-absolute",
+					"resolution-mode",
+					"resolution-relative",
+					"shape-dimensions"
+				],
+				"name": "Shape Render",
+				"thumbnail_visible": true
+			},
+			"11": {
+				"attributes": {
+					"instances": {
+						"type": "integer",
+						"value": 1
+					}
+				},
+				"bounds": {
+					"height": 82,
+					"width": 132,
+					"x": 0,
+					"y": 270
+				},
+				"class": {
+					"id": "77697265-BEEA-4D38-8EE5-0EBA4CBD0AEE",
+					"version": 1
+				},
+				"clock": "video",
+				"color": "ffff6a00",
+				"constants": {
+					"input": {
+						"type": "texture2d",
+						"value": null
+					}
+				},
+				"hidden": [
+					"instances"
+				],
+				"name": "Texture Out",
+				"thumbnail_visible": true
+			},
+			"2": {
+				"attributes": {
+					"flow": {
+						"type": "flow",
+						"value": "signal"
+					},
+					"input0-type": {
+						"type": "type",
+						"value": "color"
+					},
+					"input1-type": {
+						"type": "type",
+						"value": "null"
+					},
+					"instances": {
+						"type": "integer",
+						"value": 1
+					}
+				},
+				"bounds": {
+					"height": 58,
+					"width": 195,
+					"x": 260,
+					"y": 0
+				},
+				"class": {
+					"id": "77697265-8035-4fab-a688-52338c6b4748",
+					"version": 2
+				},
+				"clock": "video",
+				"color": "ffff6a00",
+				"constants": {
+					"input0": {
+						"type": "color",
+						"value": [
+							1,
+							1,
+							1,
+							1
+						]
+					}
+				},
+				"hidden": [
+					"flow",
+					"input0-type",
+					"input1-type",
+					"instances"
+				],
+				"name": "Color",
+				"thumbnail_visible": true
+			},
+			"3": {
+				"attributes": {
+					"corner_resolution": {
+						"type": "integer",
+						"value": 16
+					},
+					"instances": {
+						"type": "integer",
+						"value": 1
+					}
+				},
+				"bounds": {
+					"height": 82,
+					"width": 195,
+					"x": 520,
+					"y": 0
+				},
+				"class": {
+					"id": "77697265-E9C4-924B-BE62-F4FB3F2F3CE9",
+					"version": 3
+				},
+				"clock": "video",
+				"color": "ffff6a00",
+				"constants": {
+					"corner_radius": {
+						"type": "float4",
+						"value": [
+							0.03712499886751175,
+							0.03712499886751175,
+							0.03712499886751175,
+							0.03712499886751175
+						]
+					},
+					"height": {
+						"type": "float",
+						"value": 0.16875000298023224
+					},
+					"uvs": {
+						"type": "box2d",
+						"value": {
+							"max": [
+								1,
+								1
+							],
+							"min": [
+								0,
+								0
+							]
+						}
+					},
+					"width": {
+						"type": "float",
+						"value": 0.3125
+					}
+				},
+				"hidden": [
+					"corner_radius",
+					"corner_resolution",
+					"instances",
+					"uvs"
+				],
+				"name": "Rectangle",
+				"thumbnail_visible": true
+			},
+			"4": {
+				"attributes": {
+					"flow": {
+						"type": "flow",
+						"value": "signal"
+					},
+					"instances": {
+						"type": "integer",
+						"value": 64
+					}
+				},
+				"bounds": {
+					"height": 130,
+					"width": 195,
+					"x": 780,
+					"y": 0
+				},
+				"class": {
+					"id": "77697265-366B-4570-833A-D9F433415B8F",
+					"version": 2
+				},
+				"clock": "video",
+				"color": "ffff6a00",
+				"constants": {
+					"anchor": {
+						"type": "float2",
+						"value": [
+							[
+								0,
+								0
+							],
+							[
+								0,
+								0
+							],
+							[
+								0,
+								0
+							],
+							[
+								0,
+								0
+							],
+							[
+								0,
+								0
+							],
+							[
+								0,
+								0
+							],
+							[
+								0,
+								0
+							],
+							[
+								0,
+								0
+							],
+							[
+								0,
+								0
+							],
+							[
+								0,
+								0
+							],
+							[
+								0,
+								0
+							],
+							[
+								0,
+								0
+							],
+							[
+								0,
+								0
+							],
+							[
+								0,
+								0
+							],
+							[
+								0,
+								0
+							],
+							[
+								0,
+								0
+							],
+							[
+								0,
+								0
+							],
+							[
+								0,
+								0
+							],
+							[
+								0,
+								0
+							],
+							[
+								0,
+								0
+							],
+							[
+								0,
+								0
+							],
+							[
+								0,
+								0
+							],
+							[
+								0,
+								0
+							],
+							[
+								0,
+								0
+							],
+							[
+								0,
+								0
+							],
+							[
+								0,
+								0
+							],
+							[
+								0,
+								0
+							],
+							[
+								0,
+								0
+							],
+							[
+								0,
+								0
+							],
+							[
+								0,
+								0
+							],
+							[
+								0,
+								0
+							],
+							[
+								0,
+								0
+							],
+							[
+								0,
+								0
+							],
+							[
+								0,
+								0
+							],
+							[
+								0,
+								0
+							],
+							[
+								0,
+								0
+							],
+							[
+								0,
+								0
+							],
+							[
+								0,
+								0
+							],
+							[
+								0,
+								0
+							],
+							[
+								0,
+								0
+							],
+							[
+								0,
+								0
+							],
+							[
+								0,
+								0
+							],
+							[
+								0,
+								0
+							],
+							[
+								0,
+								0
+							],
+							[
+								0,
+								0
+							],
+							[
+								0,
+								0
+							],
+							[
+								0,
+								0
+							],
+							[
+								0,
+								0
+							],
+							[
+								0,
+								0
+							],
+							[
+								0,
+								0
+							],
+							[
+								0,
+								0
+							],
+							[
+								0,
+								0
+							],
+							[
+								0,
+								0
+							],
+							[
+								0,
+								0
+							],
+							[
+								0,
+								0
+							],
+							[
+								0,
+								0
+							],
+							[
+								0,
+								0
+							],
+							[
+								0,
+								0
+							],
+							[
+								0,
+								0
+							],
+							[
+								0,
+								0
+							],
+							[
+								0,
+								0
+							],
+							[
+								0,
+								0
+							],
+							[
+								0,
+								0
+							],
+							[
+								0,
+								0
+							]
+						]
+					},
+					"rotation": {
+						"type": "float",
+						"value": [
+							0,
+							0,
+							0,
+							0,
+							0,
+							0,
+							0,
+							0,
+							0,
+							0,
+							0,
+							0,
+							0,
+							0,
+							0,
+							0,
+							0,
+							0,
+							0,
+							0,
+							0,
+							0,
+							0,
+							0,
+							0,
+							0,
+							0,
+							0,
+							0,
+							0,
+							0,
+							0,
+							0,
+							0,
+							0,
+							0,
+							0,
+							0,
+							0,
+							0,
+							0,
+							0,
+							0,
+							0,
+							0,
+							0,
+							0,
+							0,
+							0,
+							0,
+							0,
+							0,
+							0,
+							0,
+							0,
+							0,
+							0,
+							0,
+							0,
+							0,
+							0,
+							0,
+							0,
+							0
+						]
+					},
+					"scale": {
+						"type": "float2",
+						"value": [
+							[
+								1,
+								1
+							],
+							[
+								1,
+								1
+							],
+							[
+								1,
+								1
+							],
+							[
+								1,
+								1
+							],
+							[
+								1,
+								1
+							],
+							[
+								1,
+								1
+							],
+							[
+								1,
+								1
+							],
+							[
+								1,
+								1
+							],
+							[
+								1,
+								1
+							],
+							[
+								1,
+								1
+							],
+							[
+								1,
+								1
+							],
+							[
+								1,
+								1
+							],
+							[
+								1,
+								1
+							],
+							[
+								1,
+								1
+							],
+							[
+								1,
+								1
+							],
+							[
+								1,
+								1
+							],
+							[
+								1,
+								1
+							],
+							[
+								1,
+								1
+							],
+							[
+								1,
+								1
+							],
+							[
+								1,
+								1
+							],
+							[
+								1,
+								1
+							],
+							[
+								1,
+								1
+							],
+							[
+								1,
+								1
+							],
+							[
+								1,
+								1
+							],
+							[
+								1,
+								1
+							],
+							[
+								1,
+								1
+							],
+							[
+								1,
+								1
+							],
+							[
+								1,
+								1
+							],
+							[
+								1,
+								1
+							],
+							[
+								1,
+								1
+							],
+							[
+								1,
+								1
+							],
+							[
+								1,
+								1
+							],
+							[
+								1,
+								1
+							],
+							[
+								1,
+								1
+							],
+							[
+								1,
+								1
+							],
+							[
+								1,
+								1
+							],
+							[
+								1,
+								1
+							],
+							[
+								1,
+								1
+							],
+							[
+								1,
+								1
+							],
+							[
+								1,
+								1
+							],
+							[
+								1,
+								1
+							],
+							[
+								1,
+								1
+							],
+							[
+								1,
+								1
+							],
+							[
+								1,
+								1
+							],
+							[
+								1,
+								1
+							],
+							[
+								1,
+								1
+							],
+							[
+								1,
+								1
+							],
+							[
+								1,
+								1
+							],
+							[
+								1,
+								1
+							],
+							[
+								1,
+								1
+							],
+							[
+								1,
+								1
+							],
+							[
+								1,
+								1
+							],
+							[
+								1,
+								1
+							],
+							[
+								1,
+								1
+							],
+							[
+								1,
+								1
+							],
+							[
+								1,
+								1
+							],
+							[
+								1,
+								1
+							],
+							[
+								1,
+								1
+							],
+							[
+								1,
+								1
+							],
+							[
+								1,
+								1
+							],
+							[
+								1,
+								1
+							],
+							[
+								1,
+								1
+							],
+							[
+								1,
+								1
+							],
+							[
+								1,
+								1
+							]
+						]
+					},
+					"scaleAnchor": {
+						"type": "bool",
+						"value": [
+							true,
+							true,
+							true,
+							true,
+							true,
+							true,
+							true,
+							true,
+							true,
+							true,
+							true,
+							true,
+							true,
+							true,
+							true,
+							true,
+							true,
+							true,
+							true,
+							true,
+							true,
+							true,
+							true,
+							true,
+							true,
+							true,
+							true,
+							true,
+							true,
+							true,
+							true,
+							true,
+							true,
+							true,
+							true,
+							true,
+							true,
+							true,
+							true,
+							true,
+							true,
+							true,
+							true,
+							true,
+							true,
+							true,
+							true,
+							true,
+							true,
+							true,
+							true,
+							true,
+							true,
+							true,
+							true,
+							true,
+							true,
+							true,
+							true,
+							true,
+							true,
+							true,
+							true,
+							true
+						]
+					},
+					"translation": {
+						"type": "float2",
+						"value": [
+							[
+								0,
+								0
+							],
+							[
+								0,
+								0
+							],
+							[
+								0,
+								0
+							],
+							[
+								0,
+								0
+							],
+							[
+								0,
+								0
+							],
+							[
+								0,
+								0
+							],
+							[
+								0,
+								0
+							],
+							[
+								0,
+								0
+							],
+							[
+								0,
+								0
+							],
+							[
+								0,
+								0
+							],
+							[
+								0,
+								0
+							],
+							[
+								0,
+								0
+							],
+							[
+								0,
+								0
+							],
+							[
+								0,
+								0
+							],
+							[
+								0,
+								0
+							],
+							[
+								0,
+								0
+							],
+							[
+								0,
+								0
+							],
+							[
+								0,
+								0
+							],
+							[
+								0,
+								0
+							],
+							[
+								0,
+								0
+							],
+							[
+								0,
+								0
+							],
+							[
+								0,
+								0
+							],
+							[
+								0,
+								0
+							],
+							[
+								0,
+								0
+							],
+							[
+								0,
+								0
+							],
+							[
+								0,
+								0
+							],
+							[
+								0,
+								0
+							],
+							[
+								0,
+								0
+							],
+							[
+								0,
+								0
+							],
+							[
+								0,
+								0
+							],
+							[
+								0,
+								0
+							],
+							[
+								0,
+								0
+							],
+							[
+								0,
+								0
+							],
+							[
+								0,
+								0
+							],
+							[
+								0,
+								0
+							],
+							[
+								0,
+								0
+							],
+							[
+								0,
+								0
+							],
+							[
+								0,
+								0
+							],
+							[
+								0,
+								0
+							],
+							[
+								0,
+								0
+							],
+							[
+								0,
+								0
+							],
+							[
+								0,
+								0
+							],
+							[
+								0,
+								0
+							],
+							[
+								0,
+								0
+							],
+							[
+								0,
+								0
+							],
+							[
+								0,
+								0
+							],
+							[
+								0,
+								0
+							],
+							[
+								0,
+								0
+							],
+							[
+								0,
+								0
+							],
+							[
+								0,
+								0
+							],
+							[
+								0,
+								0
+							],
+							[
+								0,
+								0
+							],
+							[
+								0,
+								0
+							],
+							[
+								0,
+								0
+							],
+							[
+								0,
+								0
+							],
+							[
+								0,
+								0
+							],
+							[
+								0,
+								0
+							],
+							[
+								0,
+								0
+							],
+							[
+								0,
+								0
+							],
+							[
+								0,
+								0
+							],
+							[
+								0,
+								0
+							],
+							[
+								0,
+								0
+							],
+							[
+								0,
+								0
+							],
+							[
+								0,
+								0
+							]
+						]
+					}
+				},
+				"hidden": [
+					"flow",
+					"instances",
+					"scaleAnchor"
+				],
+				"name": "Transformation 2D",
+				"thumbnail_visible": true
+			},
+			"5": {
+				"attributes": {
+					"instances": {
+						"type": "integer",
+						"value": 64
+					}
+				},
+				"bounds": {
+					"height": 106,
+					"width": 195,
+					"x": 1040,
+					"y": 0
+				},
+				"class": {
+					"id": "77697265-e8c1-11ec-8fea-0242ac120002",
+					"version": 1
+				},
+				"clock": "video",
+				"color": "ffff6a00",
+				"constants": {
+					"geometry": {
+						"type": "geometry2d",
+						"value": [
+							null,
+							null,
+							null,
+							null,
+							null,
+							null,
+							null,
+							null,
+							null,
+							null,
+							null,
+							null,
+							null,
+							null,
+							null,
+							null,
+							null,
+							null,
+							null,
+							null,
+							null,
+							null,
+							null,
+							null,
+							null,
+							null,
+							null,
+							null,
+							null,
+							null,
+							null,
+							null,
+							null,
+							null,
+							null,
+							null,
+							null,
+							null,
+							null,
+							null,
+							null,
+							null,
+							null,
+							null,
+							null,
+							null,
+							null,
+							null,
+							null,
+							null,
+							null,
+							null,
+							null,
+							null,
+							null,
+							null,
+							null,
+							null,
+							null,
+							null,
+							null,
+							null,
+							null,
+							null
+						]
+					},
+					"material": {
+						"type": "material",
+						"value": [
+							{
+								"color": [
+									1,
+									1,
+									1,
+									1
+								],
+								"type": "SolidColor"
+							},
+							{
+								"color": [
+									1,
+									1,
+									1,
+									1
+								],
+								"type": "SolidColor"
+							},
+							{
+								"color": [
+									1,
+									1,
+									1,
+									1
+								],
+								"type": "SolidColor"
+							},
+							{
+								"color": [
+									1,
+									1,
+									1,
+									1
+								],
+								"type": "SolidColor"
+							},
+							{
+								"color": [
+									1,
+									1,
+									1,
+									1
+								],
+								"type": "SolidColor"
+							},
+							{
+								"color": [
+									1,
+									1,
+									1,
+									1
+								],
+								"type": "SolidColor"
+							},
+							{
+								"color": [
+									1,
+									1,
+									1,
+									1
+								],
+								"type": "SolidColor"
+							},
+							{
+								"color": [
+									1,
+									1,
+									1,
+									1
+								],
+								"type": "SolidColor"
+							},
+							{
+								"color": [
+									1,
+									1,
+									1,
+									1
+								],
+								"type": "SolidColor"
+							},
+							{
+								"color": [
+									1,
+									1,
+									1,
+									1
+								],
+								"type": "SolidColor"
+							},
+							{
+								"color": [
+									1,
+									1,
+									1,
+									1
+								],
+								"type": "SolidColor"
+							},
+							{
+								"color": [
+									1,
+									1,
+									1,
+									1
+								],
+								"type": "SolidColor"
+							},
+							{
+								"color": [
+									1,
+									1,
+									1,
+									1
+								],
+								"type": "SolidColor"
+							},
+							{
+								"color": [
+									1,
+									1,
+									1,
+									1
+								],
+								"type": "SolidColor"
+							},
+							{
+								"color": [
+									1,
+									1,
+									1,
+									1
+								],
+								"type": "SolidColor"
+							},
+							{
+								"color": [
+									1,
+									1,
+									1,
+									1
+								],
+								"type": "SolidColor"
+							},
+							{
+								"color": [
+									1,
+									1,
+									1,
+									1
+								],
+								"type": "SolidColor"
+							},
+							{
+								"color": [
+									1,
+									1,
+									1,
+									1
+								],
+								"type": "SolidColor"
+							},
+							{
+								"color": [
+									1,
+									1,
+									1,
+									1
+								],
+								"type": "SolidColor"
+							},
+							{
+								"color": [
+									1,
+									1,
+									1,
+									1
+								],
+								"type": "SolidColor"
+							},
+							{
+								"color": [
+									1,
+									1,
+									1,
+									1
+								],
+								"type": "SolidColor"
+							},
+							{
+								"color": [
+									1,
+									1,
+									1,
+									1
+								],
+								"type": "SolidColor"
+							},
+							{
+								"color": [
+									1,
+									1,
+									1,
+									1
+								],
+								"type": "SolidColor"
+							},
+							{
+								"color": [
+									1,
+									1,
+									1,
+									1
+								],
+								"type": "SolidColor"
+							},
+							{
+								"color": [
+									1,
+									1,
+									1,
+									1
+								],
+								"type": "SolidColor"
+							},
+							{
+								"color": [
+									1,
+									1,
+									1,
+									1
+								],
+								"type": "SolidColor"
+							},
+							{
+								"color": [
+									1,
+									1,
+									1,
+									1
+								],
+								"type": "SolidColor"
+							},
+							{
+								"color": [
+									1,
+									1,
+									1,
+									1
+								],
+								"type": "SolidColor"
+							},
+							{
+								"color": [
+									1,
+									1,
+									1,
+									1
+								],
+								"type": "SolidColor"
+							},
+							{
+								"color": [
+									1,
+									1,
+									1,
+									1
+								],
+								"type": "SolidColor"
+							},
+							{
+								"color": [
+									1,
+									1,
+									1,
+									1
+								],
+								"type": "SolidColor"
+							},
+							{
+								"color": [
+									1,
+									1,
+									1,
+									1
+								],
+								"type": "SolidColor"
+							},
+							{
+								"color": [
+									1,
+									1,
+									1,
+									1
+								],
+								"type": "SolidColor"
+							},
+							{
+								"color": [
+									1,
+									1,
+									1,
+									1
+								],
+								"type": "SolidColor"
+							},
+							{
+								"color": [
+									1,
+									1,
+									1,
+									1
+								],
+								"type": "SolidColor"
+							},
+							{
+								"color": [
+									1,
+									1,
+									1,
+									1
+								],
+								"type": "SolidColor"
+							},
+							{
+								"color": [
+									1,
+									1,
+									1,
+									1
+								],
+								"type": "SolidColor"
+							},
+							{
+								"color": [
+									1,
+									1,
+									1,
+									1
+								],
+								"type": "SolidColor"
+							},
+							{
+								"color": [
+									1,
+									1,
+									1,
+									1
+								],
+								"type": "SolidColor"
+							},
+							{
+								"color": [
+									1,
+									1,
+									1,
+									1
+								],
+								"type": "SolidColor"
+							},
+							{
+								"color": [
+									1,
+									1,
+									1,
+									1
+								],
+								"type": "SolidColor"
+							},
+							{
+								"color": [
+									1,
+									1,
+									1,
+									1
+								],
+								"type": "SolidColor"
+							},
+							{
+								"color": [
+									1,
+									1,
+									1,
+									1
+								],
+								"type": "SolidColor"
+							},
+							{
+								"color": [
+									1,
+									1,
+									1,
+									1
+								],
+								"type": "SolidColor"
+							},
+							{
+								"color": [
+									1,
+									1,
+									1,
+									1
+								],
+								"type": "SolidColor"
+							},
+							{
+								"color": [
+									1,
+									1,
+									1,
+									1
+								],
+								"type": "SolidColor"
+							},
+							{
+								"color": [
+									1,
+									1,
+									1,
+									1
+								],
+								"type": "SolidColor"
+							},
+							{
+								"color": [
+									1,
+									1,
+									1,
+									1
+								],
+								"type": "SolidColor"
+							},
+							{
+								"color": [
+									1,
+									1,
+									1,
+									1
+								],
+								"type": "SolidColor"
+							},
+							{
+								"color": [
+									1,
+									1,
+									1,
+									1
+								],
+								"type": "SolidColor"
+							},
+							{
+								"color": [
+									1,
+									1,
+									1,
+									1
+								],
+								"type": "SolidColor"
+							},
+							{
+								"color": [
+									1,
+									1,
+									1,
+									1
+								],
+								"type": "SolidColor"
+							},
+							{
+								"color": [
+									1,
+									1,
+									1,
+									1
+								],
+								"type": "SolidColor"
+							},
+							{
+								"color": [
+									1,
+									1,
+									1,
+									1
+								],
+								"type": "SolidColor"
+							},
+							{
+								"color": [
+									1,
+									1,
+									1,
+									1
+								],
+								"type": "SolidColor"
+							},
+							{
+								"color": [
+									1,
+									1,
+									1,
+									1
+								],
+								"type": "SolidColor"
+							},
+							{
+								"color": [
+									1,
+									1,
+									1,
+									1
+								],
+								"type": "SolidColor"
+							},
+							{
+								"color": [
+									1,
+									1,
+									1,
+									1
+								],
+								"type": "SolidColor"
+							},
+							{
+								"color": [
+									1,
+									1,
+									1,
+									1
+								],
+								"type": "SolidColor"
+							},
+							{
+								"color": [
+									1,
+									1,
+									1,
+									1
+								],
+								"type": "SolidColor"
+							},
+							{
+								"color": [
+									1,
+									1,
+									1,
+									1
+								],
+								"type": "SolidColor"
+							},
+							{
+								"color": [
+									1,
+									1,
+									1,
+									1
+								],
+								"type": "SolidColor"
+							},
+							{
+								"color": [
+									1,
+									1,
+									1,
+									1
+								],
+								"type": "SolidColor"
+							},
+							{
+								"color": [
+									1,
+									1,
+									1,
+									1
+								],
+								"type": "SolidColor"
+							}
+						]
+					},
+					"transformation": {
+						"type": "transformation2d",
+						"value": [
+							null,
+							null,
+							null,
+							null,
+							null,
+							null,
+							null,
+							null,
+							null,
+							null,
+							null,
+							null,
+							null,
+							null,
+							null,
+							null,
+							null,
+							null,
+							null,
+							null,
+							null,
+							null,
+							null,
+							null,
+							null,
+							null,
+							null,
+							null,
+							null,
+							null,
+							null,
+							null,
+							null,
+							null,
+							null,
+							null,
+							null,
+							null,
+							null,
+							null,
+							null,
+							null,
+							null,
+							null,
+							null,
+							null,
+							null,
+							null,
+							null,
+							null,
+							null,
+							null,
+							null,
+							null,
+							null,
+							null,
+							null,
+							null,
+							null,
+							null,
+							null,
+							null,
+							null,
+							null
+						]
+					}
+				},
+				"hidden": [
+					"instances"
+				],
+				"name": "Mesh 2D",
+				"thumbnail_visible": true
+			},
+			"6": {
+				"attributes": {
+					"mode": {
+						"type": "integer",
+						"value": 0
+					}
+				},
+				"bounds": {
+					"height": 82,
+					"width": 195,
+					"x": 1300,
+					"y": 0
+				},
+				"class": {
+					"id": "77697265-8E76-4D11-8420-0A3F4CF72566",
+					"version": 0
+				},
+				"clock": "video",
+				"color": "ffff6a00",
+				"constants": {
+					"transform": {
+						"type": "transformation2d",
+						"value": null
+					},
+					"zoom": {
+						"type": "float",
+						"value": 1
+					}
+				},
+				"hidden": [
+					"mode"
+				],
+				"name": "Camera 2D",
+				"thumbnail_visible": true
+			},
+			"7": {
+				"attributes": {
+					"aa": {
+						"type": "integer",
+						"value": 2
+					},
+					"bitdepth": {
+						"type": "integer",
+						"value": 0
+					},
+					"blending": {
+						"type": "integer",
+						"value": 0
+					},
+					"instanced-output": {
+						"type": "bool",
+						"value": false
+					},
+					"mesh-dimensions": {
+						"type": "integer",
+						"value": 64
+					},
+					"resolution-absolute": {
+						"type": "float2",
+						"value": [
+							1920,
+							1080
+						]
+					},
+					"resolution-mode": {
+						"type": "integer",
+						"value": 0
+					},
+					"resolution-relative": {
+						"type": "float2",
+						"value": [
+							1,
+							1
+						]
+					}
+				},
+				"bounds": {
+					"height": 58,
+					"width": 195,
+					"x": 1560,
+					"y": 0
+				},
+				"class": {
+					"id": "77697265-E8EC-7A1G-901A-CFEC174D3B67",
+					"version": 2
+				},
+				"clock": "video",
+				"color": "ffff6a00",
+				"constants": {
+					"camera": {
+						"type": "camera2d",
+						"value": {
+							"view": [
+								1,
+								0,
+								0,
+								0,
+								0,
+								1,
+								0,
+								0,
+								0,
+								0,
+								1,
+								0,
+								0,
+								0,
+								0,
+								1
+							],
+							"viewport": {
+								"max": [
+									1,
+									1
+								],
+								"min": [
+									-1,
+									-1
+								]
+							}
+						}
+					},
+					"mesh": {
+						"type": "mesh2d",
+						"value": [
+							null,
+							null,
+							null,
+							null,
+							null,
+							null,
+							null,
+							null,
+							null,
+							null,
+							null,
+							null,
+							null,
+							null,
+							null,
+							null,
+							null,
+							null,
+							null,
+							null,
+							null,
+							null,
+							null,
+							null,
+							null,
+							null,
+							null,
+							null,
+							null,
+							null,
+							null,
+							null,
+							null,
+							null,
+							null,
+							null,
+							null,
+							null,
+							null,
+							null,
+							null,
+							null,
+							null,
+							null,
+							null,
+							null,
+							null,
+							null,
+							null,
+							null,
+							null,
+							null,
+							null,
+							null,
+							null,
+							null,
+							null,
+							null,
+							null,
+							null,
+							null,
+							null,
+							null,
+							null
+						]
+					}
+				},
+				"hidden": [
+					"aa",
+					"bitdepth",
+					"blending",
+					"instanced-output",
+					"mesh-dimensions",
+					"resolution-absolute",
+					"resolution-mode",
+					"resolution-relative"
+				],
+				"name": "2D Render",
+				"thumbnail_visible": true
+			},
+			"8": {
+				"attributes": {
+					"instances": {
+						"type": "integer",
+						"value": 1
+					}
+				},
+				"bounds": {
+					"height": 106,
+					"width": 195,
+					"x": 1820,
+					"y": 0
+				},
+				"class": {
+					"id": "77697265-4db6-4573-8aa7-42362bc44931",
+					"version": 2
+				},
+				"clock": "video",
+				"color": "ffff6a00",
+				"constants": {
+					"height": {
+						"type": "float",
+						"value": 0.16875000298023224
+					},
+					"round": {
+						"type": "float4",
+						"value": [
+							0.30857142806053162,
+							0.30857142806053162,
+							0.30857142806053162,
+							0.30857142806053162
+						]
+					},
+					"width": {
+						"type": "float",
+						"value": 0.3125
+					}
+				},
+				"hidden": [
+					"instances"
+				],
+				"name": "Rectangle",
+				"thumbnail_visible": true
+			},
+			"9": {
+				"attributes": {
+					"anchor-type": {
+						"type": "type",
+						"value": "float2"
+					},
+					"flow": {
+						"type": "flow",
+						"value": "signal"
+					},
+					"input-type": {
+						"type": "type",
+						"value": "procedural"
+					},
+					"instances": {
+						"type": "integer",
+						"value": 64
+					},
+					"rotation-type": {
+						"type": "type",
+						"value": "float"
+					},
+					"scale-anchor-type": {
+						"type": "type",
+						"value": "bool"
+					},
+					"scale-type": {
+						"type": "type",
+						"value": "float"
+					},
+					"translation-type": {
+						"type": "type",
+						"value": "float2"
+					}
+				},
+				"bounds": {
+					"height": 130,
+					"width": 195,
+					"x": 2080,
+					"y": 0
+				},
+				"class": {
+					"id": "77697265-9225-4009-9D2D-5F898E94CC33",
+					"version": 4
+				},
+				"clock": "video",
+				"color": "ffff6a00",
+				"constants": {
+					"anchor": {
+						"type": "float2",
+						"value": [
+							[
+								0,
+								0
+							],
+							[
+								0,
+								0
+							],
+							[
+								0,
+								0
+							],
+							[
+								0,
+								0
+							],
+							[
+								0,
+								0
+							],
+							[
+								0,
+								0
+							],
+							[
+								0,
+								0
+							],
+							[
+								0,
+								0
+							],
+							[
+								0,
+								0
+							],
+							[
+								0,
+								0
+							],
+							[
+								0,
+								0
+							],
+							[
+								0,
+								0
+							],
+							[
+								0,
+								0
+							],
+							[
+								0,
+								0
+							],
+							[
+								0,
+								0
+							],
+							[
+								0,
+								0
+							],
+							[
+								0,
+								0
+							],
+							[
+								0,
+								0
+							],
+							[
+								0,
+								0
+							],
+							[
+								0,
+								0
+							],
+							[
+								0,
+								0
+							],
+							[
+								0,
+								0
+							],
+							[
+								0,
+								0
+							],
+							[
+								0,
+								0
+							],
+							[
+								0,
+								0
+							],
+							[
+								0,
+								0
+							],
+							[
+								0,
+								0
+							],
+							[
+								0,
+								0
+							],
+							[
+								0,
+								0
+							],
+							[
+								0,
+								0
+							],
+							[
+								0,
+								0
+							],
+							[
+								0,
+								0
+							],
+							[
+								0,
+								0
+							],
+							[
+								0,
+								0
+							],
+							[
+								0,
+								0
+							],
+							[
+								0,
+								0
+							],
+							[
+								0,
+								0
+							],
+							[
+								0,
+								0
+							],
+							[
+								0,
+								0
+							],
+							[
+								0,
+								0
+							],
+							[
+								0,
+								0
+							],
+							[
+								0,
+								0
+							],
+							[
+								0,
+								0
+							],
+							[
+								0,
+								0
+							],
+							[
+								0,
+								0
+							],
+							[
+								0,
+								0
+							],
+							[
+								0,
+								0
+							],
+							[
+								0,
+								0
+							],
+							[
+								0,
+								0
+							],
+							[
+								0,
+								0
+							],
+							[
+								0,
+								0
+							],
+							[
+								0,
+								0
+							],
+							[
+								0,
+								0
+							],
+							[
+								0,
+								0
+							],
+							[
+								0,
+								0
+							],
+							[
+								0,
+								0
+							],
+							[
+								0,
+								0
+							],
+							[
+								0,
+								0
+							],
+							[
+								0,
+								0
+							],
+							[
+								0,
+								0
+							],
+							[
+								0,
+								0
+							],
+							[
+								0,
+								0
+							],
+							[
+								0,
+								0
+							],
+							[
+								0,
+								0
+							]
+						]
+					},
+					"input": {
+						"type": "procedural",
+						"value": [
+							null,
+							null,
+							null,
+							null,
+							null,
+							null,
+							null,
+							null,
+							null,
+							null,
+							null,
+							null,
+							null,
+							null,
+							null,
+							null,
+							null,
+							null,
+							null,
+							null,
+							null,
+							null,
+							null,
+							null,
+							null,
+							null,
+							null,
+							null,
+							null,
+							null,
+							null,
+							null,
+							null,
+							null,
+							null,
+							null,
+							null,
+							null,
+							null,
+							null,
+							null,
+							null,
+							null,
+							null,
+							null,
+							null,
+							null,
+							null,
+							null,
+							null,
+							null,
+							null,
+							null,
+							null,
+							null,
+							null,
+							null,
+							null,
+							null,
+							null,
+							null,
+							null,
+							null,
+							null
+						]
+					},
+					"rotation": {
+						"type": "float",
+						"value": [
+							0,
+							0,
+							0,
+							0,
+							0,
+							0,
+							0,
+							0,
+							0,
+							0,
+							0,
+							0,
+							0,
+							0,
+							0,
+							0,
+							0,
+							0,
+							0,
+							0,
+							0,
+							0,
+							0,
+							0,
+							0,
+							0,
+							0,
+							0,
+							0,
+							0,
+							0,
+							0,
+							0,
+							0,
+							0,
+							0,
+							0,
+							0,
+							0,
+							0,
+							0,
+							0,
+							0,
+							0,
+							0,
+							0,
+							0,
+							0,
+							0,
+							0,
+							0,
+							0,
+							0,
+							0,
+							0,
+							0,
+							0,
+							0,
+							0,
+							0,
+							0,
+							0,
+							0,
+							0
+						]
+					},
+					"scale": {
+						"type": "float",
+						"value": [
+							1,
+							1,
+							1,
+							1,
+							1,
+							1,
+							1,
+							1,
+							1,
+							1,
+							1,
+							1,
+							1,
+							1,
+							1,
+							1,
+							1,
+							1,
+							1,
+							1,
+							1,
+							1,
+							1,
+							1,
+							1,
+							1,
+							1,
+							1,
+							1,
+							1,
+							1,
+							1,
+							1,
+							1,
+							1,
+							1,
+							1,
+							1,
+							1,
+							1,
+							1,
+							1,
+							1,
+							1,
+							1,
+							1,
+							1,
+							1,
+							1,
+							1,
+							1,
+							1,
+							1,
+							1,
+							1,
+							1,
+							1,
+							1,
+							1,
+							1,
+							1,
+							1,
+							1,
+							1
+						]
+					},
+					"scale-anchor": {
+						"type": "bool",
+						"value": [
+							true,
+							true,
+							true,
+							true,
+							true,
+							true,
+							true,
+							true,
+							true,
+							true,
+							true,
+							true,
+							true,
+							true,
+							true,
+							true,
+							true,
+							true,
+							true,
+							true,
+							true,
+							true,
+							true,
+							true,
+							true,
+							true,
+							true,
+							true,
+							true,
+							true,
+							true,
+							true,
+							true,
+							true,
+							true,
+							true,
+							true,
+							true,
+							true,
+							true,
+							true,
+							true,
+							true,
+							true,
+							true,
+							true,
+							true,
+							true,
+							true,
+							true,
+							true,
+							true,
+							true,
+							true,
+							true,
+							true,
+							true,
+							true,
+							true,
+							true,
+							true,
+							true,
+							true,
+							true
+						]
+					},
+					"translation": {
+						"type": "float2",
+						"value": [
+							[
+								0,
+								0
+							],
+							[
+								0,
+								0
+							],
+							[
+								0,
+								0
+							],
+							[
+								0,
+								0
+							],
+							[
+								0,
+								0
+							],
+							[
+								0,
+								0
+							],
+							[
+								0,
+								0
+							],
+							[
+								0,
+								0
+							],
+							[
+								0,
+								0
+							],
+							[
+								0,
+								0
+							],
+							[
+								0,
+								0
+							],
+							[
+								0,
+								0
+							],
+							[
+								0,
+								0
+							],
+							[
+								0,
+								0
+							],
+							[
+								0,
+								0
+							],
+							[
+								0,
+								0
+							],
+							[
+								0,
+								0
+							],
+							[
+								0,
+								0
+							],
+							[
+								0,
+								0
+							],
+							[
+								0,
+								0
+							],
+							[
+								0,
+								0
+							],
+							[
+								0,
+								0
+							],
+							[
+								0,
+								0
+							],
+							[
+								0,
+								0
+							],
+							[
+								0,
+								0
+							],
+							[
+								0,
+								0
+							],
+							[
+								0,
+								0
+							],
+							[
+								0,
+								0
+							],
+							[
+								0,
+								0
+							],
+							[
+								0,
+								0
+							],
+							[
+								0,
+								0
+							],
+							[
+								0,
+								0
+							],
+							[
+								0,
+								0
+							],
+							[
+								0,
+								0
+							],
+							[
+								0,
+								0
+							],
+							[
+								0,
+								0
+							],
+							[
+								0,
+								0
+							],
+							[
+								0,
+								0
+							],
+							[
+								0,
+								0
+							],
+							[
+								0,
+								0
+							],
+							[
+								0,
+								0
+							],
+							[
+								0,
+								0
+							],
+							[
+								0,
+								0
+							],
+							[
+								0,
+								0
+							],
+							[
+								0,
+								0
+							],
+							[
+								0,
+								0
+							],
+							[
+								0,
+								0
+							],
+							[
+								0,
+								0
+							],
+							[
+								0,
+								0
+							],
+							[
+								0,
+								0
+							],
+							[
+								0,
+								0
+							],
+							[
+								0,
+								0
+							],
+							[
+								0,
+								0
+							],
+							[
+								0,
+								0
+							],
+							[
+								0,
+								0
+							],
+							[
+								0,
+								0
+							],
+							[
+								0,
+								0
+							],
+							[
+								0,
+								0
+							],
+							[
+								0,
+								0
+							],
+							[
+								0,
+								0
+							],
+							[
+								0,
+								0
+							],
+							[
+								0,
+								0
+							],
+							[
+								0,
+								0
+							],
+							[
+								0,
+								0
+							]
+						]
+					}
+				},
+				"hidden": [
+					"anchor-type",
+					"flow",
+					"input-type",
+					"instances",
+					"rotation-type",
+					"scale-anchor",
+					"scale-anchor-type",
+					"scale-type",
+					"translation-type"
+				],
+				"name": "Transform",
+				"thumbnail_visible": true
+			}
+		},
+		"ui": {
+			"camera": {
+				"x": 0,
+				"y": 0,
+				"zoom": 1
+			},
+			"selection": [
+				"11"
+			]
+		}
+	},
+	"ui": {
+		"audio": {
+			"routing": {
+				"in": {},
+				"out": []
+			}
+		},
+		"deviceConnections": {
+			"input": {}
+		},
+		"transport": {
+			"bpm": 120,
+			"time-signature": [
+				4,
+				4
+			]
+		},
+		"video": {
+			"routing": {
+				"out": {
+					"Display 1": null,
+					"Display 2": null,
+					"Display 3": null,
+					"Display 4": null,
+					"Syphon": null,
+					"virtualOutputs": []
+				}
+			}
+		}
+	}
+}

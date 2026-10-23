@@ -1,0 +1,147 @@
+{
+  "name": "Rectangle",
+  "class_id": "77697265-4db6-4573-8aa7-42362bc44931",
+  "color": 0,
+  "main_inlet": null,
+  "main_outlet": "output",
+  "inlets": [
+    {
+      "id": "instances",
+      "name": "Instances",
+      "description": null,
+      "bundle": {
+        "data_type": "int",
+        "flow": "attribute",
+        "dimensions": []
+      },
+      "connectable": false,
+      "read_only": true,
+      "is_main": false,
+      "visible": false,
+      "value": 1,
+      "unit": "none",
+      "precision": 6,
+      "increment": 0.005,
+      "number_view": "slider",
+      "bool_view": "toggle",
+      "option_set_view": "buttons",
+      "is_multi_line": true,
+      "range": {
+        "min": 1,
+        "max": null
+      },
+      "choices": null
+    },
+    {
+      "id": "width",
+      "name": "Width",
+      "description": "The width of the rectangle.",
+      "bundle": {
+        "data_type": "float",
+        "flow": "signal",
+        "dimensions": []
+      },
+      "connectable": true,
+      "read_only": false,
+      "is_main": false,
+      "visible": true,
+      "value": 1.0,
+      "unit": "none",
+      "precision": 6,
+      "increment": 0.005,
+      "number_view": "slider",
+      "bool_view": "toggle",
+      "option_set_view": "buttons",
+      "is_multi_line": true,
+      "range": {
+        "min": 0.0,
+        "max": null
+      },
+      "choices": null
+    },
+    {
+      "id": "height",
+      "name": "Height",
+      "description": "The height of the rectangle.",
+      "bundle": {
+        "data_type": "float",
+        "flow": "signal",
+        "dimensions": []
+      },
+      "connectable": true,
+      "read_only": false,
+      "is_main": false,
+      "visible": true,
+      "value": 1.0,
+      "unit": "none",
+      "precision": 6,
+      "increment": 0.005,
+      "number_view": "slider",
+      "bool_view": "toggle",
+      "option_set_view": "buttons",
+      "is_multi_line": true,
+      "range": {
+        "min": 0.0,
+        "max": null
+      },
+      "choices": null
+    },
+    {
+      "id": "round",
+      "name": "Corners",
+      "description": "The rounding radius for each corner.",
+      "bundle": {
+        "data_type": "float_4",
+        "flow": "signal",
+        "dimensions": []
+      },
+      "connectable": true,
+      "read_only": false,
+      "is_main": false,
+      "visible": true,
+      "value": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 0.0,
+        "w": 0.0
+      },
+      "unit": "none",
+      "precision": 6,
+      "increment": 0.005,
+      "number_view": "slider",
+      "bool_view": "toggle",
+      "option_set_view": "buttons",
+      "is_multi_line": true,
+      "range": {
+        "min": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0,
+          "w": 0.0
+        },
+        "max": {
+          "x": 1.0,
+          "y": 1.0,
+          "z": 1.0,
+          "w": 1.0
+        }
+      },
+      "choices": null
+    }
+  ],
+  "outlets": [
+    {
+      "id": "output",
+      "name": "Output",
+      "description": "The rectangle.",
+      "bundle": {
+        "data_type": "procedural",
+        "flow": "signal",
+        "dimensions": []
+      },
+      "connectable": true,
+      "is_main": true,
+      "visible": true
+    }
+  ]
+}

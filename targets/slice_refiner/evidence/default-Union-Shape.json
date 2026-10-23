@@ -1,0 +1,216 @@
+{
+  "name": "Union",
+  "class_id": "77697265-d619-42bf-b61d-4c9a7dcd6c2a",
+  "color": 0,
+  "main_inlet": null,
+  "main_outlet": "output0",
+  "inlets": [
+    {
+      "id": "size",
+      "name": "Inputs",
+      "description": null,
+      "bundle": {
+        "data_type": "int",
+        "flow": "attribute",
+        "dimensions": []
+      },
+      "connectable": false,
+      "read_only": false,
+      "is_main": false,
+      "visible": false,
+      "value": 2,
+      "unit": "none",
+      "precision": 6,
+      "increment": 0.005,
+      "number_view": "spinner",
+      "bool_view": "toggle",
+      "option_set_view": "buttons",
+      "is_multi_line": true,
+      "range": {
+        "min": 2,
+        "max": 25
+      },
+      "choices": null
+    },
+    {
+      "id": "input0",
+      "name": "Left",
+      "description": "The first shape to combine.",
+      "bundle": {
+        "data_type": "procedural",
+        "flow": "signal",
+        "dimensions": []
+      },
+      "connectable": true,
+      "read_only": false,
+      "is_main": false,
+      "visible": true,
+      "value": null,
+      "unit": "none",
+      "precision": 6,
+      "increment": 0.005,
+      "number_view": "slider",
+      "bool_view": "toggle",
+      "option_set_view": "buttons",
+      "is_multi_line": true
+    },
+    {
+      "id": "input0-dimensions",
+      "name": "Input 0 Dimensions",
+      "description": null,
+      "bundle": {
+        "data_type": "int",
+        "flow": "attribute",
+        "dimensions": []
+      },
+      "connectable": false,
+      "read_only": true,
+      "is_main": false,
+      "visible": false,
+      "value": 1,
+      "unit": "none",
+      "precision": 6,
+      "increment": 0.005,
+      "number_view": "slider",
+      "bool_view": "toggle",
+      "option_set_view": "buttons",
+      "is_multi_line": true,
+      "range": {
+        "min": null,
+        "max": null
+      },
+      "choices": null
+    },
+    {
+      "id": "input1",
+      "name": "Right",
+      "description": "An additional shape to merge into the union.",
+      "bundle": {
+        "data_type": "procedural",
+        "flow": "signal",
+        "dimensions": []
+      },
+      "connectable": true,
+      "read_only": false,
+      "is_main": false,
+      "visible": true,
+      "value": null,
+      "unit": "none",
+      "precision": 6,
+      "increment": 0.005,
+      "number_view": "slider",
+      "bool_view": "toggle",
+      "option_set_view": "buttons",
+      "is_multi_line": true
+    },
+    {
+      "id": "input1-dimensions",
+      "name": "Input 1 Dimensions",
+      "description": null,
+      "bundle": {
+        "data_type": "int",
+        "flow": "attribute",
+        "dimensions": []
+      },
+      "connectable": false,
+      "read_only": true,
+      "is_main": false,
+      "visible": false,
+      "value": 1,
+      "unit": "none",
+      "precision": 6,
+      "increment": 0.005,
+      "number_view": "slider",
+      "bool_view": "toggle",
+      "option_set_view": "buttons",
+      "is_multi_line": true,
+      "range": {
+        "min": null,
+        "max": null
+      },
+      "choices": null
+    },
+    {
+      "id": "mode",
+      "name": "Mode",
+      "description": null,
+      "bundle": {
+        "data_type": "int",
+        "flow": "attribute",
+        "dimensions": []
+      },
+      "connectable": true,
+      "read_only": false,
+      "is_main": false,
+      "visible": false,
+      "value": 0,
+      "unit": "none",
+      "precision": 6,
+      "increment": 0.005,
+      "number_view": "slider",
+      "bool_view": "toggle",
+      "option_set_view": "buttons",
+      "is_multi_line": true,
+      "range": {
+        "min": 0,
+        "max": 2
+      },
+      "choices": [
+        {
+          "label": "Round",
+          "value": 0
+        },
+        {
+          "label": "Stairs",
+          "value": 1
+        },
+        {
+          "label": "Chamfer",
+          "value": 2
+        }
+      ]
+    },
+    {
+      "id": "smoothing",
+      "name": "Smoothing",
+      "description": "Rounds the edges where shapes meet.",
+      "bundle": {
+        "data_type": "float",
+        "flow": "signal",
+        "dimensions": []
+      },
+      "connectable": true,
+      "read_only": false,
+      "is_main": false,
+      "visible": true,
+      "value": 0.0,
+      "unit": "none",
+      "precision": 6,
+      "increment": 0.005,
+      "number_view": "slider",
+      "bool_view": "toggle",
+      "option_set_view": "buttons",
+      "is_multi_line": true,
+      "range": {
+        "min": 0.0,
+        "max": 1.0
+      },
+      "choices": null
+    }
+  ],
+  "outlets": [
+    {
+      "id": "output0",
+      "name": "Output",
+      "description": "The combined shape.",
+      "bundle": {
+        "data_type": "procedural",
+        "flow": "signal",
+        "dimensions": []
+      },
+      "connectable": true,
+      "is_main": true,
+      "visible": true
+    }
+  ]
+}

@@ -1,0 +1,23 @@
+{
+  "container_sha256": "3299103010c89a2699f76ef1ae19724023694d76750b93223b42746f64a68de1",
+  "version": 1,
+  "entry_count": 1,
+  "table_size": 20,
+  "nonce_hex": "fb5fde6049a70122",
+  "cipher": "Salsa20/20, absolute file offset",
+  "key_derivation": "master XOR BLAKE2b-256(sourceeffectmixer) for .cwired",
+  "entries": [
+    {
+      "name": "patch.wire",
+      "offset": 128,
+      "size": 229959,
+      "sha256": "5ea3e293b9ea8f2c37067f5a1f6e393030800c3eabad56a81150c8ca41809365"
+    }
+  ],
+  "json_keys": [
+    "formatVersion",
+    "patch",
+    "resources",
+    "ui"
+  ]
+}

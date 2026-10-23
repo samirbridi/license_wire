@@ -1,0 +1,238 @@
+{
+  "file": "SLICE REFINER.cwired",
+  "size": 230087,
+  "sha256": "3299103010c89a2699f76ef1ae19724023694d76750b93223b42746f64a68de1",
+  "first_128_bytes": "0001000000010000001401fb5fde6049a701220000000000000000000000000000000000000000000000000000000000000000000000000000000000000000006f73369a3a6a357deec63b2b71e80c97a0b8ec940000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+  "payload_entropy_bits_per_byte": 7.999283277444439,
+  "signatures": {
+    "zip": -1,
+    "json_patch": -1,
+    "gzip": 20569
+  },
+  "ascii_strings": [
+    {
+      "offset": 1870,
+      "text": "\\ZN)=p$`"
+    },
+    {
+      "offset": 6807,
+      "text": "IRJeajO0"
+    },
+    {
+      "offset": 8591,
+      "text": "l<P$518:Z"
+    },
+    {
+      "offset": 9788,
+      "text": "Ma+dWeNc"
+    },
+    {
+      "offset": 23200,
+      "text": "TOl)u(Bq"
+    },
+    {
+      "offset": 27844,
+      "text": "=nR5k`\"a"
+    },
+    {
+      "offset": 29015,
+      "text": "![K3At<3"
+    },
+    {
+      "offset": 29310,
+      "text": "x8ObH~(@"
+    },
+    {
+      "offset": 30581,
+      "text": ";/+B&NR9k"
+    },
+    {
+      "offset": 32184,
+      "text": "9^S3rO[="
+    },
+    {
+      "offset": 37730,
+      "text": "Ol\\E8xB>ur"
+    },
+    {
+      "offset": 38588,
+      "text": "{XH`c\"Kbve|"
+    },
+    {
+      "offset": 40293,
+      "text": "a)4Vns`}"
+    },
+    {
+      "offset": 41929,
+      "text": "l8}v$@P:-U"
+    },
+    {
+      "offset": 50108,
+      "text": "Sictkh^t"
+    },
+    {
+      "offset": 52976,
+      "text": ")d@a20u;"
+    },
+    {
+      "offset": 56941,
+      "text": "xWHLwW(|"
+    },
+    {
+      "offset": 59319,
+      "text": "TIS!x_!:"
+    },
+    {
+      "offset": 71995,
+      "text": "ollq,0 w"
+    },
+    {
+      "offset": 73613,
+      "text": "cy%\\cW!O"
+    },
+    {
+      "offset": 87217,
+      "text": "W=!6`|rq"
+    },
+    {
+      "offset": 89926,
+      "text": "|'S*<9r6A"
+    },
+    {
+      "offset": 94563,
+      "text": "@r9l;(DF"
+    },
+    {
+      "offset": 98922,
+      "text": "^Pz/Tv/M"
+    },
+    {
+      "offset": 101009,
+      "text": "<55VYX7X"
+    },
+    {
+      "offset": 102081,
+      "text": "M F^dY+Fo;"
+    },
+    {
+      "offset": 105003,
+      "text": "SFgRU/mD/"
+    },
+    {
+      "offset": 107355,
+      "text": ": ,$D=HKW"
+    },
+    {
+      "offset": 110567,
+      "text": "i.do,M53#"
+    },
+    {
+      "offset": 113722,
+      "text": ";X%X:nft"
+    },
+    {
+      "offset": 118423,
+      "text": "j(:*S*F("
+    },
+    {
+      "offset": 119398,
+      "text": "<'|!MtHy#"
+    },
+    {
+      "offset": 123981,
+      "text": "w[x\\;A5W"
+    },
+    {
+      "offset": 128360,
+      "text": "Ks>*& .O"
+    },
+    {
+      "offset": 131372,
+      "text": "@3)p`y>i"
+    },
+    {
+      "offset": 131731,
+      "text": "#=VWi2z\\"
+    },
+    {
+      "offset": 134826,
+      "text": "HAX639?Q0"
+    },
+    {
+      "offset": 143655,
+      "text": "b$)vx|YA"
+    },
+    {
+      "offset": 150143,
+      "text": "Q\\L|I[`M8+."
+    },
+    {
+      "offset": 155422,
+      "text": "FswBk9h*"
+    },
+    {
+      "offset": 160622,
+      "text": "n^8e?-V^"
+    },
+    {
+      "offset": 161432,
+      "text": "aR9!}fO^"
+    },
+    {
+      "offset": 161471,
+      "text": "[.K&9a'="
+    },
+    {
+      "offset": 163107,
+      "text": "KC%%q8Uo`"
+    },
+    {
+      "offset": 163838,
+      "text": "?| d4WPX"
+    },
+    {
+      "offset": 168810,
+      "text": "cNc&14vtz"
+    },
+    {
+      "offset": 177199,
+      "text": "xL{o2n\\|\""
+    },
+    {
+      "offset": 181040,
+      "text": "PHCavZmFJ"
+    },
+    {
+      "offset": 201659,
+      "text": ".YJAV!PV"
+    },
+    {
+      "offset": 201850,
+      "text": "_[-K<C}m"
+    },
+    {
+      "offset": 205925,
+      "text": " /{le9f/"
+    },
+    {
+      "offset": 207390,
+      "text": "DVw-)6}YZ"
+    },
+    {
+      "offset": 209313,
+      "text": "j\\>'.V)4"
+    },
+    {
+      "offset": 210150,
+      "text": "/Dd5C'k%"
+    },
+    {
+      "offset": 220633,
+      "text": "4su)iU `"
+    },
+    {
+      "offset": 224159,
+      "text": "\"|{sL8>aO'"
+    }
+  ]
+}

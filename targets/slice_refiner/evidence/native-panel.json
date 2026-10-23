@@ -1,0 +1,1336 @@
+[
+  {
+    "type": "group",
+    "id": 1792689441525,
+    "name": "Output and Quality",
+    "collapsed": false,
+    "inputs": [
+      {
+        "type": "input",
+        "id": 1,
+        "name": "Video",
+        "flow": "signal",
+        "data_type": "texture_2d_rgba",
+        "unit": "none",
+        "precision": 6,
+        "increment": 0.005,
+        "number_view": "slider",
+        "option_set_view": "buttons",
+        "is_multi_line": true,
+        "value": null
+      },
+      {
+        "type": "input",
+        "id": 199,
+        "name": "Output",
+        "flow": "attribute",
+        "data_type": "int",
+        "unit": "none",
+        "precision": 6,
+        "increment": 0.005,
+        "number_view": "slider",
+        "option_set_view": "buttons",
+        "is_multi_line": true,
+        "range": {
+          "min": 0,
+          "max": 2
+        },
+        "choices": [
+          {
+            "label": "Refine + Stroke",
+            "value": 0
+          },
+          {
+            "label": "Inside Slices",
+            "value": 1
+          },
+          {
+            "label": "Outline Only",
+            "value": 2
+          }
+        ],
+        "value": 0
+      },
+      {
+        "type": "input",
+        "id": 211,
+        "name": "Merge Edges",
+        "flow": "attribute",
+        "data_type": "bool",
+        "unit": "none",
+        "precision": 6,
+        "increment": 0.005,
+        "number_view": "slider",
+        "option_set_view": "buttons",
+        "is_multi_line": true,
+        "bool_view": "toggle",
+        "value": true
+      },
+      {
+        "type": "input",
+        "id": 227,
+        "name": "Black Background",
+        "flow": "attribute",
+        "data_type": "bool",
+        "unit": "none",
+        "precision": 6,
+        "increment": 0.005,
+        "number_view": "slider",
+        "option_set_view": "buttons",
+        "is_multi_line": true,
+        "bool_view": "toggle",
+        "value": false
+      },
+      {
+        "type": "input",
+        "id": 202,
+        "name": "Corner Segments",
+        "flow": "attribute",
+        "data_type": "int",
+        "unit": "none",
+        "precision": 6,
+        "increment": 0.005,
+        "number_view": "slider",
+        "option_set_view": "buttons",
+        "is_multi_line": true,
+        "range": {
+          "min": 3,
+          "max": 64
+        },
+        "choices": null,
+        "value": 16
+      },
+      {
+        "type": "input",
+        "id": 187,
+        "name": "Soft Edges px",
+        "flow": "signal",
+        "data_type": "float",
+        "unit": "none",
+        "precision": 6,
+        "increment": 0.005,
+        "number_view": "slider",
+        "option_set_view": "buttons",
+        "is_multi_line": true,
+        "range": {
+          "min": 0.0,
+          "max": 100.0
+        },
+        "choices": null,
+        "value": 0.0
+      }
+    ]
+  },
+  {
+    "type": "group",
+    "id": 1792689441911,
+    "name": "Animation",
+    "collapsed": false,
+    "inputs": [
+      {
+        "type": "input",
+        "id": 128,
+        "name": "BPM Sync",
+        "flow": "attribute",
+        "data_type": "bool",
+        "unit": "none",
+        "precision": 6,
+        "increment": 0.005,
+        "number_view": "slider",
+        "option_set_view": "buttons",
+        "is_multi_line": true,
+        "bool_view": "toggle",
+        "value": true
+      },
+      {
+        "type": "input",
+        "id": 129,
+        "name": "Speed Hz",
+        "flow": "signal",
+        "data_type": "float",
+        "unit": "none",
+        "precision": 6,
+        "increment": 0.005,
+        "number_view": "slider",
+        "option_set_view": "buttons",
+        "is_multi_line": true,
+        "range": {
+          "min": 0.0,
+          "max": 8.0
+        },
+        "choices": null,
+        "value": 0.5
+      },
+      {
+        "type": "input",
+        "id": 130,
+        "name": "BPM Multiplier",
+        "flow": "signal",
+        "data_type": "float",
+        "unit": "none",
+        "precision": 6,
+        "increment": 0.005,
+        "number_view": "slider",
+        "option_set_view": "buttons",
+        "is_multi_line": true,
+        "range": {
+          "min": 0.03125,
+          "max": 8.0
+        },
+        "choices": null,
+        "value": 0.25
+      },
+      {
+        "type": "input",
+        "id": 131,
+        "name": "Motion Amount",
+        "flow": "signal",
+        "data_type": "float",
+        "unit": "none",
+        "precision": 6,
+        "increment": 0.005,
+        "number_view": "slider",
+        "option_set_view": "buttons",
+        "is_multi_line": true,
+        "range": {
+          "min": 0.0,
+          "max": 1.0
+        },
+        "choices": null,
+        "value": 0.800000011920929
+      },
+      {
+        "type": "input",
+        "id": 132,
+        "name": "Color B",
+        "flow": "signal",
+        "data_type": "color",
+        "unit": "none",
+        "precision": 6,
+        "increment": 0.005,
+        "number_view": "slider",
+        "option_set_view": "buttons",
+        "is_multi_line": true,
+        "choices": null,
+        "value": {
+          "r": 1.0,
+          "g": 0.15000000596046448,
+          "b": 0.5,
+          "a": 1.0
+        }
+      }
+    ]
+  },
+  {
+    "type": "group",
+    "id": 1792689442238,
+    "name": "Group 1",
+    "collapsed": false,
+    "inputs": [
+      {
+        "type": "input",
+        "id": 5,
+        "name": "G1 Slices",
+        "flow": "signal",
+        "data_type": "slice",
+        "unit": "none",
+        "precision": 6,
+        "increment": 0.005,
+        "number_view": "slider",
+        "option_set_view": "buttons",
+        "is_multi_line": true,
+        "value": [
+          null,
+          null,
+          null,
+          null,
+          null
+        ]
+      },
+      {
+        "type": "input",
+        "id": 7,
+        "name": "G1 Enabled",
+        "flow": "signal",
+        "data_type": "bool",
+        "unit": "none",
+        "precision": 6,
+        "increment": 0.005,
+        "number_view": "slider",
+        "option_set_view": "buttons",
+        "is_multi_line": true,
+        "bool_view": "toggle",
+        "value": true
+      },
+      {
+        "type": "input",
+        "id": 9,
+        "name": "G1 Top Left px",
+        "flow": "signal",
+        "data_type": "float",
+        "unit": "none",
+        "precision": 6,
+        "increment": 0.005,
+        "number_view": "slider",
+        "option_set_view": "buttons",
+        "is_multi_line": true,
+        "range": {
+          "min": 0.0,
+          "max": 1000.0
+        },
+        "choices": null,
+        "value": 80.0
+      },
+      {
+        "type": "input",
+        "id": 10,
+        "name": "G1 Top Right px",
+        "flow": "signal",
+        "data_type": "float",
+        "unit": "none",
+        "precision": 6,
+        "increment": 0.005,
+        "number_view": "slider",
+        "option_set_view": "buttons",
+        "is_multi_line": true,
+        "range": {
+          "min": 0.0,
+          "max": 1000.0
+        },
+        "choices": null,
+        "value": 80.0
+      },
+      {
+        "type": "input",
+        "id": 11,
+        "name": "G1 Bottom Left px",
+        "flow": "signal",
+        "data_type": "float",
+        "unit": "none",
+        "precision": 6,
+        "increment": 0.005,
+        "number_view": "slider",
+        "option_set_view": "buttons",
+        "is_multi_line": true,
+        "range": {
+          "min": 0.0,
+          "max": 1000.0
+        },
+        "choices": null,
+        "value": 80.0
+      },
+      {
+        "type": "input",
+        "id": 12,
+        "name": "G1 Bottom Right px",
+        "flow": "signal",
+        "data_type": "float",
+        "unit": "none",
+        "precision": 6,
+        "increment": 0.005,
+        "number_view": "slider",
+        "option_set_view": "buttons",
+        "is_multi_line": true,
+        "range": {
+          "min": 0.0,
+          "max": 1000.0
+        },
+        "choices": null,
+        "value": 80.0
+      },
+      {
+        "type": "input",
+        "id": 203,
+        "name": "G1 Corner Scale",
+        "flow": "signal",
+        "data_type": "float",
+        "unit": "none",
+        "precision": 6,
+        "increment": 0.005,
+        "number_view": "slider",
+        "option_set_view": "buttons",
+        "is_multi_line": true,
+        "range": {
+          "min": 0.0,
+          "max": 2.0
+        },
+        "choices": null,
+        "value": 1.0
+      },
+      {
+        "type": "input",
+        "id": 14,
+        "name": "G1 Stroke px",
+        "flow": "signal",
+        "data_type": "float",
+        "unit": "none",
+        "precision": 6,
+        "increment": 0.005,
+        "number_view": "slider",
+        "option_set_view": "buttons",
+        "is_multi_line": true,
+        "range": {
+          "min": 0.0,
+          "max": 200.0
+        },
+        "choices": null,
+        "value": 8.0
+      },
+      {
+        "type": "input",
+        "id": 15,
+        "name": "G1 Inset px",
+        "flow": "signal",
+        "data_type": "float",
+        "unit": "none",
+        "precision": 6,
+        "increment": 0.005,
+        "number_view": "slider",
+        "option_set_view": "buttons",
+        "is_multi_line": true,
+        "range": {
+          "min": -500.0,
+          "max": 500.0
+        },
+        "choices": null,
+        "value": 0.0
+      },
+      {
+        "type": "input",
+        "id": 16,
+        "name": "G1 Opacity",
+        "flow": "signal",
+        "data_type": "float",
+        "unit": "none",
+        "precision": 6,
+        "increment": 0.005,
+        "number_view": "slider",
+        "option_set_view": "buttons",
+        "is_multi_line": true,
+        "range": {
+          "min": 0.0,
+          "max": 1.0
+        },
+        "choices": null,
+        "value": 1.0
+      },
+      {
+        "type": "input",
+        "id": 17,
+        "name": "G1 Color",
+        "flow": "signal",
+        "data_type": "color",
+        "unit": "none",
+        "precision": 6,
+        "increment": 0.005,
+        "number_view": "slider",
+        "option_set_view": "buttons",
+        "is_multi_line": true,
+        "choices": null,
+        "value": {
+          "r": 0.10000000149011612,
+          "g": 0.800000011920929,
+          "b": 1.0,
+          "a": 1.0
+        }
+      },
+      {
+        "type": "input",
+        "id": 19,
+        "name": "G1 Animation",
+        "flow": "attribute",
+        "data_type": "int",
+        "unit": "none",
+        "precision": 6,
+        "increment": 0.005,
+        "number_view": "slider",
+        "option_set_view": "buttons",
+        "is_multi_line": true,
+        "range": {
+          "min": 0,
+          "max": 5
+        },
+        "choices": [
+          {
+            "label": "Static",
+            "value": 0
+          },
+          {
+            "label": "Pulse",
+            "value": 1
+          },
+          {
+            "label": "Chase",
+            "value": 2
+          },
+          {
+            "label": "Breathe",
+            "value": 3
+          },
+          {
+            "label": "Strobe",
+            "value": 4
+          },
+          {
+            "label": "Color Flow",
+            "value": 5
+          }
+        ],
+        "value": 0
+      },
+      {
+        "type": "input",
+        "id": 18,
+        "name": "G1 Phase",
+        "flow": "signal",
+        "data_type": "float",
+        "unit": "none",
+        "precision": 6,
+        "increment": 0.005,
+        "number_view": "slider",
+        "option_set_view": "buttons",
+        "is_multi_line": true,
+        "range": {
+          "min": 0.0,
+          "max": 1.0
+        },
+        "choices": null,
+        "value": 0.0
+      }
+    ]
+  },
+  {
+    "type": "group",
+    "id": 1792689443098,
+    "name": "Group 2",
+    "collapsed": false,
+    "inputs": [
+      {
+        "type": "input",
+        "id": 28,
+        "name": "G2 Slices",
+        "flow": "signal",
+        "data_type": "slice",
+        "unit": "none",
+        "precision": 6,
+        "increment": 0.005,
+        "number_view": "slider",
+        "option_set_view": "buttons",
+        "is_multi_line": true,
+        "value": [
+          null,
+          null,
+          null,
+          null,
+          null
+        ]
+      },
+      {
+        "type": "input",
+        "id": 30,
+        "name": "G2 Enabled",
+        "flow": "signal",
+        "data_type": "bool",
+        "unit": "none",
+        "precision": 6,
+        "increment": 0.005,
+        "number_view": "slider",
+        "option_set_view": "buttons",
+        "is_multi_line": true,
+        "bool_view": "toggle",
+        "value": true
+      },
+      {
+        "type": "input",
+        "id": 32,
+        "name": "G2 Top Left px",
+        "flow": "signal",
+        "data_type": "float",
+        "unit": "none",
+        "precision": 6,
+        "increment": 0.005,
+        "number_view": "slider",
+        "option_set_view": "buttons",
+        "is_multi_line": true,
+        "range": {
+          "min": 0.0,
+          "max": 1000.0
+        },
+        "choices": null,
+        "value": 80.0
+      },
+      {
+        "type": "input",
+        "id": 33,
+        "name": "G2 Top Right px",
+        "flow": "signal",
+        "data_type": "float",
+        "unit": "none",
+        "precision": 6,
+        "increment": 0.005,
+        "number_view": "slider",
+        "option_set_view": "buttons",
+        "is_multi_line": true,
+        "range": {
+          "min": 0.0,
+          "max": 1000.0
+        },
+        "choices": null,
+        "value": 80.0
+      },
+      {
+        "type": "input",
+        "id": 34,
+        "name": "G2 Bottom Left px",
+        "flow": "signal",
+        "data_type": "float",
+        "unit": "none",
+        "precision": 6,
+        "increment": 0.005,
+        "number_view": "slider",
+        "option_set_view": "buttons",
+        "is_multi_line": true,
+        "range": {
+          "min": 0.0,
+          "max": 1000.0
+        },
+        "choices": null,
+        "value": 80.0
+      },
+      {
+        "type": "input",
+        "id": 35,
+        "name": "G2 Bottom Right px",
+        "flow": "signal",
+        "data_type": "float",
+        "unit": "none",
+        "precision": 6,
+        "increment": 0.005,
+        "number_view": "slider",
+        "option_set_view": "buttons",
+        "is_multi_line": true,
+        "range": {
+          "min": 0.0,
+          "max": 1000.0
+        },
+        "choices": null,
+        "value": 80.0
+      },
+      {
+        "type": "input",
+        "id": 205,
+        "name": "G2 Corner Scale",
+        "flow": "signal",
+        "data_type": "float",
+        "unit": "none",
+        "precision": 6,
+        "increment": 0.005,
+        "number_view": "slider",
+        "option_set_view": "buttons",
+        "is_multi_line": true,
+        "range": {
+          "min": 0.0,
+          "max": 2.0
+        },
+        "choices": null,
+        "value": 1.0
+      },
+      {
+        "type": "input",
+        "id": 37,
+        "name": "G2 Stroke px",
+        "flow": "signal",
+        "data_type": "float",
+        "unit": "none",
+        "precision": 6,
+        "increment": 0.005,
+        "number_view": "slider",
+        "option_set_view": "buttons",
+        "is_multi_line": true,
+        "range": {
+          "min": 0.0,
+          "max": 200.0
+        },
+        "choices": null,
+        "value": 8.0
+      },
+      {
+        "type": "input",
+        "id": 38,
+        "name": "G2 Inset px",
+        "flow": "signal",
+        "data_type": "float",
+        "unit": "none",
+        "precision": 6,
+        "increment": 0.005,
+        "number_view": "slider",
+        "option_set_view": "buttons",
+        "is_multi_line": true,
+        "range": {
+          "min": -500.0,
+          "max": 500.0
+        },
+        "choices": null,
+        "value": 0.0
+      },
+      {
+        "type": "input",
+        "id": 39,
+        "name": "G2 Opacity",
+        "flow": "signal",
+        "data_type": "float",
+        "unit": "none",
+        "precision": 6,
+        "increment": 0.005,
+        "number_view": "slider",
+        "option_set_view": "buttons",
+        "is_multi_line": true,
+        "range": {
+          "min": 0.0,
+          "max": 1.0
+        },
+        "choices": null,
+        "value": 1.0
+      },
+      {
+        "type": "input",
+        "id": 40,
+        "name": "G2 Color",
+        "flow": "signal",
+        "data_type": "color",
+        "unit": "none",
+        "precision": 6,
+        "increment": 0.005,
+        "number_view": "slider",
+        "option_set_view": "buttons",
+        "is_multi_line": true,
+        "choices": null,
+        "value": {
+          "r": 1.0,
+          "g": 0.30000001192092896,
+          "b": 0.10000000149011612,
+          "a": 1.0
+        }
+      },
+      {
+        "type": "input",
+        "id": 42,
+        "name": "G2 Animation",
+        "flow": "attribute",
+        "data_type": "int",
+        "unit": "none",
+        "precision": 6,
+        "increment": 0.005,
+        "number_view": "slider",
+        "option_set_view": "buttons",
+        "is_multi_line": true,
+        "range": {
+          "min": 0,
+          "max": 5
+        },
+        "choices": [
+          {
+            "label": "Static",
+            "value": 0
+          },
+          {
+            "label": "Pulse",
+            "value": 1
+          },
+          {
+            "label": "Chase",
+            "value": 2
+          },
+          {
+            "label": "Breathe",
+            "value": 3
+          },
+          {
+            "label": "Strobe",
+            "value": 4
+          },
+          {
+            "label": "Color Flow",
+            "value": 5
+          }
+        ],
+        "value": 0
+      },
+      {
+        "type": "input",
+        "id": 41,
+        "name": "G2 Phase",
+        "flow": "signal",
+        "data_type": "float",
+        "unit": "none",
+        "precision": 6,
+        "increment": 0.005,
+        "number_view": "slider",
+        "option_set_view": "buttons",
+        "is_multi_line": true,
+        "range": {
+          "min": 0.0,
+          "max": 1.0
+        },
+        "choices": null,
+        "value": 0.25
+      }
+    ]
+  },
+  {
+    "type": "group",
+    "id": 1792689443971,
+    "name": "Group 3",
+    "collapsed": false,
+    "inputs": [
+      {
+        "type": "input",
+        "id": 51,
+        "name": "G3 Slices",
+        "flow": "signal",
+        "data_type": "slice",
+        "unit": "none",
+        "precision": 6,
+        "increment": 0.005,
+        "number_view": "slider",
+        "option_set_view": "buttons",
+        "is_multi_line": true,
+        "value": [
+          null,
+          null,
+          null,
+          null,
+          null
+        ]
+      },
+      {
+        "type": "input",
+        "id": 53,
+        "name": "G3 Enabled",
+        "flow": "signal",
+        "data_type": "bool",
+        "unit": "none",
+        "precision": 6,
+        "increment": 0.005,
+        "number_view": "slider",
+        "option_set_view": "buttons",
+        "is_multi_line": true,
+        "bool_view": "toggle",
+        "value": true
+      },
+      {
+        "type": "input",
+        "id": 55,
+        "name": "G3 Top Left px",
+        "flow": "signal",
+        "data_type": "float",
+        "unit": "none",
+        "precision": 6,
+        "increment": 0.005,
+        "number_view": "slider",
+        "option_set_view": "buttons",
+        "is_multi_line": true,
+        "range": {
+          "min": 0.0,
+          "max": 1000.0
+        },
+        "choices": null,
+        "value": 80.0
+      },
+      {
+        "type": "input",
+        "id": 56,
+        "name": "G3 Top Right px",
+        "flow": "signal",
+        "data_type": "float",
+        "unit": "none",
+        "precision": 6,
+        "increment": 0.005,
+        "number_view": "slider",
+        "option_set_view": "buttons",
+        "is_multi_line": true,
+        "range": {
+          "min": 0.0,
+          "max": 1000.0
+        },
+        "choices": null,
+        "value": 80.0
+      },
+      {
+        "type": "input",
+        "id": 57,
+        "name": "G3 Bottom Left px",
+        "flow": "signal",
+        "data_type": "float",
+        "unit": "none",
+        "precision": 6,
+        "increment": 0.005,
+        "number_view": "slider",
+        "option_set_view": "buttons",
+        "is_multi_line": true,
+        "range": {
+          "min": 0.0,
+          "max": 1000.0
+        },
+        "choices": null,
+        "value": 80.0
+      },
+      {
+        "type": "input",
+        "id": 58,
+        "name": "G3 Bottom Right px",
+        "flow": "signal",
+        "data_type": "float",
+        "unit": "none",
+        "precision": 6,
+        "increment": 0.005,
+        "number_view": "slider",
+        "option_set_view": "buttons",
+        "is_multi_line": true,
+        "range": {
+          "min": 0.0,
+          "max": 1000.0
+        },
+        "choices": null,
+        "value": 80.0
+      },
+      {
+        "type": "input",
+        "id": 207,
+        "name": "G3 Corner Scale",
+        "flow": "signal",
+        "data_type": "float",
+        "unit": "none",
+        "precision": 6,
+        "increment": 0.005,
+        "number_view": "slider",
+        "option_set_view": "buttons",
+        "is_multi_line": true,
+        "range": {
+          "min": 0.0,
+          "max": 2.0
+        },
+        "choices": null,
+        "value": 1.0
+      },
+      {
+        "type": "input",
+        "id": 60,
+        "name": "G3 Stroke px",
+        "flow": "signal",
+        "data_type": "float",
+        "unit": "none",
+        "precision": 6,
+        "increment": 0.005,
+        "number_view": "slider",
+        "option_set_view": "buttons",
+        "is_multi_line": true,
+        "range": {
+          "min": 0.0,
+          "max": 200.0
+        },
+        "choices": null,
+        "value": 8.0
+      },
+      {
+        "type": "input",
+        "id": 61,
+        "name": "G3 Inset px",
+        "flow": "signal",
+        "data_type": "float",
+        "unit": "none",
+        "precision": 6,
+        "increment": 0.005,
+        "number_view": "slider",
+        "option_set_view": "buttons",
+        "is_multi_line": true,
+        "range": {
+          "min": -500.0,
+          "max": 500.0
+        },
+        "choices": null,
+        "value": 0.0
+      },
+      {
+        "type": "input",
+        "id": 62,
+        "name": "G3 Opacity",
+        "flow": "signal",
+        "data_type": "float",
+        "unit": "none",
+        "precision": 6,
+        "increment": 0.005,
+        "number_view": "slider",
+        "option_set_view": "buttons",
+        "is_multi_line": true,
+        "range": {
+          "min": 0.0,
+          "max": 1.0
+        },
+        "choices": null,
+        "value": 1.0
+      },
+      {
+        "type": "input",
+        "id": 63,
+        "name": "G3 Color",
+        "flow": "signal",
+        "data_type": "color",
+        "unit": "none",
+        "precision": 6,
+        "increment": 0.005,
+        "number_view": "slider",
+        "option_set_view": "buttons",
+        "is_multi_line": true,
+        "choices": null,
+        "value": {
+          "r": 0.699999988079071,
+          "g": 0.20000000298023224,
+          "b": 1.0,
+          "a": 1.0
+        }
+      },
+      {
+        "type": "input",
+        "id": 65,
+        "name": "G3 Animation",
+        "flow": "attribute",
+        "data_type": "int",
+        "unit": "none",
+        "precision": 6,
+        "increment": 0.005,
+        "number_view": "slider",
+        "option_set_view": "buttons",
+        "is_multi_line": true,
+        "range": {
+          "min": 0,
+          "max": 5
+        },
+        "choices": [
+          {
+            "label": "Static",
+            "value": 0
+          },
+          {
+            "label": "Pulse",
+            "value": 1
+          },
+          {
+            "label": "Chase",
+            "value": 2
+          },
+          {
+            "label": "Breathe",
+            "value": 3
+          },
+          {
+            "label": "Strobe",
+            "value": 4
+          },
+          {
+            "label": "Color Flow",
+            "value": 5
+          }
+        ],
+        "value": 0
+      },
+      {
+        "type": "input",
+        "id": 64,
+        "name": "G3 Phase",
+        "flow": "signal",
+        "data_type": "float",
+        "unit": "none",
+        "precision": 6,
+        "increment": 0.005,
+        "number_view": "slider",
+        "option_set_view": "buttons",
+        "is_multi_line": true,
+        "range": {
+          "min": 0.0,
+          "max": 1.0
+        },
+        "choices": null,
+        "value": 0.5
+      }
+    ]
+  },
+  {
+    "type": "group",
+    "id": 1792689444857,
+    "name": "Group 4",
+    "collapsed": false,
+    "inputs": [
+      {
+        "type": "input",
+        "id": 74,
+        "name": "G4 Slices",
+        "flow": "signal",
+        "data_type": "slice",
+        "unit": "none",
+        "precision": 6,
+        "increment": 0.005,
+        "number_view": "slider",
+        "option_set_view": "buttons",
+        "is_multi_line": true,
+        "value": [
+          null,
+          null,
+          null,
+          null,
+          null
+        ]
+      },
+      {
+        "type": "input",
+        "id": 76,
+        "name": "G4 Enabled",
+        "flow": "signal",
+        "data_type": "bool",
+        "unit": "none",
+        "precision": 6,
+        "increment": 0.005,
+        "number_view": "slider",
+        "option_set_view": "buttons",
+        "is_multi_line": true,
+        "bool_view": "toggle",
+        "value": true
+      },
+      {
+        "type": "input",
+        "id": 78,
+        "name": "G4 Top Left px",
+        "flow": "signal",
+        "data_type": "float",
+        "unit": "none",
+        "precision": 6,
+        "increment": 0.005,
+        "number_view": "slider",
+        "option_set_view": "buttons",
+        "is_multi_line": true,
+        "range": {
+          "min": 0.0,
+          "max": 1000.0
+        },
+        "choices": null,
+        "value": 80.0
+      },
+      {
+        "type": "input",
+        "id": 79,
+        "name": "G4 Top Right px",
+        "flow": "signal",
+        "data_type": "float",
+        "unit": "none",
+        "precision": 6,
+        "increment": 0.005,
+        "number_view": "slider",
+        "option_set_view": "buttons",
+        "is_multi_line": true,
+        "range": {
+          "min": 0.0,
+          "max": 1000.0
+        },
+        "choices": null,
+        "value": 80.0
+      },
+      {
+        "type": "input",
+        "id": 80,
+        "name": "G4 Bottom Left px",
+        "flow": "signal",
+        "data_type": "float",
+        "unit": "none",
+        "precision": 6,
+        "increment": 0.005,
+        "number_view": "slider",
+        "option_set_view": "buttons",
+        "is_multi_line": true,
+        "range": {
+          "min": 0.0,
+          "max": 1000.0
+        },
+        "choices": null,
+        "value": 80.0
+      },
+      {
+        "type": "input",
+        "id": 81,
+        "name": "G4 Bottom Right px",
+        "flow": "signal",
+        "data_type": "float",
+        "unit": "none",
+        "precision": 6,
+        "increment": 0.005,
+        "number_view": "slider",
+        "option_set_view": "buttons",
+        "is_multi_line": true,
+        "range": {
+          "min": 0.0,
+          "max": 1000.0
+        },
+        "choices": null,
+        "value": 80.0
+      },
+      {
+        "type": "input",
+        "id": 209,
+        "name": "G4 Corner Scale",
+        "flow": "signal",
+        "data_type": "float",
+        "unit": "none",
+        "precision": 6,
+        "increment": 0.005,
+        "number_view": "slider",
+        "option_set_view": "buttons",
+        "is_multi_line": true,
+        "range": {
+          "min": 0.0,
+          "max": 2.0
+        },
+        "choices": null,
+        "value": 1.0
+      },
+      {
+        "type": "input",
+        "id": 83,
+        "name": "G4 Stroke px",
+        "flow": "signal",
+        "data_type": "float",
+        "unit": "none",
+        "precision": 6,
+        "increment": 0.005,
+        "number_view": "slider",
+        "option_set_view": "buttons",
+        "is_multi_line": true,
+        "range": {
+          "min": 0.0,
+          "max": 200.0
+        },
+        "choices": null,
+        "value": 8.0
+      },
+      {
+        "type": "input",
+        "id": 84,
+        "name": "G4 Inset px",
+        "flow": "signal",
+        "data_type": "float",
+        "unit": "none",
+        "precision": 6,
+        "increment": 0.005,
+        "number_view": "slider",
+        "option_set_view": "buttons",
+        "is_multi_line": true,
+        "range": {
+          "min": -500.0,
+          "max": 500.0
+        },
+        "choices": null,
+        "value": 0.0
+      },
+      {
+        "type": "input",
+        "id": 85,
+        "name": "G4 Opacity",
+        "flow": "signal",
+        "data_type": "float",
+        "unit": "none",
+        "precision": 6,
+        "increment": 0.005,
+        "number_view": "slider",
+        "option_set_view": "buttons",
+        "is_multi_line": true,
+        "range": {
+          "min": 0.0,
+          "max": 1.0
+        },
+        "choices": null,
+        "value": 1.0
+      },
+      {
+        "type": "input",
+        "id": 86,
+        "name": "G4 Color",
+        "flow": "signal",
+        "data_type": "color",
+        "unit": "none",
+        "precision": 6,
+        "increment": 0.005,
+        "number_view": "slider",
+        "option_set_view": "buttons",
+        "is_multi_line": true,
+        "choices": null,
+        "value": {
+          "r": 0.20000000298023224,
+          "g": 1.0,
+          "b": 0.4000000059604645,
+          "a": 1.0
+        }
+      },
+      {
+        "type": "input",
+        "id": 88,
+        "name": "G4 Animation",
+        "flow": "attribute",
+        "data_type": "int",
+        "unit": "none",
+        "precision": 6,
+        "increment": 0.005,
+        "number_view": "slider",
+        "option_set_view": "buttons",
+        "is_multi_line": true,
+        "range": {
+          "min": 0,
+          "max": 5
+        },
+        "choices": [
+          {
+            "label": "Static",
+            "value": 0
+          },
+          {
+            "label": "Pulse",
+            "value": 1
+          },
+          {
+            "label": "Chase",
+            "value": 2
+          },
+          {
+            "label": "Breathe",
+            "value": 3
+          },
+          {
+            "label": "Strobe",
+            "value": 4
+          },
+          {
+            "label": "Color Flow",
+            "value": 5
+          }
+        ],
+        "value": 0
+      },
+      {
+        "type": "input",
+        "id": 87,
+        "name": "G4 Phase",
+        "flow": "signal",
+        "data_type": "float",
+        "unit": "none",
+        "precision": 6,
+        "increment": 0.005,
+        "number_view": "slider",
+        "option_set_view": "buttons",
+        "is_multi_line": true,
+        "range": {
+          "min": 0.0,
+          "max": 1.0
+        },
+        "choices": null,
+        "value": 0.75
+      }
+    ]
+  }
+]

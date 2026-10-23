@@ -1,0 +1,109 @@
+{
+  "name": "Camera 2D",
+  "class_id": "77697265-8e76-4d11-8420-0a3f4cf72566",
+  "color": 0,
+  "main_inlet": null,
+  "main_outlet": "output",
+  "inlets": [
+    {
+      "id": "zoom",
+      "name": "Zoom",
+      "description": "Scales the visible area around its center.",
+      "bundle": {
+        "data_type": "float",
+        "flow": "signal",
+        "dimensions": []
+      },
+      "connectable": true,
+      "read_only": false,
+      "is_main": false,
+      "visible": true,
+      "value": 1.0,
+      "unit": "none",
+      "precision": 6,
+      "increment": 0.005,
+      "number_view": "slider",
+      "bool_view": "toggle",
+      "option_set_view": "buttons",
+      "is_multi_line": true,
+      "range": {
+        "min": 9.999999747378752e-05,
+        "max": null
+      },
+      "choices": null
+    },
+    {
+      "id": "transform",
+      "name": "Transformation",
+      "description": "Moves, rotates, and scales the camera.",
+      "bundle": {
+        "data_type": "transformation_2d",
+        "flow": "signal",
+        "dimensions": []
+      },
+      "connectable": true,
+      "read_only": false,
+      "is_main": false,
+      "visible": true,
+      "value": null,
+      "unit": "none",
+      "precision": 6,
+      "increment": 0.005,
+      "number_view": "slider",
+      "bool_view": "toggle",
+      "option_set_view": "buttons",
+      "is_multi_line": true
+    },
+    {
+      "id": "mode",
+      "name": "Mode",
+      "description": null,
+      "bundle": {
+        "data_type": "int",
+        "flow": "attribute",
+        "dimensions": []
+      },
+      "connectable": false,
+      "read_only": false,
+      "is_main": false,
+      "visible": false,
+      "value": 0,
+      "unit": "none",
+      "precision": 6,
+      "increment": 0.005,
+      "number_view": "slider",
+      "bool_view": "toggle",
+      "option_set_view": "buttons",
+      "is_multi_line": true,
+      "range": {
+        "min": 0,
+        "max": 1
+      },
+      "choices": [
+        {
+          "label": "Aspect Ratio",
+          "value": 0
+        },
+        {
+          "label": "Absolute",
+          "value": 1
+        }
+      ]
+    }
+  ],
+  "outlets": [
+    {
+      "id": "output",
+      "name": "Output",
+      "description": "The camera, fitted to the output.",
+      "bundle": {
+        "data_type": "camera_2d",
+        "flow": "signal",
+        "dimensions": []
+      },
+      "connectable": true,
+      "is_main": true,
+      "visible": true
+    }
+  ]
+}

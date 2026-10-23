@@ -1,0 +1,37 @@
+[
+  {
+    "string": "Failed to open patch.wire inside bundle",
+    "file_offset": "0x1cf76f0",
+    "rva": "0x1cf90f0",
+    "refs": []
+  },
+  {
+    "string": "patch.wire",
+    "file_offset": "0x1cf7718",
+    "rva": "0x1cf9118",
+    "refs": [
+      {
+        "rva": "0x17bf19",
+        "function_start": "0x18017be30",
+        "function_end": "0x18017c082"
+      },
+      {
+        "rva": "0x1c50d4",
+        "function_start": "0x1801c4fe0",
+        "function_end": "0x1801c5596"
+      }
+    ]
+  },
+  {
+    "string": "Compiled patch does not contain valid wire data",
+    "file_offset": "0x1cf8980",
+    "rva": "0x1cfa380",
+    "refs": []
+  },
+  {
+    "string": "failed to parse compiled patch JSON",
+    "file_offset": "0x1cf8a38",
+    "rva": "0x1cfa438",
+    "refs": []
+  }
+]

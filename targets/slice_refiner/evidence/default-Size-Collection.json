@@ -1,0 +1,238 @@
+{
+  "name": "Size",
+  "class_id": "77697265-a712-4c94-96ed-3a1a9756ea6a",
+  "color": 0,
+  "main_inlet": "container",
+  "main_outlet": "output0",
+  "inlets": [
+    {
+      "id": "container-type",
+      "name": "Collection Type",
+      "description": null,
+      "bundle": {
+        "data_type": "data_type",
+        "flow": "attribute",
+        "dimensions": []
+      },
+      "connectable": false,
+      "read_only": true,
+      "is_main": false,
+      "visible": false,
+      "value": "float",
+      "unit": "none",
+      "precision": 6,
+      "increment": 0.005,
+      "number_view": "slider",
+      "bool_view": "toggle",
+      "option_set_view": "buttons",
+      "is_multi_line": true,
+      "choices": [
+        {
+          "label": "Trigger",
+          "value": "trigger"
+        },
+        {
+          "label": "Float",
+          "value": "float"
+        },
+        {
+          "label": "Integer",
+          "value": "int"
+        },
+        {
+          "label": "Bool",
+          "value": "bool"
+        },
+        {
+          "label": "Float2",
+          "value": "float_2"
+        },
+        {
+          "label": "Float3",
+          "value": "float_3"
+        },
+        {
+          "label": "Float4",
+          "value": "float_4"
+        },
+        {
+          "label": "Color",
+          "value": "color"
+        },
+        {
+          "label": "String",
+          "value": "string"
+        },
+        {
+          "label": "Texture2d Channel",
+          "value": "texture_2d_r"
+        },
+        {
+          "label": "Texture2d RGBA",
+          "value": "texture_2d_rgba"
+        },
+        {
+          "label": "Material",
+          "value": "material"
+        },
+        {
+          "label": "Shape 2D",
+          "value": "procedural"
+        },
+        {
+          "label": "MIDI",
+          "value": "midi"
+        },
+        {
+          "label": "OSC",
+          "value": "osc"
+        },
+        {
+          "label": "Slice",
+          "value": "slice"
+        },
+        {
+          "label": "Geometry 2D",
+          "value": "geometry_2d"
+        },
+        {
+          "label": "Transformation 2D",
+          "value": "transformation_2d"
+        },
+        {
+          "label": "Mesh 2D",
+          "value": "mesh_2d"
+        },
+        {
+          "label": "Camera 2D",
+          "value": "camera_2d"
+        },
+        {
+          "label": "Box 2D",
+          "value": "box_2d"
+        },
+        {
+          "label": "Image Resource",
+          "value": "resource_image"
+        },
+        {
+          "label": "Video Resource",
+          "value": "resource_video"
+        },
+        {
+          "label": "ISF Resource",
+          "value": "resource_isf"
+        },
+        {
+          "label": "LUT 3D Resource",
+          "value": "resource_lut_3d"
+        }
+      ]
+    },
+    {
+      "id": "flow",
+      "name": "Flow",
+      "description": null,
+      "bundle": {
+        "data_type": "flow",
+        "flow": "attribute",
+        "dimensions": []
+      },
+      "connectable": false,
+      "read_only": true,
+      "is_main": false,
+      "visible": false,
+      "value": "event",
+      "unit": "none",
+      "precision": 6,
+      "increment": 0.005,
+      "number_view": "slider",
+      "bool_view": "toggle",
+      "option_set_view": "buttons",
+      "is_multi_line": true,
+      "choices": [
+        {
+          "label": "Event",
+          "value": "event"
+        },
+        {
+          "label": "Signal",
+          "value": "signal"
+        },
+        {
+          "label": "Attribute",
+          "value": "attribute"
+        }
+      ]
+    },
+    {
+      "id": "container-dimensions",
+      "name": "Collection Dimensions",
+      "description": null,
+      "bundle": {
+        "data_type": "int",
+        "flow": "attribute",
+        "dimensions": []
+      },
+      "connectable": false,
+      "read_only": true,
+      "is_main": false,
+      "visible": false,
+      "value": 1,
+      "unit": "none",
+      "precision": 6,
+      "increment": 0.005,
+      "number_view": "slider",
+      "bool_view": "toggle",
+      "option_set_view": "buttons",
+      "is_multi_line": true,
+      "range": {
+        "min": null,
+        "max": null
+      },
+      "choices": null
+    },
+    {
+      "id": "container",
+      "name": "Collection",
+      "description": "The collection to measure.",
+      "bundle": {
+        "data_type": "float",
+        "flow": "event",
+        "dimensions": []
+      },
+      "connectable": true,
+      "read_only": false,
+      "is_main": true,
+      "visible": true,
+      "value": 0.0,
+      "unit": "none",
+      "precision": 6,
+      "increment": 0.005,
+      "number_view": "slider",
+      "bool_view": "toggle",
+      "option_set_view": "buttons",
+      "is_multi_line": true,
+      "range": {
+        "min": null,
+        "max": null
+      },
+      "choices": null
+    }
+  ],
+  "outlets": [
+    {
+      "id": "output0",
+      "name": "Size",
+      "description": "The number of elements in the collection.",
+      "bundle": {
+        "data_type": "int",
+        "flow": "attribute",
+        "dimensions": []
+      },
+      "connectable": true,
+      "is_main": true,
+      "visible": true
+    }
+  ]
+}

@@ -1,0 +1,145 @@
+{
+  "name": "Bool In",
+  "class_id": "77697265-999c-4f8b-8b9d-3646dc68aa69",
+  "color": 0,
+  "main_inlet": "input",
+  "main_outlet": "output",
+  "inlets": [
+    {
+      "id": "instances",
+      "name": "Instances",
+      "description": null,
+      "bundle": {
+        "data_type": "int",
+        "flow": "attribute",
+        "dimensions": []
+      },
+      "connectable": false,
+      "read_only": true,
+      "is_main": false,
+      "visible": false,
+      "value": 1,
+      "unit": "none",
+      "precision": 6,
+      "increment": 0.005,
+      "number_view": "slider",
+      "bool_view": "toggle",
+      "option_set_view": "buttons",
+      "is_multi_line": true,
+      "range": {
+        "min": 1,
+        "max": null
+      },
+      "choices": null
+    },
+    {
+      "id": "flow",
+      "name": "Flow",
+      "description": null,
+      "bundle": {
+        "data_type": "flow",
+        "flow": "attribute",
+        "dimensions": []
+      },
+      "connectable": false,
+      "read_only": false,
+      "is_main": false,
+      "visible": false,
+      "value": "signal",
+      "unit": "none",
+      "precision": 6,
+      "increment": 0.005,
+      "number_view": "slider",
+      "bool_view": "toggle",
+      "option_set_view": "buttons",
+      "is_multi_line": true,
+      "choices": [
+        {
+          "label": "Event",
+          "value": "event"
+        },
+        {
+          "label": "Signal",
+          "value": "signal"
+        },
+        {
+          "label": "Attribute",
+          "value": "attribute"
+        }
+      ]
+    },
+    {
+      "id": "input",
+      "name": "Value",
+      "description": null,
+      "bundle": {
+        "data_type": "bool",
+        "flow": "signal",
+        "dimensions": []
+      },
+      "connectable": false,
+      "read_only": false,
+      "is_main": true,
+      "visible": false,
+      "value": false,
+      "unit": "none",
+      "precision": 6,
+      "increment": 0.005,
+      "number_view": "slider",
+      "bool_view": "toggle",
+      "option_set_view": "buttons",
+      "is_multi_line": true
+    },
+    {
+      "id": "bool-view",
+      "name": "Bool View",
+      "description": null,
+      "bundle": {
+        "data_type": "int",
+        "flow": "attribute",
+        "dimensions": []
+      },
+      "connectable": false,
+      "read_only": false,
+      "is_main": false,
+      "visible": false,
+      "value": 0,
+      "unit": "none",
+      "precision": 6,
+      "increment": 0.005,
+      "number_view": "slider",
+      "bool_view": "toggle",
+      "option_set_view": "buttons",
+      "is_multi_line": true,
+      "range": {
+        "min": 0,
+        "max": 1
+      },
+      "choices": [
+        {
+          "label": "Toggle",
+          "value": 0
+        },
+        {
+          "label": "Piano Button",
+          "value": 1
+        }
+      ]
+    }
+  ],
+  "outlets": [
+    {
+      "id": "output",
+      "name": "Output",
+      "description": null,
+      "bundle": {
+        "data_type": "bool",
+        "flow": "signal",
+        "dimensions": []
+      },
+      "connectable": true,
+      "is_main": true,
+      "visible": true
+    }
+  ]
+}

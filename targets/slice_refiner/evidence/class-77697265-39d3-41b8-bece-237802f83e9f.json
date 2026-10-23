@@ -1,0 +1,11 @@
+{
+  "id": "77697265-39d3-41b8-bece-237802f83e9f",
+  "name": "Slice Info",
+  "description": "Outputs a slice's name, pixel dimensions, center, rotation, shape, and mask.",
+  "category": "Slice",
+  "tags": [
+    "slice",
+    "mask"
+  ],
+  "version": 1
+}

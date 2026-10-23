@@ -1,0 +1,147 @@
+{
+  "name": "Box 2D",
+  "class_id": "676d9dbb-0197-4b23-a215-73d8467ad98e",
+  "color": 0,
+  "main_inlet": null,
+  "main_outlet": "output0",
+  "inlets": [
+    {
+      "id": "flow",
+      "name": "Flow",
+      "description": null,
+      "bundle": {
+        "data_type": "flow",
+        "flow": "attribute",
+        "dimensions": []
+      },
+      "connectable": false,
+      "read_only": false,
+      "is_main": false,
+      "visible": false,
+      "value": "signal",
+      "unit": "none",
+      "precision": 6,
+      "increment": 0.005,
+      "number_view": "slider",
+      "bool_view": "toggle",
+      "option_set_view": "buttons",
+      "is_multi_line": true,
+      "choices": [
+        {
+          "label": "Event",
+          "value": "event"
+        },
+        {
+          "label": "Signal",
+          "value": "signal"
+        },
+        {
+          "label": "Attribute",
+          "value": "attribute"
+        }
+      ]
+    },
+    {
+      "id": "instances",
+      "name": "Instances",
+      "description": null,
+      "bundle": {
+        "data_type": "int",
+        "flow": "attribute",
+        "dimensions": []
+      },
+      "connectable": false,
+      "read_only": false,
+      "is_main": false,
+      "visible": false,
+      "value": 1,
+      "unit": "none",
+      "precision": 6,
+      "increment": 0.005,
+      "number_view": "slider",
+      "bool_view": "toggle",
+      "option_set_view": "buttons",
+      "is_multi_line": true,
+      "range": {
+        "min": 1,
+        "max": null
+      },
+      "choices": null
+    },
+    {
+      "id": "input0",
+      "name": "Min",
+      "description": "The bottom-left corner.",
+      "bundle": {
+        "data_type": "float_2",
+        "flow": "signal",
+        "dimensions": []
+      },
+      "connectable": true,
+      "read_only": false,
+      "is_main": false,
+      "visible": true,
+      "value": {
+        "x": 0.0,
+        "y": 0.0
+      },
+      "unit": "none",
+      "precision": 6,
+      "increment": 0.005,
+      "number_view": "slider",
+      "bool_view": "toggle",
+      "option_set_view": "buttons",
+      "is_multi_line": true,
+      "range": {
+        "min": null,
+        "max": null
+      },
+      "choices": null
+    },
+    {
+      "id": "input1",
+      "name": "Max",
+      "description": "The top-right corner.",
+      "bundle": {
+        "data_type": "float_2",
+        "flow": "signal",
+        "dimensions": []
+      },
+      "connectable": true,
+      "read_only": false,
+      "is_main": false,
+      "visible": true,
+      "value": {
+        "x": 1.0,
+        "y": 1.0
+      },
+      "unit": "none",
+      "precision": 6,
+      "increment": 0.005,
+      "number_view": "slider",
+      "bool_view": "toggle",
+      "option_set_view": "buttons",
+      "is_multi_line": true,
+      "range": {
+        "min": null,
+        "max": null
+      },
+      "choices": null
+    }
+  ],
+  "outlets": [
+    {
+      "id": "output0",
+      "name": "Output",
+      "description": "The box spanning from Min to Max.",
+      "bundle": {
+        "data_type": "box_2d",
+        "flow": "signal",
+        "dimensions": []
+      },
+      "connectable": true,
+      "is_main": true,
+      "visible": true
+    }
+  ]
+}

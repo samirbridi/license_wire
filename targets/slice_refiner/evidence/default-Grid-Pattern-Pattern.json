@@ -1,0 +1,181 @@
+{
+  "name": "Grid Pattern",
+  "class_id": "33227265-633d-4354-bed8-73cdee0337c7",
+  "color": 0,
+  "main_inlet": null,
+  "main_outlet": "pattern",
+  "inlets": [
+    {
+      "id": "pattern-type",
+      "name": "Type",
+      "description": null,
+      "bundle": {
+        "data_type": "data_type",
+        "flow": "attribute",
+        "dimensions": []
+      },
+      "connectable": false,
+      "read_only": false,
+      "is_main": false,
+      "visible": false,
+      "value": "float_2",
+      "unit": "none",
+      "precision": 6,
+      "increment": 0.005,
+      "number_view": "slider",
+      "bool_view": "toggle",
+      "option_set_view": "buttons",
+      "is_multi_line": true,
+      "choices": [
+        {
+          "label": "Float2",
+          "value": "float_2"
+        },
+        {
+          "label": "Box 2D",
+          "value": "box_2d"
+        }
+      ]
+    },
+    {
+      "id": "flow",
+      "name": "Flow",
+      "description": null,
+      "bundle": {
+        "data_type": "flow",
+        "flow": "attribute",
+        "dimensions": []
+      },
+      "connectable": false,
+      "read_only": false,
+      "is_main": false,
+      "visible": false,
+      "value": "signal",
+      "unit": "none",
+      "precision": 6,
+      "increment": 0.005,
+      "number_view": "slider",
+      "bool_view": "toggle",
+      "option_set_view": "buttons",
+      "is_multi_line": true,
+      "choices": [
+        {
+          "label": "Event",
+          "value": "event"
+        },
+        {
+          "label": "Signal",
+          "value": "signal"
+        },
+        {
+          "label": "Attribute",
+          "value": "attribute"
+        }
+      ]
+    },
+    {
+      "id": "rows",
+      "name": "Rows",
+      "description": null,
+      "bundle": {
+        "data_type": "int",
+        "flow": "attribute",
+        "dimensions": []
+      },
+      "connectable": true,
+      "read_only": false,
+      "is_main": false,
+      "visible": true,
+      "value": 5,
+      "unit": "none",
+      "precision": 6,
+      "increment": 0.005,
+      "number_view": "slider",
+      "bool_view": "toggle",
+      "option_set_view": "buttons",
+      "is_multi_line": true,
+      "range": {
+        "min": 1,
+        "max": null
+      },
+      "choices": null
+    },
+    {
+      "id": "columns",
+      "name": "Columns",
+      "description": null,
+      "bundle": {
+        "data_type": "int",
+        "flow": "attribute",
+        "dimensions": []
+      },
+      "connectable": true,
+      "read_only": false,
+      "is_main": false,
+      "visible": true,
+      "value": 5,
+      "unit": "none",
+      "precision": 6,
+      "increment": 0.005,
+      "number_view": "slider",
+      "bool_view": "toggle",
+      "option_set_view": "buttons",
+      "is_multi_line": true,
+      "range": {
+        "min": 1,
+        "max": null
+      },
+      "choices": null
+    },
+    {
+      "id": "size",
+      "name": "Size",
+      "description": "Size of the grid on each axis.",
+      "bundle": {
+        "data_type": "float_2",
+        "flow": "signal",
+        "dimensions": []
+      },
+      "connectable": true,
+      "read_only": false,
+      "is_main": false,
+      "visible": true,
+      "value": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "unit": "none",
+      "precision": 6,
+      "increment": 0.005,
+      "number_view": "slider",
+      "bool_view": "toggle",
+      "option_set_view": "buttons",
+      "is_multi_line": true,
+      "range": {
+        "min": null,
+        "max": null
+      },
+      "choices": null
+    }
+  ],
+  "outlets": [
+    {
+      "id": "pattern",
+      "name": "Output",
+      "description": "The grid of 2D points or boxes.",
+      "bundle": {
+        "data_type": "float_2",
+        "flow": "signal",
+        "dimensions": [
+          {
+            "type": "static",
+            "value": 25
+          }
+        ]
+      },
+      "connectable": true,
+      "is_main": true,
+      "visible": true
+    }
+  ]
+}

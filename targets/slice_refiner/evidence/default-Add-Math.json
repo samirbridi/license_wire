@@ -1,0 +1,286 @@
+{
+  "name": "Add",
+  "class_id": "77697265-a9af-4cb4-b10f-3968b36bb63b",
+  "color": 0,
+  "main_inlet": null,
+  "main_outlet": "output0",
+  "inlets": [
+    {
+      "id": "flow",
+      "name": "Flow",
+      "description": null,
+      "bundle": {
+        "data_type": "flow",
+        "flow": "attribute",
+        "dimensions": []
+      },
+      "connectable": false,
+      "read_only": true,
+      "is_main": false,
+      "visible": false,
+      "value": "event",
+      "unit": "none",
+      "precision": 6,
+      "increment": 0.005,
+      "number_view": "slider",
+      "bool_view": "toggle",
+      "option_set_view": "buttons",
+      "is_multi_line": true,
+      "choices": null
+    },
+    {
+      "id": "size",
+      "name": "Inputs",
+      "description": null,
+      "bundle": {
+        "data_type": "int",
+        "flow": "attribute",
+        "dimensions": []
+      },
+      "connectable": false,
+      "read_only": false,
+      "is_main": false,
+      "visible": false,
+      "value": 2,
+      "unit": "none",
+      "precision": 6,
+      "increment": 0.005,
+      "number_view": "spinner",
+      "bool_view": "toggle",
+      "option_set_view": "buttons",
+      "is_multi_line": true,
+      "range": {
+        "min": 2,
+        "max": 25
+      },
+      "choices": null
+    },
+    {
+      "id": "input0",
+      "name": "Left",
+      "description": "The first value to add",
+      "bundle": {
+        "data_type": "float",
+        "flow": "event",
+        "dimensions": []
+      },
+      "connectable": true,
+      "read_only": false,
+      "is_main": false,
+      "visible": true,
+      "value": 0.0,
+      "unit": "none",
+      "precision": 6,
+      "increment": 0.005,
+      "number_view": "slider",
+      "bool_view": "toggle",
+      "option_set_view": "buttons",
+      "is_multi_line": true,
+      "range": {
+        "min": null,
+        "max": null
+      },
+      "choices": null
+    },
+    {
+      "id": "input0-dimensions",
+      "name": "Input 0 Dimensions",
+      "description": null,
+      "bundle": {
+        "data_type": "int",
+        "flow": "attribute",
+        "dimensions": []
+      },
+      "connectable": false,
+      "read_only": true,
+      "is_main": false,
+      "visible": false,
+      "value": 1,
+      "unit": "none",
+      "precision": 6,
+      "increment": 0.005,
+      "number_view": "slider",
+      "bool_view": "toggle",
+      "option_set_view": "buttons",
+      "is_multi_line": true,
+      "range": {
+        "min": null,
+        "max": null
+      },
+      "choices": null
+    },
+    {
+      "id": "type0",
+      "name": "Input Type 0",
+      "description": null,
+      "bundle": {
+        "data_type": "data_type",
+        "flow": "attribute",
+        "dimensions": []
+      },
+      "connectable": false,
+      "read_only": true,
+      "is_main": false,
+      "visible": false,
+      "value": "float",
+      "unit": "none",
+      "precision": 6,
+      "increment": 0.005,
+      "number_view": "slider",
+      "bool_view": "toggle",
+      "option_set_view": "buttons",
+      "is_multi_line": true,
+      "choices": [
+        {
+          "label": "Float",
+          "value": "float"
+        },
+        {
+          "label": "Integer",
+          "value": "int"
+        },
+        {
+          "label": "Float2",
+          "value": "float_2"
+        },
+        {
+          "label": "Float3",
+          "value": "float_3"
+        },
+        {
+          "label": "Float4",
+          "value": "float_4"
+        },
+        {
+          "label": "Texture2d Channel",
+          "value": "texture_2d_r"
+        },
+        {
+          "label": "Texture2d RGBA",
+          "value": "texture_2d_rgba"
+        }
+      ]
+    },
+    {
+      "id": "input1",
+      "name": "Right",
+      "description": "An additional value to add",
+      "bundle": {
+        "data_type": "float",
+        "flow": "event",
+        "dimensions": []
+      },
+      "connectable": true,
+      "read_only": false,
+      "is_main": false,
+      "visible": true,
+      "value": 0.0,
+      "unit": "none",
+      "precision": 6,
+      "increment": 0.005,
+      "number_view": "slider",
+      "bool_view": "toggle",
+      "option_set_view": "buttons",
+      "is_multi_line": true,
+      "range": {
+        "min": null,
+        "max": null
+      },
+      "choices": null
+    },
+    {
+      "id": "input1-dimensions",
+      "name": "Input 1 Dimensions",
+      "description": null,
+      "bundle": {
+        "data_type": "int",
+        "flow": "attribute",
+        "dimensions": []
+      },
+      "connectable": false,
+      "read_only": true,
+      "is_main": false,
+      "visible": false,
+      "value": 1,
+      "unit": "none",
+      "precision": 6,
+      "increment": 0.005,
+      "number_view": "slider",
+      "bool_view": "toggle",
+      "option_set_view": "buttons",
+      "is_multi_line": true,
+      "range": {
+        "min": null,
+        "max": null
+      },
+      "choices": null
+    },
+    {
+      "id": "type1",
+      "name": "Input Type 1",
+      "description": null,
+      "bundle": {
+        "data_type": "data_type",
+        "flow": "attribute",
+        "dimensions": []
+      },
+      "connectable": false,
+      "read_only": true,
+      "is_main": false,
+      "visible": false,
+      "value": "float",
+      "unit": "none",
+      "precision": 6,
+      "increment": 0.005,
+      "number_view": "slider",
+      "bool_view": "toggle",
+      "option_set_view": "buttons",
+      "is_multi_line": true,
+      "choices": [
+        {
+          "label": "Float",
+          "value": "float"
+        },
+        {
+          "label": "Integer",
+          "value": "int"
+        },
+        {
+          "label": "Float2",
+          "value": "float_2"
+        },
+        {
+          "label": "Float3",
+          "value": "float_3"
+        },
+        {
+          "label": "Float4",
+          "value": "float_4"
+        },
+        {
+          "label": "Texture2d Channel",
+          "value": "texture_2d_r"
+        },
+        {
+          "label": "Texture2d RGBA",
+          "value": "texture_2d_rgba"
+        }
+      ]
+    }
+  ],
+  "outlets": [
+    {
+      "id": "output0",
+      "name": "Output",
+      "description": "The sum of all input values",
+      "bundle": {
+        "data_type": "float",
+        "flow": "event",
+        "dimensions": []
+      },
+      "connectable": true,
+      "is_main": true,
+      "visible": true
+    }
+  ]
+}

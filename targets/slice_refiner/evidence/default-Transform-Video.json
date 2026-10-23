@@ -1,0 +1,480 @@
+{
+  "name": "Transform",
+  "class_id": "77697265-9225-4009-9d2d-5f898e94cc33",
+  "color": 0,
+  "main_inlet": "input",
+  "main_outlet": "output0",
+  "inlets": [
+    {
+      "id": "input-type",
+      "name": "Input Type",
+      "description": null,
+      "bundle": {
+        "data_type": "data_type",
+        "flow": "attribute",
+        "dimensions": []
+      },
+      "connectable": false,
+      "read_only": true,
+      "is_main": false,
+      "visible": false,
+      "value": "float_2",
+      "unit": "none",
+      "precision": 6,
+      "increment": 0.005,
+      "number_view": "slider",
+      "bool_view": "toggle",
+      "option_set_view": "buttons",
+      "is_multi_line": true,
+      "choices": [
+        {
+          "label": "Float2",
+          "value": "float_2"
+        },
+        {
+          "label": "Float3",
+          "value": "float_3"
+        },
+        {
+          "label": "Texture2d Channel",
+          "value": "texture_2d_r"
+        },
+        {
+          "label": "Texture2d RGBA",
+          "value": "texture_2d_rgba"
+        },
+        {
+          "label": "Shape 2D",
+          "value": "procedural"
+        },
+        {
+          "label": "Slice",
+          "value": "slice"
+        },
+        {
+          "label": "Transformation 2D",
+          "value": "transformation_2d"
+        },
+        {
+          "label": "Mesh 2D",
+          "value": "mesh_2d"
+        },
+        {
+          "label": "Camera 2D",
+          "value": "camera_2d"
+        },
+        {
+          "label": "Box 2D",
+          "value": "box_2d"
+        }
+      ]
+    },
+    {
+      "id": "translation-type",
+      "name": "Translation Type",
+      "description": null,
+      "bundle": {
+        "data_type": "data_type",
+        "flow": "attribute",
+        "dimensions": []
+      },
+      "connectable": false,
+      "read_only": true,
+      "is_main": false,
+      "visible": false,
+      "value": "float_2",
+      "unit": "none",
+      "precision": 6,
+      "increment": 0.005,
+      "number_view": "slider",
+      "bool_view": "toggle",
+      "option_set_view": "buttons",
+      "is_multi_line": true,
+      "choices": [
+        {
+          "label": "Float2",
+          "value": "float_2"
+        },
+        {
+          "label": "Float3",
+          "value": "float_3"
+        }
+      ]
+    },
+    {
+      "id": "scale-type",
+      "name": "Scale Type",
+      "description": null,
+      "bundle": {
+        "data_type": "data_type",
+        "flow": "attribute",
+        "dimensions": []
+      },
+      "connectable": false,
+      "read_only": true,
+      "is_main": false,
+      "visible": false,
+      "value": "float_2",
+      "unit": "none",
+      "precision": 6,
+      "increment": 0.005,
+      "number_view": "slider",
+      "bool_view": "toggle",
+      "option_set_view": "buttons",
+      "is_multi_line": true,
+      "choices": [
+        {
+          "label": "Float",
+          "value": "float"
+        },
+        {
+          "label": "Float2",
+          "value": "float_2"
+        },
+        {
+          "label": "Float3",
+          "value": "float_3"
+        }
+      ]
+    },
+    {
+      "id": "anchor-type",
+      "name": "Anchor Type",
+      "description": null,
+      "bundle": {
+        "data_type": "data_type",
+        "flow": "attribute",
+        "dimensions": []
+      },
+      "connectable": false,
+      "read_only": true,
+      "is_main": false,
+      "visible": false,
+      "value": "float_2",
+      "unit": "none",
+      "precision": 6,
+      "increment": 0.005,
+      "number_view": "slider",
+      "bool_view": "toggle",
+      "option_set_view": "buttons",
+      "is_multi_line": true,
+      "choices": [
+        {
+          "label": "Float",
+          "value": "float"
+        },
+        {
+          "label": "Float2",
+          "value": "float_2"
+        },
+        {
+          "label": "Float3",
+          "value": "float_3"
+        }
+      ]
+    },
+    {
+      "id": "scale-anchor-type",
+      "name": "Scale Anchor Type",
+      "description": null,
+      "bundle": {
+        "data_type": "data_type",
+        "flow": "attribute",
+        "dimensions": []
+      },
+      "connectable": false,
+      "read_only": true,
+      "is_main": false,
+      "visible": false,
+      "value": "bool",
+      "unit": "none",
+      "precision": 6,
+      "increment": 0.005,
+      "number_view": "slider",
+      "bool_view": "toggle",
+      "option_set_view": "buttons",
+      "is_multi_line": true,
+      "choices": [
+        {
+          "label": "Bool",
+          "value": "bool"
+        }
+      ]
+    },
+    {
+      "id": "rotation-type",
+      "name": "Rotation Type",
+      "description": null,
+      "bundle": {
+        "data_type": "data_type",
+        "flow": "attribute",
+        "dimensions": []
+      },
+      "connectable": false,
+      "read_only": true,
+      "is_main": false,
+      "visible": false,
+      "value": "float",
+      "unit": "none",
+      "precision": 6,
+      "increment": 0.005,
+      "number_view": "slider",
+      "bool_view": "toggle",
+      "option_set_view": "buttons",
+      "is_multi_line": true,
+      "choices": [
+        {
+          "label": "Float",
+          "value": "float"
+        },
+        {
+          "label": "Float3",
+          "value": "float_3"
+        }
+      ]
+    },
+    {
+      "id": "flow",
+      "name": "Flow",
+      "description": null,
+      "bundle": {
+        "data_type": "flow",
+        "flow": "attribute",
+        "dimensions": []
+      },
+      "connectable": false,
+      "read_only": true,
+      "is_main": false,
+      "visible": false,
+      "value": "event",
+      "unit": "none",
+      "precision": 6,
+      "increment": 0.005,
+      "number_view": "slider",
+      "bool_view": "toggle",
+      "option_set_view": "buttons",
+      "is_multi_line": true,
+      "choices": [
+        {
+          "label": "Event",
+          "value": "event"
+        },
+        {
+          "label": "Signal",
+          "value": "signal"
+        }
+      ]
+    },
+    {
+      "id": "instances",
+      "name": "Instances",
+      "description": null,
+      "bundle": {
+        "data_type": "int",
+        "flow": "attribute",
+        "dimensions": []
+      },
+      "connectable": false,
+      "read_only": true,
+      "is_main": false,
+      "visible": false,
+      "value": 1,
+      "unit": "none",
+      "precision": 6,
+      "increment": 0.005,
+      "number_view": "slider",
+      "bool_view": "toggle",
+      "option_set_view": "buttons",
+      "is_multi_line": true,
+      "range": {
+        "min": 1,
+        "max": null
+      },
+      "choices": null
+    },
+    {
+      "id": "input",
+      "name": "Input",
+      "description": "The object to transform.",
+      "bundle": {
+        "data_type": "float_2",
+        "flow": "event",
+        "dimensions": []
+      },
+      "connectable": true,
+      "read_only": false,
+      "is_main": true,
+      "visible": true,
+      "value": {
+        "x": 0.0,
+        "y": 0.0
+      },
+      "unit": "none",
+      "precision": 6,
+      "increment": 0.005,
+      "number_view": "slider",
+      "bool_view": "toggle",
+      "option_set_view": "buttons",
+      "is_multi_line": true,
+      "range": {
+        "min": null,
+        "max": null
+      },
+      "choices": null
+    },
+    {
+      "id": "translation",
+      "name": "Translation",
+      "description": "Moves the input by the given offset.",
+      "bundle": {
+        "data_type": "float_2",
+        "flow": "event",
+        "dimensions": []
+      },
+      "connectable": true,
+      "read_only": false,
+      "is_main": false,
+      "visible": true,
+      "value": {
+        "x": 0.0,
+        "y": 0.0
+      },
+      "unit": "none",
+      "precision": 6,
+      "increment": 0.005,
+      "number_view": "slider",
+      "bool_view": "toggle",
+      "option_set_view": "buttons",
+      "is_multi_line": true,
+      "range": {
+        "min": null,
+        "max": null
+      },
+      "choices": null
+    },
+    {
+      "id": "scale",
+      "name": "Scale",
+      "description": "Scales the input by the given factor.",
+      "bundle": {
+        "data_type": "float_2",
+        "flow": "event",
+        "dimensions": []
+      },
+      "connectable": true,
+      "read_only": false,
+      "is_main": false,
+      "visible": true,
+      "value": {
+        "x": 1.0,
+        "y": 1.0
+      },
+      "unit": "none",
+      "precision": 6,
+      "increment": 0.005,
+      "number_view": "slider",
+      "bool_view": "toggle",
+      "option_set_view": "buttons",
+      "is_multi_line": true,
+      "range": {
+        "min": null,
+        "max": null
+      },
+      "choices": null
+    },
+    {
+      "id": "anchor",
+      "name": "Anchor",
+      "description": "The pivot point around which rotation and optionally scaling are applied.",
+      "bundle": {
+        "data_type": "float_2",
+        "flow": "event",
+        "dimensions": []
+      },
+      "connectable": true,
+      "read_only": false,
+      "is_main": false,
+      "visible": true,
+      "value": {
+        "x": 0.0,
+        "y": 0.0
+      },
+      "unit": "none",
+      "precision": 6,
+      "increment": 0.005,
+      "number_view": "slider",
+      "bool_view": "toggle",
+      "option_set_view": "buttons",
+      "is_multi_line": true,
+      "range": {
+        "min": null,
+        "max": null
+      },
+      "choices": null
+    },
+    {
+      "id": "scale-anchor",
+      "name": "Scale Anchor",
+      "description": "When enabled, scaling is also applied relative to the anchor point.",
+      "bundle": {
+        "data_type": "bool",
+        "flow": "event",
+        "dimensions": []
+      },
+      "connectable": true,
+      "read_only": false,
+      "is_main": false,
+      "visible": false,
+      "value": true,
+      "unit": "none",
+      "precision": 6,
+      "increment": 0.005,
+      "number_view": "slider",
+      "bool_view": "toggle",
+      "option_set_view": "buttons",
+      "is_multi_line": true
+    },
+    {
+      "id": "rotation",
+      "name": "Rotation",
+      "description": "Rotates the input counter-clockwise around the anchor point, in turns (1.0 = full rotation).",
+      "bundle": {
+        "data_type": "float",
+        "flow": "event",
+        "dimensions": []
+      },
+      "connectable": true,
+      "read_only": false,
+      "is_main": false,
+      "visible": true,
+      "value": 0.0,
+      "unit": "none",
+      "precision": 6,
+      "increment": 0.005,
+      "number_view": "slider",
+      "bool_view": "toggle",
+      "option_set_view": "buttons",
+      "is_multi_line": true,
+      "range": {
+        "min": null,
+        "max": null
+      },
+      "choices": null
+    }
+  ],
+  "outlets": [
+    {
+      "id": "output0",
+      "name": "Output",
+      "description": "The transformed object.",
+      "bundle": {
+        "data_type": "float_2",
+        "flow": "event",
+        "dimensions": []
+      },
+      "connectable": true,
+      "is_main": true,
+      "visible": true
+    }
+  ]
+}

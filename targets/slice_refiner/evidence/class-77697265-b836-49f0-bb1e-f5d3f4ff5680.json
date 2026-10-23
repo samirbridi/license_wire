@@ -1,0 +1,10 @@
+{
+  "id": "77697265-b836-49f0-bb1e-f5d3f4ff5680",
+  "name": "Round",
+  "description": "Grows a shape outward by a given amount, rounding its corners in the process.",
+  "category": "Shape",
+  "tags": [
+    "video"
+  ],
+  "version": 1
+}

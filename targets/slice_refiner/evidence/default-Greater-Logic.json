@@ -1,0 +1,280 @@
+{
+  "name": "Greater",
+  "class_id": "77697265-3a24-4ef8-a45e-affb4358d7cf",
+  "color": 0,
+  "main_inlet": null,
+  "main_outlet": "output0",
+  "inlets": [
+    {
+      "id": "input0-type",
+      "name": "Left Type",
+      "description": null,
+      "bundle": {
+        "data_type": "data_type",
+        "flow": "attribute",
+        "dimensions": []
+      },
+      "connectable": false,
+      "read_only": true,
+      "is_main": false,
+      "visible": false,
+      "value": "float",
+      "unit": "none",
+      "precision": 6,
+      "increment": 0.005,
+      "number_view": "slider",
+      "bool_view": "toggle",
+      "option_set_view": "buttons",
+      "is_multi_line": true,
+      "choices": [
+        {
+          "label": "Float",
+          "value": "float"
+        },
+        {
+          "label": "Integer",
+          "value": "int"
+        },
+        {
+          "label": "Bool",
+          "value": "bool"
+        },
+        {
+          "label": "Float2",
+          "value": "float_2"
+        },
+        {
+          "label": "Float3",
+          "value": "float_3"
+        },
+        {
+          "label": "Float4",
+          "value": "float_4"
+        },
+        {
+          "label": "Texture2d Channel",
+          "value": "texture_2d_r"
+        },
+        {
+          "label": "Texture2d RGBA",
+          "value": "texture_2d_rgba"
+        }
+      ]
+    },
+    {
+      "id": "input1-type",
+      "name": "Right Type",
+      "description": null,
+      "bundle": {
+        "data_type": "data_type",
+        "flow": "attribute",
+        "dimensions": []
+      },
+      "connectable": false,
+      "read_only": true,
+      "is_main": false,
+      "visible": false,
+      "value": "float",
+      "unit": "none",
+      "precision": 6,
+      "increment": 0.005,
+      "number_view": "slider",
+      "bool_view": "toggle",
+      "option_set_view": "buttons",
+      "is_multi_line": true,
+      "choices": [
+        {
+          "label": "Float",
+          "value": "float"
+        },
+        {
+          "label": "Integer",
+          "value": "int"
+        },
+        {
+          "label": "Bool",
+          "value": "bool"
+        },
+        {
+          "label": "Float2",
+          "value": "float_2"
+        },
+        {
+          "label": "Float3",
+          "value": "float_3"
+        },
+        {
+          "label": "Float4",
+          "value": "float_4"
+        },
+        {
+          "label": "Texture2d Channel",
+          "value": "texture_2d_r"
+        },
+        {
+          "label": "Texture2d RGBA",
+          "value": "texture_2d_rgba"
+        }
+      ]
+    },
+    {
+      "id": "flow",
+      "name": "Flow",
+      "description": null,
+      "bundle": {
+        "data_type": "flow",
+        "flow": "attribute",
+        "dimensions": []
+      },
+      "connectable": false,
+      "read_only": true,
+      "is_main": false,
+      "visible": false,
+      "value": "event",
+      "unit": "none",
+      "precision": 6,
+      "increment": 0.005,
+      "number_view": "slider",
+      "bool_view": "toggle",
+      "option_set_view": "buttons",
+      "is_multi_line": true,
+      "choices": [
+        {
+          "label": "Event",
+          "value": "event"
+        },
+        {
+          "label": "Signal",
+          "value": "signal"
+        },
+        {
+          "label": "Attribute",
+          "value": "attribute"
+        }
+      ]
+    },
+    {
+      "id": "input0-dimensions",
+      "name": "Left Dimensions",
+      "description": null,
+      "bundle": {
+        "data_type": "int",
+        "flow": "attribute",
+        "dimensions": []
+      },
+      "connectable": false,
+      "read_only": true,
+      "is_main": false,
+      "visible": false,
+      "value": 1,
+      "unit": "none",
+      "precision": 6,
+      "increment": 0.005,
+      "number_view": "slider",
+      "bool_view": "toggle",
+      "option_set_view": "buttons",
+      "is_multi_line": true,
+      "range": {
+        "min": null,
+        "max": null
+      },
+      "choices": null
+    },
+    {
+      "id": "input1-dimensions",
+      "name": "Right Dimensions",
+      "description": null,
+      "bundle": {
+        "data_type": "int",
+        "flow": "attribute",
+        "dimensions": []
+      },
+      "connectable": false,
+      "read_only": true,
+      "is_main": false,
+      "visible": false,
+      "value": 1,
+      "unit": "none",
+      "precision": 6,
+      "increment": 0.005,
+      "number_view": "slider",
+      "bool_view": "toggle",
+      "option_set_view": "buttons",
+      "is_multi_line": true,
+      "range": {
+        "min": null,
+        "max": null
+      },
+      "choices": null
+    },
+    {
+      "id": "input0",
+      "name": "Left",
+      "description": "The value to compare.",
+      "bundle": {
+        "data_type": "float",
+        "flow": "event",
+        "dimensions": []
+      },
+      "connectable": true,
+      "read_only": false,
+      "is_main": false,
+      "visible": true,
+      "value": 0.0,
+      "unit": "none",
+      "precision": 6,
+      "increment": 0.005,
+      "number_view": "slider",
+      "bool_view": "toggle",
+      "option_set_view": "buttons",
+      "is_multi_line": true,
+      "range": {
+        "min": null,
+        "max": null
+      },
+      "choices": null
+    },
+    {
+      "id": "input1",
+      "name": "Right",
+      "description": "The threshold to compare against.",
+      "bundle": {
+        "data_type": "float",
+        "flow": "event",
+        "dimensions": []
+      },
+      "connectable": true,
+      "read_only": false,
+      "is_main": false,
+      "visible": true,
+      "value": 0.0,
+      "unit": "none",
+      "precision": 6,
+      "increment": 0.005,
+      "number_view": "slider",
+      "bool_view": "toggle",
+      "option_set_view": "buttons",
+      "is_multi_line": true,
+      "range": {
+        "min": null,
+        "max": null
+      },
+      "choices": null
+    }
+  ],
+  "outlets": [
+    {
+      "id": "output0",
+      "name": "Output",
+      "description": "True when the left value is greater than the right.",
+      "bundle": {
+        "data_type": "bool",
+        "flow": "event",
+        "dimensions": []
+      },
+      "connectable": true,
+      "is_main": true,
+      "visible": true
+    }
+  ]
+}

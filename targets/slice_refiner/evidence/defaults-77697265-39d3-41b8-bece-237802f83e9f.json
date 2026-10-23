@@ -1,0 +1,151 @@
+{
+  "name": "Slice Info",
+  "class_id": "77697265-39d3-41b8-bece-237802f83e9f",
+  "color": 0,
+  "main_inlet": "input",
+  "main_outlet": null,
+  "inlets": [
+    {
+      "id": "instances",
+      "name": "Instances",
+      "description": null,
+      "bundle": {
+        "data_type": "int",
+        "flow": "attribute",
+        "dimensions": []
+      },
+      "connectable": false,
+      "read_only": true,
+      "is_main": false,
+      "visible": false,
+      "value": 1,
+      "unit": "none",
+      "precision": 6,
+      "increment": 0.005,
+      "number_view": "slider",
+      "bool_view": "toggle",
+      "option_set_view": "buttons",
+      "is_multi_line": true,
+      "range": {
+        "min": 1,
+        "max": null
+      },
+      "choices": null
+    },
+    {
+      "id": "input",
+      "name": "Slice",
+      "description": "The slice whose properties to output.",
+      "bundle": {
+        "data_type": "slice",
+        "flow": "signal",
+        "dimensions": []
+      },
+      "connectable": true,
+      "read_only": false,
+      "is_main": true,
+      "visible": true,
+      "value": null,
+      "unit": "none",
+      "precision": 6,
+      "increment": 0.005,
+      "number_view": "slider",
+      "bool_view": "toggle",
+      "option_set_view": "buttons",
+      "is_multi_line": true
+    }
+  ],
+  "outlets": [
+    {
+      "id": "name",
+      "name": "Name",
+      "description": "The slice's name.",
+      "bundle": {
+        "data_type": "string",
+        "flow": "signal",
+        "dimensions": []
+      },
+      "connectable": true,
+      "is_main": false,
+      "visible": true
+    },
+    {
+      "id": "dimension",
+      "name": "Dimension",
+      "description": "Width and height in pixels, after transform scaling.",
+      "bundle": {
+        "data_type": "float_2",
+        "flow": "signal",
+        "dimensions": []
+      },
+      "connectable": true,
+      "is_main": false,
+      "visible": true
+    },
+    {
+      "id": "center",
+      "name": "Center",
+      "description": "The slice's transformed center.",
+      "bundle": {
+        "data_type": "float_2",
+        "flow": "signal",
+        "dimensions": []
+      },
+      "connectable": true,
+      "is_main": false,
+      "visible": true
+    },
+    {
+      "id": "rotation",
+      "name": "Rotation",
+      "description": "The slice's total rotation, in turns.",
+      "bundle": {
+        "data_type": "float",
+        "flow": "signal",
+        "dimensions": []
+      },
+      "connectable": true,
+      "is_main": false,
+      "visible": true
+    },
+    {
+      "id": "shape",
+      "name": "Shape",
+      "description": "The slice's shape.",
+      "bundle": {
+        "data_type": "procedural",
+        "flow": "signal",
+        "dimensions": []
+      },
+      "connectable": true,
+      "is_main": false,
+      "visible": true
+    },
+    {
+      "id": "has-mask",
+      "name": "Has Mask",
+      "description": "True when the slice has a mask.",
+      "bundle": {
+        "data_type": "bool",
+        "flow": "signal",
+        "dimensions": []
+      },
+      "connectable": true,
+      "is_main": false,
+      "visible": true
+    },
+    {
+      "id": "mask",
+      "name": "Mask",
+      "description": "The slice's mask.",
+      "bundle": {
+        "data_type": "procedural",
+        "flow": "signal",
+        "dimensions": []
+      },
+      "connectable": true,
+      "is_main": false,
+      "visible": true
+    }
+  ]
+}

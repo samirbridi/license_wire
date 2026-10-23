@@ -1,0 +1,62 @@
+{
+  "name": "Transport Info",
+  "class_id": "77697265-66b1-4c28-a5a9-1f64026d769b",
+  "color": 0,
+  "main_inlet": null,
+  "main_outlet": null,
+  "inlets": [],
+  "outlets": [
+    {
+      "id": "bpm",
+      "name": "BPM",
+      "description": "The current tempo, in beats per minute.",
+      "bundle": {
+        "data_type": "float",
+        "flow": "signal",
+        "dimensions": []
+      },
+      "connectable": true,
+      "is_main": false,
+      "visible": true
+    },
+    {
+      "id": "beat-count",
+      "name": "Beat Count",
+      "description": "Quarter-note beats per bar, derived from the time signature.",
+      "bundle": {
+        "data_type": "float",
+        "flow": "signal",
+        "dimensions": []
+      },
+      "connectable": true,
+      "is_main": false,
+      "visible": true
+    },
+    {
+      "id": "numerator",
+      "name": "Numerator",
+      "description": "Time signature numerator.",
+      "bundle": {
+        "data_type": "float",
+        "flow": "signal",
+        "dimensions": []
+      },
+      "connectable": true,
+      "is_main": false,
+      "visible": true
+    },
+    {
+      "id": "denominator",
+      "name": "Denominator",
+      "description": "Time signature denominator.",
+      "bundle": {
+        "data_type": "float",
+        "flow": "signal",
+        "dimensions": []
+      },
+      "connectable": true,
+      "is_main": false,
+      "visible": true
+    }
+  ]
+}

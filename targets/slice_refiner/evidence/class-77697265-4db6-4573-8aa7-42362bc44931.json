@@ -1,0 +1,11 @@
+{
+  "id": "77697265-4db6-4573-8aa7-42362bc44931",
+  "name": "Rectangle",
+  "description": "Outputs a filled rectangle centered at the origin, with optional per-corner rounding.",
+  "category": "Shape",
+  "tags": [
+    "video",
+    "generator"
+  ],
+  "version": 2
+}

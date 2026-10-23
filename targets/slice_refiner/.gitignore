@@ -1,0 +1,8 @@
+evidence/.npm-cache/
+evidence/raw-bundle/
+evidence/ghidra-user/
+scripts/.deps/
+*.log
+reconstructed/releases/
+evidence/build-verification/
+evidence/wire-api-operations.jsonl
