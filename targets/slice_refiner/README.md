@@ -2,7 +2,7 @@
 
 Reconstrução independente em Resolume Wire, baseada na análise do **SLICE REFINER v2.0**, de kpt hippo.
 Formato preservado: fonte editável `.wire` e efeito compilado `.cwired`.
-Versão calculada pelos commits: **v0.1.0 (build 1)**. Compilação: **PENDENTE**. QA no Wire: **PASS**.
+Versão calculada pelos commits: **v0.2.0 (build 0002)**. Compilação: **PASS**. QA no Wire: **PASS**.
 
 ## O que foi entregue
 
@@ -75,7 +75,7 @@ Dados: `evidence/core-benchmark.json`; método: `notes/06_validation.md`.
 
 ## Estado Atual e Próximos Passos
 
-Análise estrutural concluída, nova fonte implementada, QA Wire **PASS**, build **PENDENTE**.
+Análise estrutural concluída, nova fonte implementada, QA Wire **PASS**, build **PASS**.
 Próximo passo de operação: instalar o efeito em um projeto de teste do Arena, atribuir os slices reais,
 verificar rotação/overlap e observar FPS/GPU na resolução do show. Depois disso, avaliar presets adicionais.
 Não foi feita publicação no Acervo, upload ou substituição do original.

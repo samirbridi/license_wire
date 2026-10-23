@@ -22,7 +22,7 @@ A IoU alpha binária de um retângulo foi aproximadamente 0,994; diferenças de 
 O ensaio com as duas pipelines no mesmo grafo foi rejeitado e está em core-benchmark-mixed-invalid.json,
 com valid_for_performance_comparison=false. Não usar esse arquivo como ganho de performance.
 
-Compilação: **PENDENTE**. O recibo evidence/build-receipt.json registra comando, exit code, SHA-256,
+Compilação: **PASS**. O recibo evidence/build-receipt.json registra comando, exit code, SHA-256,
 versão do compilador, commit da fonte e equivalência do grafo serializado após compilar.
 O ZIP de entrega exclui o original e sua fonte recuperada. A checagem de contêiner não demonstra playback.
 Arena fechado na consulta ao conector; execução do `.cwired` no Arena, slices reais, rotação e sobreposição

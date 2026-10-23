@@ -1,0 +1,22 @@
+{
+  "checks": {
+    "original_unchanged": true,
+    "evidence_copy_unchanged": true,
+    "artifact_hash": true,
+    "editable_hash": true,
+    "package_hash": true,
+    "package_crc": true,
+    "package_only_own_release": true,
+    "compiler_success": true
+  },
+  "pass": true,
+  "package_files": [
+    "Slice Refine Pro by Mizin v0.2.0.wire",
+    "Slice Refine Pro by Mizin v0.2.0.cwired",
+    "README.md",
+    "CHANGELOG.md",
+    "VERSION",
+    "BUILD.json"
+  ],
+  "artifact_bytes": 184755
+}

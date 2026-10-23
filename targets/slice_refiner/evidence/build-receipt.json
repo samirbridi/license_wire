@@ -1,0 +1,42 @@
+{
+  "version": "v0.2.0 (build 0002)",
+  "source_commit": "2dcdc26bdcaa8e6066f13c72128e3c6aa4312797",
+  "compiler": "C:\\Program Files\\Resolume Wire\\Wire.exe",
+  "compiler_version": "7.28.1.26535",
+  "editable": "D:\\REA - ENGENHARIA REVERSA\\targets\\slice_refiner\\reconstructed\\releases\\v0.2.0-build0002\\Slice Refine Pro by Mizin v0.2.0.wire",
+  "artifact": "D:\\REA - ENGENHARIA REVERSA\\targets\\slice_refiner\\reconstructed\\releases\\v0.2.0-build0002\\Slice Refine Pro by Mizin v0.2.0.cwired",
+  "editable_sha256": "f3c2c698588ab52bd7a6b1267cfa49d934762b1299b0e4f8091e2c3513f22b2d",
+  "status": "PASS",
+  "command": [
+    "C:\\Program Files\\Resolume Wire\\Wire.exe",
+    "compile",
+    "D:\\REA - ENGENHARIA REVERSA\\targets\\slice_refiner\\reconstructed\\releases\\v0.2.0-build0002\\Slice Refine Pro by Mizin v0.2.0.wire",
+    "--output",
+    "D:\\REA - ENGENHARIA REVERSA\\targets\\slice_refiner\\reconstructed\\releases\\v0.2.0-build0002\\Slice Refine Pro by Mizin v0.2.0.cwired"
+  ],
+  "exit_code": 0,
+  "sha256": "343799445e76cb415fa4ab1ed2757f11b844b48a7a2232370291286f43bc0e08",
+  "bytes": 184755,
+  "nodes": 233,
+  "connections": 331,
+  "bundle": {
+    "container_sha256": "343799445e76cb415fa4ab1ed2757f11b844b48a7a2232370291286f43bc0e08",
+    "version": 1,
+    "entry_count": 1,
+    "table_size": 20,
+    "nonce_hex": "95a026a53507f331",
+    "cipher": "Salsa20/20, absolute file offset",
+    "key_derivation": "master XOR BLAKE2b-256(sourceeffectmixer) for .cwired",
+    "entries": [
+      {
+        "name": "patch.wire",
+        "offset": 128,
+        "size": 184627,
+        "sha256": "2de4bb3af8974ff41b1bbc31b0bd8e0cae3dd967680d1b7b21eb7ffcee455bf6"
+      }
+    ]
+  },
+  "arena_playback": "PENDING",
+  "package": "D:\\REA - ENGENHARIA REVERSA\\targets\\slice_refiner\\reconstructed\\releases\\v0.2.0-build0002\\Slice Refine Pro by Mizin v0.2.0.zip",
+  "package_sha256": "5e538271ed3dc6131d240ba93b70e64a494b1dc1327992b74891664917b70def"
+}

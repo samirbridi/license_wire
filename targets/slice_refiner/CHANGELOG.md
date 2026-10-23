@@ -1,14 +1,20 @@
-# 📜 CHANGELOG - slice_refiner
+# CHANGELOG - Slice Refiner
 
-Todas as descobertas, módulos dissecados e correções desta análise são registrados aqui.
-Formato de versão obrigatório: `vX.Y.Z (build XXXX)`.
+## v0.2.0 (build 0002) - 2026-10-22
 
----
+### 💥 Breaking Changes
 
-## v0.1.0 (build 1) - 2026-10-22
+- Nenhum.
 
 ### ✨ Features
-- feat: inicializa ambiente isolado para o alvo slice_refiner
+
+- feat: reconstroi Slice Refine Pro com geometria 2D e controles por grupo (`2dcdc26bdcaa8e6066f13c72128e3c6aa4312797`)
+
+### 🐛 Fixes
+
+- Nenhum.
 
 ### ⚡ Improvements
-- improve: cria estrutura padronizada de diretórios (binaries, evidence, ghidra, notes, scripts, reconstructed)
+
+- Nenhum.
+
