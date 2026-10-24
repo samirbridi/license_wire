@@ -1098,5 +1098,24 @@
     ],
     "date": "2026-10-23",
     "build_status": "PASS"
+  },
+  {
+    "display": "v0.29.2 (build 0062)",
+    "previous": "v0.29.1 (build 0061)",
+    "source_commit": "12cd311630c31ea82d9061179c84d00cef1eee8a",
+    "commits": [
+      {
+        "sha": "e75f4873257e97ba909678ba24ad9256b61e544b",
+        "subject": "improve: registra build 0061 nao publicado (janela solta do rotulo Mudo detectada no teste de atualizacao)",
+        "kind": "improve"
+      },
+      {
+        "sha": "12cd311630c31ea82d9061179c84d00cef1eee8a",
+        "subject": "fix: rotulo Mudo do Preview nao abre mais como janela solta na inicializacao",
+        "kind": "fix"
+      }
+    ],
+    "date": "2026-10-23",
+    "build_status": "PASS"
   }
 ]

@@ -1,17 +1,17 @@
 {
-  "display": "v0.29.1 (build 0061)",
-  "previous": "v0.29.0 (build 0060)",
-  "source_commit": "2ed79aac0b5e571352ea87ee522aeb741e273a3e",
+  "display": "v0.29.2 (build 0062)",
+  "previous": "v0.29.1 (build 0061)",
+  "source_commit": "12cd311630c31ea82d9061179c84d00cef1eee8a",
   "commits": [
     {
-      "sha": "f9ee7675ce36093cee924adeb4e3ba4c0e17f440",
-      "subject": "improve: registra publicacao do build 0060 com escuta do Preview e frame rate do projeto",
+      "sha": "e75f4873257e97ba909678ba24ad9256b61e544b",
+      "subject": "improve: registra build 0061 nao publicado (janela solta do rotulo Mudo detectada no teste de atualizacao)",
       "kind": "improve"
     },
     {
-      "sha": "2ed79aac0b5e571352ea87ee522aeb741e273a3e",
-      "subject": "improve: botao de ouvir o Preview com alto-falante ligado e cortado conforme o estado",
-      "kind": "improve"
+      "sha": "12cd311630c31ea82d9061179c84d00cef1eee8a",
+      "subject": "fix: rotulo Mudo do Preview nao abre mais como janela solta na inicializacao",
+      "kind": "fix"
     }
   ],
   "date": "2026-10-23",

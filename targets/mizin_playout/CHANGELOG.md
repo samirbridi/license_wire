@@ -1,5 +1,19 @@
 # CHANGELOG — Mizin Playout
 
+## v0.29.2 (build 0062) - 2026-10-23
+
+### 💥 Breaking Changes
+- None.
+
+### ✨ Features
+- None.
+
+### 🐛 Fixes
+- fix: rotulo Mudo do Preview nao abre mais como janela solta na inicializacao (12cd311630c31ea82d9061179c84d00cef1eee8a)
+
+### ⚡ Improvements
+- improve: registra build 0061 nao publicado (janela solta do rotulo Mudo detectada no teste de atualizacao) (e75f4873257e97ba909678ba24ad9256b61e544b)
+
 ## v0.29.1 (build 0061) - 2026-10-23
 
 ### 💥 Breaking Changes
