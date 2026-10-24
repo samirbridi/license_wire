@@ -1,5 +1,19 @@
 # CHANGELOG — Mizin Playout
 
+## v0.29.5 (build 0065) - 2026-10-24
+
+### 💥 Breaking Changes
+- None.
+
+### ✨ Features
+- None.
+
+### 🐛 Fixes
+- fix: monitor web envia no maximo um quadro por intervalo da taxa do projeto (b78980e7a3b0c688f18bcd5d01aec5293a866c9f)
+
+### ⚡ Improvements
+- improve: registra build 0064 nao publicado (monitor web passou da taxa do projeto no teste de pacote) (06bd810526f28dea846e0af39254e31df3ca62c4)
+
 ## v0.29.4 (build 0064) - 2026-10-24
 
 ### 💥 Breaking Changes

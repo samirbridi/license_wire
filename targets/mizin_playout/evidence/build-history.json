@@ -1155,5 +1155,24 @@
     ],
     "date": "2026-10-24",
     "build_status": "PASS"
+  },
+  {
+    "display": "v0.29.5 (build 0065)",
+    "previous": "v0.29.4 (build 0064)",
+    "source_commit": "b78980e7a3b0c688f18bcd5d01aec5293a866c9f",
+    "commits": [
+      {
+        "sha": "06bd810526f28dea846e0af39254e31df3ca62c4",
+        "subject": "improve: registra build 0064 nao publicado (monitor web passou da taxa do projeto no teste de pacote)",
+        "kind": "improve"
+      },
+      {
+        "sha": "b78980e7a3b0c688f18bcd5d01aec5293a866c9f",
+        "subject": "fix: monitor web envia no maximo um quadro por intervalo da taxa do projeto",
+        "kind": "fix"
+      }
+    ],
+    "date": "2026-10-24",
+    "build_status": "PASS"
   }
 ]

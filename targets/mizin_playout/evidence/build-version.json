@@ -1,17 +1,17 @@
 {
-  "display": "v0.29.4 (build 0064)",
-  "previous": "v0.29.3 (build 0063)",
-  "source_commit": "2d6547616cbb705154539408a84c1388b02bb20e",
+  "display": "v0.29.5 (build 0065)",
+  "previous": "v0.29.4 (build 0064)",
+  "source_commit": "b78980e7a3b0c688f18bcd5d01aec5293a866c9f",
   "commits": [
     {
-      "sha": "2792b255c63b7e3f2fe62e9c14d9d3342c3bae88",
-      "subject": "improve: registra publicacao do build 0063 com icones de escuta do Preview e cadencia do monitor web",
+      "sha": "06bd810526f28dea846e0af39254e31df3ca62c4",
+      "subject": "improve: registra build 0064 nao publicado (monitor web passou da taxa do projeto no teste de pacote)",
       "kind": "improve"
     },
     {
-      "sha": "2d6547616cbb705154539408a84c1388b02bb20e",
-      "subject": "improve: tutorial e guia com passo Ajuste o projeto (frame rate) e configuracoes com o frame rate em primeiro",
-      "kind": "improve"
+      "sha": "b78980e7a3b0c688f18bcd5d01aec5293a866c9f",
+      "subject": "fix: monitor web envia no maximo um quadro por intervalo da taxa do projeto",
+      "kind": "fix"
     }
   ],
   "date": "2026-10-24",
