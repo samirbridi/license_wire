@@ -1,5 +1,21 @@
 [
   {
+    "version": "v0.29.3 (build 0063)",
+    "date": "2026-10-23",
+    "notes": {
+      "en": [
+        "Preview listening button now shows its state: a crossed-out speaker while the Preview is silent and a lit speaker (accent colour) while you are listening; the tooltip says what a click will do.",
+        "Fix (since 0.29.0): a small \"Muted\" window could flash at startup and capture the first close request, so the app ignored closing right after opening; a new interface check guards against stray windows.",
+        "Web monitor keeps its cadence: when no new frame arrives in time it repeats the last one, and the graphics-card encoder no longer waits a whole frame for each output (lower latency, steadier frame rate)."
+      ],
+      "pt-BR": [
+        "O botão de ouvir o Preview agora mostra o estado: alto-falante cortado enquanto o Preview está mudo e alto-falante aceso (cor de destaque) enquanto você está ouvindo; a dica diz o que o clique fará.",
+        "Correção (desde a 0.29.0): uma janelinha \"Mudo\" podia piscar na abertura e capturar o primeiro pedido de fechar, fazendo o app ignorar o fechamento logo depois de abrir; uma nova verificação da interface impede janelas soltas.",
+        "O monitor web mantém a cadência: se um quadro novo não chega a tempo ele repete o último, e o codificador da placa de vídeo não espera mais um quadro inteiro por saída (menos atraso e taxa mais estável)."
+      ]
+    }
+  },
+  {
     "version": "v0.29.0 (build 0060)",
     "date": "2026-10-22",
     "notes": {

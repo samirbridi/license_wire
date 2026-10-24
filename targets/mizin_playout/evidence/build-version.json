@@ -1,16 +1,16 @@
 {
-  "display": "v0.29.2 (build 0062)",
-  "previous": "v0.29.1 (build 0061)",
-  "source_commit": "12cd311630c31ea82d9061179c84d00cef1eee8a",
+  "display": "v0.29.3 (build 0063)",
+  "previous": "v0.29.2 (build 0062)",
+  "source_commit": "3739b6af09fb670363d60507ff98afc534797cf5",
   "commits": [
     {
-      "sha": "e75f4873257e97ba909678ba24ad9256b61e544b",
-      "subject": "improve: registra build 0061 nao publicado (janela solta do rotulo Mudo detectada no teste de atualizacao)",
+      "sha": "14bf5b7865269b07a7c50ffe962c776dddd43eb8",
+      "subject": "improve: registra build 0062 nao publicado (cadencia do monitor web sob carga no teste de pacote)",
       "kind": "improve"
     },
     {
-      "sha": "12cd311630c31ea82d9061179c84d00cef1eee8a",
-      "subject": "fix: rotulo Mudo do Preview nao abre mais como janela solta na inicializacao",
+      "sha": "3739b6af09fb670363d60507ff98afc534797cf5",
+      "subject": "fix: monitor web mantem a cadencia repetindo quadros e codificador da placa sem espera de um quadro inteiro",
       "kind": "fix"
     }
   ],

@@ -1,5 +1,19 @@
 # CHANGELOG — Mizin Playout
 
+## v0.29.3 (build 0063) - 2026-10-23
+
+### 💥 Breaking Changes
+- None.
+
+### ✨ Features
+- None.
+
+### 🐛 Fixes
+- fix: monitor web mantem a cadencia repetindo quadros e codificador da placa sem espera de um quadro inteiro (3739b6af09fb670363d60507ff98afc534797cf5)
+
+### ⚡ Improvements
+- improve: registra build 0062 nao publicado (cadencia do monitor web sob carga no teste de pacote) (14bf5b7865269b07a7c50ffe962c776dddd43eb8)
+
 ## v0.29.2 (build 0062) - 2026-10-23
 
 ### 💥 Breaking Changes
