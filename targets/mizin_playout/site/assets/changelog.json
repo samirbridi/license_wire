@@ -1,5 +1,23 @@
 [
   {
+    "version": "v0.29.6 (build 0066)",
+    "date": "2026-10-24",
+    "notes": {
+      "en": [
+        "Tutorial and in-app guide (F1): new step \"Set up the project\" — choose the Project frame rate (Settings → Playback) before building the show, with suggested rates per kind of event.",
+        "Texts updated: the Preview is no longer described as always muted (it can be heard with Listen to Preview).",
+        "Web monitor never exceeds the project frame rate: at most one picture per tick, always the newest (a new frame or a repeat of the last one).",
+        "Uninstaller: when the app file is still locked for a moment after closing (antivirus scan), it retries for a few seconds instead of reporting that Mizin Playout is open."
+      ],
+      "pt-BR": [
+        "Tutorial e guia do app (F1): novo passo \"Ajuste o projeto\" — escolha o Frame rate do projeto (Configurações → Reprodução) antes de montar o show, com taxas sugeridas por tipo de evento.",
+        "Textos atualizados: a Prévia não é mais descrita como sempre muda (dá para ouvi-la com Ouvir o Preview).",
+        "O monitor web nunca passa do frame rate do projeto: no máximo uma imagem por intervalo, sempre a mais recente (quadro novo ou repetição do último).",
+        "Desinstalador: se o arquivo do app ainda estiver bloqueado por um instante depois de fechar (verificação do antivírus), ele tenta de novo por alguns segundos em vez de dizer que o Mizin Playout está aberto."
+      ]
+    }
+  },
+  {
     "version": "v0.29.3 (build 0063)",
     "date": "2026-10-23",
     "notes": {

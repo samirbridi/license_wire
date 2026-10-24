@@ -1,5 +1,19 @@
 # CHANGELOG — Mizin Playout
 
+## v0.29.6 (build 0066) - 2026-10-24
+
+### 💥 Breaking Changes
+- None.
+
+### ✨ Features
+- None.
+
+### 🐛 Fixes
+- fix: desinstalador tenta remover o executavel por ate 5 s antes de acusar app aberto (fd6934c6bc0c3e2f2c0d3261d6dca779282b3578)
+
+### ⚡ Improvements
+- improve: registra build 0065 nao publicado (desinstalador encontrou o executavel ainda bloqueado) (e36f6855ec40a9a4056bbdec8b06aa87a3051e13)
+
 ## v0.29.5 (build 0065) - 2026-10-24
 
 ### 💥 Breaking Changes
