@@ -136,21 +136,23 @@ private:
             width_=size.width();height_=size.height();bitrate_=bitrate;hardware_=videoReady&&video.hardware();*keyframe_=true;
             std::lock_guard lock(statsMutex_);encoderError_=videoReady?QString():video.error();encoderName_=video.name();
         };
-        QImage canvas,last;double lastVideo=-1,audioClock=-1;std::vector<float> pcm;
+        QImage canvas,last;double lastVideo=-1,audioClock=-1;std::vector<float> pcm;qint64 lastTick=-1;bool fresh=false;
         for(;;){
             QImage image;std::deque<AudioPacket> audio;bool reset=false;
             {std::unique_lock lock(mutex_);wake_.wait_for(lock,std::chrono::milliseconds(qMax(5,int(500/webFrameRate()))),[this]{return stopping_||hasPending_||!audio_.empty();});if(stopping_)break;
                 if(hasPending_){image=std::move(pending_);hasPending_=false;}audio.swap(audio_);reset=std::exchange(resetAudio_,false);}
-            const double now=seconds();
-            // Keep the cadence: while playing, a tick without a new frame (GUI busy, slower source) repeats the last one;
-            // paused/black Programs still repeat every 0.4 s so joining viewers get a picture.
-            if(image.isNull()&&!last.isNull()&&now-lastVideo>(playing_.load()?1.2/webFrameRate():.4))image=last;
+            const double now=seconds(),rate=webFrameRate();const qint64 tick=qint64(std::floor(now*rate));
+            // Cadence: at most one picture per tick of the web rate, always the newest. A tick without a new frame (GUI busy,
+            // slower source) repeats the last one; paused/black Programs repeat every 0.4 s so joining viewers get a picture.
+            if(!image.isNull()){last=image;fresh=true;}
+            const bool due=!last.isNull()&&tick!=lastTick&&(fresh||now-lastVideo>(playing_.load()?1.0/rate:.4));
+            image=due?last:QImage();if(due){fresh=false;lastTick=tick;}
             // The 16x9 black placeholder (nothing on air) keeps the current size instead of shrinking the stream.
             if(!image.isNull()&&image.size()!=QSize(16,9))source=image.size();
             if(!image.isNull()&&(quality!=quality_->load()||fps_!=int(std::lround(webFrameRate()))||!videoReady||video.failed()||streamSize(quality_->load(),source)!=QSize(width_.load(),height_.load()))){quality=quality_->load();prepare(streamSize(quality,source));}
             if(!image.isNull()&&videoReady){
                 const int W=width_.load(),H=height_.load();if(canvas.size()!=QSize(W,H))canvas=QImage(W,H,QImage::Format_RGB32);
-                last=image;if(image.size()==QSize(W,H))canvas=image.format()==QImage::Format_RGB32?image:image.convertToFormat(QImage::Format_RGB32); // already the stream size: no scaling pass
+                if(image.size()==QSize(W,H))canvas=image.format()==QImage::Format_RGB32?image:image.convertToFormat(QImage::Format_RGB32); // already the stream size: no scaling pass
                 else{if(canvas.size()!=QSize(W,H)||canvas.isDetached()==false)canvas=QImage(W,H,QImage::Format_RGB32);canvas.fill(Qt::black);QPainter painter(&canvas);painter.setRenderHint(QPainter::SmoothPixmapTransform);const QSize fit=image.size().scaled(W,H,Qt::KeepAspectRatio);painter.drawImage(QRect(QPoint((W-fit.width())/2,(H-fit.height())/2),fit),image);}
                 const bool force=keyframe_->exchange(false);bool key=false;QElapsedTimer timer;timer.start();const QByteArray unit=video.encode(canvas,qint64(now*1e6),force,&key);encodeUs_=timer.nsecsElapsed()/1000;
                 if(!unit.isEmpty()){++encoded_;bytes_+=unit.size();if(key)++keyframes_;lastVideo=qMax(now,lastVideo+.001);for(const auto& viewer:snapshot())if(viewer->videoOpen)send(viewer->video,unit,lastVideo);}

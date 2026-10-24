@@ -1,10 +1,12 @@
 {
   "en": [
     "Tutorial and in-app guide (F1): new step \"Set up the project\" — choose the Project frame rate (Settings → Playback) before building the show, with suggested rates per kind of event.",
-    "Texts updated: the Preview is no longer described as always muted (it can be heard with Listen to Preview)."
+    "Texts updated: the Preview is no longer described as always muted (it can be heard with Listen to Preview).",
+    "Web monitor never exceeds the project frame rate: at most one picture per tick, always the newest (a new frame or a repeat of the last one)."
   ],
   "pt-BR": [
     "Tutorial e guia do app (F1): novo passo \"Ajuste o projeto\" — escolha o Frame rate do projeto (Configurações → Reprodução) antes de montar o show, com taxas sugeridas por tipo de evento.",
-    "Textos atualizados: a Prévia não é mais descrita como sempre muda (dá para ouvi-la com Ouvir o Preview)."
+    "Textos atualizados: a Prévia não é mais descrita como sempre muda (dá para ouvi-la com Ouvir o Preview).",
+    "O monitor web nunca passa do frame rate do projeto: no máximo uma imagem por intervalo, sempre a mais recente (quadro novo ou repetição do último)."
   ]
 }
