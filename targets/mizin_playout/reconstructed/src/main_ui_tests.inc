@@ -4,6 +4,10 @@ int MainWindow::runUiTests(const QString& directory,const QString& resultPath){
     auto record=[&](const QString& name,bool ok){tests.append(QJsonObject{{"name",name},{"pass",ok}});all&=ok;qInfo().noquote()<<name<<ok;};
     auto wait=[&](const std::function<bool()>& predicate,int limit=10000){QElapsedTimer time;time.start();while(!predicate()&&time.elapsed()<limit){QCoreApplication::processEvents(QEventLoop::AllEvents,10);QCoreApplication::sendPostedEvents(nullptr,QEvent::DeferredDelete);QThread::msleep(2);}QCoreApplication::processEvents();return predicate();};
     auto pump=[&](int ms){QElapsedTimer timer;timer.start();wait([&]{return timer.elapsed()>=ms;},ms+1000);};
+    {   // A widget shown before it has a parent opens as a stray top-level window (and steals "close main window").
+        pump(300);QStringList stray;for(auto* widget:QApplication::topLevelWidgets())if(widget!=this&&widget->isVisible()&&!widget->inherits("QMenu")&&!(widget->windowFlags()&Qt::ToolTip))stray<<(widget->metaObject()->className()+QString(":")+widget->objectName());
+        record("only_the_main_window_is_open_at_startup",stray.isEmpty());if(!stray.isEmpty())qInfo().noquote()<<"stray windows"<<stray.join(", ");
+    }
     const QString base=QFileInfo(resultPath).absolutePath()+"/",stem=QFileInfo(resultPath).completeBaseName();
     pump(80);record("default_allocates_only_main_program_and_one_route",programCount_==1&&displayCount_==1&&extraPrograms_.empty()&&sourceBoxes_.size()==1&&targetBox_->count()==1&&programViews_->currentIndex()==0);
     record("update_install_guard_allows_idle",!updatePlaybackBusy());record("updater_starts_idle_without_download",updates_->state()=="idle"&&updates_->downloadedFile().isEmpty()&&!updateBanner_->isVisible());record("updates_page_is_available",settingsTabs_->count()==3&&updatePanel_);

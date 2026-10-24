@@ -145,7 +145,8 @@ class MainWindow final : public QMainWindow {
     void setPreviewListening(bool on){
         if(previewAudio_&&previewAudio_->localBox()->isChecked()!=on){previewAudio_->localBox()->setChecked(on);return;}
         // Speaker on (accent colour) while listening, crossed-out speaker while the Preview is silent.
-        for(auto* b:previewListen_){const QSignalBlocker block(b);b->setChecked(on);b->setIcon(deskIcon(on?DeskIcon::Speaker:DeskIcon::SpeakerOff,on?QColor("#64d3e6"):QColor("#afc2d5")));b->setToolTip(tx(on?"Stop listening to Preview":"Listen to Preview"));}for(auto* l:previewMuted_)l->setVisible(!on);
+        for(auto* b:previewListen_){const QSignalBlocker block(b);b->setChecked(on);b->setIcon(deskIcon(on?DeskIcon::Speaker:DeskIcon::SpeakerOff,on?QColor("#64d3e6"):QColor("#afc2d5")));b->setToolTip(tx(on?"Stop listening to Preview":"Listen to Preview"));}// Only hide/show labels already inside a window: show() on a widget without a parent opens it as a top-level window.
+        for(auto* l:previewMuted_){if(on)l->hide();else if(l->parentWidget())l->show();}
     }
     QList<DigitalPanel*> digitalPanels_;
     QTabWidget* outputsTabs_=nullptr;
@@ -279,7 +280,7 @@ private:
         const int index=style=="preview"?0:style=="program"?1:2;
         auto* panel=new QFrame;panel->setObjectName("deck");panel->setProperty("channel",style);auto* l=new QVBoxLayout(panel);l->setContentsMargins(10,10,10,10);l->setSpacing(7);
         auto* header=new QHBoxLayout;auto* heading=label(title,"deckTitle");heading->setProperty("channel",style);header->addWidget(heading);header->addStretch();
-        if(dashboard&&index==0){auto* muted=label("Muted","deckState");previewMuted_.append(muted);muted->setVisible(!preview_.localAudioEnabled());header->addWidget(muted);}
+        if(dashboard&&index==0){auto* muted=label("Muted","deckState");previewMuted_.append(muted);if(preview_.localAudioEnabled())muted->hide();header->addWidget(muted);}
         auto* state=new QLabel;state->setObjectName("deckState");header->addWidget(state);if(dashboard)deckState_[index]=state;else state->setText(tx("Muted"));
         if(index<2)header->addWidget(detachButton(index==0?PreviewDeck:1));if(index==1)programDeck_=panel;l->addLayout(header);
         l->addWidget(index<2?deckSlot(index==0?PreviewDeck:1,monitor(channel,sample)):monitor(channel,sample),1);*name=new ElidedLabel;(*name)->setObjectName("mediaTitle");(*name)->setSizePolicy(QSizePolicy::Ignored,QSizePolicy::Fixed);l->addWidget(*name);
