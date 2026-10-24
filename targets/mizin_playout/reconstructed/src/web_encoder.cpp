@@ -122,20 +122,24 @@ QByteArray H264Encoder::encode(const QImage& image,qint64 timeUs,bool keyframe,b
     ComPtr<IMFSample> sample;MFCreateSample(&sample);sample->AddBuffer(buffer.Get());sample->SetSampleTime(timeUs*10);sample->SetSampleDuration(10000000/d_->fps);
     QByteArray result;bool key=false,broken=false;const DWORD minimum=DWORD(d_->nv12.size());
     if(d_->async){
-        // Submit when the encoder asks for input; collect what it announces. Output that is not ready within one
-        // frame interval is picked up on the next call (low-latency encoders return one unit per input).
-        bool submitted=false,produced=false;QElapsedTimer waited;waited.start();const qint64 limit=qMax(20,1000/d_->fps);
+        // Never block a whole frame: collect what is already done, hand this frame over as soon as the encoder asks for
+        // input, then give it a few ms for this frame's output. Anything later is returned by the next call.
+        bool submitted=false;QElapsedTimer waited;waited.start();const qint64 limit=qMax(20,1000/d_->fps);
         auto submit=[&]{if(FAILED(d_->mft->ProcessInput(0,sample.Get(),0)))broken=true;submitted=true;};
-        if(d_->needInput>0){--d_->needInput;submit();}
-        while(!broken&&waited.elapsed()<limit&&!(submitted&&produced)){
+        auto next=[&]()->bool{ // handles one pending event; false when none is waiting
             ComPtr<IMFMediaEvent> event;const HRESULT hr=d_->events->GetEvent(MF_EVENT_FLAG_NO_WAIT,&event);
-            if(hr==MF_E_NO_EVENTS_AVAILABLE){QThread::usleep(300);continue;}
-            if(FAILED(hr)){broken=true;break;}
+            if(hr==MF_E_NO_EVENTS_AVAILABLE)return false;if(FAILED(hr)){broken=true;return false;}
             MediaEventType type=MEUnknown;event->GetType(&type);
             if(type==METransformNeedInput){if(!submitted)submit();else ++d_->needInput;}
-            else if(type==METransformHaveOutput){takeOutput(d_->mft.Get(),minimum,result,key,broken);produced=!result.isEmpty();}
-            else if(type==MEError){broken=true;}
-        }
+            else if(type==METransformHaveOutput)takeOutput(d_->mft.Get(),minimum,result,key,broken);
+            else if(type==MEError)broken=true;
+            return true;
+        };
+        if(d_->needInput>0){--d_->needInput;submit();}
+        while(!broken&&next()){}
+        while(!broken&&!submitted&&waited.elapsed()<limit)if(!next())QThread::usleep(200);
+        QElapsedTimer tail;tail.start();
+        while(!broken&&submitted&&result.isEmpty()&&tail.elapsed()<4)if(!next())QThread::usleep(200);
     }else{
         HRESULT hr=d_->mft->ProcessInput(0,sample.Get(),0);if(hr==MF_E_NOTACCEPTING){while(takeOutput(d_->mft.Get(),minimum,result,key,broken)){}hr=d_->mft->ProcessInput(0,sample.Get(),0);}
         if(FAILED(hr)){error_="H.264 encoder rejected a frame";return {};}

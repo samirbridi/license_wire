@@ -50,6 +50,7 @@ public:
     WebStream(NativeChannel* channel,std::shared_ptr<std::atomic<int>> quality):channel_(channel),quality_(std::move(quality)){
         clock_.start();
         connect(channel,&NativeChannel::frameReady,this,[this](const QVideoFrame& frame){this->frame(frame,false);});
+        connect(channel,&NativeChannel::changed,this,[this]{playing_=channel_->playing();});
         connect(channel,&NativeChannel::audioReady,this,[this](const AudioPacket& packet){if(!watching())return;std::lock_guard lock(mutex_);while(audio_.size()>=50){audio_.pop_front();++droppedAudio_;}audio_.push_back(packet);wake_.notify_one();});
         connect(channel,&NativeChannel::audioReset,this,[this]{std::lock_guard lock(mutex_);audio_.clear();resetAudio_=true;});
         worker_=std::thread([this]{work();});
@@ -110,7 +111,7 @@ private:
     QImage pending_;bool hasPending_=false,stopping_=false,resetAudio_=false;std::deque<AudioPacket> audio_;
     std::shared_ptr<std::atomic<bool>> keyframe_=std::make_shared<std::atomic<bool>>(true);
     std::atomic<qint64> encoded_{0},keyframes_{0},superseded_{0},audioPackets_{0},droppedAudio_{0},encodeUs_{0},bytes_{0},bitrate_{0};
-    std::shared_ptr<std::atomic<int>> quality_;std::atomic<int> width_{0},height_{0},fps_{30};std::atomic<bool> hardware_{false};
+    std::shared_ptr<std::atomic<int>> quality_;std::atomic<int> width_{0},height_{0},fps_{30};std::atomic<bool> playing_{false};std::atomic<bool> hardware_{false};
     QString encoderError_,encoderName_;
     std::vector<std::shared_ptr<Viewer>> snapshot()const{std::lock_guard lock(viewersMutex_);return viewers_;}
     bool watching()const{for(const auto& viewer:snapshot())if(viewer->videoOpen||viewer->audioOpen)return true;return false;}
@@ -138,11 +139,12 @@ private:
         QImage canvas,last;double lastVideo=-1,audioClock=-1;std::vector<float> pcm;
         for(;;){
             QImage image;std::deque<AudioPacket> audio;bool reset=false;
-            {std::unique_lock lock(mutex_);wake_.wait_for(lock,std::chrono::milliseconds(100),[this]{return stopping_||hasPending_||!audio_.empty();});if(stopping_)break;
+            {std::unique_lock lock(mutex_);wake_.wait_for(lock,std::chrono::milliseconds(qMax(5,int(500/webFrameRate()))),[this]{return stopping_||hasPending_||!audio_.empty();});if(stopping_)break;
                 if(hasPending_){image=std::move(pending_);hasPending_=false;}audio.swap(audio_);reset=std::exchange(resetAudio_,false);}
             const double now=seconds();
-            // Paused/black Programs publish no new frames: repeat the last picture twice per second so joining viewers get a keyframe.
-            if(image.isNull()&&!last.isNull()&&now-lastVideo>.5)image=last;
+            // Keep the cadence: while playing, a tick without a new frame (GUI busy, slower source) repeats the last one;
+            // paused/black Programs still repeat every 0.4 s so joining viewers get a picture.
+            if(image.isNull()&&!last.isNull()&&now-lastVideo>(playing_.load()?1.2/webFrameRate():.4))image=last;
             // The 16x9 black placeholder (nothing on air) keeps the current size instead of shrinking the stream.
             if(!image.isNull()&&image.size()!=QSize(16,9))source=image.size();
             if(!image.isNull()&&(quality!=quality_->load()||fps_!=int(std::lround(webFrameRate()))||!videoReady||video.failed()||streamSize(quality_->load(),source)!=QSize(width_.load(),height_.load()))){quality=quality_->load();prepare(streamSize(quality,source));}
