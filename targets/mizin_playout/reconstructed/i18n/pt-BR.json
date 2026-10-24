@@ -535,5 +535,6 @@
   "Mirrored video outputs do not duplicate local audio.": "Saídas de vídeo espelhadas não duplicam o áudio local.",
   "PROJECT FRAME RATE": "FRAME RATE DO PROJETO",
   "Automatic (follow each video)": "Automático (segue cada vídeo)",
-  "NDI, OMT and the web monitor deliver a constant cadence at this rate, repeating or skipping frames of videos with another rate (the web monitor uses half of 50/59.94/60). Audio/video sync never depends on it. Display outputs follow the screen refresh.": "NDI, OMT e o monitor web entregam uma cadência constante nesta taxa, repetindo ou pulando quadros de vídeos com outra taxa (o monitor web usa a metade de 50/59,94/60). A sincronia de áudio e vídeo nunca depende disso. As saídas de tela seguem a atualização do monitor."
+  "NDI, OMT and the web monitor deliver a constant cadence at this rate, repeating or skipping frames of videos with another rate (the web monitor uses half of 50/59.94/60). Audio/video sync never depends on it. Display outputs follow the screen refresh.": "NDI, OMT e o monitor web entregam uma cadência constante nesta taxa, repetindo ou pulando quadros de vídeos com outra taxa (o monitor web usa a metade de 50/59,94/60). A sincronia de áudio e vídeo nunca depende disso. As saídas de tela seguem a atualização do monitor.",
+  "Stop listening to Preview": "Parar de ouvir o Preview"
 }

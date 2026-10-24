@@ -6,7 +6,7 @@
 #include <utility>
 
 // Small native vector icons; no screenshot textures or external icon runtime.
-enum class DeskIcon { Play, Pause, Stop, Restart, Main, Edit, Folder, Display, Audio, Settings, Cut, Fade, Add, Save, Up, Down, Detach, Dock, Fullscreen };
+enum class DeskIcon { Play, Pause, Stop, Restart, Main, Edit, Folder, Display, Audio, Settings, Cut, Fade, Add, Save, Up, Down, Detach, Dock, Fullscreen, Speaker, SpeakerOff };
 inline QIcon deskIcon(DeskIcon icon, QColor color=QColor("#afc2d5")) {
     QPixmap pix(48,48); pix.fill(Qt::transparent);
     QPainter p(&pix); p.setRenderHint(QPainter::Antialiasing); p.scale(2,2);
@@ -30,6 +30,9 @@ inline QIcon deskIcon(DeskIcon icon, QColor color=QColor("#afc2d5")) {
     case DeskIcon::Down: p.drawLine(12,5,12,19);p.drawPolyline(QPolygonF{QPointF(6,13),QPointF(12,19),QPointF(18,13)});break;
     case DeskIcon::Detach: p.drawPolyline(QPolygonF{QPointF(11,5),QPointF(4,5),QPointF(4,20),QPointF(19,20),QPointF(19,13)});p.drawLine(11,13,20,4);p.drawPolyline(QPolygonF{QPointF(14,4),QPointF(20,4),QPointF(20,10)});break;
     case DeskIcon::Dock: p.drawRoundedRect(QRectF(3,4,18,16),1,1);p.drawLine(20,5,12,13);p.drawPolyline(QPolygonF{QPointF(12,8),QPointF(12,13),QPointF(17,13)});break;
+    case DeskIcon::Speaker: case DeskIcon::SpeakerOff:
+        p.setBrush(color);p.drawPolygon(QPolygonF{QPointF(3,9),QPointF(7,9),QPointF(12,5),QPointF(12,19),QPointF(7,15),QPointF(3,15)});p.setBrush(Qt::NoBrush);
+        if(icon==DeskIcon::Speaker){p.drawArc(QRectF(10,8,6,8),-60*16,120*16);p.drawArc(QRectF(10,5,10,14),-60*16,120*16);}else{p.drawLine(15,9,21,15);p.drawLine(21,9,15,15);}break;
     case DeskIcon::Fullscreen: for(int i=0;i<4;++i){p.save();p.translate(12,12);p.rotate(i*90);p.drawPolyline(QPolygonF{QPointF(-8,-3),QPointF(-8,-8),QPointF(-3,-8)});p.restore();}break;
     }
     return QIcon(pix);

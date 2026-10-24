@@ -144,7 +144,8 @@ class MainWindow final : public QMainWindow {
     QList<QLabel*> previewMuted_;
     void setPreviewListening(bool on){
         if(previewAudio_&&previewAudio_->localBox()->isChecked()!=on){previewAudio_->localBox()->setChecked(on);return;}
-        for(auto* b:previewListen_){const QSignalBlocker block(b);b->setChecked(on);}for(auto* l:previewMuted_)l->setVisible(!on);
+        // Speaker on (accent colour) while listening, crossed-out speaker while the Preview is silent.
+        for(auto* b:previewListen_){const QSignalBlocker block(b);b->setChecked(on);b->setIcon(deskIcon(on?DeskIcon::Speaker:DeskIcon::SpeakerOff,on?QColor("#64d3e6"):QColor("#afc2d5")));b->setToolTip(tx(on?"Stop listening to Preview":"Listen to Preview"));}for(auto* l:previewMuted_)l->setVisible(!on);
     }
     QList<DigitalPanel*> digitalPanels_;
     QTabWidget* outputsTabs_=nullptr;
@@ -289,8 +290,8 @@ private:
         auto* play=iconButton("Play / pause",DeskIcon::Play);row->addWidget(play);connect(play,&QPushButton::clicked,this,[channel]{channel->togglePause();});if(dashboard)deckPlay_[index]=play;
         auto* stop=iconButton(index==0?"Clear Preview":"Black selected channel",DeskIcon::Stop);row->addWidget(stop);connect(stop,&QPushButton::clicked,this,[this,channel,index]{if(index==0){readiness_.clear();channel->black();cuedRow_=-1;}else if(index==1)controllerA_.stop();else targetController()->stop();});row->addStretch();
         if(index!=0){auto* audio=iconButton("Audio routing",DeskIcon::Audio);row->addWidget(audio);connect(audio,&QPushButton::clicked,this,[this]{selectPage(4);});}
-        else{auto* listen=iconButton("Listen to Preview",DeskIcon::Audio);listen->setObjectName("previewListen");listen->setCheckable(true);listen->setChecked(preview_.localAudioEnabled());row->addWidget(listen);previewListen_.append(listen);
-            connect(listen,&QPushButton::toggled,this,[this](bool on){setPreviewListening(on);});}
+        else{auto* listen=iconButton("Listen to Preview",DeskIcon::SpeakerOff);listen->setObjectName("previewListen");listen->setCheckable(true);listen->setChecked(preview_.localAudioEnabled());row->addWidget(listen);previewListen_.append(listen);
+            connect(listen,&QPushButton::toggled,this,[this](bool on){setPreviewListening(on);});setPreviewListening(preview_.localAudioEnabled());}
         l->addLayout(row);return panel;
     }
     QWidget* mainPage(){
