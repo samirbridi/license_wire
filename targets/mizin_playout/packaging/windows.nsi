@@ -100,10 +100,18 @@ Section "Uninstall"
   SetShellVarContext current
   SetRegView 64
   ReadINIStr $QaMode "$INSTDIR\installation.ini" "Setup" "QA"
-  ; Check the running EXE before removing any dependency or notice.
+  ; Check the running EXE before removing any dependency or notice. A just-launched EXE can stay locked for a moment
+  ; (antivirus scan, process teardown): retry for up to 5 s before treating it as a running application.
+  StrCpy $R9 0
+uninstall_delete_exe:
   ClearErrors
   Delete "$INSTDIR\MizinPlayout.exe"
   IfFileExists "$INSTDIR\MizinPlayout.exe" 0 removal_ready
+    IntOp $R9 $R9 + 1
+    IntCmp $R9 10 uninstall_running 0 uninstall_running
+    Sleep 500
+    Goto uninstall_delete_exe
+uninstall_running:
     SetErrorLevel 1
     Abort "Close Mizin Playout before uninstalling."
 removal_ready:
