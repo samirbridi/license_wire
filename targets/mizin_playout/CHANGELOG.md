@@ -1,5 +1,20 @@
 # CHANGELOG — Mizin Playout
 
+## v0.29.4 (build 0064) - 2026-10-24
+
+### 💥 Breaking Changes
+- None.
+
+### ✨ Features
+- None.
+
+### 🐛 Fixes
+- None.
+
+### ⚡ Improvements
+- improve: registra publicacao do build 0063 com icones de escuta do Preview e cadencia do monitor web (2792b255c63b7e3f2fe62e9c14d9d3342c3bae88)
+- improve: tutorial e guia com passo Ajuste o projeto (frame rate) e configuracoes com o frame rate em primeiro (2d6547616cbb705154539408a84c1388b02bb20e)
+
 ## v0.29.3 (build 0063) - 2026-10-23
 
 ### 💥 Breaking Changes

@@ -1136,5 +1136,24 @@
     ],
     "date": "2026-10-23",
     "build_status": "PASS"
+  },
+  {
+    "display": "v0.29.4 (build 0064)",
+    "previous": "v0.29.3 (build 0063)",
+    "source_commit": "2d6547616cbb705154539408a84c1388b02bb20e",
+    "commits": [
+      {
+        "sha": "2792b255c63b7e3f2fe62e9c14d9d3342c3bae88",
+        "subject": "improve: registra publicacao do build 0063 com icones de escuta do Preview e cadencia do monitor web",
+        "kind": "improve"
+      },
+      {
+        "sha": "2d6547616cbb705154539408a84c1388b02bb20e",
+        "subject": "improve: tutorial e guia com passo Ajuste o projeto (frame rate) e configuracoes com o frame rate em primeiro",
+        "kind": "improve"
+      }
+    ],
+    "date": "2026-10-24",
+    "build_status": "PASS"
   }
 ]
