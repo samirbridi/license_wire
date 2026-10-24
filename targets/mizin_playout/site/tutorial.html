@@ -25,20 +25,21 @@
 <main>
 <section style="border-top:0"><div class="wrap">
   <h2 lang="en">How to use Mizin Playout</h2><h2 lang="pt-BR">Como usar o Mizin Playout</h2>
-  <p class="sub" lang="en">From installation to a full show in ten short steps. Press <kbd>F1</kbd> inside the app for the same guide.</p>
-  <p class="sub" lang="pt-BR">Da instalação a um show completo em dez passos curtos. Aperte <kbd>F1</kbd> dentro do app para o mesmo guia.</p>
+  <p class="sub" lang="en">From installation to a full show in eleven short steps. Press <kbd>F1</kbd> inside the app for the same guide.</p>
+  <p class="sub" lang="pt-BR">Da instalação a um show completo em onze passos curtos. Aperte <kbd>F1</kbd> dentro do app para o mesmo guia.</p>
   <nav class="toc">
     <a href="#install">1 · <span lang="en">Install</span><span lang="pt-BR">Instalar</span></a>
-    <a href="#show">2 · <span lang="en">First show</span><span lang="pt-BR">Primeiro show</span></a>
-    <a href="#take">3 · CUT / FADE</a>
-    <a href="#programs">4 · Programs</a>
-    <a href="#decks">5 · <span lang="en">Decks &amp; ON AIR</span><span lang="pt-BR">Decks e NO AR</span></a>
-    <a href="#edit">6 · <span lang="en">Trim &amp; transitions</span><span lang="pt-BR">Recortes e transições</span></a>
-    <a href="#outputs">7 · <span lang="en">Screens</span><span lang="pt-BR">Telas</span></a>
-    <a href="#network">8 · NDI / OMT</a>
-    <a href="#web">9 · <span lang="en">Web monitor</span><span lang="pt-BR">Monitor web</span></a>
-    <a href="#audio">10 · <span lang="en">Audio</span><span lang="pt-BR">Áudio</span></a>
-    <a href="#link">11 · Mizin Link</a>
+    <a href="#project">2 · <span lang="en">Project setup</span><span lang="pt-BR">Ajustar o projeto</span></a>
+    <a href="#show">3 · <span lang="en">First show</span><span lang="pt-BR">Primeiro show</span></a>
+    <a href="#take">4 · CUT / FADE</a>
+    <a href="#programs">5 · Programs</a>
+    <a href="#decks">6 · <span lang="en">Decks &amp; ON AIR</span><span lang="pt-BR">Decks e NO AR</span></a>
+    <a href="#edit">7 · <span lang="en">Trim &amp; transitions</span><span lang="pt-BR">Recortes e transições</span></a>
+    <a href="#outputs">8 · <span lang="en">Screens</span><span lang="pt-BR">Telas</span></a>
+    <a href="#network">9 · NDI / OMT</a>
+    <a href="#web">10 · <span lang="en">Web monitor</span><span lang="pt-BR">Monitor web</span></a>
+    <a href="#audio">11 · <span lang="en">Audio</span><span lang="pt-BR">Áudio</span></a>
+    <a href="#link">12 · Mizin Link</a>
     <a href="#trouble"><span lang="en">Troubleshooting</span><span lang="pt-BR">Problemas</span></a>
   </nav>
 
@@ -48,50 +49,57 @@
     <ol lang="pt-BR"><li>Baixe o <b>Setup</b> ou o <b>ZIP portátil</b>.</li><li>O Setup instala na sua conta (sem administrador). O ZIP roda de qualquer pasta ou pendrive.</li><li>Prévia sem assinatura: em "O Windows protegeu o computador" clique em <b>Mais informações → Executar assim mesmo</b>.</li><li>As configurações ficam no seu perfil; o <b>Start portable.cmd</b> guarda tudo junto do app.</li></ol>
   </div><div class="note" style="margin:0"><span lang="en">Updates: the app checks after it opens and shows a banner. You choose when to install; it waits until playback and outputs are stopped.</span><span lang="pt-BR">Atualizações: o app verifica depois de abrir e mostra um aviso. Você escolhe quando instalar; ele espera a reprodução e as saídas pararem.</span></div></div>
 
+  <div class="step" id="project"><div>
+    <h3 lang="en">2 · Set up the project</h3><h3 lang="pt-BR">2 · Ajuste o projeto</h3>
+    <ol lang="en"><li>Before building the show open <b>Settings → Playback</b>.</li><li>In <b>Project frame rate</b> choose the event's rate: <b>29.97 or 30 fps</b> for most video, <b>25 fps</b> for PAL systems, <b>59.94/60 fps</b> for LED walls with fast motion, <b>23.976/24 fps</b> for cinema content.</li><li>NDI, OMT and the web monitor then deliver a constant cadence at that rate; videos with another rate repeat or skip frames. Audio/video sync is never affected.</li><li><b>Automatic</b> follows each video, so the rate may change from clip to clip.</li></ol>
+    <ol lang="pt-BR"><li>Antes de montar o show abra <b>Configurações → Reprodução</b>.</li><li>Em <b>Frame rate do projeto</b> escolha a taxa do evento: <b>29,97 ou 30 fps</b> para a maioria dos vídeos, <b>25 fps</b> em sistemas PAL, <b>59,94/60 fps</b> para telão de LED com movimento rápido, <b>23,976/24 fps</b> para conteúdo de cinema.</li><li>NDI, OMT e o monitor web passam a entregar cadência constante nessa taxa; vídeos com outra taxa repetem ou pulam quadros. A sincronia de áudio e vídeo nunca é afetada.</li><li><b>Automático</b> segue cada vídeo, então a taxa pode mudar de um clipe para outro.</li></ol>
+  </div><div class="shot" style="margin:0"><img alt="" src="assets/shots/15-project-en.webp" data-src-en="assets/shots/15-project-en.webp" data-src-pt="assets/shots/16-project-pt-BR.webp" loading="lazy" width="1600" height="1000"></div></div>
+  <div class="note" style="margin:0 0 8px"><span lang="en">Tip: use the rate your switcher, vMix/OBS or LED processor expects. Screens connected to this computer always follow their own refresh rate.</span><span lang="pt-BR">Dica: use a taxa que o seu switcher, vMix/OBS ou processador de LED espera. As telas ligadas a este computador sempre seguem a própria taxa de atualização.</span></div>
+
   <div class="step" id="show"><div>
-    <h3 lang="en">2 · Build your first show</h3><h3 lang="pt-BR">2 · Monte o primeiro show</h3>
+    <h3 lang="en">3 · Build your first show</h3><h3 lang="pt-BR">3 · Monte o primeiro show</h3>
     <ol lang="en"><li>In <b>MAIN</b>, click <b>Add media</b> → files or a whole folder (or drag files in).</li><li>Files stay where they are — nothing is converted.</li><li>Reorder with the arrows; <b>More</b> duplicates or removes an item.</li><li><b>Save show</b> (<kbd>Ctrl</kbd>+<kbd>S</kbd>) creates a <code>.mizinshow</code> file.</li><li><b>Export show package</b> copies the show and all its media into one folder you can take to another computer.</li></ol>
     <ol lang="pt-BR"><li>Na <b>MAIN</b>, clique em <b>Adicionar mídia</b> → arquivos ou uma pasta inteira (ou arraste os arquivos).</li><li>Os arquivos ficam onde estão — nada é convertido.</li><li>Reordene com as setas; <b>Mais</b> duplica ou remove um item.</li><li><b>Salvar show</b> (<kbd>Ctrl</kbd>+<kbd>S</kbd>) cria um arquivo <code>.mizinshow</code>.</li><li><b>Exportar pacote do show</b> copia o show e todas as mídias para uma pasta que você leva para outro computador.</li></ol>
   </div><div class="shot" style="margin:0"><img alt="" src="assets/shots/01-main-en.webp" data-src-en="assets/shots/01-main-en.webp" data-src-pt="assets/shots/04-main-pt-BR.webp" loading="lazy" width="1600" height="1000"></div></div>
 
   <div class="step" id="take"><div>
-    <h3 lang="en">3 · Take it on air: CUT and FADE</h3><h3 lang="pt-BR">3 · Coloque no ar: CUT e FADE</h3>
+    <h3 lang="en">4 · Take it on air: CUT and FADE</h3><h3 lang="pt-BR">4 · Coloque no ar: CUT e FADE</h3>
     <ol lang="en"><li>Double-click an item (or <b>Cue selected</b>): it loads muted in <b>PREVIEW</b> and shows <b>READY</b> once checked.</li><li>Choose the <b>Take destination</b> (Program).</li><li><b>CUT</b> (<kbd>Ctrl</kbd>+<kbd>Enter</kbd>) switches instantly; <b>FADE</b> (<kbd>Ctrl</kbd>+<kbd>Space</kbd>) uses the fade duration (300 ms by default).</li><li><b>Black</b> clears the selected Program. <b>Loop</b> repeats the current item.</li></ol>
     <ol lang="pt-BR"><li>Dê dois cliques num item (ou <b>Carregar selecionado</b>): ele entra mudo na <b>PRÉVIA</b> e mostra <b>PRONTO</b> após a verificação.</li><li>Escolha o <b>Destino do envio</b> (Program).</li><li><b>CUT</b> (<kbd>Ctrl</kbd>+<kbd>Enter</kbd>) troca na hora; <b>FADE</b> (<kbd>Ctrl</kbd>+<kbd>Espaço</kbd>) usa a duração do fade (300 ms por padrão).</li><li><b>Preto</b> limpa o Program selecionado. <b>Loop</b> repete o item atual.</li></ol>
   </div><div><ul class="checks"><li lang="en"><b>Manual</b>: the item holds at its Out point.</li><li lang="pt-BR"><b>Manual</b>: o item para no ponto de saída.</li><li lang="en"><b>Sequential</b>: the next item is prepared and plays automatically, with its own transition; <b>Repeat order</b> loops the list.</li><li lang="pt-BR"><b>Sequencial</b>: o próximo item é preparado e entra sozinho, com sua transição; <b>Repetir lista</b> repete a lista.</li></ul></div></div>
 
   <div class="step" id="programs"><div>
-    <h3 lang="en">4 · Several Programs at once</h3><h3 lang="pt-BR">4 · Vários Programs ao mesmo tempo</h3>
+    <h3 lang="en">5 · Several Programs at once</h3><h3 lang="pt-BR">5 · Vários Programs ao mesmo tempo</h3>
     <ol lang="en"><li>Click <b>+</b> next to the take destination to add a Program (B, C…). Each has its own playlist and mode.</li><li>The multiview shows every Program; click a tile name to edit its list without stopping the others.</li><li><b>Copy A playlist</b> starts a new Program with A's items.</li></ol>
     <ol lang="pt-BR"><li>Clique no <b>+</b> ao lado do destino para criar um Program (B, C…). Cada um tem sua playlist e modo.</li><li>A multiview mostra todos; clique no nome de um tile para editar a lista dele sem parar os outros.</li><li><b>Copiar playlist de A</b> começa um Program novo com os itens de A.</li></ol>
   </div><div class="note" style="margin:0"><span lang="en">Removing a Program requires it to be black and with its screens and network outputs closed — a live Program is never removed by accident.</span><span lang="pt-BR">Para remover um Program ele precisa estar em preto e com telas e saídas de rede fechadas — um Program no ar nunca é removido por engano.</span></div></div>
 
   <div class="step" id="decks"><div>
-    <h3 lang="en">5 · Detach decks and watch the ON AIR tally</h3><h3 lang="pt-BR">5 · Destaque decks e acompanhe o NO AR</h3>
+    <h3 lang="en">6 · Detach decks and watch the ON AIR tally</h3><h3 lang="pt-BR">6 · Destaque decks e acompanhe o NO AR</h3>
     <ol lang="en"><li>Click the detach icon at the corner of a deck: it opens in its own window. Drag it to another monitor.</li><li><kbd>F11</kbd> or the fullscreen button toggles fullscreen; <kbd>Esc</kbd> leaves it.</li><li>Close the window (or click the dock note on the desk) to dock it again.</li><li>A red bar and <b>ON AIR</b> mark Programs with media on air; the blue border is the take destination.</li></ol>
     <ol lang="pt-BR"><li>Clique no ícone de destacar no canto do deck: ele abre numa janela própria. Arraste para outro monitor.</li><li><kbd>F11</kbd> ou o botão de tela cheia alterna tela cheia; <kbd>Esc</kbd> sai.</li><li>Feche a janela (ou clique no aviso no deck) para encaixar de volta.</li><li>A barra vermelha e o <b>NO AR</b> marcam os Programs com mídia no ar; a borda azul é o destino do TAKE.</li></ol>
   </div><div class="note" style="margin:0"><span lang="en">A deck window is an operator monitor, not an output. For the LED wall or projector use Outputs (step 7).</span><span lang="pt-BR">A janela do deck é um monitor do operador, não uma saída. Para o telão de LED ou projetor use Saídas (passo 7).</span></div></div>
 
   <div class="step" id="edit"><div>
-    <h3 lang="en">6 · Trim and transitions</h3><h3 lang="pt-BR">6 · Recortes e transições</h3>
+    <h3 lang="en">7 · Trim and transitions</h3><h3 lang="pt-BR">7 · Recortes e transições</h3>
     <ol lang="en"><li>Select an item and open <b>EDIT</b>.</li><li>Set <b>In</b> / <b>Out</b>, the sequence transition (Cut, Dissolve, Fade through black), fade in and fade out.</li><li>Click <b>Apply cue</b>: changes take effect on the next launch; what is on air is not altered.</li></ol>
     <ol lang="pt-BR"><li>Selecione um item e abra a <b>EDIÇÃO</b>.</li><li>Defina <b>In</b> / <b>Out</b>, a transição da sequência (Corte, Dissolve, Passagem pelo preto), fade de entrada e de saída.</li><li>Clique em <b>Aplicar item</b>: vale no próximo disparo; o que está no ar não muda.</li></ol>
   </div><div class="shot" style="margin:0"><img alt="" src="assets/shots/05-edit-en.webp" data-src-en="assets/shots/05-edit-en.webp" data-src-pt="assets/shots/06-edit-pt-BR.webp" loading="lazy" width="1600" height="1000"></div></div>
 
   <div class="step" id="outputs"><div>
-    <h3 lang="en">7 · Screens (LED, projector, TV)</h3><h3 lang="pt-BR">7 · Telas (LED, projetor, TV)</h3>
+    <h3 lang="en">8 · Screens (LED, projector, TV)</h3><h3 lang="pt-BR">8 · Telas (LED, projetor, TV)</h3>
     <ol lang="en"><li>Open <b>Outputs → Displays</b>. Each route has a <b>Source</b> (Program) and a <b>Display</b>.</li><li><b>+ Add display output</b> creates more routes; several routes can mirror the same Program.</li><li>Choose scaling: <b>Native</b> (recommended live) or <b>Lanczos GPU</b>.</li><li><b>AREA</b> shows only part of the video on that screen (LED wall split): halves, thirds, quarters or custom X/Y/W/H in %.</li><li><b>Open output</b> goes fullscreen on that display; <kbd>Esc</kbd> closes it — the Program keeps running.</li></ol>
     <ol lang="pt-BR"><li>Abra <b>Saídas → Telas</b>. Cada rota tem uma <b>Origem</b> (Program) e uma <b>Tela</b>.</li><li><b>+ Adicionar saída de tela</b> cria mais rotas; várias rotas podem espelhar o mesmo Program.</li><li>Escolha a escala: <b>Nativa</b> (recomendada ao vivo) ou <b>Lanczos GPU</b>.</li><li><b>ÁREA</b> mostra só uma parte do vídeo naquela tela (telão dividido): metades, terços, quartos ou X/Y/L/A personalizados em %.</li><li><b>Abrir saída</b> abre em tela cheia naquela tela; <kbd>Esc</kbd> fecha — o Program continua rodando.</li></ol>
   </div><div class="shot" style="margin:0"><img alt="" src="assets/shots/02-outputs-en.webp" data-src-en="assets/shots/02-outputs-en.webp" data-src-pt="assets/shots/03-outputs-pt-BR.webp" loading="lazy" width="1600" height="1000"></div></div>
 
   <div class="step" id="network"><div>
-    <h3 lang="en">8 · NDI® and OMT</h3><h3 lang="pt-BR">8 · NDI® e OMT</h3>
+    <h3 lang="en">9 · NDI® and OMT</h3><h3 lang="pt-BR">9 · NDI® e OMT</h3>
     <ol lang="en"><li>Open <b>Outputs → NDI / OMT</b>.</li><li>Name each Program's source and choose whether to include audio.</li><li>Click <b>Start NDI</b> and/or <b>Start OMT</b>. They appear on the network for switchers, OBS, vMix and recorders.</li></ol>
     <ol lang="pt-BR"><li>Abra <b>Saídas → NDI / OMT</b>.</li><li>Dê nome à fonte de cada Program e escolha se inclui áudio.</li><li>Clique em <b>Iniciar NDI</b> e/ou <b>Iniciar OMT</b>. Eles aparecem na rede para switchers, OBS, vMix e gravadores.</li></ol>
   </div><div class="shot" style="margin:0"><img alt="" src="assets/shots/09-network-en.webp" data-src-en="assets/shots/09-network-en.webp" data-src-pt="assets/shots/10-network-pt-BR.webp" loading="lazy" width="1600" height="1000"></div></div>
 
   <div class="step" id="web"><div>
-    <h3 lang="en">9 · Web monitor (phones and tablets)</h3><h3 lang="pt-BR">9 · Monitor web (celulares e tablets)</h3>
+    <h3 lang="en">10 · Web monitor (phones and tablets)</h3><h3 lang="pt-BR">10 · Monitor web (celulares e tablets)</h3>
     <ol lang="en"><li>Open <b>Outputs → Web monitor</b>, choose <b>Local network (LAN)</b> and click <b>Start web monitor</b>.</li><li>Share the address shown (it includes the access code), e.g. <code>http://192.168.1.30:8787/?k=…</code>.</li><li>On the phone, open the address and tap <b>Watch</b> on a Program. Tap <b>Sound</b> to unmute.</li><li><b>New code</b> disconnects everyone. Windows may ask to allow network access the first time.</li><li><b>Quality</b>: <b>Automatic</b> follows the source up to 1080p; 720p, 1080p and 4K are fixed and change live. The graphics card encodes when available. On the page each viewer can also pick its own quality.</li></ol>
     <ol lang="pt-BR"><li>Abra <b>Saídas → Monitor web</b>, escolha <b>Rede local (LAN)</b> e clique em <b>Iniciar monitor web</b>.</li><li>Compartilhe o endereço mostrado (ele inclui o código de acesso), ex.: <code>http://192.168.1.30:8787/?k=…</code>.</li><li>No celular, abra o endereço e toque em <b>Assistir</b> num Program. Toque em <b>Som</b> para ativar o áudio.</li><li><b>Novo código</b> desconecta todos. Na primeira vez o Windows pode pedir para liberar a rede.</li><li><b>Qualidade</b>: <b>Automática</b> segue a origem até 1080p; 720p, 1080p e 4K são fixas e mudam na hora. A placa de vídeo codifica quando disponível. Na página cada pessoa também pode escolher a sua qualidade.</li></ol>
   </div><div class="note" style="margin:0"><span lang="en">View only: nothing in the browser controls the show. Keep it on the event network; do not expose the port to the internet.</span><span lang="pt-BR">Só visualização: nada no navegador controla o show. Use na rede do evento; não exponha a porta na internet.</span></div></div>
@@ -103,7 +111,7 @@
   </div><div class="shot" style="margin:0"><img alt="" src="assets/shots/13-link-en.webp" data-src-en="assets/shots/13-link-en.webp" data-src-pt="assets/shots/14-link-pt-BR.webp" loading="lazy" width="1600" height="1000"></div></div>
 
   <div class="step" id="audio"><div>
-    <h3 lang="en">10 · Audio and low-latency output</h3><h3 lang="pt-BR">10 · Áudio e saída de baixa latência</h3>
+    <h3 lang="en">11 · Audio and low-latency output</h3><h3 lang="pt-BR">11 · Áudio e saída de baixa latência</h3>
     <ol lang="en"><li><b>Audio</b> page: each Program has volume, mute, local monitoring and device.</li><li>For minimum delay, in <b>Low-latency output</b> pick <b>WASAPI exclusive</b>, your interface and <b>Device minimum</b>, then <b>Start low-latency output</b>.</li><li>Assign each Program an output pair (A on 1–2, B on 3–4…).</li><li>Keep <b>Sync with the video</b> on; use <b>Fine adjust</b> for projector/LED delay. Raise the buffer if you hear clicks.</li><li><b>Preview listening</b>: the headphones button on the PREVIEW deck plays the cued media on its own device (Audio page → PREVIEW).</li><li><b>Project frame rate</b> (Settings → Playback): a fixed rate gives NDI, OMT and the web monitor a constant cadence.</li><li><b>AES67 / Dante</b>: choose <b>AES67 network (Dante-compatible)</b> and the network adapter, set channels and receiver latency and start. The stream appears in Dante Controller (enable AES67 mode on the Dante devices); the status line shows the PTP clock.</li></ol>
     <ol lang="pt-BR"><li>Página <b>Áudio</b>: cada Program tem volume, mudo, monitoramento local e dispositivo.</li><li>Para o menor atraso, em <b>Saída de baixa latência</b> escolha <b>WASAPI exclusivo</b>, sua interface e <b>Mínimo do dispositivo</b>, e clique em <b>Iniciar saída de baixa latência</b>.</li><li>Defina o par de saídas de cada Program (A em 1–2, B em 3–4…).</li><li>Deixe <b>Sincronizar com o vídeo</b> ligado; use o <b>Ajuste fino</b> para o atraso do projetor/LED. Aumente o buffer se ouvir estalos.</li><li><b>Ouvir o Preview</b>: o botão de fone no deck PREVIEW toca o item em preparo num dispositivo próprio (página Áudio → PREVIEW).</li><li><b>Frame rate do projeto</b> (Configurações → Reprodução): uma taxa fixa dá cadência constante ao NDI, OMT e monitor web.</li><li><b>AES67 / Dante</b>: escolha <b>Rede AES67 (compatível com Dante)</b> e a placa de rede, defina canais e latência do receptor e inicie. O fluxo aparece no Dante Controller (ative o modo AES67 nos equipamentos Dante); a linha de status mostra o relógio PTP.</li></ol>
   </div><div class="shot" style="margin:0"><img alt="" src="assets/shots/07-audio-en.webp" data-src-en="assets/shots/07-audio-en.webp" data-src-pt="assets/shots/08-audio-pt-BR.webp" loading="lazy" width="1600" height="1000"></div></div>

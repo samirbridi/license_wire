@@ -230,6 +230,7 @@ public:
         programDefinitions_[0].cues=playlist_;refreshOutputConfiguration();retranslate();startAutosave();
         if(demo_){playlistTable_->selectRow(2);syncEditor(2);}
     }
+    void selectPlaybackSettings(){selectPage(5);if(settingsTabs_)settingsTabs_->setCurrentIndex(0);}
     void selectPage(int page){pages_->setCurrentIndex(page);if(navigation_->button(page))navigation_->button(page)->setChecked(true);}
     void selectDigital(){selectPage(3);outputsTabs_->setCurrentIndex(1);}
     void selectLink(){selectPage(3);outputsTabs_->setCurrentIndex(3);}
@@ -365,7 +366,7 @@ private:
         setFlag(programDeck_,"onAir",onAir(1));setFlag(deckState_[1],"onAir",onAir(1));
         const std::array<NativeChannel*,3> channels{&preview_,&programA_,targetChannel()};
         for(int i=0;i<3;++i){auto* c=channels[i];if(deckState_[i]&&i>0)deckState_[i]->setText(tx(demo_?"Sample":c->pending()?"Preparing":c->path().isEmpty()?"Empty":c->playing()?"Playing":"Paused"));if(deckPlay_[i])deckPlay_[i]->setIcon(deskIcon(!demo_&&c->playing()?DeskIcon::Pause:DeskIcon::Play));if(deckProgress_[i])deckProgress_[i]->setValue(demo_?(i==1?560:i==2?120:0):c->duration()>0?int(qBound<qint64>(qint64{0},1000*c->position()/c->duration(),qint64{1000})):0);}
-        if(deckState_[0]){const bool selected=cuedRow_>=0&&cuedRow_<playlist_.size()&&cuedRow_==playlistTable_->currentRow();const QString key=demo_?"Sample READY":!selected?"Not cued":readiness_.readyFor(playlist_[cuedRow_])?"READY":readiness_.state()==CueReadiness::State::Preparing?"Preparing":readiness_.state()==CueReadiness::State::Error?"Error":"Not cued";auto* badge=deckState_[0];badge->setText(tx(key));badge->setToolTip(key=="Error"?tx(readiness_.error()):tx("READY verifies the source and applied trim in muted Preview. Program prepares on TAKE."));const QString health=key=="READY"?"ready":key=="Error"?"error":key=="Preparing"?"pending":"idle";if(badge->property("health")!=health){badge->setProperty("health",health);badge->style()->unpolish(badge);badge->style()->polish(badge);}}
+        if(deckState_[0]){const bool selected=cuedRow_>=0&&cuedRow_<playlist_.size()&&cuedRow_==playlistTable_->currentRow();const QString key=demo_?"Sample READY":!selected?"Not cued":readiness_.readyFor(playlist_[cuedRow_])?"READY":readiness_.state()==CueReadiness::State::Preparing?"Preparing":readiness_.state()==CueReadiness::State::Error?"Error":"Not cued";auto* badge=deckState_[0];badge->setText(tx(key));badge->setToolTip(key=="Error"?tx(readiness_.error()):tx("READY verifies the source and applied trim in the Preview. Program prepares on TAKE."));const QString health=key=="READY"?"ready":key=="Error"?"error":key=="Preparing"?"pending":"idle";if(badge->property("health")!=health){badge->setProperty("health",health);badge->style()->unpolish(badge);badge->style()->polish(badge);}}
         int openCount=0;QStringList routeLines;for(int i=0;i<displayCount_;++i){const bool open=routeWindows_[i]&&routeWindows_[i]->isVisible();openCount+=open;const int source=open?routePrograms_[i]:sourceBoxes_[i]->currentIndex();routeLines<<QString("%1 → %2 · %3").arg(i+1).arg(programLabel(source),tx(open?"Open":"Closed"));}routesSummary_->setText(tx("Displays")+QString("  %1 / %2 ").arg(openCount).arg(displayCount_)+tx("Open"));routesSummary_->setToolTip(routeLines.join('\n'));
         for(int protocol=0;protocol<2;++protocol){int sending=0;QStringList lines;for(int i=0;i<programCount_;++i){auto& sender=busAt(i)->sender(protocol==0?NetworkProtocol::Ndi:NetworkProtocol::Omt);sending+=sender.running();lines<<programLabel(i)+": "+tx(sender.running()?"Sending":sender.error().isEmpty()?"Stopped":"Error");}networkSummary_[protocol]->setText(QString("%1  %2 / %3 ").arg(protocol==0?"NDI":"OMT").arg(sending).arg(programCount_)+tx("Sending"));networkSummary_[protocol]->setToolTip(lines.join('\n'));}
         for(int row=0;row<playlist_.size();++row){auto* item=playlistTable_->item(row,1);if(!item)continue;const auto& cue=playlist_[row];const auto* c=channelAt(selectedProgram_);QString mark;if(demo_?row==1:!c->path().isEmpty()&&c->path()==cue.path&&c->cue().in==cue.in&&c->cue().out==cue.out)mark=programLabel(selectedProgram_).toUpper();else if(demo_?row==2:row==cuedRow_)mark=tx("CUED");if(item->data(Qt::UserRole+1).toString()!=mark)item->setData(Qt::UserRole+1,mark);}
@@ -469,8 +470,8 @@ private:
         auto* fps=new QComboBox;fps->setObjectName("projectFps");fps->addItem(tx("Automatic (follow each video)"),0.0);for(const auto& [text,value]:{std::pair{"23.976",24000.0/1001},{"24",24.0},{"25",25.0},{"29.97",30000.0/1001},{"30",30.0},{"50",50.0},{"59.94",60000.0/1001},{"60",60.0}})fps->addItem(QString(text)+" fps",value);
         const double saved=settings_->value("projectFps",0.0).toDouble();int row=0;for(int i=0;i<fps->count();++i)if(std::abs(fps->itemData(i).toDouble()-saved)<0.001)row=i;fps->setCurrentIndex(row);projectFrameRate()=fps->currentData().toDouble();rl->addWidget(fps);
         connect(fps,&QComboBox::currentIndexChanged,this,[this,fps]{projectFrameRate()=fps->currentData().toDouble();if(!demo_)settings_->setValue("projectFps",fps->currentData().toDouble());});
-        auto* rateHint=label("NDI, OMT and the web monitor deliver a constant cadence at this rate, repeating or skipping frames of videos with another rate (the web monitor uses half of 50/59.94/60). Audio/video sync never depends on it. Display outputs follow the screen refresh.","muted");rateHint->setWordWrap(true);rl->addWidget(rateHint);l->addWidget(rate);
-        l->addWidget(label("Prototype: trims, fades, sequential playback and independent Programs.","muted"));l->addWidget(label("Transitions currently use a shared CPU compositor. GPU composition, scheduling and remote access are future milestones.","muted"));l->addStretch();return page;}
+        auto* rateHint=label("NDI, OMT and the web monitor deliver a constant cadence at this rate, repeating or skipping frames of videos with another rate (the web monitor uses half of 50/59.94/60). Audio/video sync never depends on it. Display outputs follow the screen refresh.","muted");rateHint->setWordWrap(true);rl->addWidget(rateHint);l->insertWidget(1,rate); // project setup first, then decoding
+        l->addStretch();return page;}
     NativeChannel* channelAt(int index)const{return index==0?const_cast<NativeChannel*>(&programA_):&extraPrograms_.at(size_t(index-1))->channel;}
     PlaylistController* controllerAt(int index){return index==0?&controllerA_:&extraPrograms_.at(size_t(index-1))->controller;}
     NetworkBus* busAt(int index)const{return index==0?const_cast<NetworkBus*>(&networkA_):&extraPrograms_.at(size_t(index-1))->network;}
@@ -537,7 +538,7 @@ private:
         connect(markIn,&QPushButton::clicked,this,[this]{if(!matchingPreview())return;inBox_->setValue(double(preview_.position())/1000);applyEditor();});
         connect(markOut,&QPushButton::clicked,this,[this]{if(!matchingPreview())return;outBox_->setValue(double(preview_.position())/1000);applyEditor();});
         body->addWidget(preview,2);auto* fields=cueEditor();fields->setMinimumWidth(360);body->addWidget(fields,1);layout->addLayout(body,1);
-        layout->addWidget(label("Preview stays muted. Editing does not interrupt either Program.","muted"));return page;
+        layout->addWidget(label("The Preview is heard only with Listen to Preview on. Editing does not interrupt the Programs.","muted"));return page;
     }
     QDoubleSpinBox* secondsBox(double minimum,double maximum){auto* box=new QDoubleSpinBox;box->setDecimals(3);box->setRange(minimum,maximum);box->setSingleStep(.04);box->setSuffix(" s");box->setMinimumWidth(100);return box;}
     QWidget* cueEditor(){
@@ -763,6 +764,7 @@ int main(int argc,char** argv){
     parser.addOption(QCommandLineOption(QStringLiteral("web-test"),QStringLiteral("Test the local WebRTC web monitor")));
     parser.addOption(QCommandLineOption(QStringLiteral("network-test"),QStringLiteral("Test audio mixing and native NDI/OMT loopback")));
     parser.addOption(QCommandLineOption(QStringLiteral("capture-link"),QStringLiteral("Capture the Mizin Link tab")));
+    parser.addOption(QCommandLineOption(QStringLiteral("capture-settings"),QStringLiteral("Capture Settings → Playback (project setup)")));
     parser.addOption(QCommandLineOption(QStringLiteral("capture-digital"),QStringLiteral("Capture the Digital/IP outputs tab")));
     parser.addOption(QCommandLineOption(QStringLiteral("capture-diagnostics"),QStringLiteral("Capture Settings / Engine diagnostics")));
     parser.addOption(QCommandLineOption(QStringLiteral("readiness-test"),QStringLiteral("Test real source readiness and engine metrics")));
@@ -810,9 +812,9 @@ int main(int argc,char** argv){
    window.importExternal(parser.positionalArguments());if(!parser.isSet("capture-dir"))window.startUpdateChecks(parser.isSet("portable"));
     if(parser.isSet("capture-dir")){
         const QString dir=parser.value("capture-dir");QDir().mkpath(dir);
-        const int page=qBound(0,parser.value("capture-page").toInt(),4);window.selectPage(page);if(parser.isSet("capture-digital"))window.selectDigital();if(parser.isSet("capture-link"))window.selectLink();if(parser.isSet("capture-diagnostics"))window.selectDiagnostics();
+        const int page=qBound(0,parser.value("capture-page").toInt(),4);window.selectPage(page);if(parser.isSet("capture-digital"))window.selectDigital();if(parser.isSet("capture-link"))window.selectLink();if(parser.isSet("capture-settings"))window.selectPlaybackSettings();if(parser.isSet("capture-diagnostics"))window.selectDiagnostics();
         const bool portuguese=parser.value("lang")=="pt-BR";
-        const QString name=parser.isSet("capture-link")?(portuguese?"14-link-pt-BR.png":"13-link-en.png"):parser.isSet("capture-diagnostics")?(portuguese?"12-engine-pt-BR.png":"11-engine-en.png"):parser.isSet("capture-digital")?(portuguese?"10-network-pt-BR.png":"09-network-en.png"):page==4?(portuguese?"08-audio-pt-BR.png":"07-audio-en.png"):page==3?"02-outputs-en.png":page==2?"03-library-en.png":page==1?(portuguese?"06-edit-pt-BR.png":"05-edit-en.png"):portuguese?"04-main-pt-BR.png":"01-main-en.png";
+        const QString name=parser.isSet("capture-settings")?(portuguese?"16-project-pt-BR.png":"15-project-en.png"):parser.isSet("capture-link")?(portuguese?"14-link-pt-BR.png":"13-link-en.png"):parser.isSet("capture-diagnostics")?(portuguese?"12-engine-pt-BR.png":"11-engine-en.png"):parser.isSet("capture-digital")?(portuguese?"10-network-pt-BR.png":"09-network-en.png"):page==4?(portuguese?"08-audio-pt-BR.png":"07-audio-en.png"):page==3?"02-outputs-en.png":page==2?"03-library-en.png":page==1?(portuguese?"06-edit-pt-BR.png":"05-edit-en.png"):portuguese?"04-main-pt-BR.png":"01-main-en.png";
         QTimer::singleShot(2100,&window,[&window,dir,name]{window.capture(dir+"/"+name);QCoreApplication::quit();});
     }
     return app.exec();
