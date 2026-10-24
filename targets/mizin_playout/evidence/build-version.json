@@ -1,19 +1,19 @@
 {
-  "display": "v0.29.0 (build 0060)",
-  "previous": "v0.28.0 (build 0059)",
-  "source_commit": "47722b5fcb9d6a5bd122414035ab29bc3a18d137",
+  "display": "v0.29.1 (build 0061)",
+  "previous": "v0.29.0 (build 0060)",
+  "source_commit": "2ed79aac0b5e571352ea87ee522aeb741e273a3e",
   "commits": [
     {
-      "sha": "b4afe5e76303d309fc56088b8b19b39ab52cd539",
-      "subject": "improve: registra publicacao do build 0059 com qualidade do monitor web",
+      "sha": "f9ee7675ce36093cee924adeb4e3ba4c0e17f440",
+      "subject": "improve: registra publicacao do build 0060 com escuta do Preview e frame rate do projeto",
       "kind": "improve"
     },
     {
-      "sha": "47722b5fcb9d6a5bd122414035ab29bc3a18d137",
-      "subject": "feat: adiciona escuta do Preview, frame rate do projeto e qualidade por viewer no monitor web",
-      "kind": "feat"
+      "sha": "2ed79aac0b5e571352ea87ee522aeb741e273a3e",
+      "subject": "improve: botao de ouvir o Preview com alto-falante ligado e cortado conforme o estado",
+      "kind": "improve"
     }
   ],
-  "date": "2026-10-22",
+  "date": "2026-10-23",
   "build_status": "PASS"
 }

@@ -1,0 +1,45 @@
+﻿{
+    "version":  "v0.29.1 (build 0061)",
+    "source_commit":  "2ed79aac0b5e571352ea87ee522aeb741e273a3e",
+    "result":  "FAIL",
+    "checks":  [
+                   {
+                       "name":  "isolated portable installation succeeds",
+                       "pass":  true
+                   },
+                   {
+                       "name":  "corrupt installer hash is rejected before replacement",
+                       "pass":  true
+                   },
+                   {
+                       "name":  "verified handoff waits for parent exit and installs",
+                       "pass":  true
+                   },
+                   {
+                       "name":  "portable update keeps registration marker absent",
+                       "pass":  true
+                   },
+                   {
+                       "name":  "operator profile is byte-for-byte preserved",
+                       "pass":  true
+                   },
+                   {
+                       "name":  "updated application restarts successfully",
+                       "pass":  true
+                   },
+                   {
+                       "name":  "updated app retains version and explicit profile",
+                       "pass":  true
+                   },
+                   {
+                       "name":  "verified installer and native restart complete",
+                       "pass":  true
+                   },
+                   {
+                       "name":  "helper restarts exactly the isolated updated app",
+                       "pass":  true
+                   }
+               ],
+    "work":  "D:\\REA - ENGENHARIA REVERSA\\targets\\mizin_playout\\binaries\\update-install-qa\\ba567b74a79d43268eff70680444e853",
+    "scope":  "Real native helper waits for an isolated parent, rejects wrong hash, invokes NSIS portable update, preserves profile and restarts the updated app. Same-host QA, not clean-machine qualification."
+}

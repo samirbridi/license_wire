@@ -1,5 +1,20 @@
 # CHANGELOG — Mizin Playout
 
+## v0.29.1 (build 0061) - 2026-10-23
+
+### 💥 Breaking Changes
+- None.
+
+### ✨ Features
+- None.
+
+### 🐛 Fixes
+- None.
+
+### ⚡ Improvements
+- improve: registra publicacao do build 0060 com escuta do Preview e frame rate do projeto (f9ee7675ce36093cee924adeb4e3ba4c0e17f440)
+- improve: botao de ouvir o Preview com alto-falante ligado e cortado conforme o estado (2ed79aac0b5e571352ea87ee522aeb741e273a3e)
+
 ## v0.29.0 (build 0060) - 2026-10-22
 
 ### 💥 Breaking Changes
