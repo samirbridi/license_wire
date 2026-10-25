@@ -1,5 +1,21 @@
 # CHANGELOG — Mizin Playout
 
+## v0.30.0 (build 0067) - 2026-10-25
+
+### 💥 Breaking Changes
+- None.
+
+### ✨ Features
+- feat: monitor web com codigo novo por sessao, QR code com cartoes de endereco e indicador Web no rodape (f54a2976455b62ae7925e75acb6f3a9a16819f23)
+
+### 🐛 Fixes
+- None.
+
+### ⚡ Improvements
+- improve: registra publicacao do build 0066 com passo Ajuste o projeto no tutorial (7d3addfc2306354b5a666d33abd88ab2e6477a10)
+- improve: registra plano do codigo por sessao, rodape e QR code do monitor web (ddb8a9a915bf7ae71f756166bf0b5f210a29852e)
+- improve: plano do QR do monitor web sem pagina neutra (4437029be28caa227551800c97df5017ecec0dde)
+
 ## v0.29.6 (build 0066) - 2026-10-24
 
 ### 💥 Breaking Changes

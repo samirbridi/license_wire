@@ -1,5 +1,21 @@
 [
   {
+    "version": "v0.30.0 (build 0067)",
+    "date": "2026-10-25",
+    "notes": {
+      "en": [
+        "Web monitor access: a new uppercase access code on every start (option to keep it), accepted in any case; QR code in the app that opens the page already signed in, with address cards (main network first) to pick another address if needed.",
+        "MAIN footer: new Web tile beside NDI and OMT showing how many people are watching.",
+        "Fix: closing a web monitor connection could occasionally crash the app; connections are now released safely."
+      ],
+      "pt-BR": [
+        "Acesso ao monitor web: código novo em maiúsculas a cada início (opção de manter), aceito em qualquer caixa; QR code no app que abre a página já conectada, com cartões de endereço (rede principal primeiro) para escolher outro se precisar.",
+        "Rodapé da MAIN: novo indicador Web ao lado do NDI e do OMT, mostrando quantas pessoas estão assistindo.",
+        "Correção: fechar uma conexão do monitor web podia, de vez em quando, derrubar o app; as conexões agora são liberadas com segurança."
+      ]
+    }
+  },
+  {
     "version": "v0.29.6 (build 0066)",
     "date": "2026-10-24",
     "notes": {

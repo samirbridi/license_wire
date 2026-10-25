@@ -1193,5 +1193,34 @@
     ],
     "date": "2026-10-24",
     "build_status": "PASS"
+  },
+  {
+    "display": "v0.30.0 (build 0067)",
+    "previous": "v0.29.6 (build 0066)",
+    "source_commit": "f54a2976455b62ae7925e75acb6f3a9a16819f23",
+    "commits": [
+      {
+        "sha": "7d3addfc2306354b5a666d33abd88ab2e6477a10",
+        "subject": "improve: registra publicacao do build 0066 com passo Ajuste o projeto no tutorial",
+        "kind": "improve"
+      },
+      {
+        "sha": "ddb8a9a915bf7ae71f756166bf0b5f210a29852e",
+        "subject": "improve: registra plano do codigo por sessao, rodape e QR code do monitor web",
+        "kind": "improve"
+      },
+      {
+        "sha": "4437029be28caa227551800c97df5017ecec0dde",
+        "subject": "improve: plano do QR do monitor web sem pagina neutra",
+        "kind": "improve"
+      },
+      {
+        "sha": "f54a2976455b62ae7925e75acb6f3a9a16819f23",
+        "subject": "feat: monitor web com codigo novo por sessao, QR code com cartoes de endereco e indicador Web no rodape",
+        "kind": "feat"
+      }
+    ],
+    "date": "2026-10-25",
+    "build_status": "PASS"
   }
 ]
