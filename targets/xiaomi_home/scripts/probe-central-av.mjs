@@ -4,6 +4,7 @@ import { dirname, resolve, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { spawn } from 'node:child_process';
 import { Readable } from 'node:stream';
+import { parseCentralAV } from './media-diagnostics.mjs';
 
 const target = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const runtime = join(target, 'runtime/central'), origin = 'http://127.0.0.1:19845';
@@ -29,10 +30,7 @@ try {
       child.stdin.on('error', () => {});
       input = Readable.fromWeb(response.body); input.on('error', () => {}); input.pipe(child.stdin);
       const exit = await new Promise((accept, reject) => { child.once('close', accept); child.once('error', reject); abort.signal.addEventListener('abort', () => { child.kill(); reject(new Error('Decode timeout')); }, { once: true }); });
-      const video = /Video: (h264)[^\r\n]*? (\d+)x(\d+)/.exec(diagnostics);
-      const audio = /Audio: (aac)[^\r\n]*? (\d+) Hz/.exec(diagnostics);
-      const audioData = /audio:(\d+)KiB/.exec(diagnostics);
-      const result = { family: id.startsWith('mi2k') ? 'Mi 2K' : 'AW300', exit, videoCodec: video?.[1], width: Number(video?.[2]), height: Number(video?.[3]), audioCodec: audio?.[1], sampleRate: Number(audio?.[2]), decodedAudioKiB: Number(audioData?.[1]), pass: exit === 0 && !!video && !!audio && Number(audioData?.[1]) > 0 };
+      const result = { family: id.startsWith('mi2k') ? 'Mi 2K' : 'AW300', ...parseCentralAV(diagnostics, exit) };
       results.push(result); console.log(JSON.stringify(result));
     } finally { clearTimeout(timeout); abort.abort(); input?.destroy(); child?.kill(); }
   }
