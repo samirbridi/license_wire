@@ -10,7 +10,8 @@ SHOTS=[(['--capture-page','0'],{'en':'01-main-en.png','pt-BR':'04-main-pt-BR.png
        (['--capture-page','4'],{'en':'07-audio-en.png','pt-BR':'08-audio-pt-BR.png'},{'en':'07-audio-en','pt-BR':'08-audio-pt-BR'}),
        (['--capture-digital'],{'en':'09-network-en.png','pt-BR':'10-network-pt-BR.png'},{'en':'09-network-en','pt-BR':'10-network-pt-BR'}),
        (['--capture-link'],{'en':'13-link-en.png','pt-BR':'14-link-pt-BR.png'},{'en':'13-link-en','pt-BR':'14-link-pt-BR'}),
-       (['--capture-settings'],{'en':'15-project-en.png','pt-BR':'16-project-pt-BR.png'},{'en':'15-project-en','pt-BR':'16-project-pt-BR'})]
+       (['--capture-settings'],{'en':'15-project-en.png','pt-BR':'16-project-pt-BR.png'},{'en':'15-project-en','pt-BR':'16-project-pt-BR'}),
+       (['--capture-web'],{'en':'17-web-en.png','pt-BR':'18-web-pt-BR.png'},{'en':'17-web-en','pt-BR':'18-web-pt-BR'})]
 work=pathlib.Path(tempfile.mkdtemp(prefix='mizin-site-shots-'))
 try:
     for args,written,names in SHOTS:

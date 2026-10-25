@@ -23,6 +23,9 @@ if(NOT EXISTS "${MIZIN_WEB_SDK}/lib/datachannel.lib" OR NOT EXISTS "${MIZIN_WEB_
   message(FATAL_ERROR "Run scripts/build-web-sdk.cmd first (ADR-017).")
 endif()
 target_sources(MizinPlayout PRIVATE src/web_encoder.hpp src/web_encoder.cpp src/web_monitor.hpp src/web_monitor.cpp src/web_tests.cpp)
+# ADR-022 QR code for the web monitor link (Project Nayuki QR Code generator v1.8.0, MIT).
+target_sources(MizinPlayout PRIVATE third_party/qrcodegen/qrcodegen.hpp third_party/qrcodegen/qrcodegen.cpp)
+target_include_directories(MizinPlayout PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/third_party/qrcodegen")
 target_include_directories(MizinPlayout PRIVATE "${MIZIN_WEB_SDK}/include" "${MIZIN_WEB_SDK}/include/opus")
 target_link_libraries(MizinPlayout PRIVATE "${MIZIN_WEB_SDK}/lib/datachannel.lib" "${MIZIN_WEB_SDK}/lib/opus.lib")
 if(WIN32)
@@ -33,7 +36,7 @@ target_sources(MizinPlayout PRIVATE src/local_audio.hpp src/local_audio.cpp src/
 # ADR-021 AES67 network audio (PTPv2 + RTP L24 + SAP/SDP); ADR-020 keeps native Dante for the Audinate licence build.
 target_sources(MizinPlayout PRIVATE src/aes67.hpp src/aes67.cpp src/local_audio_aes67.cpp src/aes67_tests.cpp)
 if(WIN32)
-  target_link_libraries(MizinPlayout PRIVATE ws2_32 winmm)
+  target_link_libraries(MizinPlayout PRIVATE ws2_32 winmm iphlpapi)
 endif()
 # ADR-019 Mizin Link (multi-machine).
 target_sources(MizinPlayout PRIVATE src/link.hpp src/link.cpp src/link_tests.cpp)

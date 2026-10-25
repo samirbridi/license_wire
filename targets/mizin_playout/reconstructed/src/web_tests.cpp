@@ -1,5 +1,6 @@
 #include "web_monitor.hpp"
 #include "project_rate.hpp"
+#include "qrcodegen.hpp"
 #include "web_encoder.hpp"
 #include <rtc/rtc.hpp>
 #include <QApplication>
@@ -60,6 +61,13 @@ int runWebTests(const QString& directory,const QString& resultPath){
     if(const int hold=qEnvironmentVariableIntValue("MIZIN_WEB_TEST_HOLD_SECONDS");hold>0&&started){QFile url(resultPath+".url");if(url.open(QIODevice::WriteOnly))url.write(server.urls().constFirst().toUtf8());url.close();waitUntil([]{return false;},hold*1000);}
     QNetworkAccessManager manager;
     const auto page=http(manager,"GET",base+"/");record("serves_view_only_page",page.status==200&&page.body.contains("MIZIN")&&!page.body.contains("/api/cut"));
+    {   // ADR-022: uppercase codes without ambiguous characters, accepted in any case; the QR holds the full link.
+        const QString generated=WebMonitorServer::generateCode();bool clean=generated.size()==8&&generated==generated.toUpper();for(QChar c:QString("IO01"))clean&=!generated.contains(c);
+        record("generated_code_is_uppercase_without_ambiguous_characters",clean,{{"code",generated}});
+        record("access_code_is_case_insensitive",http(manager,"GET",base+"/api/programs?k=TESTCODE42").status==200&&http(manager,"GET",base+"/api/programs?k=TestCode42").status==200&&server.code()=="TESTCODE42");
+        const auto addresses=server.addresses();const QString link=server.urlFor(addresses.first().ip);const auto qr=qrcodegen::QrCode::encodeText(link.toUtf8().constData(),qrcodegen::QrCode::Ecc::MEDIUM);
+        record("qr_holds_the_page_link_of_the_first_address",!addresses.isEmpty()&&addresses.first().primary&&link.endsWith("/?k=TESTCODE42")&&qr.getSize()>=21&&qr.getSize()<=57,{{"link",link},{"modules",qr.getSize()}});
+    }
     record("api_without_code_is_forbidden",http(manager,"GET",base+"/api/programs").status==403&&http(manager,"GET",base+"/api/programs?k=wrong").status==403);
     const auto list=http(manager,"GET",base+"/api/programs?k="+code);const auto programs=QJsonDocument::fromJson(list.body).object()["programs"].toArray();
     record("lists_programs_with_tally",list.status==200&&programs.size()==1&&programs[0].toObject()["name"].toString()=="Program A"&&programs[0].toObject()["onAir"].toBool());

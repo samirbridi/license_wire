@@ -16,6 +16,8 @@ class WebStream;
 // ADR-017: opt-in, view-only local web monitor. Browsers on the LAN (or this computer only) list
 // the Programs and watch them over WebRTC. One encoder per watched Program is shared by all of its
 // viewers. Nothing listens until start(); no remote control endpoint exists.
+// ADR-022: one address of this computer for the page link/QR. primary = the adapter Windows routes through by default.
+struct WebAddress {QString name,ip;bool primary=false;};
 struct WebProgramInfo {int id=0;QString name,media;bool onAir=false,playing=false;};
 
 class WebMonitorServer final : public QObject {
@@ -35,6 +37,11 @@ public:
     QString code()const{return code_;}
     void setCode(const QString& code);
     QStringList urls()const;
+    // Addresses to offer (primary first, this computer last) and the page link for one of them.
+    QList<WebAddress> addresses()const;
+    QString urlFor(const QString& ip)const;
+    // Access codes are case-insensitive: stored and compared in uppercase.
+    static QString normalizeCode(const QString& code){return code.trimmed().toUpper();}
     int viewers()const;
     int encoders()const{return int(streams_.size());}
     QString error()const{return error_;}

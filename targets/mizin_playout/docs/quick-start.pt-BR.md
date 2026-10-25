@@ -50,6 +50,8 @@ O monitor web nunca liga sozinho ao abrir o aplicativo. **Novo código** troca o
 
 Na página, cada pessoa também pode escolher a **qualidade** ao lado do botão Som (Padrão do app, Auto até 1080p, 720p, 1080p ou 4K); a escolha fica salva naquele navegador e quem escolhe a mesma qualidade compartilha um codificador.
 
+**Acesso:** cada **Iniciar monitor web** cria um código novo (maiúsculo, sem I/O/0/1; digitar em minúsculas também funciona), a não ser que *Manter o mesmo código entre sessões* esteja marcado. Aponte a câmera do celular para o **QR code**: a página abre já conectada e o código some da barra de endereço. Os cartões ao lado do QR mostram os endereços deste computador (rede principal primeiro); se a página não carregar, escolha outro cartão e leia de novo. O indicador **Web** no rodapé da MAIN, ao lado do NDI e do OMT, mostra quantas pessoas estão assistindo.
+
 ## Saída de áudio de baixa latência
 
 Em **Áudio → Saída de baixa latência**, escolha o motor e o dispositivo e clique em **Iniciar saída de baixa latência**. **WASAPI exclusivo** fala direto com o driver (menor atraso; o dispositivo fica reservado para o Mizin). **WASAPI compartilhado de baixa latência** deixa outros aplicativos usarem o mesmo dispositivo. **ASIO** (Dante Virtual Soundcard, Behringer UMC, Blackmagic) só aparece na versão com a licença Steinberg. Em **Buffer**, "Mínimo do dispositivo" é o menor atraso; aumente se ouvir estalos.

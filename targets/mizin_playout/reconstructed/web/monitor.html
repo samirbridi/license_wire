@@ -36,7 +36,7 @@ button:disabled{opacity:.45;cursor:default}
 select{background:#162434;color:var(--text);border:1px solid #2e465d;border-radius:4px;padding:5px 6px;font:inherit}
 .stats{font-size:11px;color:var(--muted);padding:6px 10px;font-family:Consolas,monospace}
 form{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
-input{background:#0a121b;color:var(--text);border:1px solid #2e465d;border-radius:4px;padding:7px 10px;font:inherit}
+input{text-transform:uppercase;letter-spacing:1px;background:#0a121b;color:var(--text);border:1px solid #2e465d;border-radius:4px;padding:7px 10px;font:inherit}
 .note{color:var(--muted);font-size:12px}
 </style>
 </head>
@@ -52,14 +52,18 @@ input{background:#0a121b;color:var(--text);border:1px solid #2e465d;border-radiu
 const pt=(navigator.language||"").toLowerCase().startsWith("pt");
 const T=pt?{quality:"Qualidade",qApp:"Padrão do app",qAuto:"Auto (até 1080p)",code:"Código de acesso",enter:"Entrar",watch:"Assistir",stop:"Fechar",sound:"Som",mute:"Mudo",full:"Tela cheia",air:"NO AR",off:"Fora do ar",connecting:"Conectando…",live:"Ao vivo",failed:"Falhou — tente de novo",wrong:"Código errado ou trocado no aplicativo.",offline:"Aplicativo não responde.",viewers:n=>n+" assistindo",note:"Somente visualização: nada aqui controla o playout. O áudio começa mudo (exigência do navegador)."}
                 :{quality:"Quality",qApp:"App default",qAuto:"Auto (up to 1080p)",code:"Access code",enter:"Enter",watch:"Watch",stop:"Close",sound:"Sound",mute:"Mute",full:"Fullscreen",air:"ON AIR",off:"Off air",connecting:"Connecting…",live:"Live",failed:"Failed — try again",wrong:"Wrong code, or it was changed in the app.",offline:"App is not responding.",viewers:n=>n+" watching",note:"View only: nothing here controls playout. Audio starts muted (browser rule)."};
-const params=new URLSearchParams(location.search);const key=params.get("k")||"";
+const params=new URLSearchParams(location.search);
+// The code arrives in the link/QR once; keep it for this tab only and drop it from the address bar (screenshots, shared links).
+let key=(params.get("k")||"").trim().toUpperCase();try{if(key)sessionStorage.setItem("mizinKey",key);else key=sessionStorage.getItem("mizinKey")||"";}catch(_){}
+if(params.has("k"))history.replaceState(null,"",location.pathname);
 const $=id=>document.getElementById(id);const players=new Map();let programs=[],lastList="";
 $("note").textContent=T.note;$("codeLabel").textContent=T.code;$("enter").textContent=T.enter;
-$("login").onsubmit=e=>{e.preventDefault();location.search="?k="+encodeURIComponent($("code").value.trim());};
+$("code").addEventListener("input",e=>{const s=e.target.selectionStart;e.target.value=e.target.value.toUpperCase();e.target.setSelectionRange(s,s);});
+$("login").onsubmit=e=>{e.preventDefault();location.search="?k="+encodeURIComponent($("code").value.trim().toUpperCase());};
 function api(path,options){return fetch(path+(path.includes("?")?"&":"?")+"k="+encodeURIComponent(key),Object.assign({cache:"no-store"},options||{}));}
 async function refresh(){
   if(!key){$("login").hidden=false;return;}
-  try{const r=await api("/api/programs");if(r.status===403||r.status===429){$("status").textContent=T.wrong;$("login").hidden=false;return;}
+  try{const r=await api("/api/programs");if(r.status===403||r.status===429){try{sessionStorage.removeItem("mizinKey");}catch(_){}$("status").textContent=T.wrong;$("login").hidden=false;return;}
     const data=await r.json();programs=data.programs;$("status").textContent=T.viewers(data.viewers);$("login").hidden=true;const list=JSON.stringify(programs)+[...players.keys()];if(list!==lastList){lastList=list;render();}}
   catch(e){$("status").textContent=T.offline;}
 }

@@ -2,12 +2,17 @@
 #include "project_rate.hpp"
 #include "web_encoder.hpp"
 #include <rtc/rtc.hpp>
+#include <QCoreApplication>
 #include <QDateTime>
 #include <QElapsedTimer>
 #include <QFile>
 #include <QJsonArray>
 #include <QJsonDocument>
 #include <QNetworkInterface>
+#ifdef Q_OS_WIN
+#include <winsock2.h>
+#include <iphlpapi.h>
+#endif
 #include <QPainter>
 #include <QRandomGenerator>
 #include <QTcpServer>
@@ -58,7 +63,14 @@ public:
     }
     ~WebStream() override {
         {std::lock_guard lock(mutex_);stopping_=true;}wake_.notify_all();if(worker_.joinable())worker_.join();
-        for(const auto& viewer:snapshot())if(viewer->pc)viewer->pc->close();
+        for(const auto& viewer:snapshot())retire(viewer);
+    }
+    // A closing PeerConnection is still used by libdatachannel's own threads for a moment: silence its callbacks,
+    // close it, and release it only a few seconds later (destroying it right away crashed in ntdll now and then).
+    static void retire(const std::shared_ptr<Viewer>& viewer){
+        if(!viewer)return;
+        try{if(viewer->video)viewer->video->resetCallbacks();if(viewer->audio)viewer->audio->resetCallbacks();if(viewer->pc){viewer->pc->resetCallbacks();viewer->pc->close();}}catch(const std::exception&){}
+        if(qApp)QTimer::singleShot(3000,qApp,[viewer]{});
     }
     std::shared_ptr<Viewer> addViewer(const QString& session,const rtc::Configuration& config,QObject* context,std::function<void(QString)> offer,std::function<void()> failed){
         auto viewer=std::make_shared<Viewer>();viewer->session=session;viewer->pc=std::make_shared<rtc::PeerConnection>(config);std::weak_ptr<Viewer> weak=viewer;auto keyframe=keyframe_;
@@ -95,7 +107,7 @@ public:
     bool connected(const QString& session){for(const auto& viewer:snapshot())if(viewer->session==session)return viewer->connected;return false;}
     void removeViewer(const QString& session){
         std::shared_ptr<Viewer> removed;{std::lock_guard lock(viewersMutex_);for(auto it=viewers_.begin();it!=viewers_.end();++it)if((*it)->session==session){removed=*it;viewers_.erase(it);break;}}
-        if(removed&&removed->pc)removed->pc->close();
+        retire(removed);
     }
     int viewerCount()const{std::lock_guard lock(viewersMutex_);return int(viewers_.size());}
     QJsonObject statistics()const{
@@ -173,27 +185,45 @@ WebMonitorServer::WebMonitorServer(Programs programs,Channel channel,QObject* pa
 WebMonitorServer::~WebMonitorServer(){closeAll();}
 bool WebMonitorServer::running()const{return server_&&server_->isListening();}
 quint16 WebMonitorServer::port()const{return running()?server_->serverPort():0;}
-QString WebMonitorServer::generateCode(){static const QString alphabet="abcdefghjkmnpqrstuvwxyz23456789";QString code;for(int i=0;i<8;++i)code+=alphabet[int(QRandomGenerator::system()->bounded(alphabet.size()))];return code;}
+// Uppercase codes without I/O/0/1: easy to read aloud and type.
+QString WebMonitorServer::generateCode(){static const QString alphabet="ABCDEFGHJKLMNPQRSTUVWXYZ23456789";QString code;for(int i=0;i<8;++i)code+=alphabet[int(QRandomGenerator::system()->bounded(alphabet.size()))];return code;}
 bool WebMonitorServer::start(quint16 port,bool lan,const QString& code){
     stop();initLogger();server_=new QTcpServer(this);
     if(!server_->listen(lan?QHostAddress::AnyIPv4:QHostAddress::LocalHost,port)){error_=server_->errorString();delete server_;server_=nullptr;emit changed();return false;}
-    lan_=lan;code_=code.size()>=6?code:generateCode();error_.clear();failures_.clear();
+    lan_=lan;code_=normalizeCode(code).size()>=6?normalizeCode(code):generateCode();error_.clear();failures_.clear();
     connect(server_,&QTcpServer::newConnection,this,[this]{while(auto* socket=server_->nextPendingConnection()){connect(socket,&QTcpSocket::readyRead,this,[this,socket]{read(socket);});connect(socket,&QTcpSocket::disconnected,socket,&QObject::deleteLater);QTimer::singleShot(15000,socket,[socket]{socket->abort();});}});
     emit changed();return true;
 }
 void WebMonitorServer::stop(){closeAll();if(server_){server_->close();delete server_;server_=nullptr;}emit changed();}
-void WebMonitorServer::setCode(const QString& code){code_=code;closeAll();emit changed();}
+void WebMonitorServer::setCode(const QString& code){code_=normalizeCode(code);closeAll();emit changed();}
 void WebMonitorServer::closeAll(){sessions_.clear();streams_.clear();}
 void WebMonitorServer::programRemoved(int id){
     for(auto it=sessions_.begin();it!=sessions_.end();)if(it.value()/10==id)it=sessions_.erase(it);else ++it;
     for(auto it=streams_.begin();it!=streams_.end();)if(it.key()/10==id)it=streams_.erase(it);else ++it;emit changed();
 }
 int WebMonitorServer::viewers()const{int total=0;for(const auto& stream:streams_)total+=stream->viewerCount();return total;}
-QStringList WebMonitorServer::urls()const{
-    if(!running())return {};QStringList list;const QString suffix=QString(":%1/?k=%2").arg(port()).arg(code_);
-    if(lan_)for(const auto& address:QNetworkInterface::allAddresses())if(address.protocol()==QAbstractSocket::IPv4Protocol&&!address.isLoopback()&&!address.isLinkLocal())list<<"http://"+address.toString()+suffix;
-    list<<"http://127.0.0.1"+suffix;return list;
+QString WebMonitorServer::urlFor(const QString& ip)const{return QString("http://%1:%2/?k=%3").arg(ip).arg(port()).arg(code_);}
+QList<WebAddress> WebMonitorServer::addresses()const{
+    QList<WebAddress> list;
+    if(lan_){
+        int best=-1;
+#ifdef Q_OS_WIN
+        // The adapter Windows would use to reach the internet is the one phones on the event network most likely share.
+        DWORD index=0;if(GetBestInterface(inet_addr("8.8.8.8"),&index)==NO_ERROR)best=int(index);
+#endif
+        for(const auto& nic:QNetworkInterface::allInterfaces()){
+            const auto f=nic.flags();if(!f.testFlag(QNetworkInterface::IsUp)||!f.testFlag(QNetworkInterface::IsRunning)||f.testFlag(QNetworkInterface::IsLoopBack))continue;
+            for(const auto& entry:nic.addressEntries()){const auto ip=entry.ip();if(ip.protocol()!=QAbstractSocket::IPv4Protocol||ip.isLinkLocal())continue;
+                WebAddress a{nic.humanReadableName(),ip.toString(),nic.index()==best};if(a.primary)list.prepend(a);else list.append(a);}
+        }
+        // Physical adapters before virtual ones (Hyper-V/WSL/VMware/VirtualBox/Docker switches rarely reach phones).
+        auto isVirtual=[](const WebAddress& a){for(const char* key:{"vEthernet","Virtual","VMware","VirtualBox","Hyper-V","WSL","Docker","Loopback"})if(a.name.contains(QLatin1String(key),Qt::CaseInsensitive))return true;return false;};
+        std::stable_sort(list.begin(),list.end(),[&](const WebAddress& x,const WebAddress& y){return (x.primary?0:isVirtual(x)?2:1)<(y.primary?0:isVirtual(y)?2:1);});
+        if(!list.isEmpty()&&!list.first().primary)list.first().primary=true;
+    }
+    list.append({QStringLiteral("localhost"),QStringLiteral("127.0.0.1"),list.isEmpty()});return list;
 }
+QStringList WebMonitorServer::urls()const{if(!running())return {};QStringList list;for(const auto& a:addresses())list<<urlFor(a.ip);return list;}
 QJsonObject WebMonitorServer::statistics()const{
     QJsonArray streams;for(auto it=streams_.cbegin();it!=streams_.cend();++it){auto item=it.value()->statistics();item["program_id"]=it.key()/10;item["quality"]=it.key()%10==9?QStringLiteral("app"):QStringLiteral("viewer");streams.append(item);}
     return {{"running",running()},{"port",port()},{"lan",lan_},{"viewers",viewers()},{"encoders",encoders()},{"streams",streams},{"media_udp_ports",QString("%1-%2").arg(MediaPortFirst).arg(MediaPortLast)},{"error",error_}};
@@ -223,7 +253,7 @@ void WebMonitorServer::handle(QTcpSocket* socket,const Request& request){
     if(!request.path.startsWith("/api/")){respond(socket,404,"text/plain","Not found");return;}
     const qint64 now=QDateTime::currentMSecsSinceEpoch();failures_.removeIf([now](qint64 time){return now-time>60000;});
     if(failures_.size()>=20){respond(socket,429,"text/plain","Too many wrong codes. Wait one minute.");return;}
-    if(request.query.value("k")!=code_){failures_.append(now);respond(socket,403,"text/plain","Wrong or expired access code");return;}
+    if(normalizeCode(request.query.value("k"))!=code_){failures_.append(now);respond(socket,403,"text/plain","Wrong or expired access code");return;}
     if(request.path=="/api/programs"&&request.method=="GET"){
         QJsonArray list;for(const auto& program:programs_())list.append(QJsonObject{{"id",program.id},{"name",program.name},{"media",program.media},{"onAir",program.onAir},{"playing",program.playing}});
         respond(socket,200,"application/json",QJsonDocument(QJsonObject{{"programs",list},{"viewers",viewers()}}).toJson(QJsonDocument::Compact));return;

@@ -29,3 +29,6 @@ alongside the preview at https://playoutmizin.pages.dev/updates/sources/qt-6.10.
 Original third-party license/notice and attribution files from those archives are
 retained in licenses/upstream/. A bit-identical rebuild is not asserted. The
 original application source for the recorded commit is bundled in source/.
+
+qrcodegen-MIT.txt: Project Nayuki QR Code generator v1.8.0 (C++), used for the web monitor QR code.
+https://github.com/nayuki/QR-Code-generator/tree/v1.8.0/cpp

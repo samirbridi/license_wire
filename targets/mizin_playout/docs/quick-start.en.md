@@ -50,6 +50,8 @@ The web monitor never starts by itself at launch. **New code** replaces the code
 
 On the page, each viewer can also pick a **quality** next to the Sound button (App default, Auto up to 1080p, 720p, 1080p or 4K); the choice is remembered in that browser and viewers with the same choice share one encoder.
 
+**Access:** every **Start web monitor** creates a new code (uppercase, without I/O/0/1; typing in lowercase also works) unless *Keep the same code between sessions* is ticked. Point a phone camera at the **QR code**: the page opens already signed in and the code disappears from the address bar. The cards beside the QR list this computer's addresses (main network first); if the page does not load, choose another card and scan again. The **Web** tile in the MAIN footer, next to NDI and OMT, shows how many people are watching.
+
 ## Low-latency audio output
 
 In **Audio → Low-latency output**, choose the engine and device and click **Start low-latency output**. **WASAPI exclusive** talks directly to the driver (lowest delay; the device is reserved for Mizin). **WASAPI shared low-latency** lets other apps keep using the device. **ASIO** (Dante Virtual Soundcard, Behringer UMC, Blackmagic) is only available in the Steinberg-licensed build. In **Buffer**, "Device minimum" is the lowest delay; raise it if you hear clicks.

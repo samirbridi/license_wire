@@ -1,6 +1,6 @@
 # ADR-022 — Web monitor access: per-session code, footer tally, QR code
 
-Date: 2026-10-25. Status: approved by the owner, to implement next session (tokens ran out this week).
+Date: 2026-10-25. Status: implemented 2026-10-25 (build after 0066). Also fixed: PeerConnections are retired (callbacks reset, close, released 3 s later) — closing one could crash in ntdll.
 
 ## Requests (owner, after testing NDI/OMT/Web: all working well)
 1. Like P2PMizin: every start of the web monitor generates a new access code (safer).

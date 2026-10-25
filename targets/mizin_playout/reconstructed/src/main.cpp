@@ -15,6 +15,7 @@
 #include "local_audio.hpp"
 #include "aes67.hpp"
 #include "project_rate.hpp"
+#include "qrcodegen.hpp"
 #include "link.hpp"
 #include <QtWidgets>
 #include <QtConcurrent>
@@ -123,6 +124,7 @@ class MainWindow final : public QMainWindow {
     std::array<QProgressBar*,3> deckProgress_{};
 
     std::array<QPushButton*,2> networkSummary_{};
+    QPushButton* webSummary_=nullptr;
     std::array<StereoMeter*,2> mainMeters_{};
     QList<int> routePrograms_;
     QString runningMarkKey_;
@@ -230,10 +232,12 @@ public:
         programDefinitions_[0].cues=playlist_;refreshOutputConfiguration();retranslate();startAutosave();
         if(demo_){playlistTable_->selectRow(2);syncEditor(2);}
     }
+    void captureWebMonitor(){startWebForCapture();}
     void selectPlaybackSettings(){selectPage(5);if(settingsTabs_)settingsTabs_->setCurrentIndex(0);}
     void selectPage(int page){pages_->setCurrentIndex(page);if(navigation_->button(page))navigation_->button(page)->setChecked(true);}
     void selectDigital(){selectPage(3);outputsTabs_->setCurrentIndex(1);}
     void selectLink(){selectPage(3);outputsTabs_->setCurrentIndex(3);}
+    void selectWeb(){selectPage(3);outputsTabs_->setCurrentIndex(2);}
     void selectDiagnostics(){selectPage(5);settingsTabs_->setCurrentIndex(1);}
     void configureBoardSequential(){if(demo_)sequentialMode_->click();}
     void configureBoardPrograms(int count){if(demo_)while(programCount_<qBound(1,count,64))addProgram(true);}
@@ -347,7 +351,8 @@ private:
         auto* mainMeter=new QWidget;auto* meterLayout=new QHBoxLayout(mainMeter);meterLayout->setContentsMargins(4,0,6,0);meterLayout->addWidget(label("Program A","meterTitle"));mainMeters_[0]=new StereoMeter(&programA_,demo_);mainMeters_[0]->setMinimumWidth(80);meterLayout->addWidget(mainMeters_[0],1);row->addWidget(mainMeter,2);
         secondaryMeter_=new QWidget;secondaryMeterLayout_=new QHBoxLayout(secondaryMeter_);secondaryMeterLayout_->setContentsMargins(4,0,6,0);row->addWidget(secondaryMeter_,2);secondaryMeter_->hide();
         routesSummary_=new QPushButton;routesSummary_->setObjectName("statusTile");routesSummary_->setFixedHeight(30);routesSummary_->setSizePolicy(QSizePolicy::Ignored,QSizePolicy::Preferred);row->addWidget(routesSummary_,2);connect(routesSummary_,&QPushButton::clicked,this,[this]{selectPage(3);outputsTabs_->setCurrentIndex(0);});
-        for(int i=0;i<2;++i){auto* tile=new QPushButton;tile->setObjectName("networkTile");tile->setFixedHeight(30);tile->setSizePolicy(QSizePolicy::Ignored,QSizePolicy::Preferred);networkSummary_[i]=tile;row->addWidget(tile,1);connect(tile,&QPushButton::clicked,this,[this]{selectDigital();});}return strip;
+        for(int i=0;i<2;++i){auto* tile=new QPushButton;tile->setObjectName("networkTile");tile->setFixedHeight(30);tile->setSizePolicy(QSizePolicy::Ignored,QSizePolicy::Preferred);networkSummary_[i]=tile;row->addWidget(tile,1);connect(tile,&QPushButton::clicked,this,[this]{selectDigital();});}
+        webSummary_=new QPushButton;webSummary_->setObjectName("networkTile");webSummary_->setFixedHeight(30);webSummary_->setSizePolicy(QSizePolicy::Ignored,QSizePolicy::Preferred);row->addWidget(webSummary_,1);connect(webSummary_,&QPushButton::clicked,this,[this]{selectWeb();});return strip;
     }
 #include "main_multiview.inc"
 #include "main_decks.inc"
@@ -369,6 +374,7 @@ private:
         if(deckState_[0]){const bool selected=cuedRow_>=0&&cuedRow_<playlist_.size()&&cuedRow_==playlistTable_->currentRow();const QString key=demo_?"Sample READY":!selected?"Not cued":readiness_.readyFor(playlist_[cuedRow_])?"READY":readiness_.state()==CueReadiness::State::Preparing?"Preparing":readiness_.state()==CueReadiness::State::Error?"Error":"Not cued";auto* badge=deckState_[0];badge->setText(tx(key));badge->setToolTip(key=="Error"?tx(readiness_.error()):tx("READY verifies the source and applied trim in the Preview. Program prepares on TAKE."));const QString health=key=="READY"?"ready":key=="Error"?"error":key=="Preparing"?"pending":"idle";if(badge->property("health")!=health){badge->setProperty("health",health);badge->style()->unpolish(badge);badge->style()->polish(badge);}}
         int openCount=0;QStringList routeLines;for(int i=0;i<displayCount_;++i){const bool open=routeWindows_[i]&&routeWindows_[i]->isVisible();openCount+=open;const int source=open?routePrograms_[i]:sourceBoxes_[i]->currentIndex();routeLines<<QString("%1 → %2 · %3").arg(i+1).arg(programLabel(source),tx(open?"Open":"Closed"));}routesSummary_->setText(tx("Displays")+QString("  %1 / %2 ").arg(openCount).arg(displayCount_)+tx("Open"));routesSummary_->setToolTip(routeLines.join('\n'));
         for(int protocol=0;protocol<2;++protocol){int sending=0;QStringList lines;for(int i=0;i<programCount_;++i){auto& sender=busAt(i)->sender(protocol==0?NetworkProtocol::Ndi:NetworkProtocol::Omt);sending+=sender.running();lines<<programLabel(i)+": "+tx(sender.running()?"Sending":sender.error().isEmpty()?"Stopped":"Error");}networkSummary_[protocol]->setText(QString("%1  %2 / %3 ").arg(protocol==0?"NDI":"OMT").arg(sending).arg(programCount_)+tx("Sending"));networkSummary_[protocol]->setToolTip(lines.join('\n'));}
+        if(webSummary_&&web_){const bool on=web_->running();webSummary_->setText(on?QString("Web  %1 ").arg(web_->viewers())+tx("watching"):QString("Web  ")+tx("Off"));const auto list=web_->addresses();webSummary_->setToolTip(on&&!list.isEmpty()?web_->urlFor(list.first().ip):tx("Web monitor"));}
         for(int row=0;row<playlist_.size();++row){auto* item=playlistTable_->item(row,1);if(!item)continue;const auto& cue=playlist_[row];const auto* c=channelAt(selectedProgram_);QString mark;if(demo_?row==1:!c->path().isEmpty()&&c->path()==cue.path&&c->cue().in==cue.in&&c->cue().out==cue.out)mark=programLabel(selectedProgram_).toUpper();else if(demo_?row==2:row==cuedRow_)mark=tx("CUED");if(item->data(Qt::UserRole+1).toString()!=mark)item->setData(Qt::UserRole+1,mark);}
     }
     QTableWidget* makeTable(){auto* t=new QTableWidget(0,5);t->setSelectionBehavior(QAbstractItemView::SelectRows);t->setSelectionMode(QAbstractItemView::SingleSelection);t->setEditTriggers(QAbstractItemView::NoEditTriggers);t->setAlternatingRowColors(true);t->verticalHeader()->hide();t->setShowGrid(false);t->setAcceptDrops(false);t->horizontalHeader()->setStretchLastSection(true);t->horizontalHeader()->setSectionResizeMode(1,QHeaderView::Stretch);t->setColumnWidth(0,44);t->setColumnWidth(2,110);t->setColumnWidth(3,130);t->verticalHeader()->setDefaultSectionSize(42);return t;}
@@ -705,6 +711,9 @@ QPushButton#targetB:checked {background:#b58be9;color:#161c26;border-color:#b58b
 QPushButton#mode {font-weight:600;padding:5px 12px;}
 QPushButton#mode:checked {background:#4dc4da;color:#10232c;border-color:#7fd9e7;font-weight:600;}
 QPushButton#statusTile,QPushButton#networkTile {background:transparent;font-size:10px;padding:4px 6px;border-color:#263d52;}
+QPushButton#webAddressCard {padding:4px 10px;}
+QPushButton#webAddressCard:checked {background:#1d4a57;border-color:#55cce3;color:#ffffff;}
+QWidget#webCards {background:transparent;}
 QMenu {background:#172737;border:1px solid #344d65;padding:5px;} QMenu::item {padding:8px 22px;} QMenu::item:selected {background:#285b70;}
 QComboBox,QLineEdit,QDoubleSpinBox,QSpinBox {background:#0c1723;border:1px solid #344d65;border-radius:4px;padding:7px;min-height:18px;selection-background-color:#285b70;}
 QCheckBox::indicator {width:14px;height:14px;border:1px solid #526d86;border-radius:2px;background:#0c1723;}
@@ -764,6 +773,7 @@ int main(int argc,char** argv){
     parser.addOption(QCommandLineOption(QStringLiteral("web-test"),QStringLiteral("Test the local WebRTC web monitor")));
     parser.addOption(QCommandLineOption(QStringLiteral("network-test"),QStringLiteral("Test audio mixing and native NDI/OMT loopback")));
     parser.addOption(QCommandLineOption(QStringLiteral("capture-link"),QStringLiteral("Capture the Mizin Link tab")));
+    parser.addOption(QCommandLineOption(QStringLiteral("capture-web"),QStringLiteral("Capture Outputs → Web monitor running (QR and addresses)")));
     parser.addOption(QCommandLineOption(QStringLiteral("capture-settings"),QStringLiteral("Capture Settings → Playback (project setup)")));
     parser.addOption(QCommandLineOption(QStringLiteral("capture-digital"),QStringLiteral("Capture the Digital/IP outputs tab")));
     parser.addOption(QCommandLineOption(QStringLiteral("capture-diagnostics"),QStringLiteral("Capture Settings / Engine diagnostics")));
@@ -812,9 +822,9 @@ int main(int argc,char** argv){
    window.importExternal(parser.positionalArguments());if(!parser.isSet("capture-dir"))window.startUpdateChecks(parser.isSet("portable"));
     if(parser.isSet("capture-dir")){
         const QString dir=parser.value("capture-dir");QDir().mkpath(dir);
-        const int page=qBound(0,parser.value("capture-page").toInt(),4);window.selectPage(page);if(parser.isSet("capture-digital"))window.selectDigital();if(parser.isSet("capture-link"))window.selectLink();if(parser.isSet("capture-settings"))window.selectPlaybackSettings();if(parser.isSet("capture-diagnostics"))window.selectDiagnostics();
+        const int page=qBound(0,parser.value("capture-page").toInt(),4);window.selectPage(page);if(parser.isSet("capture-digital"))window.selectDigital();if(parser.isSet("capture-link"))window.selectLink();if(parser.isSet("capture-settings"))window.selectPlaybackSettings();if(parser.isSet("capture-web"))window.captureWebMonitor();if(parser.isSet("capture-diagnostics"))window.selectDiagnostics();
         const bool portuguese=parser.value("lang")=="pt-BR";
-        const QString name=parser.isSet("capture-settings")?(portuguese?"16-project-pt-BR.png":"15-project-en.png"):parser.isSet("capture-link")?(portuguese?"14-link-pt-BR.png":"13-link-en.png"):parser.isSet("capture-diagnostics")?(portuguese?"12-engine-pt-BR.png":"11-engine-en.png"):parser.isSet("capture-digital")?(portuguese?"10-network-pt-BR.png":"09-network-en.png"):page==4?(portuguese?"08-audio-pt-BR.png":"07-audio-en.png"):page==3?"02-outputs-en.png":page==2?"03-library-en.png":page==1?(portuguese?"06-edit-pt-BR.png":"05-edit-en.png"):portuguese?"04-main-pt-BR.png":"01-main-en.png";
+        const QString name=parser.isSet("capture-web")?(portuguese?"18-web-pt-BR.png":"17-web-en.png"):parser.isSet("capture-settings")?(portuguese?"16-project-pt-BR.png":"15-project-en.png"):parser.isSet("capture-link")?(portuguese?"14-link-pt-BR.png":"13-link-en.png"):parser.isSet("capture-diagnostics")?(portuguese?"12-engine-pt-BR.png":"11-engine-en.png"):parser.isSet("capture-digital")?(portuguese?"10-network-pt-BR.png":"09-network-en.png"):page==4?(portuguese?"08-audio-pt-BR.png":"07-audio-en.png"):page==3?"02-outputs-en.png":page==2?"03-library-en.png":page==1?(portuguese?"06-edit-pt-BR.png":"05-edit-en.png"):portuguese?"04-main-pt-BR.png":"01-main-en.png";
         QTimer::singleShot(2100,&window,[&window,dir,name]{window.capture(dir+"/"+name);QCoreApplication::quit();});
     }
     return app.exec();
