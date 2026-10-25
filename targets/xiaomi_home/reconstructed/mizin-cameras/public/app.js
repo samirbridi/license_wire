@@ -29,7 +29,7 @@ function render(items) {
     const body = document.createElement('div'); body.className = 'camera-body';
     const text = document.createElement('div'), title = document.createElement('h2'), family = document.createElement('span');
     title.className = 'camera-name'; title.textContent = camera.name;
-    family.className = 'camera-family'; family.textContent = camera.family;
+    family.className = 'camera-family'; family.textContent = camera.family + (camera.views.length > 1 ? ` · ${camera.views.length} visões` : '');
     text.append(title, family);
     const open = document.createElement('button'); open.className = 'camera-open'; open.textContent = '↗'; open.setAttribute('aria-label', 'Abrir ' + camera.name);
     body.append(text, open); card.append(preview, body); $('#camera-grid').append(card);
@@ -48,28 +48,33 @@ async function fetchSnapshot(camera, preview, state) {
     state.textContent = 'Prévia atualizada';
   } catch { if (state.isConnected) state.textContent = 'Toque para conectar'; }
 }
-async function refreshStatus() { try { const state = await api('/api/status'); $('#central-status').classList.toggle('error', !state.bridge); $('#central-status').replaceChildren(); const dot = document.createElement('span'); dot.className = 'pulse-dot'; $('#central-status').append(dot, document.createTextNode(state.bridge ? 'Central conectada' : 'Central sem conexão')); } catch {} }
-function openCamera(camera) { current = camera; retries = 0; $('#player-title').textContent = camera.name; if (!$('#player-dialog').open) $('#player-dialog').showModal(); startVideo(); }
+async function refreshStatus() { try { const state = await api('/api/status'); $('#central-status').classList.toggle('error', !state.bridge); $('#central-status').replaceChildren(); const dot = document.createElement('span'); dot.className = 'pulse-dot'; $('#central-status').append(dot, document.createTextNode(state.bridge ? 'Central conectada' : 'Central sem conexão')); $('#remote-status').textContent = state.remoteConfigured ? 'HTTPS configurado' : 'Em preparação'; $('#pair-device').hidden = !state.pairingAvailable; $('#revoke-remote').hidden = !state.pairingAvailable; } catch {} }
+function openCamera(camera) { current = camera; retries = 0; $('#player-title').textContent = camera.name; $('#camera-view').replaceChildren(); for (const view of camera.views) { const option = document.createElement('option'); option.value = view.id; option.textContent = view.label; $('#camera-view').append(option); } $('#view-control').hidden = camera.views.length < 2; if (!$('#player-dialog').open) $('#player-dialog').showModal(); startVideo(); }
 function startVideo() {
   clearTimeout(retryTimer); sourceGeneration++; const generation = sourceGeneration;
   $('#player-state').hidden = false; $('#player-state').lastElementChild.textContent = retries ? 'Reconectando à câmera…' : 'Conectando à câmera…';
   $('#playback-state').textContent = 'Preparando vídeo';
   const player = $('#player'); player.pause(); player.removeAttribute('src'); player.load();
-  player.src = '/api/video/' + current.id + '?quality=' + quality.value + '&attempt=' + Date.now(); player.load();
+  player.src = '/api/video/' + current.id + '?quality=' + quality.value + '&view=' + encodeURIComponent($('#camera-view').value) + '&attempt=' + Date.now(); player.load();
   player.play().catch(() => {});
   retryTimer = setTimeout(() => { if (generation === sourceGeneration && $('#player-dialog').open && player.readyState < 2) retryVideo(); }, 48000);
 }
 function retryVideo() { clearTimeout(retryTimer); if (!current || !$('#player-dialog').open) return; if (retries >= 2) { $('#player-state').hidden = false; $('#player-state').lastElementChild.textContent = 'A câmera não respondeu. Use Reconectar para tentar novamente.'; $('#playback-state').textContent = 'Conexão interrompida'; return; } retries++; retryTimer = setTimeout(startVideo, 2000); }
 function stopVideo() { sourceGeneration++; clearTimeout(retryTimer); const player = $('#player'); player.pause(); player.removeAttribute('src'); player.load(); current = null; }
 $('#player').addEventListener('playing', () => { clearTimeout(retryTimer); $('#player-state').hidden = true; $('#playback-state').textContent = '● Vídeo conectado'; });
+$('#player').addEventListener('loadedmetadata', () => { const video = $('#player'); $('#player-title').textContent = current ? current.name + ` · ${video.videoWidth}×${video.videoHeight}` : ''; });
 $('#player').addEventListener('error', () => { if (current && $('#player-dialog').open) retryVideo(); });
 $('#player').addEventListener('ended', () => { if (current && $('#player-dialog').open) retryVideo(); });
 $('#close-player').onclick = () => $('#player-dialog').close(); $('#player-dialog').addEventListener('close', stopVideo);
 $('#retry-video').onclick = () => { retries = 0; startVideo(); };
 quality.onchange = () => { localStorage.setItem('camera-quality', quality.value); if (current) { retries = 0; startVideo(); } };
+$('#camera-view').onchange = () => { if (current) { retries = 0; startVideo(); } };
 document.querySelectorAll('[data-filter]').forEach(button => button.onclick = () => { document.querySelectorAll('[data-filter]').forEach(other => other.classList.toggle('active', other === button)); render(cameras.filter(camera => button.dataset.filter === 'all' || camera.family === button.dataset.filter)); });
 $('#refresh').onclick = () => { const active = document.querySelector('[data-filter].active'); active.click(); toast('Atualizando as prévias disponíveis.'); };
 $('#settings').onclick = () => $('#settings-dialog').showModal(); $('#close-settings').onclick = () => $('#settings-dialog').close();
+$('#pair-device').onclick = async () => { try { const access = await api('/api/remote-link', { method: 'POST', headers: { 'X-CSRF-Token': csrf } }); $('#remote-link').value = access.url; $('#remote-access').hidden = false; } catch (error) { toast(error.message); } };
+$('#copy-remote').onclick = async () => { try { await navigator.clipboard.writeText($('#remote-link').value); toast('Link copiado. Válido por 10 minutos e um único uso.'); } catch { $('#remote-link').select(); } };
+$('#revoke-remote').onclick = async () => { try { await api('/api/revoke-remote-sessions', { method: 'POST', headers: { 'X-CSRF-Token': csrf } }); $('#remote-access').hidden = true; toast('Acessos externos desvinculados.'); } catch (error) { toast(error.message); } };
 $('#logout').onclick = async () => { await api('/api/logout', { method: 'POST', headers: { 'X-CSRF-Token': csrf } }); $('#settings-dialog').close(); showLogin(); };
 $('#login-form').onsubmit = async event => { event.preventDefault(); try { await connect($('#access-code').value); $('#access-code').value = ''; } catch (error) { $('#login-error').textContent = error.message; } };
 const bootstrap = new URLSearchParams(location.hash.slice(1)).get('pair');

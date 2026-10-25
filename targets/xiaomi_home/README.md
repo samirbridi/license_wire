@@ -8,7 +8,7 @@ Criar acesso dedicado em Android e Windows, na rede local e pela internet. As c�
 
 ## Estado Atual e Próximos Passos
 
-Estado: PROTOTIPO_LOCAL_WINDOWS_VALIDADO. Autorização QR confirmada pelo proprietário; seis câmeras com quadros decodificados e prévias reais no painel. As três famílias reproduziram vídeo H.264 no navegador. Reconexão manual e layout de 390 px conferidos. Ver [teste nativo](notes/09_video_local_validado.md), [central Windows](notes/10_central_windows.md) e [recibo do painel](evidence/central-browser-qa-2026-10-25.json). Android físico, acesso remoto e estabilidade prolongada permanecem pendentes.
+Estado: PROTOTIPO_LOCAL_WINDOWS_VALIDADO, com ampliação de vistas e qualidade nativa. Autorização QR confirmada pelo proprietário; seis câmeras com quadros decodificados e prévias reais no painel. As três famílias reproduziram vídeo H.264 no navegador. Outdoor Pro tem dois canais comprovados a 2880×1620; as duas AW300 chegaram a 2304×1296. Ver [teste nativo](notes/09_video_local_validado.md), [central Windows](notes/10_central_windows.md), [recursos e Cloudflare](notes/11_recursos_nativos_e_cloudflare.md) e os recibos em evidence. Android físico, acesso remoto, áudio, SD, PTZ e estabilidade prolongada permanecem pendentes.
 
 - Pesquisa inicial: [notas de viabilidade](notes/00_viabilidade.md).
 - Referências e limites de cada evidência: [fontes públicas](evidence/fontes_publicas.json).
@@ -16,10 +16,10 @@ Estado: PROTOTIPO_LOCAL_WINDOWS_VALIDADO. Autorização QR confirmada pelo propr
 - Imagens preservadas em `evidence/user_images/2026-10-25/`, com hashes e verificação das cópias em `manifest.json`.
 - Ambiente de teste e procedimento: [sessão local Windows](notes/06_teste_local_windows.md).
 - Conta autorizada: duas AW300 `mxiang.camera.mod11`, três Mi 2K `isa.camera.hlc7` e uma Outdoor Pro `xiaomi.camera.cw701`.
-- AW300: vídeo comprovado em SD; Mi 2K: até 2304×1296 comprovado; Outdoor Pro: canal inicial 1280×720 comprovado.
+- AW300 e Mi 2K: 2304×1296 nas cinco unidades; Outdoor Pro: duas vistas a 2880×1620. A unidade do Estúdio usa o perfil de qualidade 4, após testes dos perfis 0/3/4/5. Não há 4K comprovado.
 - Usuário confirmou que pode manter o Windows ligado no local. Cliente web responsivo e central em [mizin-cameras](reconstructed/mizin-cameras/README.md).
-- Próximo passo: usuário escolher Tailscale para o canal privado, efetuar login nos dispositivos e validar a implementação HTTPS/remota por dados móveis. Acesso externo desativado nesta versão.
-- Confirmar separadamente as três imagens e os controles da Outdoor Pro.
+- Decisão posterior: usuário recusou VPN no Android, quer link/login e já utiliza Cloudflare R2. O desenho remoto combina serviço de login/sinalização e transporte de vídeo; R2 entra como armazenamento. Nenhum bucket ou conta foi modificado.
+- Confirmar escuta/fala, controle direcional/zoom e reprodução temporal das gravações SD. Duas vistas da Outdoor Pro já foram identificadas.
 - Validar separadamente vídeo, áudio, movimento da câmera, gravações do cartão, recuperação de conexão e sessão.
 - Testar acesso externo por Android e Windows e, em outra etapa, o destino Google Home desejado.
 

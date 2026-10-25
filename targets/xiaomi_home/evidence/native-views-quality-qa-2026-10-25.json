@@ -1,0 +1,87 @@
+{
+  "method": "FFmpeg decode to null, no video recording",
+  "results": [
+    {
+      "frames": 121,
+      "width": 2304,
+      "seconds": 6,
+      "height": 1296,
+      "family": "AW300",
+      "unit": 1,
+      "quality": 3
+    },
+    {
+      "frames": 121,
+      "width": 2304,
+      "seconds": 6,
+      "height": 1296,
+      "family": "AW300",
+      "unit": 2,
+      "quality": 3
+    },
+    {
+      "frames": 121,
+      "width": 2880,
+      "quality": 3,
+      "height": 1620,
+      "family": "Outdoor Pro",
+      "seconds": 6.025105,
+      "view": 1
+    },
+    {
+      "frames": 121,
+      "width": 1280,
+      "quality": 2,
+      "height": 720,
+      "family": "Outdoor Pro",
+      "seconds": 6.025105,
+      "view": 2
+    },
+    {
+      "frames": 121,
+      "width": 2880,
+      "quality": 3,
+      "height": 1620,
+      "family": "Outdoor Pro",
+      "seconds": 6.025105,
+      "view": 2
+    },
+    {
+      "family": "Mi 2K",
+      "quality": 3,
+      "frames": 121,
+      "height": 360,
+      "unit": "previously SD",
+      "width": 640,
+      "maximum_resolution_confirmed": false,
+      "seconds": 6
+    },
+    {
+      "family": "Mi 2K",
+      "unit": "previously SD",
+      "quality": 4,
+      "width": 2304,
+      "height": 1296,
+      "frames": 121,
+      "seconds": 6,
+      "maximum_resolution_confirmed": true
+    },
+    {
+      "family": "Mi 2K",
+      "unit": "previously SD",
+      "quality": 5,
+      "width": 2304,
+      "height": 1296,
+      "frames": 121,
+      "seconds": 6,
+      "maximum_resolution_confirmed": true
+    }
+  ],
+  "date": "2026-10-25",
+  "limitations": [
+    "No actual 4K stream confirmed",
+    "Audio not exposed by current MP4 input",
+    "PTZ commands not executed",
+    "SD recording access not implemented"
+  ]
+}

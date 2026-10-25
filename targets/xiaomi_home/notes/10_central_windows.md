@@ -14,7 +14,7 @@ Em 2026-10-25 o proprietário confirmou que pode manter um Windows ligado na red
 
 ## Próxima etapa remota
 
-Proposta pesquisada: Tailscale Personal, elegível para uso pessoal não comercial sem assinatura, e Tailscale Serve para HTTPS acessível somente pela rede privada. O usuário ainda não escolheu nem autorizou a instalação desta ferramenta. Nenhuma conta Tailscale foi criada; nenhuma rota foi publicada.
+Proposta inicial pesquisada: Tailscale Personal e Serve. O usuário recusou esta opção e confirmou link/login sem VPN no Android; o desenho atual com Cloudflare está na nota 11. Nenhuma conta Tailscale foi criada; nenhuma rota foi publicada. Os comandos abaixo são registro da pesquisa inicial, não plano de execução atual.
 
 Fontes oficiais consultadas: [preços](https://tailscale.com/pricing), [Serve](https://tailscale.com/docs/features/tailscale-serve), [CLI Serve](https://tailscale.com/docs/reference/tailscale-cli/serve), [Android](https://tailscale.com/docs/install/android), [Windows sem usuário conectado](https://tailscale.com/docs/how-to/run-unattended).
 

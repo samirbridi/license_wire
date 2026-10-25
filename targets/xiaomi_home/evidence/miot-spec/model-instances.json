@@ -1,0 +1,44 @@
+[
+  {
+    "status": "released",
+    "model": "xiaomi.camera.cw701",
+    "version": 1,
+    "type": "urn:miot-spec-v2:device:camera:0000A01C:xiaomi-cw701:1:0000D070",
+    "ts": 1751615545
+  },
+  {
+    "status": "debug",
+    "model": "mxiang.camera.mod11",
+    "version": 3,
+    "type": "urn:miot-spec-v2:device:camera:0000A01C:mxiang-mod11:3",
+    "ts": 1732695899
+  },
+  {
+    "status": "released",
+    "model": "mxiang.camera.mod11",
+    "version": 2,
+    "type": "urn:miot-spec-v2:device:camera:0000A01C:mxiang-mod11:2",
+    "ts": 1720409462
+  },
+  {
+    "status": "released",
+    "model": "mxiang.camera.mod11",
+    "version": 1,
+    "type": "urn:miot-spec-v2:device:camera:0000A01C:mxiang-mod11:1",
+    "ts": 1663067972
+  },
+  {
+    "status": "released",
+    "model": "isa.camera.hlc7",
+    "version": 2,
+    "type": "urn:miot-spec-v2:device:camera:0000A01C:isa-hlc7:2",
+    "ts": 1630983924
+  },
+  {
+    "status": "released",
+    "model": "isa.camera.hlc7",
+    "version": 1,
+    "type": "urn:miot-spec-v2:device:camera:0000A01C:isa-hlc7:1",
+    "ts": 1617846188
+  }
+]

@@ -6,9 +6,9 @@ import { resolve, join, sep } from 'node:path';
 import { createCentral } from '../server.mjs';
 
 const roots = [];
-async function fixture() {
+async function fixture(extra = {}) {
   const runtime = mkdtempSync(join(tmpdir(), 'mizin-cameras-test-')); roots.push(runtime);
-  const cameras = [{ id: 'test_camera', sourceAlias: 'test_source', name: '<Test camera>', family: 'Mi 2K', model: 'isa.camera.hlc7', sd: false, privateField: 'PRIVATE_SENTINEL' }];
+  const cameras = [{ id: 'test_camera', sourceAlias: 'test_source', name: '<Test camera>', family: 'Mi 2K', model: 'isa.camera.hlc7', sd: false, privateField: 'PRIVATE_SENTINEL', ...extra }];
   const app = createCentral({ runtime, cameras, port: 0, bootstrap: 'test-bootstrap-secret-with-sufficient-length', ffmpeg: 'not-used-in-boundary-tests' });
   const port = await app.start(), origin = `http://127.0.0.1:${port}`;
   return { app, origin, runtime, cameras };
@@ -49,7 +49,7 @@ test('camera API returns allowlisted display fields and blocks arbitrary media p
   try {
     const cookie = await login(f), headers = { Cookie: cookie };
     const cameras = await (await fetch(f.origin + '/api/cameras', { headers })).json();
-    assert.deepEqual(cameras, [{ id: 'test_camera', name: '<Test camera>', family: 'Mi 2K', sd: false }]);
+    assert.deepEqual(cameras, [{ id: 'test_camera', name: '<Test camera>', family: 'Mi 2K', sd: false, views: [{ id: 'main', label: 'Principal' }] }]);
     assert.equal((await fetch(f.origin + '/api/video/unknown', { headers })).status, 404);
     assert.equal((await fetch(f.origin + '/server.mjs', { headers })).status, 404);
   } finally { await f.app.close(); }
@@ -85,6 +85,16 @@ test('an authorized browser session survives a central restart', async () => {
     const port = await restarted.start();
     assert.equal((await fetch(`http://127.0.0.1:${port}/api/cameras`, { headers: { Cookie: cookie } })).status, 200);
   } finally { await restarted.close(); }
+});
+test('multiple views expose only display labels and reject unknown media views', async () => {
+  const f = await fixture({ views: [{ id: 'view1', label: 'Visão 1', sourceAlias: 'private_alias', originalAlias: 'private_hd' }, { id: 'view2', label: 'Visão 2', sourceAlias: 'private_alias2' }] });
+  try {
+    const cookie = await login(f), headers = { Cookie: cookie };
+    const inventory = await (await fetch(f.origin + '/api/cameras', { headers })).json();
+    assert.deepEqual(inventory[0].views, [{ id: 'view1', label: 'Visão 1' }, { id: 'view2', label: 'Visão 2' }]);
+    assert.ok(!JSON.stringify(inventory).includes('private_alias'));
+    assert.equal((await fetch(f.origin + '/api/video/test_camera?view=unknown&quality=original', { headers })).status, 400);
+  } finally { await f.app.close(); }
 });
 test.after(() => {
   const safeRoot = resolve(tmpdir()) + sep;

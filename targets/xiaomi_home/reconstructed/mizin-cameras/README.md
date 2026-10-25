@@ -14,12 +14,12 @@ Depois de um build concluído, executar a partir da raiz do repositório:
 
 `-Restart` reinicia apenas o processo registrado desta central, após conferir executável e horário de início. O navegador recebe um link local de uso único; a sessão persiste por até 30 dias. Não compartilhar o arquivo privado `local-access.json`. Uma sessão expirada exige novo vínculo; não há promessa de login permanente.
 
-O protótipo limita vídeo a dois clientes simultâneos, um vídeo por cliente. As prévias são imagens estáticas e têm cache de até 60 segundos. Áudio, PTZ, zoom e gravações ainda não estão disponíveis. H.264 usa CPU; desempenho com dois clientes não foi medido.
+O protótipo limita vídeo a dois clientes simultâneos, um vídeo por cliente. As prévias são imagens estáticas e têm cache de até 60 segundos. A Outdoor Pro oferece seleção entre Visão 1 e Visão 2; Resolução nativa mantém até 3840 pixels de largura sem ampliar fontes menores. A imagem continua sendo convertida para H.264 a 15 fps. O encoder pode ser libx264/CPU ou h264_nvenc; a configuração privada deste Windows seleciona NVENC após teste local. Decodificação/redimensionamento não foram movidos para GPU. Desempenho com dois clientes não foi medido. Áudio, PTZ, zoom e reprodução do SD continuam pendentes.
 
 ## Verificar e gerar versão
 
 ```powershell
-node --test targets/xiaomi_home/reconstructed/mizin-cameras/test/server.test.mjs targets/xiaomi_home/scripts/test-version-build.mjs targets/xiaomi_home/scripts/test-version-build-integration.mjs
+node --test targets/xiaomi_home/reconstructed/mizin-cameras/test/server.test.mjs targets/xiaomi_home/reconstructed/mizin-cameras/test/remote.test.mjs targets/xiaomi_home/scripts/test-version-build.mjs targets/xiaomi_home/scripts/test-version-build-integration.mjs
 node targets/xiaomi_home/scripts/version-build.mjs --plan
 ```
 
@@ -27,4 +27,6 @@ Após commit estruturado dos fontes do alvo, `--build --run-id <identificador-un
 
 ## Acesso remoto
 
-Ainda desativado no servidor. O caminho proposto é uma rede privada Tailscale com HTTPS e autenticação do aplicativo. Exige instalação, login do proprietário e teste real pelo Android em dados móveis. A ponte de diagnóstico e o auxiliar QR não devem ser publicados. Consulte `notes/10_central_windows.md` no alvo.
+O usuário escolheu link/login sem VPN e já tem Cloudflare R2. O adaptador HTTPS está implementado, com porta loopback distinta, segredo do proxy, origem exata, cookie Secure, vínculo remoto de uso único e revogação dos acessos pelo Windows. Ele só é ativado quando existe a configuração privada `runtime/central/https-gateway.json`; nenhum gateway está configurado neste Windows. O listener local recusa encaminhamento de proxy.
+
+R2 pode guardar gravações e segmentos; login/sinalização e transporte ao vivo exigem componentes adicionais. Não foi criada conta, gateway, Worker ou bucket nesta etapa. A ponte de diagnóstico e o auxiliar QR permanecem internos. Consulte `notes/11_recursos_nativos_e_cloudflare.md` no alvo.
