@@ -10,7 +10,7 @@ if (Test-Path -LiteralPath $xiaomiProcessFile) {
     $xiaomiMetadata = Get-Content -LiteralPath $xiaomiProcessFile -Raw | ConvertFrom-Json
     $xiaomiExisting = Get-Process -Id $xiaomiMetadata.pid -ErrorAction SilentlyContinue
     if ($xiaomiExisting) {
-        $xiaomiExpectedTime = [datetimeoffset]::Parse($xiaomiMetadata.started).UtcDateTime
+        $xiaomiExpectedTime = ([datetimeoffset]$xiaomiMetadata.started).UtcDateTime
         if ($xiaomiExisting.Path -ne $xiaomiNodePath -or [math]::Abs(($xiaomiExisting.StartTime.ToUniversalTime() - $xiaomiExpectedTime).TotalSeconds) -gt 3) {
             throw 'O PID registrado foi reutilizado. Nao sera encerrado.'
         }

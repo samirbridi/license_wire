@@ -1,0 +1,20 @@
+{
+  "runId": "20261025-central-local-01",
+  "sourceCommit": "2defcbe409c38e3ee174c0106246454c92e3f392",
+  "previous": "v0.1.0 (build 0001)",
+  "version": "v0.2.0 (build 0002)",
+  "build": 2,
+  "date": "2026-10-25",
+  "status": "built",
+  "commits": [
+    {
+      "sha": "2defcbe409c38e3ee174c0106246454c92e3f392",
+      "subject": "feat: cria central Windows para seis cameras Xiaomi com sessao QR e video H264",
+      "body": "",
+      "type": "feat",
+      "description": "cria central Windows para seis cameras Xiaomi com sessao QR e video H264",
+      "breaking": false
+    }
+  ],
+  "artifact": "runtime/builds/build-0002"
+}

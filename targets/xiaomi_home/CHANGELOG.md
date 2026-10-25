@@ -1,5 +1,23 @@
 # CHANGELOG — xiaomi_home
 
+## v0.2.0 (build 0002) - 2026-10-25
+
+### 💥 Breaking Changes
+
+- Nenhum.
+
+### ✨ Features
+
+- feat: cria central Windows para seis cameras Xiaomi com sessao QR e video H264 (commit `2defcbe409c38e3ee174c0106246454c92e3f392`)
+
+### 🐛 Fixes
+
+- Nenhum.
+
+### ⚡ Improvements
+
+- Nenhum.
+
 ## Histórico da preparação — 2026-10-25
 
 ### ✨ Features
