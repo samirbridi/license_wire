@@ -1,0 +1,62 @@
+{
+  "date": "2026-10-25",
+  "method": "FFmpeg audio decode to null sink; no audio playback, recording or microphone transmission",
+  "results": [
+    {
+      "unit": 1,
+      "family": "Mi 2K",
+      "seconds_requested": 3,
+      "codec": "flac (fLaC / 0x43614C66)",
+      "sample_rate": 8000,
+      "layout": "mono",
+      "decode_pass": true
+    },
+    {
+      "unit": 2,
+      "family": "Outdoor Pro",
+      "seconds_requested": 3,
+      "codec": "opus (Opus / 0x7375704F)",
+      "sample_rate": 48000,
+      "layout": "stereo",
+      "decode_pass": true
+    },
+    {
+      "unit": 3,
+      "family": "Mi 2K",
+      "seconds_requested": 3,
+      "codec": "flac (fLaC / 0x43614C66)",
+      "sample_rate": 8000,
+      "layout": "mono",
+      "decode_pass": true
+    },
+    {
+      "unit": 4,
+      "family": "Mi 2K",
+      "seconds_requested": 3,
+      "codec": "flac (fLaC / 0x43614C66)",
+      "sample_rate": 8000,
+      "layout": "mono",
+      "decode_pass": true
+    },
+    {
+      "unit": 5,
+      "family": "AW300",
+      "seconds_requested": 3,
+      "codec": "opus (Opus / 0x7375704F)",
+      "sample_rate": 48000,
+      "layout": "stereo",
+      "decode_pass": true
+    },
+    {
+      "unit": 6,
+      "family": "AW300",
+      "seconds_requested": 3,
+      "codec": "opus (Opus / 0x7375704F)",
+      "sample_rate": 48000,
+      "layout": "stereo",
+      "decode_pass": true
+    }
+  ],
+  "physical_listening_verified": false,
+  "talkback_verified": false
+}

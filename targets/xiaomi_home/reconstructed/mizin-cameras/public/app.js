@@ -49,7 +49,7 @@ async function fetchSnapshot(camera, preview, state) {
   } catch { if (state.isConnected) state.textContent = 'Toque para conectar'; }
 }
 async function refreshStatus() { try { const state = await api('/api/status'); $('#central-status').classList.toggle('error', !state.bridge); $('#central-status').replaceChildren(); const dot = document.createElement('span'); dot.className = 'pulse-dot'; $('#central-status').append(dot, document.createTextNode(state.bridge ? 'Central conectada' : 'Central sem conexão')); $('#remote-status').textContent = state.remoteConfigured ? 'HTTPS configurado' : 'Em preparação'; $('#pair-device').hidden = !state.pairingAvailable; $('#revoke-remote').hidden = !state.pairingAvailable; } catch {} }
-function openCamera(camera) { current = camera; retries = 0; $('#player-title').textContent = camera.name; $('#camera-view').replaceChildren(); for (const view of camera.views) { const option = document.createElement('option'); option.value = view.id; option.textContent = view.label; $('#camera-view').append(option); } $('#view-control').hidden = camera.views.length < 2; if (!$('#player-dialog').open) $('#player-dialog').showModal(); startVideo(); }
+function openCamera(camera) { current = camera; retries = 0; $('#player').muted = true; $('#player-title').textContent = camera.name; $('#camera-view').replaceChildren(); for (const view of camera.views) { const option = document.createElement('option'); option.value = view.id; option.textContent = view.label; $('#camera-view').append(option); } $('#view-control').hidden = camera.views.length < 2; if (!$('#player-dialog').open) $('#player-dialog').showModal(); startVideo(); }
 function startVideo() {
   clearTimeout(retryTimer); sourceGeneration++; const generation = sourceGeneration;
   $('#player-state').hidden = false; $('#player-state').lastElementChild.textContent = retries ? 'Reconectando à câmera…' : 'Conectando à câmera…';
@@ -63,6 +63,8 @@ function retryVideo() { clearTimeout(retryTimer); if (!current || !$('#player-di
 function stopVideo() { sourceGeneration++; clearTimeout(retryTimer); const player = $('#player'); player.pause(); player.removeAttribute('src'); player.load(); current = null; }
 $('#player').addEventListener('playing', () => { clearTimeout(retryTimer); $('#player-state').hidden = true; $('#playback-state').textContent = '● Vídeo conectado'; });
 $('#player').addEventListener('loadedmetadata', () => { const video = $('#player'); $('#player-title').textContent = current ? current.name + ` · ${video.videoWidth}×${video.videoHeight}` : ''; });
+$('#listen-audio').onclick = () => { const video = $('#player'); video.muted = !video.muted; if (!video.muted) video.volume = 1; };
+$('#player').addEventListener('volumechange', () => { $('#listen-audio').textContent = $('#player').muted || $('#player').volume === 0 ? '◖ Ouvir' : '◖ Silenciar'; });
 $('#player').addEventListener('error', () => { if (current && $('#player-dialog').open) retryVideo(); });
 $('#player').addEventListener('ended', () => { if (current && $('#player-dialog').open) retryVideo(); });
 $('#close-player').onclick = () => $('#player-dialog').close(); $('#player-dialog').addEventListener('close', stopVideo);

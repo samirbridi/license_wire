@@ -8,7 +8,7 @@ Criar acesso dedicado em Android e Windows, na rede local e pela internet. As c�
 
 ## Estado Atual e Próximos Passos
 
-Estado: PROTOTIPO_LOCAL_WINDOWS_VALIDADO, com ampliação de vistas e qualidade nativa. Autorização QR confirmada pelo proprietário; seis câmeras com quadros decodificados e prévias reais no painel. As três famílias reproduziram vídeo H.264 no navegador. Outdoor Pro tem dois canais comprovados a 2880×1620; as duas AW300 chegaram a 2304×1296. Ver [teste nativo](notes/09_video_local_validado.md), [central Windows](notes/10_central_windows.md), [recursos e Cloudflare](notes/11_recursos_nativos_e_cloudflare.md) e os recibos em evidence. Android físico, acesso remoto, áudio, SD, PTZ e estabilidade prolongada permanecem pendentes.
+Estado: PROTOTIPO_LOCAL_WINDOWS_VALIDADO, com vistas, qualidade nativa e escuta de áudio. Autorização QR confirmada pelo proprietário; seis câmeras com quadros e áudio decodificados, e prévias reais no painel. As três famílias reproduziram vídeo H.264 no navegador. Outdoor Pro tem dois canais comprovados a 2880×1620; AW300/Mi 2K chegaram a 2304×1296. Ver [teste nativo](notes/09_video_local_validado.md), [central Windows](notes/10_central_windows.md), [recursos e Cloudflare](notes/11_recursos_nativos_e_cloudflare.md) e os recibos em evidence. Android físico, acesso remoto, audição física, fala, SD, PTZ e estabilidade prolongada permanecem pendentes.
 
 - Pesquisa inicial: [notas de viabilidade](notes/00_viabilidade.md).
 - Referências e limites de cada evidência: [fontes públicas](evidence/fontes_publicas.json).

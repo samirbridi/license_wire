@@ -14,7 +14,9 @@ Depois de um build concluído, executar a partir da raiz do repositório:
 
 `-Restart` reinicia apenas o processo registrado desta central, após conferir executável e horário de início. O navegador recebe um link local de uso único; a sessão persiste por até 30 dias. Não compartilhar o arquivo privado `local-access.json`. Uma sessão expirada exige novo vínculo; não há promessa de login permanente.
 
-O protótipo limita vídeo a dois clientes simultâneos, um vídeo por cliente. As prévias são imagens estáticas e têm cache de até 60 segundos. A Outdoor Pro oferece seleção entre Visão 1 e Visão 2; Resolução nativa mantém até 3840 pixels de largura sem ampliar fontes menores. A imagem continua sendo convertida para H.264 a 15 fps. O encoder pode ser libx264/CPU ou h264_nvenc; a configuração privada deste Windows seleciona NVENC após teste local. Decodificação/redimensionamento não foram movidos para GPU. Desempenho com dois clientes não foi medido. Áudio, PTZ, zoom e reprodução do SD continuam pendentes.
+O protótipo limita vídeo a dois clientes simultâneos, um vídeo por cliente. As prévias são imagens estáticas e têm cache de até 60 segundos. A Outdoor Pro oferece seleção entre Visão 1 e Visão 2; Resolução nativa mantém até 3840 pixels de largura sem ampliar fontes menores. A imagem continua sendo convertida para H.264 a 15 fps. O encoder pode ser libx264/CPU ou h264_nvenc; a configuração privada deste Windows seleciona NVENC após teste local. Decodificação/redimensionamento não foram movidos para GPU. Desempenho com dois clientes não foi medido.
+
+Ouvir/Silenciar controla a escuta do áudio AAC convertido a partir do áudio nativo das câmeras. Cada câmera abre inicialmente mutada. O aplicativo não solicita microfone nesta fase. O teste físico de audição é distinto dos recibos de recepção/decodificação. Fala, PTZ, zoom e reprodução do SD continuam pendentes.
 
 ## Verificar e gerar versão
 

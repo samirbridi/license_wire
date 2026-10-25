@@ -19,7 +19,11 @@ Referências: [módulo Xiaomi](https://github.com/AlexxIT/go2rtc/blob/v1.9.15/in
 
 ## Áudio, voz, PTZ e SD
 
-O MP4 consumido no protótipo não expôs trilha de áudio. O módulo Xiaomi nativo suporta PCMA/OPUS e retorno de voz, mas isso não valida o som físico nas seis unidades. Caminho pesquisado: manter áudio nativo no alias, acrescentar temporariamente vídeo H.264/MPEG-TS por `POST /api/stream?dst=ALIAS`, e negociar WebRTC autenticado. A entrada do FFmpeg precisa fixar `video=h265` para evitar consumir o próprio H.264. O transporte WebRTC ainda exige caminho ICE para a etapa remota.
+A prévia inicial de MP4 filtrava áudio AAC, descartando os codecs efetivos das câmeras. A consulta explícita `video=h265&audio=all` resolveu a entrada: três Mi 2K entregam áudio G711 convertido internamente para FLAC/8000 mono; AW300 e Outdoor Pro entregam OPUS/48000 estéreo. Os seis áudios foram decodificados por três segundos para descarte. O aplicativo agora converte para AAC/48000 junto do vídeo e oferece Ouvir/Silenciar, começando mutado em cada câmera. Não houve gravação nem reprodução física de conversas durante os testes.
+
+O retorno de voz continua separado: manter áudio nativo no alias e negociar WebRTC autenticado, com permissão de microfone solicitada apenas por ação do usuário. O transporte WebRTC exige caminho ICE na etapa remota. Para uma futura saída WebRTC H.264, o código permite ingest transitório H.264/MPEG-TS por `POST /api/stream?dst=ALIAS`; a entrada do conversor deve fixar `video=h265` para evitar consumir seu próprio H.264.
+
+O SDK oficial MiEcosystem, em `miot-sdk/service/miotcamera.js`, identifica playback 0x10D/0x10E, velocidade 0x10F e motor 0x112/0x113. Ele fornece wrappers `sendP2PCommandToDevice` e `sendRDTJSONCommandToDevice`, sem definir os payloads específicos de direção, parada, zoom, canal e busca temporal destes modelos. O próximo artefato para reconstrução é o plugin efetivamente baixado por modelo (RN/MPKG/plugin nativo), com versão/hash; o APK base sozinho pode ser insuficiente. [SDK oficial](https://github.com/MiEcosystem/miot-plugin-sdk/blob/master/miot-sdk/service/miotcamera.js).
 
 As especificações oficiais MIOT foram obtidas de `https://miot-spec.org/miot-spec-v2/instances?status=all` e `instance?type=<URN>` e estão em `evidence/miot-spec/`. Elas são metadados públicos, não testes de comandos no dispositivo.
 

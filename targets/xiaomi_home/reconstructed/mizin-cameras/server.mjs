@@ -109,7 +109,7 @@ export function createCentral(options = {}) {
     child.stderr.resume();
     return child;
   }
-  function source(camera) { return `${upstream}/api/stream.mp4?src=${encodeURIComponent(camera.sourceAlias)}`; }
+  function source(camera) { return `${upstream}/api/stream.mp4?src=${encodeURIComponent(camera.sourceAlias)}&video=h265&audio=all`; }
   function scheduleSnapshot(task) {
     return new Promise((accept, reject) => {
       snapshotQueue.push({ task, accept, reject });
@@ -234,7 +234,7 @@ export function createCentral(options = {}) {
     const bitrate = width === 640 ? '700k' : width === 1280 ? '1800k' : width === 1920 ? '3000k' : '6000k';
     const sourceAlias = quality !== 'economy' && view.originalAlias ? view.originalAlias : view.sourceAlias;
     const encoding = encoder === 'h264_nvenc' ? ['-c:v', 'h264_nvenc', '-preset', 'p4', '-tune', 'ull'] : ['-c:v', 'libx264', '-preset', 'veryfast', '-tune', 'zerolatency'];
-    const child = spawnMedia(['-hide_banner', '-nostdin', '-loglevel', 'error', '-rw_timeout', '25000000', '-i', source({ sourceAlias }), '-map', '0:v:0', '-an', '-vf', `scale=w='min(${width},iw)':h=-2`, '-r', '15', ...encoding, '-b:v', bitrate, '-maxrate', bitrate, '-bufsize', bitrate, '-g', '15', '-keyint_min', '15', '-sc_threshold', '0', '-pix_fmt', 'yuv420p', '-movflags', '+frag_keyframe+empty_moov+default_base_moof', '-f', 'mp4', 'pipe:1']);
+    const child = spawnMedia(['-hide_banner', '-nostdin', '-loglevel', 'error', '-rw_timeout', '25000000', '-i', source({ sourceAlias }), '-map', '0:v:0', '-map', '0:a:0?', '-c:a', 'aac', '-b:a', '64k', '-ar', '48000', '-vf', `scale=w='min(${width},iw)':h=-2`, '-r', '15', ...encoding, '-b:v', bitrate, '-maxrate', bitrate, '-bufsize', bitrate, '-g', '15', '-keyint_min', '15', '-sc_threshold', '0', '-pix_fmt', 'yuv420p', '-movflags', '+frag_keyframe+empty_moov+default_base_moof', '-f', 'mp4', 'pipe:1']);
     activeVideos.set(session.key, child);
     let sent = false;
     const timer = setTimeout(() => { child.kill(); if (!res.headersSent) json(res, 504, { error: 'A câmera não respondeu a tempo.' }); else res.destroy(); }, 45_000);

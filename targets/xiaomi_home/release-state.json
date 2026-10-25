@@ -1,20 +1,20 @@
 {
-  "runId": "20261025-central-local-02",
-  "sourceCommit": "fd4e9491e70d43724e0d68c2b767e444ad18f984",
-  "previous": "v0.2.0 (build 0002)",
-  "version": "v0.2.1 (build 0003)",
-  "build": 3,
+  "runId": "20261025-native-views-01",
+  "sourceCommit": "7f42ad9f77db2cc14c3bb01d3ad259b9c06ca348",
+  "previous": "v0.2.1 (build 0003)",
+  "version": "v0.3.0 (build 0004)",
+  "build": 4,
   "date": "2026-10-25",
   "status": "built",
   "commits": [
     {
-      "sha": "fd4e9491e70d43724e0d68c2b767e444ad18f984",
-      "subject": "fix: interpreta data JSON do processo sem depender da cultura do Windows",
+      "sha": "7f42ad9f77db2cc14c3bb01d3ad259b9c06ca348",
+      "subject": "feat: adiciona duas visoes Outdoor qualidade nativa NVENC e vinculo HTTPS protegido",
       "body": "",
-      "type": "fix",
-      "description": "interpreta data JSON do processo sem depender da cultura do Windows",
+      "type": "feat",
+      "description": "adiciona duas visoes Outdoor qualidade nativa NVENC e vinculo HTTPS protegido",
       "breaking": false
     }
   ],
-  "artifact": "runtime/builds/build-0003"
+  "artifact": "runtime/builds/build-0004"
 }

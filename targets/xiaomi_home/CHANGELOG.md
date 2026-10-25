@@ -1,5 +1,23 @@
 # CHANGELOG — xiaomi_home
 
+## v0.3.0 (build 0004) - 2026-10-25
+
+### 💥 Breaking Changes
+
+- Nenhum.
+
+### ✨ Features
+
+- feat: adiciona duas visoes Outdoor qualidade nativa NVENC e vinculo HTTPS protegido (commit `7f42ad9f77db2cc14c3bb01d3ad259b9c06ca348`)
+
+### 🐛 Fixes
+
+- Nenhum.
+
+### ⚡ Improvements
+
+- Nenhum.
+
 ## v0.2.1 (build 0003) - 2026-10-25
 
 ### 💥 Breaking Changes

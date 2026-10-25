@@ -1,0 +1,20 @@
+{
+  "runId": "20261025-native-views-01",
+  "sourceCommit": "7f42ad9f77db2cc14c3bb01d3ad259b9c06ca348",
+  "previous": "v0.2.1 (build 0003)",
+  "version": "v0.3.0 (build 0004)",
+  "build": 4,
+  "date": "2026-10-25",
+  "status": "built",
+  "commits": [
+    {
+      "sha": "7f42ad9f77db2cc14c3bb01d3ad259b9c06ca348",
+      "subject": "feat: adiciona duas visoes Outdoor qualidade nativa NVENC e vinculo HTTPS protegido",
+      "body": "",
+      "type": "feat",
+      "description": "adiciona duas visoes Outdoor qualidade nativa NVENC e vinculo HTTPS protegido",
+      "breaking": false
+    }
+  ],
+  "artifact": "runtime/builds/build-0004"
+}
