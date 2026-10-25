@@ -1,0 +1,57 @@
+{
+  "date": "2026-10-25",
+  "version": "v0.2.1 (build 0003)",
+  "sourceCommit": "fd4e9491e70d43724e0d68c2b767e444ad18f984",
+  "artifact": "runtime/builds/build-0003",
+  "http_ready": true,
+  "launcher_restart_verified": true,
+  "launcher_reuse_verified": true,
+  "source_artifact_hash_match": true,
+  "node_tests_passed": 14,
+  "qr_tests_passed": 5,
+  "assets": [
+    {
+      "file": "package.json",
+      "sha256": "942ffd0a58e23a453405eaa77f2dbd06c197a02c4094c755ab0b8a133a74d5ae"
+    },
+    {
+      "file": "server.mjs",
+      "sha256": "89956ed111b5ce1a24d329174c641c0b20cc722ea1133356e717c82bec58b293"
+    },
+    {
+      "file": "public/app.js",
+      "sha256": "f759af0c9f28099f6a34c68b15750d4249115b49217d7025a82f95c559da3aa6"
+    },
+    {
+      "file": "public/icon.svg",
+      "sha256": "27db228fd755cc01da4eaa44cadc53b69ea98b9d43c9b90b2da6d21adb54befb"
+    },
+    {
+      "file": "public/index.html",
+      "sha256": "7e9099c0c41da159047e5cb7eef99332504b7f66ab0ad96c16f97853a9d370af"
+    },
+    {
+      "file": "public/manifest.webmanifest",
+      "sha256": "5011204f22d8a7421f92a11b437ce106319277ada86d770a1ad573b42db74084"
+    },
+    {
+      "file": "public/style.css",
+      "sha256": "366a9ad7babbeaee04e2341b34094b5b004bea1578d349fbe7049a3ead49e893"
+    },
+    {
+      "file": "public/version.json",
+      "sha256": "0c0cb392a4e0a276f68c9333fe6217fecf229e45d5b1b014291e2b5054fad407"
+    }
+  ],
+  "browser_after_restart": {
+    "authenticated": true,
+    "loaded_previews": 6,
+    "family": "Mi 2K",
+    "width": 1280,
+    "height": 720,
+    "readyState": 4,
+    "currentTime": 31.5204,
+    "paused": false,
+    "error": null
+  }
+}

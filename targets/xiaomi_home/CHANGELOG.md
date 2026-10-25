@@ -1,5 +1,23 @@
 # CHANGELOG — xiaomi_home
 
+## v0.2.1 (build 0003) - 2026-10-25
+
+### 💥 Breaking Changes
+
+- Nenhum.
+
+### ✨ Features
+
+- Nenhum.
+
+### 🐛 Fixes
+
+- fix: interpreta data JSON do processo sem depender da cultura do Windows (commit `fd4e9491e70d43724e0d68c2b767e444ad18f984`)
+
+### ⚡ Improvements
+
+- Nenhum.
+
 ## v0.2.0 (build 0002) - 2026-10-25
 
 ### 💥 Breaking Changes

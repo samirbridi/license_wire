@@ -1,20 +1,20 @@
 {
-  "runId": "20261025-central-local-01",
-  "sourceCommit": "2defcbe409c38e3ee174c0106246454c92e3f392",
-  "previous": "v0.1.0 (build 0001)",
-  "version": "v0.2.0 (build 0002)",
-  "build": 2,
+  "runId": "20261025-central-local-02",
+  "sourceCommit": "fd4e9491e70d43724e0d68c2b767e444ad18f984",
+  "previous": "v0.2.0 (build 0002)",
+  "version": "v0.2.1 (build 0003)",
+  "build": 3,
   "date": "2026-10-25",
   "status": "built",
   "commits": [
     {
-      "sha": "2defcbe409c38e3ee174c0106246454c92e3f392",
-      "subject": "feat: cria central Windows para seis cameras Xiaomi com sessao QR e video H264",
+      "sha": "fd4e9491e70d43724e0d68c2b767e444ad18f984",
+      "subject": "fix: interpreta data JSON do processo sem depender da cultura do Windows",
       "body": "",
-      "type": "feat",
-      "description": "cria central Windows para seis cameras Xiaomi com sessao QR e video H264",
+      "type": "fix",
+      "description": "interpreta data JSON do processo sem depender da cultura do Windows",
       "breaking": false
     }
   ],
-  "artifact": "runtime/builds/build-0002"
+  "artifact": "runtime/builds/build-0003"
 }
