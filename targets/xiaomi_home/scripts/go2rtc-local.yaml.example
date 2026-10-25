@@ -1,0 +1,10 @@
+# Configuracao inicial de diagnostico; nenhuma camera ou credencial incluida.
+api:
+  listen: "127.0.0.1:19841"
+rtsp:
+  listen: ""
+webrtc:
+  listen: "127.0.0.1:19842"
+  ice_servers: []
+  candidates: ["127.0.0.1:19842"]
+streams: {}

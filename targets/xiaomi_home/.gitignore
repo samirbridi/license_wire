@@ -1,0 +1,5 @@
+# Runtime e configuracoes locais podem conter tokens Xiaomi.
+/runtime/
+/evidence/private/
+__pycache__/
+*.py[cod]

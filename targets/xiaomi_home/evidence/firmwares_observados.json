@@ -1,0 +1,29 @@
+{
+  "observed_on": "2026-10-25",
+  "source": "user_attached_images_in_conversation",
+  "app_reports_up_to_date": true,
+  "global_latest_version_verified": false,
+  "association_basis": "same order as previous product screenshots, pending device identity confirmation",
+  "observations": [
+    {
+      "attachment": "Screenshot_20261025_134229_Xiaomi Home.png",
+      "firmware_displayed": "5.3.1_0251",
+      "assumed_product": "Xiaomi Smart Outdoor Camera 4 Pro Triple Zoom",
+      "device_identity_confirmed": false
+    },
+    {
+      "attachment": "Screenshot_20261025_134255_Xiaomi Home.png",
+      "firmware_displayed": "5.1.6_0031",
+      "assumed_product": "Xiaomi Outdoor Camera AW300",
+      "device_identity_confirmed": false
+    },
+    {
+      "attachment": "Screenshot_20261025_134330_Xiaomi Home.png",
+      "firmware_displayed": "4.6.0_0288",
+      "assumed_product": "Xiaomi Smart Camera Standard 2K",
+      "device_identity_confirmed": false
+    }
+  ],
+  "local_original_files_available": false,
+  "local_original_file_note": "Provided Downloads paths were absent during this turn; values transcribed from visible attachments. No image hashes fabricated."
+}

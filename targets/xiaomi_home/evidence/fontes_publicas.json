@@ -1,0 +1,145 @@
+{
+  "consulted_on": "2026-10-25",
+  "timezone": "America/Sao_Paulo",
+  "evidence_kind": "public_documentation_review",
+  "physical_device_tested": true,
+  "local_video_decoded_camera_count": 6,
+  "local_video_evidence": "local-video-qa-2026-10-25.json",
+  "browser_visual_playback_verified": false,
+  "user_confirmed": {
+    "xiaomi_home_region": "China",
+    "clients": ["Android", "Windows"],
+    "access": ["local", "remote"],
+    "windows_same_lan_as_at_least_one_camera": true,
+    "camera_models": [
+      "小米智能室外摄像机 4 Pro 三摄变焦版",
+      "Xiaomi室外摄像机 AW300",
+      "小米智能摄像机 标准版2K"
+    ],
+    "confirmed_camera_model_counts": {
+      "mxiang.camera.mod11": 2,
+      "isa.camera.hlc7": 3,
+      "xiaomi.camera.cw701": 1
+    },
+    "camera_firmware": {
+      "observed_versions": ["5.3.1_0251", "5.1.6_0031", "4.6.0_0288"],
+      "app_reports_up_to_date": true,
+      "model_associations_provisional": true,
+      "details": "firmwares_observados.json"
+    }
+  },
+  "sources": [
+    {
+      "id": "S1",
+      "publisher": "AlexxIT/go2rtc",
+      "title": "Xiaomi Mi Home source documentation",
+      "url": "https://github.com/AlexxIT/go2rtc/blob/master/internal/xiaomi/README.md",
+      "supports": "Implementacao independente para certos modelos; requisitos de conectividade e limitacoes de suporte.",
+      "limit": "Documentacao do projeto, sem teste das cameras do usuario. A branch master pode mudar."
+    },
+    {
+      "id": "S2",
+      "publisher": "AlexxIT/go2rtc",
+      "title": "Known Xiaomi cameras - issue 1982",
+      "url": "https://github.com/AlexxIT/go2rtc/issues/1982",
+      "supports": "Triagem por identificador do modelo, firmware e familia de protocolo.",
+      "limit": "Lista e relatos mantidos no projeto; uma entrada nao certifica todo firmware ou unidade."
+    },
+    {
+      "id": "S3",
+      "publisher": "XiaoMi/ha_xiaomi_home",
+      "title": "Features that will not be implemented - Camera video stream",
+      "url": "https://github.com/XiaoMi/ha_xiaomi_home/wiki/Features-that-will-not-be-implemented#camera-video-stream",
+      "supports": "Limite da integracao oficial para obter video e separacao da autorizacao de video criptografado.",
+      "limit": "Descreve o projeto oficial, nao a impossibilidade de toda implementacao independente."
+    },
+    {
+      "id": "S4",
+      "publisher": "Xiaomi",
+      "title": "What APPs are compatible with the Xiaomi Smart Camera C300?",
+      "url": "https://www.mi.com/ph/support/faq/details/KA-231316/",
+      "supports": "Exemplo oficial de um produto com compatibilidade Google Assistant.",
+      "limit": "FAQ regional de produto especifico; nao valida variantes chinesas ou modelos desconhecidos."
+    },
+    {
+      "id": "S5",
+      "publisher": "Google Home Developers",
+      "title": "Smart Home CameraStream Trait Schema",
+      "url": "https://developers.home.google.com/cloud-to-cloud/traits/camerastream",
+      "supports": "Interface de integracao de video no ecossistema Google e formatos de streaming.",
+      "limit": "Documentacao de desenvolvimento; nao prova reproducao nos destinos do usuario."
+    },
+    {
+      "id": "S6",
+      "publisher": "Home Assistant",
+      "title": "Google Assistant integration",
+      "url": "https://www.home-assistant.io/integrations/google_assistant/",
+      "supports": "Exposicao de cameras compativeis ao Google Assistant como caminho a avaliar.",
+      "limit": "Requer configuracao e camera compativel; nao garante visualizacao em todas as superficies Google Home."
+    },
+    {
+      "id": "S7",
+      "publisher": "Tuya Developer",
+      "title": "Smart App SDK",
+      "url": "https://developer.tuya.com/en/docs/iot/app-sdk-instruction?id=K9kjstc7t376p",
+      "supports": "SDKs destinados ao ecossistema Tuya-enabled e extensao Smart Camera.",
+      "limit": "Nao demonstra importacao generica de cameras Xiaomi no SmartLife."
+    },
+    {
+      "id": "S8",
+      "publisher": "Tuya Developer",
+      "title": "Device Authorization",
+      "url": "https://developer.tuya.com/en/docs/iot-device-dev/TuyaOS-iot_abi_device_authkey?id=Kc67susphcsg5",
+      "supports": "Autorizacao individual para dispositivos que acessam a nuvem Tuya.",
+      "limit": "Nao e uma API de conversao de cadastro Xiaomi para SmartLife."
+    },
+    {
+      "id": "S9",
+      "publisher": "Xiaomi support CDN",
+      "title": "Camera firmware instructions - product model mapping",
+      "url": "https://cdn.cnbj1.fds.api.mi-img.com/ics-resources/articles/625637f174b3a4a88fb0e801.html",
+      "supports": "Associa o nome chines Smart Camera Standard 2K ao modelo MJSXJ03HL e ao caminho isa.camera.hlc7.",
+      "limit": "Usada somente para identificar o produto. Nao foi baixado ou aplicado firmware."
+    },
+    {
+      "id": "S10",
+      "publisher": "XiaoMi/xiaomi-miloco - device owner report and project collaborator reply",
+      "title": "Support for xiaomi.camera.cw701 (Xiaomi 4 Pro Triple Zoom) - issue 189",
+      "url": "https://github.com/XiaoMi/xiaomi-miloco/issues/189",
+      "supports": "Relato de proprietario vincula o nome 4 Pro Triple Zoom ao identificador CW701; registra dificuldade de streaming e discussao de ambiente.",
+      "limit": "Nao e identificacao da unidade do usuario nem prova de funcionamento. O fechamento tratou de macOS/Docker e nao certifica suporte ao produto."
+    },
+    {
+      "id": "S11",
+      "publisher": "glissmam - author of go2rtc pull request",
+      "title": "xiaomi: add cs2 cloud-relay handshake - pull request 2264",
+      "url": "https://github.com/AlexxIT/go2rtc/pull/2264",
+      "supports": "Proposta experimental cita CW701 e HLC7; autor declara teste real apenas em uma C302n, regiao US, em VPS com IP publico.",
+      "limit": "PR consultado aberto. Nao comprova CW701 na regiao China, acesso aos tres canais, zoom ou operacao em rede residencial."
+    },
+    {
+      "id": "S12",
+      "publisher": "AlexxIT/go2rtc - device owner reports",
+      "title": "mxiang.camera.mod13 (AW300): cs2 tcp i/o timeout - issue 2291",
+      "url": "https://github.com/AlexxIT/go2rtc/issues/2291",
+      "supports": "Relatos diretos de timeout e sugestoes de rede/qualidade para AW300, apesar da presenca na lista de cameras conhecidas.",
+      "limit": "Ambientes de terceiros. Sugestoes nao foram aplicadas ou validadas no equipamento do usuario."
+    },
+    {
+      "id": "S13",
+      "publisher": "AlexxIT/go2rtc - GitHub release metadata",
+      "title": "go2rtc v1.9.15",
+      "url": "https://github.com/AlexxIT/go2rtc/releases/tag/v1.9.15",
+      "supports": "Origem da ferramenta Windows AMD64 usada no teste local. Digest do ZIP conferido com a API oficial de releases.",
+      "limit": "Autenticidade da origem e execucao local verificadas; isso nao prova compatibilidade com cameras."
+    },
+    {
+      "id": "S14",
+      "publisher": "AlexxIT/go2rtc",
+      "title": "HTTP API configuration",
+      "url": "https://github.com/AlexxIT/go2rtc/blob/master/internal/api/README.md",
+      "supports": "Configuracao de escuta da interface somente em localhost.",
+      "limit": "Escuta real conferida por netstat para a instancia iniciada; nenhuma configuracao remota implantada."
+    }
+  ]
+}

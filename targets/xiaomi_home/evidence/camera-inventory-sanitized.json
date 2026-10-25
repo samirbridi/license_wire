@@ -1,0 +1,23 @@
+{
+  "observed_on": "2026-10-25",
+  "source": "owner_authorized_xiaomi_cloud_camera_list",
+  "region": "cn",
+  "authenticated": true,
+  "camera_count": 6,
+  "models": [
+    {
+      "model": "isa.camera.hlc7",
+      "count": 3
+    },
+    {
+      "model": "mxiang.camera.mod11",
+      "count": 2
+    },
+    {
+      "model": "xiaomi.camera.cw701",
+      "count": 1
+    }
+  ],
+  "private_identifiers_omitted": true,
+  "firmware_per_unit_verified": false
+}

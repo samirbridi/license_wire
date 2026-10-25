@@ -1,0 +1,29 @@
+{
+  "received_on": "2026-10-25",
+  "timezone": "America/Sao_Paulo",
+  "kind": "user_supplied_product_page_screenshots",
+  "originals_modified": false,
+  "files": [
+    {
+      "filename": "Screenshot_20261025_132942_Xiaomi Home.png",
+      "source": "C:\\Users\\Avell Mizin\\Downloads\\Screenshot_20261025_132942_Xiaomi Home.png",
+      "bytes": 179035,
+      "sha256": "B8F6DF200DF4A6D9539300EB9051C07ADC2A943C65330113AE5D3E0A6EE432C8",
+      "copy_verified": true
+    },
+    {
+      "filename": "Screenshot_20261025_133003_Xiaomi Home.png",
+      "source": "C:\\Users\\Avell Mizin\\Downloads\\Screenshot_20261025_133003_Xiaomi Home.png",
+      "bytes": 179282,
+      "sha256": "DA5C35772B69153A86505EEA54908F22BFB9469C6A27DCDF39F7E41F906C37DE",
+      "copy_verified": true
+    },
+    {
+      "filename": "Screenshot_20261025_133015_Xiaomi Home.png",
+      "source": "C:\\Users\\Avell Mizin\\Downloads\\Screenshot_20261025_133015_Xiaomi Home.png",
+      "bytes": 155226,
+      "sha256": "648F0943E3DE8FDD1D52ABA6724BA3967A09917C6CA76196BF8146FF12A76F62",
+      "copy_verified": true
+    }
+  ]
+}

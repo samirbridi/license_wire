@@ -1,0 +1,93 @@
+{
+  "observed_on": "2026-10-25",
+  "method": "FFmpeg decoding to null sink, no recording of images",
+  "owner_authorized_account": true,
+  "listed_cameras": 6,
+  "decoded_cameras": 6,
+  "results": [
+    {
+      "family": "AW300",
+      "unit": 1,
+      "model": "mxiang.camera.mod11",
+      "requested_seconds": 10,
+      "decoded_frames": 201,
+      "decoded_seconds": 10.0,
+      "width": 640,
+      "height": 360,
+      "video_decode_pass": true
+    },
+    {
+      "family": "AW300",
+      "unit": 2,
+      "model": "mxiang.camera.mod11",
+      "requested_seconds": 10,
+      "decoded_frames": 205,
+      "decoded_seconds": 10.0,
+      "width": 640,
+      "height": 360,
+      "video_decode_pass": true
+    },
+    {
+      "family": "Mi 2K",
+      "unit": 1,
+      "model": "isa.camera.hlc7",
+      "requested_seconds": 30,
+      "decoded_frames": 592,
+      "decoded_seconds": 30.0,
+      "width": 2304,
+      "height": 1296,
+      "video_decode_pass": true
+    },
+    {
+      "family": "Mi 2K",
+      "unit": 2,
+      "model": "isa.camera.hlc7",
+      "requested_seconds": 10,
+      "decoded_frames": 200,
+      "decoded_seconds": 10.008299,
+      "width": 640,
+      "height": 360,
+      "video_decode_pass": true
+    },
+    {
+      "family": "Mi 2K",
+      "unit": 3,
+      "model": "isa.camera.hlc7",
+      "requested_seconds": 10,
+      "decoded_frames": 201,
+      "decoded_seconds": 10.0,
+      "width": 2304,
+      "height": 1296,
+      "video_decode_pass": true
+    },
+    {
+      "family": "Outdoor Pro",
+      "unit": 1,
+      "model": "xiaomi.camera.cw701",
+      "requested_seconds": 10,
+      "decoded_frames": 201,
+      "decoded_seconds": 10.0,
+      "width": 1280,
+      "height": 720,
+      "video_decode_pass": true
+    }
+  ],
+  "firewall_scope": {
+    "program": "target-local go2rtc.exe",
+    "profile": "Private",
+    "interface": "Ethernet",
+    "protocol": "UDP",
+    "remote_addresses": "six inventoried camera IPs only",
+    "admin_application_verified": true
+  },
+  "limitations": {
+    "browser_playback_verified": false,
+    "audio_verified": false,
+    "all_outdoor_pro_channels_verified": false,
+    "ptz_zoom_verified": false,
+    "remote_access_verified": false,
+    "google_home_verified": false,
+    "smartlife_verified": false,
+    "long_term_session_verified": false
+  }
+}

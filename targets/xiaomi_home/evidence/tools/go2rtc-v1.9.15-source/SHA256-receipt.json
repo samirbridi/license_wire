@@ -1,0 +1,14 @@
+[
+  {
+    "filename": "cloud.go",
+    "sha256": "37E12570615ED249C412254D2C0CF623E10B04C713EE1B077BD929B3885B1385",
+    "upstream_ref": "v1.9.15",
+    "read_only_analysis": true
+  },
+  {
+    "filename": "xiaomi.go",
+    "sha256": "17278C1BD466E976864C7CDF430D974E0C56E62F498E28055F85AB1C0897533C",
+    "upstream_ref": "v1.9.15",
+    "read_only_analysis": true
+  }
+]

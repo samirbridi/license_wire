@@ -1,0 +1,22 @@
+# CHANGELOG — xiaomi_home
+
+## Histórico da preparação — 2026-10-25
+
+### ✨ Features
+- Pesquisa documental das alternativas de acesso a câmeras Xiaomi e integração com Google Home/SmartLife; referências em evidence/fontes_publicas.json.
+- Escopo confirmado pelo usuário: região China, clientes Android e Windows, acesso local e remoto.
+- Identificação comercial dos três modelos nas imagens enviadas pelo usuário; inventário em notes/05_modelos_identificados.md.
+- Registro dos três firmwares exibidos pelo app e preparação de ambiente local com go2rtc oficial, sem câmeras conectadas.
+- Auxiliar de autorização Xiaomi por QR confirmado no app, com página restrita a loopback e sessão privada separada da tentativa por senha. Geração real do QR validada; aprovação e vídeo pendentes.
+- Autorização QR concluída, inventário real das seis câmeras e vídeo decodificado de todas; três famílias confirmadas, com SD nas duas AW300 e observação de 30 segundos em uma Mi 2K.
+
+### ⚡ Improvements
+- Estrutura isolada gerada por tools/new-target.ps1.
+- Critérios para identificar modelos e validar uma câmera antes de implementar os clientes.
+- Preservação dos prints originais por cópias verificadas com SHA-256 e pesquisa de limitações específicas de AW300, HLC7 e CW701. Nenhuma câmera foi acessada.
+- Conferência do digest GitHub do go2rtc, HTTP 200 e escuta somente em loopback; runtime/configurações locais excluídos do Git. Não houve nova compilação do projeto.
+- Diagnóstico documental do erro de autenticação 70016, com confirmação de login por e-mail/senha no Android e leitura do código público da versão instalada; sem coletar credenciais ou repetir tentativas.
+- Cinco testes do auxiliar QR aprovados, cobrindo isolamento de origem e não exposição de dados privados. Não houve compilação, versão publicada ou commit.
+- Correção da variante AW300 para mod11, da contagem de fontes e da separação entre resolução anunciada/decodificada. Regra UDP limitada aplicada via UAC, preservando firewall ativo e interfaces em localhost.
+
+Estas anotações registram etapas anteriores ao primeiro commit e build do alvo. Versões posteriores são geradas pelo script próprio, com commits de origem. O helper antigo da raiz continua inadequado para releases por alvo, pois lê os dez commits globais mais recentes.

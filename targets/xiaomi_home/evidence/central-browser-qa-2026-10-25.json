@@ -1,0 +1,18 @@
+{
+  "observed_on": "2026-10-25",
+  "client": "Chromium in-app browser on Windows",
+  "listed_cameras": 6,
+  "loaded_real_previews": 6,
+  "native_camera_decode_count_from_prior_phase": 6,
+  "browser_live_families": [
+    {"family":"Mi 2K","width":1280,"height":720,"readyState":4,"time_samples":[17.6844,62.4926],"paused":false,"error":null},
+    {"family":"AW300","width":640,"height":360,"readyState":4,"observed_time":81.2357,"paused":false,"error":null},
+    {"family":"Outdoor Pro","width":1280,"height":720,"readyState":3,"observed_time_before_reconnect":147.7247,"after_reconnect":{"time":42.2509,"readyState":4,"paused":false,"error":null}}
+  ],
+  "manual_reconnect_verified": true,
+  "mobile_layout":{"viewport_width":390,"viewport_height":844,"document_scroll_width":375,"cards":6,"loaded_previews":6,"horizontal_overflow":false},
+  "node_tests_passed":14,
+  "qr_helper_tests_passed":5,
+  "screenshots":"Private evidence only, excluded from Git",
+  "limitations":{"physical_android_tested":false,"remote_tested":false,"audio_tested":false,"all_outdoor_sensors_tested":false,"ptz_tested":false,"two_video_clients_performance_tested":false,"long_term_session_tested":false}
+}
