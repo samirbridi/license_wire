@@ -7,7 +7,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css?v=0.18.0">
+  <link rel="stylesheet" href="style.css?v=0.19.0-build0021">
   <link rel="manifest" href="manifest.json">
   <link rel="icon" type="image/svg+xml" href="icon.svg">
   <link rel="apple-touch-icon" href="icon.svg">
@@ -51,7 +51,10 @@
           </svg>
         </div>
         <div>
-          <div class="brand-title">MIZIN HOME</div>
+          <div style="display:flex; align-items:center; gap:8px;">
+            <div class="brand-title">MIZIN HOME</div>
+            <span class="badge badge-version" id="headerVersionBadge" style="background: rgba(56, 189, 248, 0.15); border: 1px solid rgba(56, 189, 248, 0.35); color: #38bdf8; font-family: 'JetBrains Mono', monospace; font-size: 10px; padding: 2px 7px; border-radius: 4px; font-weight: 600;">v0.19.0 (build 0021)</span>
+          </div>
           <div class="brand-sub">CENTRAL DE CONTROLE RESIDENCIAL</div>
         </div>
       </div>
@@ -1200,122 +1203,99 @@
         </div>
       </div>
 
-      <!-- Palco Central de Vídeo e Painel de Controle Adaptativo -->
-      <div class="ptz-modal-content-grid">
-        
-        <!-- COLUNA ESQUERDA: PALCO DE VÍDEO (DUPLO OU ÚNICO) + ÁUDIO BIDIRECIONAL + RÉGUA SD -->
-        <div class="ptz-view-column">
+      <!-- BARRA DE ABAS PRINCIPAIS: AO VIVO & CONTROLES vs GRAVAÇÕES SD -->
+      <div class="theater-tabs-bar">
+        <button type="button" class="theater-tab-btn active" id="tabBtnTheaterLive" onclick="switchTheaterTab('live')">
+          <span class="tab-icon">🔴</span>
+          <div class="tab-text-wrap">
+            <span class="tab-title">Ao Vivo & Controles</span>
+            <span class="tab-sub">Tempo real • Intercom • PTZ • Holofote</span>
+          </div>
+          <span class="tab-badge tab-badge-live">AO VIVO</span>
+        </button>
+        <button type="button" class="theater-tab-btn" id="tabBtnTheaterSd" onclick="switchTheaterTab('sd')">
+          <span class="tab-icon">📼</span>
+          <div class="tab-text-wrap">
+            <span class="tab-title">Gravações do Cartão SD</span>
+            <span class="tab-sub">Armazenamento local • Régua 24h • Eventos IA</span>
+          </div>
+          <span class="tab-badge tab-badge-sd" id="tabSdCapacityBadge">MICROSD 24H</span>
+        </button>
+      </div>
+
+      <!-- ABA 1: AO VIVO & CONTROLES ESPECÍFICOS DE HARDWARE -->
+      <div class="theater-tab-panel active" id="theaterPanelLive">
+        <div class="ptz-modal-content-grid">
           
-          <!-- Contêiner de Vídeo Duplo / Único Adaptativo -->
-          <div class="ptz-dual-video-container" id="ptzDualVideoContainer">
+          <!-- COLUNA ESQUERDA: PALCO DE VÍDEO AO VIVO (DUPLO OU ÚNICO) + ÁUDIO INTERCOM -->
+          <div class="ptz-view-column">
             
-            <!-- PLAYER 1: VISTA PRINCIPAL (AMPLA OU ÚNICA) -->
-            <div class="ptz-main-player-wrap" id="ptzPlayerWrap1">
-              <video id="ptzMainVideoElement" autoplay playsinline muted controls style="width:100%; height:100%; display:none; border-radius:10px; background:#000; object-fit:contain !important;"></video>
-              <img id="ptzMainVideoFeed" src="" alt="Câmera Feed" style="width:100%; height:100%; border-radius:10px; display:block; background:#000; object-fit:contain !important;">
-              <div id="ptzVideoSpinner" class="ptz-stream-spinner">
-                <span class="pulse-dot"></span> Sincronizando vídeo ao vivo...
+            <!-- Contêiner de Vídeo Duplo / Único Adaptativo -->
+            <div class="ptz-dual-video-container" id="ptzDualVideoContainer">
+              
+              <!-- PLAYER 1: VISTA PRINCIPAL (AMPLA OU ÚNICA) -->
+              <div class="ptz-main-player-wrap" id="ptzPlayerWrap1">
+                <video id="ptzMainVideoElement" autoplay playsinline muted controls style="width:100%; height:100%; display:none; border-radius:10px; background:#000; object-fit:contain !important;"></video>
+                <img id="ptzMainVideoFeed" src="" alt="Câmera Feed" style="width:100%; height:100%; border-radius:10px; display:block; background:#000; object-fit:contain !important;">
+                <div id="ptzVideoSpinner" class="ptz-stream-spinner">
+                  <span class="pulse-dot"></span> Sincronizando vídeo ao vivo...
+                </div>
+                <div class="ptz-overlay-top-badge" id="ptzOverlayBadge1">
+                  <span class="pulse-dot"></span>
+                  <span id="ptzOverlayText1">AO VIVO • NATIVA</span>
+                </div>
+                <!-- Atalho Rápido de Portão Flutuante Sobreposto no Vídeo -->
+                <button class="ptz-floating-gate-btn" id="ptzFloatingGateBtn" onclick="pulseGate()" style="display:none;">
+                  <span>🚪</span> Acionar Portão (<span id="ptzFloatingGateStatus">Fechado 🔒</span>)
+                </button>
               </div>
-              <div class="ptz-overlay-top-badge" id="ptzOverlayBadge1">
-                <span class="pulse-dot"></span>
-                <span id="ptzOverlayText1">AO VIVO • NATIVA</span>
+
+              <!-- PLAYER 2: VISTA SECUNDÁRIA (TELE / PTZ DA OUTDOOR PRO) -->
+              <div class="ptz-main-player-wrap" id="ptzPlayerWrap2" style="display:none;">
+                <video id="ptzSecondaryVideoElement" autoplay playsinline muted controls style="width:100%; height:100%; display:none; border-radius:10px; background:#000; object-fit:contain !important;"></video>
+                <img id="ptzSecondaryVideoFeed" src="" alt="Câmera Feed Secundário" style="width:100%; height:100%; border-radius:10px; display:block; background:#000; object-fit:contain !important;">
+                <div class="ptz-overlay-top-badge" id="ptzOverlayBadge2">
+                  <span class="pulse-dot" style="background:#38bdf8;"></span>
+                  <span>VISTA 2 • TELE / PTZ (3K)</span>
+                </div>
               </div>
-              <!-- Atalho Rápido de Portão Flutuante Sobreposto no Vídeo -->
-              <button class="ptz-floating-gate-btn" id="ptzFloatingGateBtn" onclick="pulseGate()" style="display:none;">
-                <span>🚪</span> Acionar Portão (<span id="ptzFloatingGateStatus">Fechado 🔒</span>)
-              </button>
+
             </div>
 
-            <!-- PLAYER 2: VISTA SECUNDÁRIA (TELE / PTZ DA OUTDOOR PRO) -->
-            <div class="ptz-main-player-wrap" id="ptzPlayerWrap2" style="display:none;">
-              <video id="ptzSecondaryVideoElement" autoplay playsinline muted controls style="width:100%; height:100%; display:none; border-radius:10px; background:#000; object-fit:contain !important;"></video>
-              <img id="ptzSecondaryVideoFeed" src="" alt="Câmera Feed Secundário" style="width:100%; height:100%; border-radius:10px; display:block; background:#000; object-fit:contain !important;">
-              <div class="ptz-overlay-top-badge" id="ptzOverlayBadge2">
-                <span class="pulse-dot" style="background:#38bdf8;"></span>
-                <span>VISTA 2 • TELE / PTZ (3K)</span>
+            <!-- Barra de Áudio Bidirecional (Retorno de Áudio + Push-to-Talk) -->
+            <div class="ptz-audio-intercom-box">
+              <div class="audio-status-pill">
+                <span class="status-dot online"></span>
+                <span id="audioStatusText">Áudio Bidirecional: Microfone e Alto-Falante Prontos</span>
+                <div class="audio-wave-meter" id="audioWaveMeter" style="display:none;">
+                  <span class="wave-bar"></span><span class="wave-bar"></span><span class="wave-bar"></span><span class="wave-bar"></span>
+                </div>
+              </div>
+              <div class="audio-controls-row">
+                <button class="btn-audio-action" id="btnAudioListen" onclick="toggleAudioListen()" title="Ouvir som do ambiente da câmera em tempo real">
+                  <span id="audioListenIcon">🔊</span> <span id="audioListenText">Ouvir Retorno</span>
+                </button>
+                <button class="btn-audio-action btn-ptt-talk" id="btnAudioTalk" onmousedown="startPttTalk()" onmouseup="stopPttTalk()" ontouchstart="startPttTalk()" ontouchend="stopPttTalk()" title="Pressione e segure para falar pelo alto-falante da câmera">
+                  <span id="audioTalkIcon">🎙️</span> <span id="audioTalkText">Pressione para Falar (Talkback)</span>
+                </button>
               </div>
             </div>
 
-          </div>
-
-          <!-- Barra de Áudio Bidirecional (Retorno de Áudio + Push-to-Talk) -->
-          <div class="ptz-audio-intercom-box">
-            <div class="audio-status-pill">
-              <span class="status-dot online"></span>
-              <span id="audioStatusText">Áudio Bidirecional: Microfone e Alto-Falante Prontos</span>
-              <div class="audio-wave-meter" id="audioWaveMeter" style="display:none;">
-                <span class="wave-bar"></span><span class="wave-bar"></span><span class="wave-bar"></span><span class="wave-bar"></span>
-              </div>
-            </div>
-            <div class="audio-controls-row">
-              <button class="btn-audio-action" id="btnAudioListen" onclick="toggleAudioListen()" title="Ouvir som do ambiente da câmera em tempo real">
-                <span id="audioListenIcon">🔊</span> <span id="audioListenText">Ouvir Retorno</span>
-              </button>
-              <button class="btn-audio-action btn-ptt-talk" id="btnAudioTalk" onmousedown="startPttTalk()" onmouseup="stopPttTalk()" ontouchstart="startPttTalk()" ontouchend="stopPttTalk()" title="Pressione e segure para falar pelo alto-falante da câmera">
-                <span id="audioTalkIcon">🎙️</span> <span id="audioTalkText">Pressione para Falar (Talkback)</span>
-              </button>
-            </div>
-          </div>
-
-          <!-- Barra de Gravações do Cartão SD (Régua Interativa de 24 Horas) -->
-          <div class="ptz-recordings-timeline-box" id="ptzRecordingsTimelineBox">
-            <div class="timeline-header-row">
+            <!-- Acesso Rápido às Gravações SD -->
+            <div style="display:flex; justify-content:space-between; align-items:center; background:rgba(255,255,255,0.02); border:1px solid rgba(255,255,255,0.06); border-radius:8px; padding:10px 14px;">
               <div style="display:flex; align-items:center; gap:8px;">
                 <span style="font-size:16px;">📼</span>
-                <span style="font-weight:700; font-size:12px; color:var(--text-main);">Gravações do Cartão SD</span>
-                <span class="badge badge-emerald" id="sdStorageBadge" style="font-size:10px;">SD 32GB PRONTO</span>
+                <div>
+                  <div style="font-size:12px; font-weight:700; color:var(--text-main);">Gravações Contínuas MicroSD (24h)</div>
+                  <div style="font-size:10px; color:var(--text-muted);" id="liveSdQuickInfo">Linha do tempo interativa e detecções IA disponíveis</div>
+                </div>
               </div>
-              <div class="timeline-date-selector">
-                <button type="button" class="btn btn-sm btn-secondary" onclick="stepTimelineDay(-1)">◀ Ontem</button>
-                <input type="date" id="timelineDateInput" class="timeline-date-picker" onchange="onTimelineDateChanged(this.value)">
-                <button type="button" class="btn btn-sm btn-secondary" onclick="stepTimelineDay(1)">Hoje ▶</button>
-              </div>
+              <button type="button" class="btn btn-sm btn-outline-cyan" onclick="switchTheaterTab('sd')" style="font-size:11px; padding:5px 12px; white-space:nowrap;">
+                Abrir Aba Gravações ▶
+              </button>
             </div>
 
-            <!-- Régua Gráfica de 24h -->
-            <div class="timeline-ruler-container" id="timelineRulerContainer" onclick="seekTimelineClick(event)">
-              <div class="timeline-track" id="timelineTrack">
-                <!-- Blocos coloridos de gravação renderizados dinamicamente -->
-              </div>
-              <!-- Agulha de Posição Atual -->
-              <div class="timeline-needle" id="timelineNeedle" style="left: 65%;">
-                <span class="timeline-needle-tip" id="timelineNeedleTime">14:32:00</span>
-              </div>
-            </div>
-
-            <div class="timeline-labels-row">
-              <span>00:00</span>
-              <span>04:00</span>
-              <span>08:00</span>
-              <span>12:00</span>
-              <span>16:00</span>
-              <span>20:00</span>
-              <span>23:59</span>
-            </div>
-
-            <!-- Controles de Reprodução SD -->
-            <div class="timeline-playback-actions">
-              <div class="timeline-legend">
-                <span class="legend-dot" style="background:#10b981;"></span> Contínuo
-                <span class="legend-dot" style="background:#f59e0b;"></span> Movimento
-                <span class="legend-dot" style="background:#38bdf8;"></span> Humano
-              </div>
-              <div style="display:flex; gap:8px;">
-                <button type="button" class="btn btn-sm btn-secondary" onclick="playCurrentSdSegment()">▶️ Reproduzir Trecho</button>
-                <button type="button" class="btn btn-sm btn-secondary" onclick="downloadCurrentSdClip()">💾 Baixar Clipe MP4</button>
-              </div>
-            </div>
-
-            <!-- Eventos Inteligentes Gravados no Cartão SD -->
-            <div style="margin-top:10px;">
-              <div style="font-size:11px; font-weight:700; color:var(--text-muted); margin-bottom:6px; display:flex; align-items:center; gap:5px;">
-                <span>🎯</span> EVENTOS DETECTADOS POR IA NO CARTÃO SD (CLIQUE PARA NAVEGAR):
-              </div>
-              <div class="timeline-events-container" id="timelineEventsContainer" style="display:flex; gap:6px; flex-wrap:wrap;"></div>
-            </div>
           </div>
-
-        </div>
 
         <!-- COLUNA DIREITA: CONTROLES ESPECÍFICOS POR MODELO DE HARDWARE & ATALHOS -->
         <div class="ptz-controls-column">
@@ -1463,6 +1443,132 @@
 
         </div>
       </div>
+      <!-- FIM DA ABA 1: AO VIVO -->
+
+      <!-- ABA 2: GRAVAÇÕES DO CARTÃO SD (TEATRO DEDICADO DE REPRODUÇÃO & ARMAZENAMENTO) -->
+      <div class="theater-tab-panel" id="theaterPanelSd" style="display:none;">
+        <div class="theater-sd-panel">
+
+          <!-- LINHA 1: CARTÕES DE DIAGNÓSTICO E CAPACIDADE DO CARTÃO SD -->
+          <div class="sd-stat-cards-grid">
+            <div class="sd-stat-card">
+              <span class="sd-stat-icon">💾</span>
+              <div class="sd-stat-content">
+                <span class="sd-stat-label">Cartão MicroSD &amp; Saúde</span>
+                <span class="sd-stat-val" id="sdCardHealthTitle">MicroSD High Endurance</span>
+                <span class="sd-stat-sub" id="sdCardHealthSub">Saúde: 100% Excelente (Class 10 U3 V30)</span>
+              </div>
+            </div>
+
+            <div class="sd-stat-card">
+              <span class="sd-stat-icon">📊</span>
+              <div class="sd-stat-content">
+                <span class="sd-stat-label">Armazenamento</span>
+                <span class="sd-stat-val" id="sdStorageUsageText">Calculando espaço...</span>
+                <span class="sd-stat-sub" id="sdStorageFreeText">24h contínuas</span>
+              </div>
+            </div>
+
+            <div class="sd-stat-card">
+              <span class="sd-stat-icon">🔄</span>
+              <div class="sd-stat-content">
+                <span class="sd-stat-label">Regime de Gravação</span>
+                <span class="sd-stat-val" id="sdRecordingModeText">24/7 Contínua Circular</span>
+                <span class="sd-stat-sub">Sobrescreve blocos antigos em loop</span>
+              </div>
+            </div>
+
+            <div class="sd-stat-card">
+              <span class="sd-stat-icon">🧠</span>
+              <div class="sd-stat-content">
+                <span class="sd-stat-label">Eventos Inteligentes</span>
+                <span class="sd-stat-val" id="sdEventsCountBadge">18 Detecções de IA Hoje</span>
+                <span class="sd-stat-sub">Pessoas, Veículos e Movimento</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- LINHA 2: PLAYER DEDICADO DE REPRODUÇÃO DO CARTÃO SD (ZERO CROP, 16:9) -->
+          <div class="sd-player-theater-wrap">
+            <video id="sdPlaybackVideoElement" controls autoplay playsinline style="width:100%; height:100%; border-radius:10px; background:#000; object-fit:contain !important;"></video>
+            <div id="sdPlaybackSpinner" class="ptz-stream-spinner">
+              <span class="pulse-dot"></span> Sincronizando gravação do cartão SD...
+            </div>
+            <div class="ptz-overlay-top-badge" id="sdPlaybackOverlayBadge">
+              <span class="pulse-dot" style="background:#10b981;"></span>
+              <span id="sdPlaybackOverlayText">GRAVAÇÃO SD • NATIVA H.264/AAC</span>
+            </div>
+          </div>
+
+          <!-- LINHA 3: NAVEGAÇÃO DE DATA & RÉGUA INTERATIVA DE 24 HORAS -->
+          <div class="ptz-recordings-timeline-box" style="margin-top:0;">
+            <div class="timeline-header-row">
+              <div style="display:flex; align-items:center; gap:8px;">
+                <span style="font-size:16px;">📅</span>
+                <span style="font-weight:700; font-size:13px; color:var(--text-main);">Seletor de Data &amp; Linha do Tempo</span>
+                <span class="badge badge-emerald" id="sdStorageBadge" style="font-size:10px;">MicroSD PRONTO</span>
+              </div>
+              <div class="timeline-date-selector">
+                <button type="button" class="btn btn-sm btn-secondary" onclick="stepTimelineDay(-1)">◀ Ontem</button>
+                <input type="date" id="timelineDateInput" class="timeline-date-picker" onchange="onTimelineDateChanged(this.value)">
+                <button type="button" class="btn btn-sm btn-secondary" onclick="stepTimelineDay(1)">Hoje ▶</button>
+                <button type="button" class="btn btn-sm btn-outline-cyan" onclick="stepTimelineToday()">📅 Hoje</button>
+              </div>
+            </div>
+
+            <!-- Régua Gráfica de 24h -->
+            <div class="timeline-ruler-container" id="timelineRulerContainer" onclick="seekTimelineClick(event)">
+              <div class="timeline-track" id="timelineTrack">
+                <!-- Blocos coloridos de gravação renderizados dinamicamente -->
+              </div>
+              <!-- Agulha de Posição Atual -->
+              <div class="timeline-needle" id="timelineNeedle" style="left: 65%;">
+                <span class="timeline-needle-tip" id="timelineNeedleTime">14:32:00</span>
+              </div>
+            </div>
+
+            <div class="timeline-labels-row">
+              <span>00:00</span>
+              <span>02:00</span>
+              <span>04:00</span>
+              <span>06:00</span>
+              <span>08:00</span>
+              <span>10:00</span>
+              <span>12:00</span>
+              <span>14:00</span>
+              <span>16:00</span>
+              <span>18:00</span>
+              <span>20:00</span>
+              <span>22:00</span>
+              <span>23:59</span>
+            </div>
+
+            <!-- Controles de Reprodução SD e Ações -->
+            <div class="timeline-playback-actions">
+              <div class="timeline-legend">
+                <span class="legend-dot" style="background:#10b981;"></span> Contínuo
+                <span class="legend-dot" style="background:#f59e0b;"></span> Movimento
+                <span class="legend-dot" style="background:#38bdf8;"></span> Humano/Veículo
+              </div>
+              <div style="display:flex; gap:8px;">
+                <button type="button" class="btn btn-sm btn-primary" onclick="playCurrentSdSegment()">▶️ Reproduzir Deste Ponto</button>
+                <button type="button" class="btn btn-sm btn-outline-cyan" onclick="downloadCurrentSdClip()">💾 Baixar Clipe MP4 (15s)</button>
+                <button type="button" class="btn btn-sm btn-secondary" onclick="captureSdSnapshot()">📸 Foto da Gravação</button>
+              </div>
+            </div>
+
+            <!-- Eventos Inteligentes Gravados no Cartão SD -->
+            <div style="margin-top:12px; border-top:1px solid rgba(255,255,255,0.06); padding-top:10px;">
+              <div style="font-size:11px; font-weight:700; color:var(--text-muted); margin-bottom:8px; display:flex; align-items:center; gap:6px;">
+                <span>🎯</span> EVENTOS DETECTADOS POR IA NO CARTÃO SD (CLIQUE PARA REPRODUZIR):
+              </div>
+              <div class="timeline-events-container" id="timelineEventsContainer" style="display:flex; gap:6px; flex-wrap:wrap;"></div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+      <!-- FIM DA ABA 2: GRAVAÇÕES SD -->
 
       <div class="modal-footer" style="margin-top:14px; display:flex; justify-content:space-between; align-items:center;">
         <span style="font-size:11px; color:var(--text-muted);" id="ptzModalFooterStatus">Protocolo go2rtc • Criptografia P2P Xiaomi • Conexão Local Direta</span>
@@ -2002,6 +2108,6 @@
   <!-- Floating Toast Notifications Container -->
   <div id="toastContainer" class="toast-container"></div>
 
-  <script src="app.js?v=0.18.0"></script>
+  <script src="app.js?v=0.19.0-build0021"></script>
 </body>
 </html>

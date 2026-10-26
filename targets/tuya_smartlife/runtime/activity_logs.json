@@ -1,5 +1,47 @@
 [
   {
+    "id": "log_1793038454202_x0pg",
+    "timestamp": 1793038454202,
+    "timeFormatted": "15:14:14",
+    "dateFormatted": "26/10/2026",
+    "devId": "eb49c5d1977172327aqb1q",
+    "devName": "Portão da Garagem",
+    "action": "Portão Fechado com Sucesso",
+    "details": "Sensor magnético confirmou fechamento total (permaneceu aberto por 65s). Garagem segura.",
+    "origin": "Sensor Magnético",
+    "icon": "✅",
+    "level": "success",
+    "read": true
+  },
+  {
+    "id": "log_1793038449057_pj6r",
+    "timestamp": 1793038449057,
+    "timeFormatted": "15:14:09",
+    "dateFormatted": "26/10/2026",
+    "devId": "eb49c5d1977172327aqb1q",
+    "devName": "Portão da Garagem",
+    "action": "Alerta: Portão Aberto > 1 Minuto",
+    "details": "Atenção! O portão da garagem permaneceu aberto por mais de 60 segundos. Verifique as câmeras ou feche agora.",
+    "origin": "Alerta de Segurança",
+    "icon": "🚨",
+    "level": "danger",
+    "read": true
+  },
+  {
+    "id": "log_1793038388879_rewu",
+    "timestamp": 1793038388879,
+    "timeFormatted": "15:13:08",
+    "dateFormatted": "26/10/2026",
+    "devId": "eb49c5d1977172327aqb1q",
+    "devName": "Portão da Garagem",
+    "action": "Portão Aberto",
+    "details": "Sensor magnético detectou abertura do portão da garagem",
+    "origin": "Sensor Magnético",
+    "icon": "🚪",
+    "level": "warning",
+    "read": true
+  },
+  {
     "id": "log_1793031234649_wc52",
     "timestamp": 1793031234649,
     "timeFormatted": "13:13:54",
@@ -11,7 +53,7 @@
     "origin": "Sensor Magnético",
     "icon": "✅",
     "level": "success",
-    "read": false
+    "read": true
   },
   {
     "id": "log_1793031184895_4vuo",
@@ -25,7 +67,7 @@
     "origin": "Sensor Magnético",
     "icon": "🚪",
     "level": "warning",
-    "read": false
+    "read": true
   },
   {
     "id": "log_1793025097279_2010",

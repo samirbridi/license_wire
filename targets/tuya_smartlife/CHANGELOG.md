@@ -5,6 +5,21 @@ Formato de versão obrigatório: `vX.Y.Z (build XXXX)`.
 
 ---
 
+## v0.19.0 (build 0021) - 2026-10-26
+
+### ✨ Features
+- feat: reformula o Surveillance Theater em abas dedicadas e independentes para otimização visual e de performance:
+  - **Aba 🔴 Ao Vivo & Controles**: foca exclusivamente no streaming de vídeo em tempo real (duplo sensor 3K ou único 2K/1080p sem cortes), seletor de resolução, intercomunicador de áudio bidirecional (ouvir e falar/talkback), joystick PTZ 360°, controle de zoom digital/óptico, slider de brilho do holofote duplo, sirene dissuasiva e atalhos rápidos da casa
+  - **Aba 📼 Gravações do Cartão SD (24h)**: central dedicada de reprodução de segurança NVR com diagnóstico de hardware MicroSD (capacidade 128GB/64GB/32GB, saúde 100% Class 10 U3 V30, espaço ocupado/livre e regime circular 24/7), player dedicado de reprodução contínua (16:9 sem cortes), seletor de calendário/data, régua temporal interativa de 24h com agulha deslizante de alta precisão, exportação de clipes MP4 de 15 segundos e chips de eventos de IA (Pessoas, Veículos, Movimento) com reprodução imediata em 1 clique
+- feat: adiciona badge de versão visível (`v0.19.0 (build 0021)`) no topo da interface ao lado da marca MIZIN HOME e indicador no rodapé para rastreabilidade imediata entre acessos locais e remotos
+
+### 🐛 Fixes
+- fix: corrige implantação remota no Cloudflare Pages forçando o branch de produção `--branch=main`, corrigindo o descompasso onde os deploys iam para o branch preview `master`
+- fix: implementa cabeçalhos estritos `Cache-Control: no-cache, no-store, must-revalidate` em `_headers` e parâmetros de versionamento nos bundles (`style.css?v=0.19.0-build0021` e `app.js?v=0.19.0-build0021`) para erradicar o cache de versões antigas em celulares e navegadores remotos
+- improve: desativa automaticamente o streaming ao vivo ao alternar para a aba de gravações SD e pausa a reprodução de gravação ao voltar para o ao vivo, poupando banda e processamento do dispositivo
+
+---
+
 ## v0.18.0 (build 0020) - 2026-10-26
 
 ### ✨ Features

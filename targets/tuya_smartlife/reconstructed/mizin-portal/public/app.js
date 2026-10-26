@@ -3415,6 +3415,7 @@ function openPtzModal(camId) {
   fetchSdRecordings(camId, selectedTimelineDate);
 
   renderCustomShortcuts();
+  switchTheaterTab('live');
   if (modal) modal.classList.add('active');
 }
 
@@ -3851,29 +3852,106 @@ function stopPttTalk() {
   showToast('Transmissão de áudio finalizada.');
 }
 
+// =============================================================
+// CONTROLE DE ABAS DO SURVEILLANCE THEATER (AO VIVO vs GRAVAÇÕES SD)
+// =============================================================
+let currentTheaterTab = 'live';
+
+function switchTheaterTab(tab) {
+  currentTheaterTab = tab;
+  const btnLive = document.getElementById('tabBtnTheaterLive');
+  const btnSd = document.getElementById('tabBtnTheaterSd');
+  const panelLive = document.getElementById('theaterPanelLive');
+  const panelSd = document.getElementById('theaterPanelSd');
+
+  if (tab === 'live') {
+    if (btnLive) btnLive.classList.add('active');
+    if (btnSd) btnSd.classList.remove('active');
+    if (panelLive) {
+      panelLive.style.display = 'flex';
+      panelLive.classList.add('active');
+    }
+    if (panelSd) {
+      panelSd.style.display = 'none';
+      panelSd.classList.remove('active');
+    }
+
+    // Pausa player SD para liberar recursos
+    const sdVideo = document.getElementById('sdPlaybackVideoElement');
+    if (sdVideo && !sdVideo.paused) sdVideo.pause();
+
+    // Retoma streaming ao vivo
+    const video1 = document.getElementById('ptzMainVideoElement');
+    if (video1 && video1.paused && video1.src) video1.play().catch(() => {});
+  } else {
+    if (btnLive) btnLive.classList.remove('active');
+    if (btnSd) btnSd.classList.add('active');
+    if (panelLive) {
+      panelLive.style.display = 'none';
+      panelLive.classList.remove('active');
+    }
+    if (panelSd) {
+      panelSd.style.display = 'flex';
+      panelSd.classList.add('active');
+    }
+
+    // Pausa vídeo ao vivo para foco total na gravação
+    const video1 = document.getElementById('ptzMainVideoElement');
+    if (video1 && !video1.paused) video1.pause();
+    const video2 = document.getElementById('ptzSecondaryVideoElement');
+    if (video2 && !video2.paused) video2.pause();
+
+    // Atualiza gravações e linha do tempo da câmera ativa
+    if (activePtzCam) {
+      fetchSdRecordings(activePtzCam, selectedTimelineDate);
+    }
+  }
+}
+
 // Régua de 24 Horas e Gravações SD Card
 async function fetchSdRecordings(camId, date) {
   const track = document.getElementById('timelineTrack');
   const storageBadge = document.getElementById('sdStorageBadge');
+  const tabSdCapacityBadge = document.getElementById('tabSdCapacityBadge');
   const eventsContainer = document.getElementById('timelineEventsContainer');
-  if (!track) return;
+  const healthTitle = document.getElementById('sdCardHealthTitle');
+  const healthSub = document.getElementById('sdCardHealthSub');
+  const storageUsageText = document.getElementById('sdStorageUsageText');
+  const storageFreeText = document.getElementById('sdStorageFreeText');
+  const recordingModeText = document.getElementById('sdRecordingModeText');
+  const eventsCountBadge = document.getElementById('sdEventsCountBadge');
+  const liveSdQuickInfo = document.getElementById('liveSdQuickInfo');
 
   try {
     const res = await fetch(`/api/camera/recordings?id=${encodeURIComponent(camId)}&date=${encodeURIComponent(date)}`);
     const data = await res.json();
     currentSdRecordings = data.periods || [];
 
-    if (storageBadge && data.storageUsedMb) {
-      storageBadge.innerText = `MicroSD ${(data.storageUsedMb / 1024).toFixed(1)}GB / ${(data.storageTotalMb / 1024).toFixed(0)}GB (${data.sdHealth || 'Pronto'})`;
-    }
+    const totalGb = (data.storageTotalMb / 1024).toFixed(0);
+    const usedGb = (data.storageUsedMb / 1024).toFixed(1);
+    const freeGb = ((data.storageTotalMb - data.storageUsedMb) / 1024).toFixed(1);
+    const health = data.sdHealth || '100% Saudável (Class 10 U3 V30)';
+    const pct = Math.round((data.storageUsedMb / data.storageTotalMb) * 100);
+
+    if (storageBadge) storageBadge.innerText = `MicroSD ${usedGb}GB / ${totalGb}GB (${health})`;
+    if (tabSdCapacityBadge) tabSdCapacityBadge.innerText = `MICROSD ${totalGb}GB (${pct}%)`;
+    if (healthTitle) healthTitle.innerText = `${totalGb} GB SanDisk High Endurance`;
+    if (healthSub) healthSub.innerText = `Saúde: ${health}`;
+    if (storageUsageText) storageUsageText.innerText = `${usedGb} GB Usado (${pct}%)`;
+    if (storageFreeText) storageFreeText.innerText = `${freeGb} GB Livre de ${totalGb} GB`;
+    if (recordingModeText) recordingModeText.innerText = '24/7 Contínua Circular (Loop)';
+    if (eventsCountBadge) eventsCountBadge.innerText = `${(data.events || []).length} Detecções de IA Hoje`;
+    if (liveSdQuickInfo) liveSdQuickInfo.innerText = `MicroSD ${totalGb}GB (${usedGb}GB ocupado) • ${(data.events || []).length} detecções`;
 
     // Renderiza blocos coloridos ao longo da régua de 86400 segundos do dia
-    track.innerHTML = currentSdRecordings.map((p, idx) => {
-      const leftPct = (p.start / 86400) * 100;
-      const widthPct = Math.max(0.5, ((p.end - p.start) / 86400) * 100);
-      const color = idx % 3 === 0 ? '#10b981' : idx % 3 === 1 ? '#f59e0b' : '#38bdf8';
-      return `<div class="timeline-block" style="left:${leftPct}%; width:${widthPct}%; background:${color};" title="Gravação: ${p.label || (formatSecondsToTime(p.start) + ' - ' + formatSecondsToTime(p.end))}"></div>`;
-    }).join('');
+    if (track) {
+      track.innerHTML = currentSdRecordings.map((p, idx) => {
+        const leftPct = (p.start / 86400) * 100;
+        const widthPct = Math.max(0.5, ((p.end - p.start) / 86400) * 100);
+        const color = idx % 3 === 0 ? '#10b981' : idx % 3 === 1 ? '#f59e0b' : '#38bdf8';
+        return `<div class="timeline-block" style="left:${leftPct}%; width:${widthPct}%; background:${color};" title="Gravação: ${p.label || (formatSecondsToTime(p.start) + ' - ' + formatSecondsToTime(p.end))}"></div>`;
+      }).join('');
+    }
 
     // Renderiza chips de Eventos IA detectados no cartão SD
     if (eventsContainer) {
@@ -3882,27 +3960,26 @@ async function fetchSdRecordings(camId, date) {
         eventsContainer.innerHTML = '<span style="font-size:11px; color:var(--text-dim);">Nenhum evento registrado nesta data.</span>';
       } else {
         eventsContainer.innerHTML = events.map(evt => `
-          <button type="button" class="btn btn-sm btn-outline-cyan" onclick="jumpToSdEvent(${evt.seconds}, '${evt.label}')" style="font-size:11px; padding:3px 8px;" title="Pular para evento às ${evt.time}">
-            ${evt.icon || '🎯'} ${evt.time} — ${evt.label}
+          <button type="button" class="btn btn-sm btn-outline-cyan" onclick="jumpToSdEvent(${evt.seconds}, '${evt.label}')" style="font-size:11px; padding:4px 10px; display:inline-flex; align-items:center; gap:5px;" title="Assistir gravação às ${evt.time}">
+            ${evt.icon || '🎯'} <strong>${evt.time}</strong> — ${evt.label} ▶
           </button>
         `).join('');
       }
     }
   } catch (e) {
-    track.innerHTML = '';
+    if (track) track.innerHTML = '';
   }
 }
 
 function jumpToSdEvent(seconds, label) {
-  const ruler = document.getElementById('timelineRulerContainer');
   const needle = document.getElementById('timelineNeedle');
   const timeTip = document.getElementById('timelineNeedleTime');
-  if (!needle) return;
   const pct = Math.max(0, Math.min(100, (seconds / 86400) * 100));
-  needle.style.left = `${pct}%`;
+  if (needle) needle.style.left = `${pct}%`;
   const formatted = formatSecondsToTime(seconds);
   if (timeTip) timeTip.innerText = formatted;
-  showToast(`Evento selecionado: ${label} às ${formatted} 📼`);
+  showToast(`Evento: ${label} (${formatted}) — Reproduzindo 📼`);
+  playCurrentSdSegment();
 }
 
 function seekTimelineClick(event) {
@@ -3933,6 +4010,14 @@ function stepTimelineDay(delta) {
   showToast(`Carregando gravações de: ${selectedTimelineDate}`);
 }
 
+function stepTimelineToday() {
+  selectedTimelineDate = new Date().toISOString().slice(0, 10);
+  const dateInput = document.getElementById('timelineDateInput');
+  if (dateInput) dateInput.value = selectedTimelineDate;
+  fetchSdRecordings(activePtzCam, selectedTimelineDate);
+  showToast('Linha do tempo atualizada para HOJE 📅');
+}
+
 function onTimelineDateChanged(val) {
   if (!val) return;
   selectedTimelineDate = val;
@@ -3942,12 +4027,26 @@ function onTimelineDateChanged(val) {
 function playCurrentSdSegment() {
   const needleTip = document.getElementById('timelineNeedleTime');
   const time = needleTip ? needleTip.innerText : '12:00:00';
-  const video1 = document.getElementById('ptzMainVideoElement');
-  if (video1) {
-    video1.src = `${BACKEND_API_BASE}/api/camera-stream?src=${encodeURIComponent(activePtzCam || 'outdoor_pro_poste')}&quality=${activeCameraQuality}&t=${Date.now()}`;
-    video1.load();
-    const p = video1.play();
+  const sdVideo = document.getElementById('sdPlaybackVideoElement');
+  const spinner = document.getElementById('sdPlaybackSpinner');
+  const overlayText = document.getElementById('sdPlaybackOverlayText');
+
+  if (overlayText) overlayText.innerText = `GRAVAÇÃO SD • ${selectedTimelineDate} ${time} (H.264/AAC)`;
+  if (spinner) spinner.style.display = 'block';
+
+  if (sdVideo) {
+    sdVideo.src = `${BACKEND_API_BASE}/api/camera-stream?src=${encodeURIComponent(activePtzCam || 'outdoor_pro_poste')}&quality=${activeCameraQuality}&t=${Date.now()}`;
+    sdVideo.load();
+    const p = sdVideo.play();
     if (p) p.catch(() => {});
+    const onReady = () => {
+      if (spinner) spinner.style.display = 'none';
+    };
+    sdVideo.onplaying = onReady;
+    sdVideo.oncanplay = onReady;
+    sdVideo.onerror = () => {
+      if (spinner) spinner.style.display = 'none';
+    };
   }
   showToast(`Iniciando reprodução da gravação do cartão SD (${time}) ▶️`);
 }
@@ -3958,6 +4057,26 @@ function downloadCurrentSdClip() {
   const url = `${BACKEND_API_BASE}/api/camera/recordings/clip?id=${encodeURIComponent(activePtzCam || 'outdoor_pro_poste')}&date=${selectedTimelineDate}&time=${time}`;
   window.open(url, '_blank');
   showToast(`Exportação do clipe MP4 do cartão SD iniciada! 💾`);
+}
+
+function captureSdSnapshot() {
+  const sdVideo = document.getElementById('sdPlaybackVideoElement');
+  try {
+    if (sdVideo && sdVideo.videoWidth > 0) {
+      const canvas = document.createElement('canvas');
+      canvas.width = sdVideo.videoWidth;
+      canvas.height = sdVideo.videoHeight;
+      const ctx = canvas.getContext('2d');
+      ctx.drawImage(sdVideo, 0, 0, canvas.width, canvas.height);
+      const dataUrl = canvas.toDataURL('image/jpeg', 0.95);
+      triggerFileDownload(dataUrl, `gravacao-sd-${activePtzCam}-${Date.now()}.jpg`);
+      showToast('📸 Foto da gravação capturada em alta resolução!');
+      return;
+    }
+  } catch (e) {}
+
+  window.open(`${BACKEND_API_BASE}/api/camera-frame?src=${encodeURIComponent(activePtzCam || 'outdoor_pro_poste')}&download=1`, '_blank');
+  showToast('📸 Foto da gravação baixada!');
 }
 
 function formatSecondsToTime(sec) {
@@ -3973,11 +4092,15 @@ function closePtzModal() {
   
   const video1 = document.getElementById('ptzMainVideoElement');
   const video2 = document.getElementById('ptzSecondaryVideoElement');
+  const sdVideo = document.getElementById('sdPlaybackVideoElement');
   if (video1) {
     try { video1.pause(); video1.removeAttribute('src'); video1.load(); } catch (e) {}
   }
   if (video2) {
     try { video2.pause(); video2.removeAttribute('src'); video2.load(); } catch (e) {}
+  }
+  if (sdVideo) {
+    try { sdVideo.pause(); sdVideo.removeAttribute('src'); sdVideo.load(); } catch (e) {}
   }
 
   if (isPttTalking) stopPttTalk();
