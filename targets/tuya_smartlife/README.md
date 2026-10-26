@@ -1,7 +1,7 @@
 # 🎯 ALVO: tuya_smartlife
 
 > **Descrição**: Análise, descoberta local, mapeamento de protocolos e controle de dispositivos Tuya/SmartLife  
-> **Versão da Análise**: `v0.15.0 (build 0015)`  
+> **Versão da Análise**: `v0.15.1 (build 0016)`  
 > **Criado em**: 2026-10-25
 
 ---

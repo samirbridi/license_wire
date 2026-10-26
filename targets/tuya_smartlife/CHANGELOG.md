@@ -5,6 +5,16 @@ Formato de versão obrigatório: `vX.Y.Z (build XXXX)`.
 
 ---
 
+## v0.15.1 (build 0016) - 2026-10-26
+
+### 🐛 Fixes
+- fix: corrige estilização do botão "X" de fechar janelas e modais (`.btn-close` e `.modal-close` em `style.css`), eliminando o botão branco retangular padrão do navegador (Print 1) e aplicando dark glassmorphism com cantos arredondados, fundo translúcido sutil e efeito hover em vermelho suave
+- fix: corrige preflight CORS no servidor central (`server.mjs`: `Access-Control-Allow-Methods` agora permite explicitamente `GET, POST, PUT, DELETE, PATCH, OPTIONS` e todos os cabeçalhos), eliminando o bloqueio de requisições `DELETE` e `PUT` no modo remoto (Cloudflare Pages)
+- fix: implementa fallback automático com `_method=DELETE` no frontend (`app.js`) para garantir que exclusões de cenas e automações funcionem em qualquer proxy, túnel ou firewall
+- improve: adiciona versionamento de cache em `index.html` (`style.css?v=0.15.1`, `app.js?v=0.15.1`) e meta tags anti-cache (`no-cache, no-store, must-revalidate`), garantindo que tanto o acesso remoto quanto o local carreguem sempre a versão mais recente sincronizada
+
+---
+
 ## v0.15.0 (build 0015) - 2026-10-26
 
 ### 🐛 Fixes

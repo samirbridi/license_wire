@@ -3888,14 +3888,29 @@ async function deleteScene(sceneId) {
   if (!confirm(`Tem certeza que deseja excluir a cena "${name}"?`)) return;
 
   try {
-    const res = await fetch(`/api/scenes/${sceneId}`, { method: 'DELETE' });
+    let res = await fetch(`/api/scenes/${sceneId}`, { method: 'DELETE' });
+    if (!res.ok) {
+      res = await fetch(`/api/scenes/${sceneId}?_method=DELETE`, { method: 'POST' });
+    }
     const data = await res.json();
     if (data.success) {
       currentScenes = data.scenes || currentScenes.filter(s => s.id !== sceneId);
       renderAutomationsTab();
       showToast('Cena Removida', `A cena "${name}" foi excluída.`, 'info');
+    } else {
+      alert('Erro ao excluir cena: ' + (data.error || 'Erro desconhecido'));
     }
   } catch (err) {
+    try {
+      const resPost = await fetch(`/api/scenes/${sceneId}?_method=DELETE`, { method: 'POST' });
+      const dataPost = await resPost.json();
+      if (dataPost.success) {
+        currentScenes = dataPost.scenes || currentScenes.filter(s => s.id !== sceneId);
+        renderAutomationsTab();
+        showToast('Cena Removida', `A cena "${name}" foi excluída.`, 'info');
+        return;
+      }
+    } catch (e) {}
     alert('Erro ao excluir cena: ' + err.message);
   }
 }
@@ -4155,14 +4170,29 @@ async function deleteAutomation(autoId) {
   if (!confirm(`Tem certeza que deseja excluir a automação "${name}"?`)) return;
 
   try {
-    const res = await fetch(`/api/automations/${autoId}`, { method: 'DELETE' });
+    let res = await fetch(`/api/automations/${autoId}`, { method: 'DELETE' });
+    if (!res.ok) {
+      res = await fetch(`/api/automations/${autoId}?_method=DELETE`, { method: 'POST' });
+    }
     const data = await res.json();
     if (data.success) {
       currentAutomations = data.automations || currentAutomations.filter(a => a.id !== autoId);
       renderAutomationsTab();
       showToast('Automação Removida', `A automação "${name}" foi excluída.`, 'info');
+    } else {
+      alert('Erro ao excluir automação: ' + (data.error || 'Erro desconhecido'));
     }
   } catch (err) {
+    try {
+      const resPost = await fetch(`/api/automations/${autoId}?_method=DELETE`, { method: 'POST' });
+      const dataPost = await resPost.json();
+      if (dataPost.success) {
+        currentAutomations = dataPost.automations || currentAutomations.filter(a => a.id !== autoId);
+        renderAutomationsTab();
+        showToast('Automação Removida', `A automação "${name}" foi excluída.`, 'info');
+        return;
+      }
+    } catch (e) {}
     alert('Erro ao excluir automação: ' + err.message);
   }
 }
