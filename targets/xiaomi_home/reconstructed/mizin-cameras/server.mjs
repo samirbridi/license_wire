@@ -238,7 +238,7 @@ export function createCentral(options = {}) {
     if (req.method === 'GET' && url.pathname === '/api/status') {
       let bridge = false;
       try { const response = await fetch(upstream + '/api/streams', { signal: AbortSignal.timeout(3000) }); bridge = response.ok; await response.body?.cancel(); } catch {}
-      return json(res, 200, { bridge, cameras: cameras.length, uptime: Math.floor((Date.now() - started) / 1000), remoteEnabled: !!remote, remoteConfigured: !!remote, pairingAvailable: !!remote && !isRemote, videoLimits: { clients: 2, viewsPerClient: 2 } });
+      return json(res, 200, { bridge, cameras: cameras.length, uptime: Math.floor((Date.now() - started) / 1000), remoteEnabled: !!remote, remoteConfigured: !!remote, pairingAvailable: !!remote && !isRemote, localPairingAvailable: !isRemote, videoLimits: { clients: 2, viewsPerClient: 2 } });
     }
     const recordingMatch = /^\/api\/recordings\/([a-z0-9_]{1,64})$/.exec(url.pathname);
     if (req.method === 'GET' && recordingMatch) {

@@ -328,6 +328,15 @@ func main() {
 	receipt["pass"] = err == nil
 	if err != nil {
 		receipt["errorType"] = fmt.Sprintf("%T", err)
+		// Detailed network errors can contain private endpoints. Keep them only
+		// in the local diagnostic log; publish bounded classifications instead.
+		fmt.Fprintln(privateLog, err.Error())
+		var networkError *net.OpError
+		if errors.As(err, &networkError) {
+			receipt["networkOperation"] = networkError.Op
+			receipt["networkTransport"] = networkError.Net
+			receipt["networkTimeout"] = networkError.Timeout()
+		}
 	}
 	destination := filepath.Join(root, "evidence/private", fmt.Sprintf("readonly-%s-%d.json", *operation, time.Now().UnixMilli()))
 	if !inTarget(root, destination) {

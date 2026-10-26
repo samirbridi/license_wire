@@ -8,6 +8,8 @@ Criar acesso dedicado em Android e Windows, na rede local e pela internet. As c�
 
 ## Estado Atual e Próximos Passos
 
+Para acessar a central no navegador padrão do Windows, executar `Abrir-Central.cmd`. Ele renova o convite local e abre o acesso automaticamente; reinicia a central preservando as sessões já autorizadas. Um navegador conectado também pode gerar convite em **Sua central → Vincular outro navegador**. O código é da central, não da Xiaomi. Referências adicionais, limites por modelo e alternativas de hospedagem estão em [acesso e recursos](notes/15_acesso_e_referencias_recursos.md). O nome `homecams.pages.dev` foi sugerido, mas ainda não reservado/publicado.
+
 Estado: PROTOTIPO_LOCAL_WINDOWS_VALIDADO, com vistas, qualidade nativa e escuta de áudio. Autorização QR confirmada pelo proprietário; seis câmeras com quadros e áudio decodificados, e prévias reais no painel. As três famílias reproduziram vídeo H.264 no navegador. Outdoor Pro tem dois canais comprovados a 2880×1620; AW300/Mi 2K chegaram a 2304×1296. Ver [teste nativo](notes/09_video_local_validado.md), [central Windows](notes/10_central_windows.md), [recursos e Cloudflare](notes/11_recursos_nativos_e_cloudflare.md) e os recibos em evidence. Android físico, acesso remoto, audição física, fala, SD, PTZ e estabilidade prolongada permanecem pendentes.
 
 O painel inclui exibição simultânea das duas vistas, seleção apenas de foco/áudio, ampliação opcional e navegação de gravações por mês/dia. A consulta real do SD e os downloads continuam indisponíveis até o protocolo nativo ser integrado; veja [estado da visão dupla, gravações e rondas](notes/12_visao_dupla_gravacoes_rondas.md). A validação de serviço e a visual são registradas separadamente.
