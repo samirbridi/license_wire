@@ -1,20 +1,20 @@
 {
-  "runId": "20261026-mobile-icons-01",
-  "sourceCommit": "10e4bfc690399ac3610fc2772ce4378d8209bef2",
-  "previous": "v0.6.0 (build 0011)",
-  "version": "v0.7.0 (build 0012)",
-  "build": 12,
+  "runId": "20261026-access-commands-01",
+  "sourceCommit": "dc8e9260df8a38795c01aacd0b67ea8979f8118e",
+  "previous": "v0.7.0 (build 0012)",
+  "version": "v0.8.0 (build 0013)",
+  "build": 13,
   "date": "2026-10-26",
   "status": "built",
   "commits": [
     {
-      "sha": "10e4bfc690399ac3610fc2772ce4378d8209bef2",
-      "subject": "feat: adiciona icones animados e melhora a previa movel das cameras",
+      "sha": "dc8e9260df8a38795c01aacd0b67ea8979f8118e",
+      "subject": "feat: facilita acesso local e prepara diagnostico dos comandos Xiaomi",
       "body": "",
       "type": "feat",
-      "description": "adiciona icones animados e melhora a previa movel das cameras",
+      "description": "facilita acesso local e prepara diagnostico dos comandos Xiaomi",
       "breaking": false
     }
   ],
-  "artifact": "runtime/builds/build-0012"
+  "artifact": "runtime/builds/build-0013"
 }

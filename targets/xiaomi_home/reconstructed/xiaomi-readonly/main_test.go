@@ -33,3 +33,17 @@ func TestScopedPrivatePaths(t *testing.T) {
 		t.Fatal("sibling accepted")
 	}
 }
+
+func TestPhysicalResponseByteOrder(t *testing.T) {
+	for command, expected := range map[uint32]uint32{
+		17825792: 0x1001, // observed from the actual CW701 through CS2/TCP
+		0x1001: 0x1001,
+		0x11010000: 0x111,
+		0x111: 0x111,
+		0x12345678: 0x12345678,
+	} {
+		if actual := responseCommand(command); actual != expected {
+			t.Fatalf("response %#x became %#x, expected %#x", command, actual, expected)
+		}
+	}
+}

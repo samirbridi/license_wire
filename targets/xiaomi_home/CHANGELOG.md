@@ -1,5 +1,23 @@
 # CHANGELOG — xiaomi_home
 
+## v0.8.0 (build 0013) - 2026-10-26
+
+### 💥 Breaking Changes
+
+- Nenhum.
+
+### ✨ Features
+
+- feat: facilita acesso local e prepara diagnostico dos comandos Xiaomi (commit `dc8e9260df8a38795c01aacd0b67ea8979f8118e`)
+
+### 🐛 Fixes
+
+- Nenhum.
+
+### ⚡ Improvements
+
+- Nenhum.
+
 ## v0.7.0 (build 0012) - 2026-10-26
 
 ### 💥 Breaking Changes

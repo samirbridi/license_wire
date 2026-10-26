@@ -1,0 +1,11 @@
+{
+  "sourceCommit": "dc8e9260df8a38795c01aacd0b67ea8979f8118e",
+  "camera": "outdoor_pro_poste",
+  "operation": "device-info",
+  "baseline": {"at": "2026-10-26T23:09:01Z", "stage": "connect-read-session", "requestSent": false, "networkTransport": "udp", "networkTimeout": true},
+  "temporaryRuleTest": {"at": "2026-10-26T23:10:17Z", "stage": "read-response", "requestSent": true, "transport": "cs2+tcp", "observedCommands": [17825792], "pass": false, "ruleRemoved": true, "remoteCount": 1},
+  "conclusion": "Temporary per-program UDP allowance enabled the authenticated CS2/TCP session. A response was received but the diagnostic did not recognize its byte-swapped outer command. Response parsing requires a fix and repeat test.",
+  "mediaStarted": false,
+  "physicalMovementRequested": false,
+  "sdWritten": false
+}

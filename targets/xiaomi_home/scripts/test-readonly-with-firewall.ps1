@@ -33,8 +33,10 @@ try {
     $probeCreated = $true
     $probeProcess = Start-Process -FilePath $probeExe -ArgumentList ('--target "' + $probeRoot + '" --camera outdoor_pro_poste --read device-info') -WindowStyle Hidden -RedirectStandardOutput (Join-Path $probePrivate ('firewall-probe-' + $probeStamp + '.stdout.json')) -RedirectStandardError (Join-Path $probePrivate ('firewall-probe-' + $probeStamp + '.stderr.log')) -PassThru
     if (-not $probeProcess.WaitForExit(45000)) { $probeProcess.Kill(); $probeProcess.WaitForExit(); throw 'Prazo do diagnostico atingido.' }
-    $probeProcess.Refresh()
-    $probeReceipt.exitCode = $probeProcess.ExitCode
+    # Windows PowerShell can lose ExitCode after WaitForExit/Refresh.
+    # Read the child diagnostic's own structured result as authoritative.
+    $probeSummary = Get-Content -Raw -LiteralPath (Join-Path $probePrivate ('firewall-probe-' + $probeStamp + '.stdout.json')) | ConvertFrom-Json
+    $probeReceipt.exitCode = $(if ($probeSummary.pass) { 0 } else { 1 })
 } catch { $probeReceipt.error = $_.Exception.Message }
 finally {
     if ($probeProcess -and -not $probeProcess.HasExited) { $probeProcess.Kill(); $probeProcess.WaitForExit() }

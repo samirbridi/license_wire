@@ -10,6 +10,7 @@ import (
 	"errors"
 	"flag"
 	"fmt"
+	"math/bits"
 	"net"
 	"net/url"
 	"os"
@@ -225,6 +226,17 @@ func connectWithTimeout(rawURL string) (*miss.Client, error) {
 	}
 }
 
+// CW701 physically returned outer 0x1001 as 0x01100000 through the
+// transport's little-endian reader. Normalize only expected response types.
+func responseCommand(cmd uint32) uint32 {
+	for _, known := range []uint32{0x111, 0x1001} {
+		if cmd == known || bits.ReverseBytes32(cmd) == known {
+			return known
+		}
+	}
+	return cmd
+}
+
 func run(root, id, operation string, receipt map[string]any) error {
 	receipt["stage"] = "load-owner-config"
 	payload, err := requestBytes(operation)
@@ -267,6 +279,7 @@ func run(root, id, operation string, receipt map[string]any) error {
 		}
 		observed, _ := receipt["observedCommands"].([]uint32)
 		receipt["observedCommands"] = append(observed, command)
+		command = responseCommand(command)
 		if command == 0x111 {
 			receipt["responseBytes"] = len(data)
 			receipt["responseHex"] = hex.EncodeToString(data)
@@ -275,6 +288,9 @@ func run(root, id, operation string, receipt map[string]any) error {
 		}
 		if command != 0x1001 {
 			continue
+		}
+		if len(data) < 12 {
+			return errors.New("encoded response too short for nonce and command")
 		}
 		decoded, decodeErr := crypto.Decode(data, key)
 		if decodeErr != nil {
