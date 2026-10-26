@@ -3,6 +3,21 @@
 Todas as descobertas, módulos dissecados e correções desta análise são registrados aqui.
 Formato de versão obrigatório: `vX.Y.Z (build XXXX)`.
 
+## v0.20.0 (build 0022) - 2026-10-26
+
+### ✨ Features
+- feat: converte o microfone de talkback para modo toggle em 1 clique (`toggleAudioTalk()`), replicando exatamente a usabilidade do aplicativo Xiaomi Home:
+  - Ativação instantânea (0ms lag) com feedback visual (`active-talking`, pulso vermelho neon e animação de ondas sonoras)
+  - Streaming contínuo de áudio em tempo real a cada 800ms diretamente para `/api/camera/talkback` via `MediaRecorder` com cancelamento de eco e supressão de ruído
+  - Desativação em 1 clique sem travamentos ou necessidade de segurar o botão
+  - Desligamento automático preventivo ao fechar o modal de monitoramento
+
+### 🐛 Fixes
+- fix: erradica o texto `undefined` em todas as notificações flutuantes (toasts), tratando chamadas com único argumento ou mensagens nulas e omitindo a tag `.toast-msg` quando ausente
+- fix: estiliza o botão `▶ Ativar` das cenas inteligentes (`.btn-scene-run`) com gradiente esmeralda, borda neon, tipografia JetBrains/Outfit e hover glow, eliminando o estilo padrão branco/preto nativo do navegador
+- fix: substitui o glifo/emoji incompatível de janela (`🪟` U+1FA9F) por `📺` universalmente suportado em todos os sistemas operacionais e navegadores (evitando o caractere quebrado `▯`)
+- improve: amplia o espaçamento e a respiração visual entre as janelas e componentes do modal de monitoramento (grids com gap 22px, coluna de vídeo com gap 18px, contêiner de dupla visão com gap 16px, barra de abas com margin 18px e caixa de intercom com padding expandido)
+
 ---
 
 ## v0.19.0 (build 0021) - 2026-10-26

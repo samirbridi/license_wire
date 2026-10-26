@@ -3372,11 +3372,11 @@ button.btn-close:active {
 .theater-tabs-bar {
   display: flex;
   align-items: center;
-  gap: 10px;
-  margin-top: 10px;
-  margin-bottom: 12px;
+  gap: 14px;
+  margin-top: 12px;
+  margin-bottom: 18px;
   border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-  padding-bottom: 10px;
+  padding-bottom: 14px;
   flex-wrap: wrap;
 }
 
@@ -3565,8 +3565,8 @@ button.btn-close:active {
 .ptz-modal-content-grid {
   display: grid;
   grid-template-columns: minmax(0, 1.85fr) minmax(320px, 1.05fr);
-  gap: 16px;
-  margin-top: 4px;
+  gap: 22px;
+  margin-top: 8px;
   flex: 1;
   min-height: 0;
   overflow: hidden;
@@ -3582,20 +3582,21 @@ button.btn-close:active {
 .ptz-view-column {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 18px;
   overflow-y: auto;
-  padding-right: 4px;
+  padding-right: 6px;
 }
 
 .ptz-dual-video-container {
   display: grid;
   grid-template-columns: 1fr;
-  gap: 10px;
+  gap: 16px;
   width: 100%;
 }
 
 .ptz-dual-video-container.dual-active {
   grid-template-columns: 1fr 1fr;
+  gap: 16px;
 }
 
 @media (max-width: 768px) {
@@ -3607,13 +3608,13 @@ button.btn-close:active {
 .ptz-main-player-wrap {
   position: relative;
   background: #000;
-  border-radius: 10px;
+  border-radius: 12px;
   overflow: hidden;
-  border: 1px solid rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.16);
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.55);
   aspect-ratio: 16 / 9;
   width: 100%;
 }
@@ -3689,10 +3690,11 @@ button.btn-close:active {
 
 /* Áudio Intercom & Talkback */
 .ptz-audio-intercom-box {
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 10px;
-  padding: 12px;
+  background: rgba(255, 255, 255, 0.035);
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  border-radius: 12px;
+  padding: 14px 18px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25);
 }
 
 .audio-status-pill {
@@ -4234,6 +4236,34 @@ button.btn-close:active {
   background: rgba(56, 189, 248, 0.15);
   color: var(--accent-cyan);
   border-color: rgba(56, 189, 248, 0.3);
+}
+
+.btn-scene-run {
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.2) 0%, rgba(5, 150, 105, 0.35) 100%);
+  border: 1px solid rgba(16, 185, 129, 0.45);
+  color: #34d399;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 4px 10px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  box-shadow: 0 2px 8px rgba(16, 185, 129, 0.15);
+}
+
+.btn-scene-run:hover {
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.45) 0%, rgba(5, 150, 105, 0.65) 100%);
+  border-color: #10b981;
+  color: #ffffff;
+  box-shadow: 0 4px 14px rgba(16, 185, 129, 0.35);
+  transform: translateY(-1px);
+}
+
+.btn-scene-run:active {
+  transform: scale(0.96);
 }
 
 .btn-icon-del {

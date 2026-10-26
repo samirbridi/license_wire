@@ -2042,13 +2042,37 @@ function showToast(title, message, icon = '⚡', type = 'info') {
   const container = document.getElementById('toastContainer');
   if (!container) return;
 
+  const validTypes = ['info', 'success', 'warning', 'danger', 'error'];
+  let toastTitle = title || '';
+  let toastMsg = message;
+  let toastIcon = icon;
+  let toastType = type;
+
+  // Se o 2º parâmetro for um tipo (ex: showToast('Alerta!', 'warning'))
+  if (typeof toastMsg === 'string' && validTypes.includes(toastMsg)) {
+    toastType = toastMsg;
+    toastMsg = '';
+  }
+
+  // Se toastMsg for undefined, null ou a string literal 'undefined'
+  if (!toastMsg || toastMsg === 'undefined' || typeof toastMsg !== 'string') {
+    toastMsg = '';
+  }
+
+  // Ajusta ícone padrão caso seja o padrão '⚡' mas o tipo for específico
+  if (toastIcon === '⚡') {
+    if (toastType === 'success') toastIcon = '✅';
+    else if (toastType === 'warning') toastIcon = '⚠️';
+    else if (toastType === 'danger' || toastType === 'error') toastIcon = '🚨';
+  }
+
   const card = document.createElement('div');
-  card.className = `toast-card toast-${type}`;
+  card.className = `toast-card toast-${toastType}`;
   card.innerHTML = `
-    <div class="toast-icon">${icon}</div>
+    <div class="toast-icon">${toastIcon}</div>
     <div class="toast-body">
-      <div class="toast-title">${title}</div>
-      <div class="toast-msg">${message}</div>
+      <div class="toast-title">${toastTitle}</div>
+      ${toastMsg ? `<div class="toast-msg">${toastMsg}</div>` : ''}
     </div>
     <button class="toast-close" onclick="this.parentElement.remove()">&times;</button>
   `;
@@ -3539,7 +3563,7 @@ function switchCameraViewMode(mode) {
         if (feed2) feed2.style.display = 'block';
       };
     }
-    showToast('Visualização Dupla Ativada: Ampla + Teleobjetiva 🪟');
+    showToast('Visualização Dupla Ativada: Ampla + Teleobjetiva 📺');
   } else if (mode === 'view1') {
     if (container) container.classList.remove('dual-active');
     if (wrap1) wrap1.style.display = 'flex';
@@ -3790,67 +3814,107 @@ function toggleAudioListen() {
   }
 }
 
-async function startPttTalk() {
-  isPttTalking = true;
+let isAudioTalking = false;
+let audioTalkStream = null;
+let audioTalkRecorder = null;
+
+async function toggleAudioTalk() {
   const btn = document.getElementById('btnAudioTalk');
+  const icon = document.getElementById('audioTalkIcon');
+  const text = document.getElementById('audioTalkText');
   const statusText = document.getElementById('audioStatusText');
   const waveMeter = document.getElementById('audioWaveMeter');
-  if (btn) btn.classList.add('active-talking');
-  if (statusText) statusText.innerText = '🎤 TRANSMITINDO VOZ: Falando pelo alto-falante da câmera...';
-  if (waveMeter) waveMeter.style.display = 'flex';
 
-  try {
-    if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
-      pttAudioStream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      pttMediaRecorder = new MediaRecorder(pttAudioStream);
-      const audioChunks = [];
-      pttMediaRecorder.ondataavailable = e => {
-        if (e.data.size > 0) audioChunks.push(e.data);
-      };
-      pttMediaRecorder.onstop = async () => {
-        const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
-        try {
-          await fetch(`/api/camera/talkback?id=${encodeURIComponent(activePtzCam || 'outdoor_pro_poste')}`, {
-            method: 'POST',
-            body: audioBlob
-          });
-          showToast('Mensagem de voz transmitida com sucesso! 📢');
-        } catch(e) {}
-      };
-      pttMediaRecorder.start();
-    } else {
-      showToast('Microfone requer conexão segura HTTPS ou localhost 🎤', 'info');
+  if (!isAudioTalking) {
+    // ATIVAR MICROFONE (Falar em tempo real - padrão app Xiaomi)
+    isAudioTalking = true;
+    isPttTalking = true;
+
+    if (btn) btn.classList.add('active-talking');
+    if (icon) icon.innerText = '🔴';
+    if (text) text.innerText = 'Microfone Ativo (Ao Vivo)';
+    if (statusText) statusText.innerText = '🎙️ TRANSMITINDO VOZ: Microfone ligado • Fale em tempo real';
+    if (waveMeter) waveMeter.style.display = 'flex';
+
+    showToast('Microfone ativado! Fale normalmente...', '', '🎙️', 'success');
+
+    try {
+      if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+        audioTalkStream = await navigator.mediaDevices.getUserMedia({
+          audio: {
+            echoCancellation: true,
+            noiseSuppression: true,
+            autoGainControl: true
+          }
+        });
+
+        // Se o usuário desligou o microfone enquanto esperava a permissão
+        if (!isAudioTalking) {
+          audioTalkStream.getTracks().forEach(t => t.stop());
+          audioTalkStream = null;
+          return;
+        }
+
+        const mimeType = MediaRecorder.isTypeSupported('audio/webm;codecs=opus')
+          ? 'audio/webm;codecs=opus'
+          : (MediaRecorder.isTypeSupported('audio/webm') ? 'audio/webm' : '');
+
+        audioTalkRecorder = mimeType ? new MediaRecorder(audioTalkStream, { mimeType }) : new MediaRecorder(audioTalkStream);
+
+        audioTalkRecorder.ondataavailable = async e => {
+          if (e.data && e.data.size > 0 && isAudioTalking) {
+            try {
+              const camId = activePtzCam || 'outdoor_pro_poste';
+              await fetch(`/api/camera/talkback?id=${encodeURIComponent(camId)}`, {
+                method: 'POST',
+                body: e.data
+              });
+            } catch(err) {
+              console.warn('[Talkback chunk send error]:', err);
+            }
+          }
+        };
+
+        // Streaming contínuo e rápido a cada 800ms
+        audioTalkRecorder.start(800);
+      } else {
+        showToast('Microfone requer conexão segura HTTPS ou localhost 🎤', '', '⚠️', 'warning');
+      }
+    } catch (e) {
+      console.warn('Permissão de microfone negada ou indisponível:', e.message);
+      showToast('Permissão de microfone negada ou indisponível', '', '⚠️', 'warning');
+      if (isAudioTalking) {
+        toggleAudioTalk();
+      }
     }
-  } catch (e) {
-    console.log('Permissão de microfone ou gravação:', e.message);
-    showToast('Permissão de microfone negada ou indisponível', 'error');
+  } else {
+    // DESATIVAR MICROFONE
+    isAudioTalking = false;
+    isPttTalking = false;
+
+    if (btn) btn.classList.remove('active-talking');
+    if (icon) icon.innerText = '🎙️';
+    if (text) text.innerText = 'Falar (Microfone)';
+    if (statusText) statusText.innerText = isAudioListening ? '🔊 Retorno de Som Ativo — Ouvindo ambiente' : 'Áudio Bidirecional: Microfone e Alto-Falante Prontos';
+    if (waveMeter && !isAudioListening) waveMeter.style.display = 'none';
+
+    try {
+      if (audioTalkRecorder && audioTalkRecorder.state !== 'inactive') {
+        audioTalkRecorder.stop();
+      }
+      if (audioTalkStream) {
+        audioTalkStream.getTracks().forEach(t => t.stop());
+        audioTalkStream = null;
+      }
+    } catch (e) {}
+
+    showToast('Microfone desativado.', '', '🔇', 'info');
   }
-
-  showToast('🎤 Transmitindo voz para o alto-falante da câmera...');
 }
 
-function stopPttTalk() {
-  if (!isPttTalking) return;
-  isPttTalking = false;
-  const btn = document.getElementById('btnAudioTalk');
-  const statusText = document.getElementById('audioStatusText');
-  const waveMeter = document.getElementById('audioWaveMeter');
-  if (btn) btn.classList.remove('active-talking');
-  if (statusText) statusText.innerText = isAudioListening ? '🔊 Retorno de Som Ativo — Ouvindo ambiente' : 'Áudio Bidirecional: Microfone e Alto-Falante Prontos';
-  if (waveMeter && !isAudioListening) waveMeter.style.display = 'none';
-
-  try {
-    if (pttMediaRecorder && pttMediaRecorder.state !== 'inactive') {
-      pttMediaRecorder.stop();
-    }
-    if (pttAudioStream) {
-      pttAudioStream.getTracks().forEach(t => t.stop());
-      pttAudioStream = null;
-    }
-  } catch (e) {}
-
-  showToast('Transmissão de áudio finalizada.');
-}
+// Aliases para retrocompatibilidade
+function startPttTalk() { toggleAudioTalk(); }
+function stopPttTalk() { if (isAudioTalking) toggleAudioTalk(); }
 
 // =============================================================
 // CONTROLE DE ABAS DO SURVEILLANCE THEATER (AO VIVO vs GRAVAÇÕES SD)
@@ -4103,7 +4167,8 @@ function closePtzModal() {
     try { sdVideo.pause(); sdVideo.removeAttribute('src'); sdVideo.load(); } catch (e) {}
   }
 
-  if (isPttTalking) stopPttTalk();
+  if (isAudioTalking) toggleAudioTalk();
+  else if (isPttTalking) stopPttTalk();
   if (isAudioListening) toggleAudioListen();
   activePtzCam = null;
 }
@@ -4141,7 +4206,7 @@ async function fetchCameras() {
       if (isPtz) {
         floatingActions += `
           <button class="cam-btn-floating" onclick="openPtzModal('${cam.id}'); event.stopPropagation();" title="Abrir Dupla Visão e PTZ">
-            🪟 Dupla Visão & PTZ
+            📺 Dupla Visão & PTZ
           </button>
         `;
       } else {
@@ -4188,7 +4253,7 @@ async function fetchCameras() {
                 </button>
               ` : ''}
               <button class="btn btn-primary" onclick="openPtzModal('${cam.id}')" style="padding: 6px 12px; font-size: 11px;">
-                ${isPtz ? '🪟 Dupla Visão & PTZ' : '👁️ Monitorar & Áudio'}
+                ${isPtz ? '📺 Dupla Visão & PTZ' : '👁️ Monitorar & Áudio'}
               </button>
             </div>
           </div>
