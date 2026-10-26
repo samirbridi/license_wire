@@ -23,6 +23,34 @@ const AUTOMATIONS_PATH = path.join(WORKSPACE, 'targets/tuya_smartlife/runtime/au
 const SCENES_PATH = path.join(WORKSPACE, 'targets/tuya_smartlife/runtime/scenes.json');
 const PYTHON_PATH = 'python';
 const FFMPEG_BIN = 'D:\\REA - ENGENHARIA REVERSA\\targets\\mizin_playout\\binaries\\qa\\ffmpeg\\ffmpeg-n8.1-latest-win64-gpl-shared-8.1\\bin\\ffmpeg.exe';
+const GO2RTC_BIN = path.join(WORKSPACE, 'targets/xiaomi_home/runtime/go2rtc-v1.9.15/go2rtc.exe');
+const GO2RTC_CONFIG = path.join(WORKSPACE, 'targets/xiaomi_home/runtime/qr-login/session-recovered-1793020804715919000.yaml');
+
+let go2rtcChild = null;
+function ensureGo2rtcRunning() {
+  const req = http.get('http://127.0.0.1:19843/api/streams', (res) => {
+    res.resume();
+  });
+  req.on('error', () => {
+    if (fs.existsSync(GO2RTC_BIN) && fs.existsSync(GO2RTC_CONFIG)) {
+      console.log('[go2rtc Watchdog] Iniciando ponte go2rtc Xiaomi (127.0.0.1:19843)...');
+      try {
+        go2rtcChild = spawn(GO2RTC_BIN, ['-config', GO2RTC_CONFIG], {
+          cwd: path.dirname(GO2RTC_CONFIG),
+          windowsHide: true,
+          stdio: 'ignore',
+          detached: true
+        });
+        go2rtcChild.unref();
+      } catch (e) {
+        console.warn('[go2rtc Watchdog Error]:', e.message);
+      }
+    }
+  });
+}
+ensureGo2rtcRunning();
+setInterval(ensureGo2rtcRunning, 10000);
+
 const SNAPSHOTS_DIR = path.join(WORKSPACE, 'targets/xiaomi_home/runtime/central/snapshots');
 if (!fs.existsSync(SNAPSHOTS_DIR)) {
   try { fs.mkdirSync(SNAPSHOTS_DIR, { recursive: true }); } catch (e) {}
@@ -1268,14 +1296,18 @@ const server = http.createServer(async (req, res) => {
   if (url.pathname === '/api/health') {
     const netInterfaces = os.networkInterfaces();
     let localIp = '127.0.0.1';
+    const candidateIps = [];
     for (const name of Object.keys(netInterfaces)) {
       for (const net of netInterfaces[name]) {
         if (net.family === 'IPv4' && !net.internal) {
-          localIp = net.address;
-          break;
+          candidateIps.push(net.address);
         }
       }
     }
+    // Prioriza subnet física residencial 192.168.1.* sobre adaptadores virtuais WSL/Hyper-V (172.*)
+    const lan192 = candidateIps.find(ip => ip.startsWith('192.168.'));
+    const lan10 = candidateIps.find(ip => ip.startsWith('10.'));
+    localIp = lan192 || lan10 || candidateIps[0] || '127.0.0.1';
 
     const clientIp = req.headers['cf-connecting-ip'] || (req.headers['x-forwarded-for'] || '').split(',')[0].trim() || req.socket.remoteAddress;
     const isDirectLocal = (
@@ -1516,7 +1548,7 @@ const server = http.createServer(async (req, res) => {
     const rawSrc = url.searchParams.get('src') || '';
     const quality = url.searchParams.get('quality') || 'native';
     const resolvedSrc = resolveStreamAlias(rawSrc, quality);
-    const go2rtcUrl = `http://127.0.0.1:19843/api/stream.mp4?src=${encodeURIComponent(resolvedSrc)}&video=h265&audio=all`;
+    const go2rtcUrl = `http://127.0.0.1:19843/api/stream.mp4?src=${encodeURIComponent(resolvedSrc)}&video=h265`;
 
     const width = quality === 'native' ? 3840 : quality === '2k' ? 2560 : quality === '1080p' ? 1920 : 1280;
     const bitrate = quality === 'native' ? '3500k' : quality === '2k' ? '2500k' : quality === '1080p' ? '1800k' : '900k';
@@ -1676,7 +1708,9 @@ const server = http.createServer(async (req, res) => {
 
       res.writeHead(200, {
         'Content-Type': 'application/json',
-        'Access-Control-Allow-Origin': '*'
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Methods': 'POST, OPTIONS',
+        'Access-Control-Allow-Headers': '*'
       });
       res.end(JSON.stringify({
         ok: true,
@@ -1697,7 +1731,7 @@ const server = http.createServer(async (req, res) => {
     const time = url.searchParams.get('time') || '10:00:00';
     const sec = parseInt(url.searchParams.get('sec') || '36000', 10);
     const resolvedSrc = resolveStreamAlias(camId, '1080p');
-    const go2rtcUrl = `http://127.0.0.1:19843/api/stream.mp4?src=${encodeURIComponent(resolvedSrc)}&video=h265&audio=all`;
+    const go2rtcUrl = `http://127.0.0.1:19843/api/stream.mp4?src=${encodeURIComponent(resolvedSrc)}&video=h265`;
 
     res.writeHead(200, {
       'Content-Type': 'video/mp4',
@@ -1705,13 +1739,18 @@ const server = http.createServer(async (req, res) => {
       'Access-Control-Allow-Origin': '*'
     });
 
+    const overlayText = `GRAVACAO SD  |  ${date} ${time}`;
+    const fontOpt = fs.existsSync('C:/Windows/Fonts/arial.ttf')
+      ? `drawtext=fontfile='C\\:/Windows/Fonts/arial.ttf':text='${overlayText}':x=24:y=24:fontsize=22:fontcolor=white:box=1:boxcolor=black@0.65:boxborderw=8,`
+      : '';
+
     const child = spawn(FFMPEG_BIN, [
       '-hide_banner', '-nostdin', '-loglevel', 'error',
       '-rw_timeout', '20000000',
       '-i', go2rtcUrl,
       '-map', '0:v:0', '-map', '0:a:0?',
       '-c:a', 'aac', '-b:a', '64k', '-ar', '48000',
-      '-vf', `scale=w='min(1920,iw)':h=-2`,
+      '-vf', `${fontOpt}scale=w='min(1920,iw)':h=-2`,
       '-c:v', 'libx264', '-preset', 'ultrafast', '-tune', 'zerolatency',
       '-pix_fmt', 'yuv420p',
       '-movflags', '+frag_keyframe+empty_moov+default_base_moof',
@@ -1791,7 +1830,7 @@ const server = http.createServer(async (req, res) => {
     const date = url.searchParams.get('date') || new Date().toISOString().slice(0, 10);
     const time = url.searchParams.get('time') || '120000';
     const resolvedSrc = resolveStreamAlias(camId, '1080p');
-    const go2rtcUrl = `http://127.0.0.1:19843/api/stream.mp4?src=${encodeURIComponent(resolvedSrc)}&video=h265&audio=all`;
+    const go2rtcUrl = `http://127.0.0.1:19843/api/stream.mp4?src=${encodeURIComponent(resolvedSrc)}&video=h265`;
 
     const filename = `sd_clip_${camId}_${date}_${time}.mp4`;
     res.writeHead(200, {

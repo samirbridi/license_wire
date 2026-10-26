@@ -2,6 +2,28 @@
 
 Todas as descobertas, módulos dissecados e correções desta análise são registrados aqui.
 Formato de versão obrigatório: `vX.Y.Z (build XXXX)`.
+## v0.22.0 (build 0024) - 2026-10-26
+
+### ✨ Features
+- feat: implementa opção de Resolução "Automática" (`🔄 Automática`) no seletor de qualidade de vídeo das câmeras:
+  - Avalia o tipo de conexão (`isLocalAccess`) e latência real medida via pings de telemetria
+  - Em Rede Local (0ms): seleciona automaticamente 2K/3K para máxima nitidez sem gargalos
+  - Em Modo Remoto (Cloudflare): seleciona dinamicamente 1080p (<85ms) ou 720p (>=85ms) para carregamento instantâneo
+  - Atualiza o indicador visual da pill para exibir o modo ativo (ex: `🔄 Auto (1080P)`) e notifica o usuário via toast
+- feat: implementa watchdog automático de processo go2rtc no `server.mjs`:
+  - Monitora o endpoint de streams em `127.0.0.1:19843` e auto-inicia o executável com a sessão restaurada de câmeras Xiaomi caso o processo encerre
+  - Elimina paradas silenciosas de fluxo de streaming das câmeras Outdoor Pro, AW300 e Mi 2K
+- feat: adiciona overlay visual com carimbo de data/hora (drawtext) nas gravações do cartão MicroSD (`/api/camera/recordings/stream`):
+  - Estampa a identificação exata do timestamp gravado (`GRAVAÇÃO SD | YYYY-MM-DD HH:MM:SS`) na renderização MP4
+
+### 🐛 Fixes
+- fix: corrige falha no envio de áudio do microfone Talkback via acesso remoto Cloudflare (`myhomemizin.pages.dev`):
+  - Adiciona cabeçalhos CORS explícitos (`Access-Control-Allow-Origin: *`, `POST, OPTIONS`) e `Content-Type: audio/webm` nas requisições
+  - Força prefixo de rota `BACKEND_API_BASE` em todos os chunks de áudio enviados
+- fix: corrige travamento na reprodução do cartão SD eliminando o parâmetro instável `audio=all` no go2rtc que provocava pânico com ponteiro nulo (FLAC/PCM)
+- fix: resolve falha na identificação de rede local residencial priorizando interfaces de rede físicas `192.168.1.*` sobre adaptadores virtuais de virtualização WSL/Hyper-V (`172.*`) no `/api/health`
+
+---
 
 ## v0.21.0 (build 0023) - 2026-10-26
 

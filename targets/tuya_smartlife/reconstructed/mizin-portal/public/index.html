@@ -7,7 +7,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css?v=0.21.0-build0023">
+  <link rel="stylesheet" href="style.css?v=0.22.0-build0024">
   <link rel="manifest" href="manifest.json">
   <link rel="icon" type="image/svg+xml" href="icon.svg">
   <link rel="apple-touch-icon" href="icon.svg">
@@ -1180,11 +1180,12 @@
           </button>
         </div>
 
-        <!-- Seletor de Qualidade de Vídeo (3K/4K Nativa, 2K, 1080p, 720p) -->
+        <!-- Seletor de Qualidade de Vídeo (Automática, 3K/4K Nativa, 2K, 1080p, 720p) -->
         <div class="ptz-quality-container">
           <span class="ptz-quality-label">RESOLUÇÃO:</span>
           <div class="ptz-quality-pills" id="ptzQualityPills">
-            <button type="button" class="quality-pill active" data-quality="native" onclick="setCameraQuality('native')">💎 3K/4K</button>
+            <button type="button" class="quality-pill active" data-quality="auto" id="qualityAuto" onclick="setCameraQuality('auto')" title="Ajuste adaptativo inteligente conforme sua velocidade de rede">🔄 Automática</button>
+            <button type="button" class="quality-pill" data-quality="native" onclick="setCameraQuality('native')">💎 3K/4K</button>
             <button type="button" class="quality-pill" data-quality="2k" onclick="setCameraQuality('2k')">🌟 2K</button>
             <button type="button" class="quality-pill" data-quality="1080p" onclick="setCameraQuality('1080p')">⚡ 1080p</button>
             <button type="button" class="quality-pill" data-quality="720p" onclick="setCameraQuality('720p')">🍃 720p</button>
@@ -2109,6 +2110,6 @@
   <!-- Floating Toast Notifications Container -->
   <div id="toastContainer" class="toast-container"></div>
 
-  <script src="app.js?v=0.21.0-build0023"></script>
+  <script src="app.js?v=0.22.0-build0024"></script>
 </body>
 </html>

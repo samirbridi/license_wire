@@ -3364,7 +3364,7 @@ function resetShortcutsToDefaults() {
 activePtzCam = null;
 isAudioListening = false;
 isPttTalking = false;
-let activeCameraQuality = 'native'; // 'native', '2k', '1080p', '720p'
+let activeCameraQuality = 'auto'; // 'auto', 'native', '2k', '1080p', '720p'
 let activeCameraViewMode = 'dual'; // 'dual', 'view1', 'view2'
 let activePtzTargetChannel = 'both'; // 'both', 0, 1
 let isCameraLightOn = false;
@@ -3373,6 +3373,17 @@ let currentSdRecordings = [];
 let selectedTimelineDate = new Date().toISOString().slice(0, 10);
 let pttMediaRecorder = null;
 let pttAudioStream = null;
+
+function resolveEffectiveCameraQuality() {
+  if (activeCameraQuality !== 'auto') return activeCameraQuality;
+  // Modo Automático Inteligente:
+  // Na rede local (0ms de latência) -> 2K Quad HD
+  if (isLocalAccess) return '2k';
+  // No acesso remoto via Cloudflare -> balanceia latência com taxa de bits
+  const ping = window._lastHealthPingMs || 70;
+  if (ping < 85) return '1080p';
+  return '720p';
+}
 
 function openPtzModal(camId) {
   activePtzCam = camId;
@@ -3503,7 +3514,7 @@ function setupSingleCameraView(camObj) {
   const spinnerEl = document.getElementById('ptzVideoSpinner');
   const overlayText = document.getElementById('ptzOverlayText1');
 
-  if (overlayText) overlayText.innerText = `AO VIVO • ${activeCameraQuality.toUpperCase()}`;
+  if (overlayText) overlayText.innerText = `AO VIVO • ${activeCameraQuality === 'auto' ? ('AUTO • ' + resolveEffectiveCameraQuality().toUpperCase()) : activeCameraQuality.toUpperCase()}`;
 
   if (feedImg) {
     feedImg.src = `${BACKEND_API_BASE}/api/camera-frame?src=${encodeURIComponent(streamAlias)}&t=${Date.now()}`;
@@ -3513,7 +3524,7 @@ function setupSingleCameraView(camObj) {
     videoEl.style.display = 'none';
     if (spinnerEl) spinnerEl.style.display = 'block';
     videoEl.muted = !isAudioListening;
-    videoEl.src = `${BACKEND_API_BASE}/api/camera-stream?src=${encodeURIComponent(streamAlias)}&quality=${activeCameraQuality}`;
+    videoEl.src = `${BACKEND_API_BASE}/api/camera-stream?src=${encodeURIComponent(streamAlias)}&quality=${resolveEffectiveCameraQuality()}`;
     videoEl.load();
     const playPromise = videoEl.play();
     if (playPromise) playPromise.catch(() => {});
@@ -3557,16 +3568,18 @@ function switchCameraViewMode(mode) {
   const feed2 = document.getElementById('ptzSecondaryVideoFeed');
   const video2 = document.getElementById('ptzSecondaryVideoElement');
 
+  const effective = resolveEffectiveCameraQuality();
+
   if (mode === 'dual') {
     if (container) container.classList.add('dual-active');
     if (wrap1) wrap1.style.display = 'flex';
     if (wrap2) wrap2.style.display = 'flex';
-    if (overlay1) overlay1.innerText = 'VISTA 1 • AMPLA (3K)';
+    if (overlay1) overlay1.innerText = `VISTA 1 • AMPLA (${activeCameraQuality === 'auto' ? ('AUTO ' + effective.toUpperCase()) : '3K'})`;
 
     // Conecta Lente 1 (Ampla)
     if (feed1) feed1.src = `${BACKEND_API_BASE}/api/camera-frame?src=${encodeURIComponent(alias1)}&t=${Date.now()}`;
     if (video1) {
-      video1.src = `${BACKEND_API_BASE}/api/camera-stream?src=${encodeURIComponent(alias1)}&quality=${activeCameraQuality}`;
+      video1.src = `${BACKEND_API_BASE}/api/camera-stream?src=${encodeURIComponent(alias1)}&quality=${effective}`;
       video1.muted = !isAudioListening;
       video1.style.display = 'none';
       if (spinner1) spinner1.style.display = 'block';
@@ -3591,7 +3604,7 @@ function switchCameraViewMode(mode) {
     // Conecta Lente 2 (Tele/PTZ)
     if (feed2) feed2.src = `${BACKEND_API_BASE}/api/camera-frame?src=${encodeURIComponent(alias2)}&t=${Date.now()}`;
     if (video2) {
-      video2.src = `${BACKEND_API_BASE}/api/camera-stream?src=${encodeURIComponent(alias2)}&quality=${activeCameraQuality}`;
+      video2.src = `${BACKEND_API_BASE}/api/camera-stream?src=${encodeURIComponent(alias2)}&quality=${effective}`;
       video2.muted = true; // Apenas 1 canal de áudio por padrão
       video2.style.display = 'none';
       video2.load();
@@ -3624,7 +3637,7 @@ function switchCameraViewMode(mode) {
     if (video1) { try { video1.pause(); video1.removeAttribute('src'); } catch(e){} }
     if (feed2) feed2.src = `${BACKEND_API_BASE}/api/camera-frame?src=${encodeURIComponent(alias2)}&t=${Date.now()}`;
     if (video2) {
-      video2.src = `${BACKEND_API_BASE}/api/camera-stream?src=${encodeURIComponent(alias2)}&quality=${activeCameraQuality}`;
+      video2.src = `${BACKEND_API_BASE}/api/camera-stream?src=${encodeURIComponent(alias2)}&quality=${effective}`;
       video2.muted = !isAudioListening;
       video2.style.display = 'none';
       video2.load();
@@ -3651,6 +3664,12 @@ function setCameraQuality(quality) {
     else p.classList.remove('active');
   });
 
+  const effective = resolveEffectiveCameraQuality();
+  const autoPill = document.getElementById('qualityAuto');
+  if (autoPill) {
+    autoPill.innerText = quality === 'auto' ? `🔄 Auto (${effective.toUpperCase()})` : '🔄 Automática';
+  }
+
   const camObj = (window._cachedCameras || []).find(c => c.id === activePtzCam) || { id: activePtzCam };
   const isOutdoorPro = (activePtzCam === 'outdoor_pro_poste' || (camObj.family && camObj.family.toLowerCase().includes('outdoor pro')));
   if (isOutdoorPro) {
@@ -3658,7 +3677,13 @@ function setCameraQuality(quality) {
   } else {
     setupSingleCameraView(camObj);
   }
-  const labels = { native: '3K/4K Nativa', '2k': '2K Quad HD', '1080p': '1080p Full HD', '720p': '720p Econômica' };
+  const labels = {
+    auto: `Automática Adaptativa (${effective.toUpperCase()})`,
+    native: '3K/4K Nativa',
+    '2k': '2K Quad HD',
+    '1080p': '1080p Full HD',
+    '720p': '720p Econômica'
+  };
   showToast(`Qualidade de transmissão ajustada para: ${labels[quality] || quality} 💎`);
 }
 
@@ -3919,8 +3944,12 @@ async function toggleAudioTalk() {
           if (e.data && e.data.size > 0 && isAudioTalking) {
             try {
               const camId = activePtzCam || 'outdoor_pro_poste';
-              await fetch(`/api/camera/talkback?id=${encodeURIComponent(camId)}`, {
+              const talkUrl = `${BACKEND_API_BASE}/api/camera/talkback?id=${encodeURIComponent(camId)}`;
+              await fetch(talkUrl, {
                 method: 'POST',
+                headers: {
+                  'Content-Type': e.data.type || 'audio/webm'
+                },
                 body: e.data
               });
             } catch(err) {
@@ -4201,15 +4230,21 @@ function playCurrentSdSegment(targetSeconds, optLabel) {
   if (sdVideo) {
     const camId = activePtzCam || 'outdoor_pro_poste';
     sdVideo.src = `${BACKEND_API_BASE}/api/camera/recordings/stream?id=${encodeURIComponent(camId)}&date=${encodeURIComponent(selectedTimelineDate)}&time=${encodeURIComponent(time)}&sec=${seconds}&t=${Date.now()}`;
+    sdVideo.muted = !isAudioListening;
     sdVideo.load();
     const p = sdVideo.play();
-    if (p) p.catch(() => {});
+    if (p) p.catch(() => {
+      // Fallback para política de reprodução automática sem interação de som
+      sdVideo.muted = true;
+      sdVideo.play().catch(() => {});
+    });
     const onReady = () => {
       if (spinner) spinner.style.display = 'none';
       startSdTimelineTracking();
     };
     sdVideo.onplaying = onReady;
     sdVideo.oncanplay = onReady;
+    sdVideo.onloadedmetadata = onReady;
     sdVideo.onerror = () => {
       if (spinner) spinner.style.display = 'none';
     };
