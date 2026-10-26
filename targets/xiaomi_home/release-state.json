@@ -1,20 +1,20 @@
 {
-  "runId": "20261026-readonly-models-01",
-  "sourceCommit": "6b6fa8d3013f3e0590d87d1a9a551b4c564fb34b",
-  "previous": "v0.5.3 (build 0010)",
-  "version": "v0.6.0 (build 0011)",
-  "build": 11,
+  "runId": "20261026-mobile-icons-01",
+  "sourceCommit": "10e4bfc690399ac3610fc2772ce4378d8209bef2",
+  "previous": "v0.6.0 (build 0011)",
+  "version": "v0.7.0 (build 0012)",
+  "build": 12,
   "date": "2026-10-26",
   "status": "built",
   "commits": [
     {
-      "sha": "6b6fa8d3013f3e0590d87d1a9a551b4c564fb34b",
-      "subject": "feat: mapeia plugins Xiaomi sem USB e adiciona diagnostico de leitura",
+      "sha": "10e4bfc690399ac3610fc2772ce4378d8209bef2",
+      "subject": "feat: adiciona icones animados e melhora a previa movel das cameras",
       "body": "",
       "type": "feat",
-      "description": "mapeia plugins Xiaomi sem USB e adiciona diagnostico de leitura",
+      "description": "adiciona icones animados e melhora a previa movel das cameras",
       "breaking": false
     }
   ],
-  "artifact": "runtime/builds/build-0011"
+  "artifact": "runtime/builds/build-0012"
 }

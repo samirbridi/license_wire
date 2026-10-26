@@ -1,5 +1,23 @@
 # CHANGELOG — xiaomi_home
 
+## v0.7.0 (build 0012) - 2026-10-26
+
+### 💥 Breaking Changes
+
+- Nenhum.
+
+### ✨ Features
+
+- feat: adiciona icones animados e melhora a previa movel das cameras (commit `10e4bfc690399ac3610fc2772ce4378d8209bef2`)
+
+### 🐛 Fixes
+
+- Nenhum.
+
+### ⚡ Improvements
+
+- Nenhum.
+
 ## v0.6.0 (build 0011) - 2026-10-26
 
 ### 💥 Breaking Changes

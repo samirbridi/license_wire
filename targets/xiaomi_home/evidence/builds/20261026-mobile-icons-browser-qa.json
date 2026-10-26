@@ -1,0 +1,36 @@
+{
+  "observedAt": "2026-10-26T18:08:04Z",
+  "version": "v0.7.0 (build 0012)",
+  "sourceCommit": "10e4bfc690399ac3610fc2772ce4378d8209bef2",
+  "environment": "Windows, Codex in-app Chromium browser; not physical Android",
+  "pass": true,
+  "checks": {
+    "startupVersionConfirmed": true,
+    "tcpListenersRemainLoopback": [19843, 19844, 19845],
+    "localIconAssets": {"successfulHttpResponses": 8, "expectedResponses": 8},
+    "mobile": {"requestedViewport": [390, 844], "documentClientWidth": 375, "documentScrollWidth": 375, "dialogWidth": 337, "svgIcons": 39, "loadedCameraPreviews": 7},
+    "wide": {"documentClientWidth": 852, "documentClientHeight": 892, "documentScrollWidth": 852, "svgIcons": 39, "loadedCameraPreviews": 7},
+    "outdoorDualLive": [
+      {"view": 1, "decodedSize": [2880, 1620], "currentTime": 16.844374, "paused": false, "muted": true, "mediaError": null},
+      {"view": 2, "decodedSize": [2880, 1620], "currentTime": 12.857632, "paused": false, "muted": true, "mediaError": null}
+    ],
+    "audioSelectedView": {"icon": "volumeOn", "firstViewMuted": false, "secondViewMuted": true, "restoredMuted": true},
+    "expandAndReturn": {"singleViewStatus": "Vídeo conectado", "singleViewButton": "Ver duas visões", "singleViewIcon": "dual", "restoredDualPlayback": true, "restoredIcon": "expand"},
+    "recordings": {"calendarVisible": true, "seekDisabled": true, "downloadDisabled": true, "realSdAvailabilityQueried": false},
+    "browserErrorLogs": 0,
+    "temporaryViewportReset": true,
+    "allLivePlayersClosedAtEnd": true
+  },
+  "privateScreenshots": [
+    "evidence/private/mobile-dashboard-build0012.jpg",
+    "evidence/private/outdoor-dual-mobile-build0012.jpg",
+    "evidence/private/calendar-mobile-build0012.jpg",
+    "evidence/private/dashboard-wide-top-build0012.jpg"
+  ],
+  "limits": [
+    "Responsive browser preview does not validate Android device playback or performance.",
+    "Audio mute and icon state were observed; physical audibility was not independently assessed.",
+    "SD playback/download, physical PTZ/zoom/patrol, talkback and remote access remain unvalidated and unavailable.",
+    "Outdoor timestamp overlay differs from the host date; SD timestamp conversion still requires native catalog evidence."
+  ]
+}
