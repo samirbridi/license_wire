@@ -28,9 +28,11 @@ test('scoped builds are automatic, idempotent and traceable', () => {
     git(['add', '--', 'targets/xiaomi_home']); git(['commit', '-qm', 'improve: registra metadados gerados']);
     save(join(root, 'unrelated.txt'), 'other target'); git(['add', '--', 'unrelated.txt']); git(['commit', '-qm', 'unstructured unrelated commit']);
     const plan = release({ target }); assert.equal(plan.commits.length, 0); assert.equal(plan.version, 'v0.2.1 (build 0003)');
+    save(join(target, 'scripts/other-analysis-in-progress.mjs'), '// Other analyst work; not a packaged input.\n');
+    assert.equal(release({ target, mode: 'build', runId: 'unit-outside-0003' }).build, 3);
     save(join(app, 'server.mjs'), 'export const example = false;\n');
     assert.throws(() => release({ target, mode: 'build', runId: 'unit-dirty-build' }), /Commit target sources/);
-    assert.equal(JSON.parse(readFileSync(join(target, 'release-state.json'), 'utf8')).build, 2);
+    assert.equal(JSON.parse(readFileSync(join(target, 'release-state.json'), 'utf8')).build, 3);
   } finally {
     const absolute = resolve(root), base = resolve(tmpdir()) + sep;
     if (!absolute.startsWith(base) || !absolute.split(sep).at(-1).startsWith('mizin-version-test-')) throw new Error('Unsafe cleanup');

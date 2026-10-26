@@ -1,0 +1,20 @@
+{
+  "runId": "20261026-yaml-startup-01",
+  "sourceCommit": "8b4c5eb8133b8fd1d843bd50bb42d29060a1c6f1",
+  "previous": "v0.5.2 (build 0009)",
+  "version": "v0.5.3 (build 0010)",
+  "build": 10,
+  "date": "2026-10-26",
+  "status": "built",
+  "commits": [
+    {
+      "sha": "8b4c5eb8133b8fd1d843bd50bb42d29060a1c6f1",
+      "subject": "fix: inicia ponte YAML com rede restrita ao computador local",
+      "body": "",
+      "type": "fix",
+      "description": "inicia ponte YAML com rede restrita ao computador local",
+      "breaking": false
+    }
+  ],
+  "artifact": "runtime/builds/build-0010"
+}

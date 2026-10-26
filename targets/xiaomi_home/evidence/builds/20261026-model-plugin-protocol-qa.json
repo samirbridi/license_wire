@@ -1,0 +1,100 @@
+{
+  "observedDate": "2026-10-26",
+  "ownerAppVersion": "11.8.701.5676-MI_APP_STORE",
+  "analyzedBaseApp": "11.7.599 official development distribution",
+  "metadataQuery": {
+    "observedDate": "2026-10-26",
+    "models": [
+      "xiaomi.camera.cw701",
+      "mxiang.camera.mod11",
+      "isa.camera.hlc7"
+    ],
+    "endpoint": "https://core.api.mijia.tech/app/v2/plugin/fetch_plugin",
+    "sid": "mijia",
+    "apiPrefixSource": "HostApiIO.buildHostPath default /app; SmartHomeServer production China domain and SID",
+    "deviceCommandsSent": false,
+    "credentialsPrintedOrSaved": false,
+    "loginCode": 0,
+    "httpStatus": 200,
+    "serverCode": 0,
+    "status": "metadata_received"
+  },
+  "verifiedPackages": [
+    {
+      "model": "xiaomi.camera.cw701",
+      "packageId": 1047343,
+      "version": 58,
+      "sha256": "915cb9de854d65d0b0f24581b3018434fe9b384fb7e11cd100db06c802ac6153"
+    },
+    {
+      "model": "mxiang.camera.mod11",
+      "packageId": 1430790,
+      "version": 46,
+      "sha256": "2cd4e1e041aaecc762e0b54edd9d77632b0e45aea946604f65a335668ac8f4af"
+    },
+    {
+      "model": "isa.camera.hlc7",
+      "packageId": 1025980,
+      "version": 87,
+      "sha256": "f662a40d491ef505789c5e0f2b6a86d56ea60723c602bd1eb7fad6e0132d95eb"
+    },
+    {
+      "model": "isa.camera.hlc7",
+      "packageId": 1427598,
+      "version": 127,
+      "sha256": "1d766f6db8234e6304559b10d6054195fd54e7c7f9c7c9fb89af4cfa0ebb0023"
+    }
+  ],
+  "cw701Bundle": {
+    "format": "Metro indexed RAM",
+    "sha256": "2c76fb3193b17845f831cae09afc3a6626134c6894b957ccf6b58e7cd7eaba08",
+    "slots": 14912,
+    "nonemptyEntries": 936,
+    "executed": false
+  },
+  "sd": {
+    "catalogRdtCommand": 6,
+    "catalogChannels": [
+      0,
+      10
+    ],
+    "requestWordsLE": [
+      6,
+      0,
+      0,
+      0,
+      "channel",
+      0,
+      0,
+      0
+    ],
+    "entryBytes": 8,
+    "downloadRdtCommand": 1,
+    "thumbnailRdtCommand": 5,
+    "eventsRdtCommand": 11,
+    "arbitraryTimeRangeDownloadDemonstrated": false,
+    "physicalSdReadDemonstrated": false
+  },
+  "motion": {
+    "getCruisePositions": 9200,
+    "getCruiseState": 9204,
+    "framing": "HL v5 header16; IOT bridge 0x7FFFFFFF",
+    "movesExecuted": false,
+    "stopNotYetValidated": true
+  },
+  "limits": [
+    "Metadata/package compatibility is not a physical camera test",
+    "Legacy/base package versions must not be confused with latest advertised versions",
+    "RDT transport is not exposed by the current HTTP bridge"
+  ],
+  "staticAnalysis": {
+    "tool": "REA analyze-javascript-application",
+    "selectedSources": 5,
+    "parsedJavaScriptFiles": 5,
+    "parseFailures": 0,
+    "unselectedFiles": 204,
+    "evidenceId": "ev_60fa99343afa38099e75c633602a0e5099198f2706d0eccdacade2b2d9319e80",
+    "graphCoverage": "partial",
+    "executedVendorCode": false
+  }
+}

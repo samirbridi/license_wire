@@ -1,0 +1,35 @@
+package main
+
+import (
+	"encoding/hex"
+	"path/filepath"
+	"testing"
+)
+
+func TestReadWireFixtures(t *testing.T) {
+	fixtures := map[string]string{"device-info": "000001107b7d"}
+	for operation, want := range fixtures {
+		data, err := requestBytes(operation)
+		if err != nil || hex.EncodeToString(data) != want {
+			t.Fatalf("%s differs from documented read fixture", operation)
+		}
+	}
+	if hex.EncodeToString(cruiseProtocolBytes()) != "484c0500f02300000000000000000000" {
+		t.Fatal("HL read fixture differs from plugin evidence")
+	}
+	for _, operation := range []string{"cruise-positions", "set-motor", "format", "delete", "", "../outside"} {
+		if _, err := requestBytes(operation); err == nil {
+			t.Fatalf("unexpected operation accepted: %s", operation)
+		}
+	}
+}
+
+func TestScopedPrivatePaths(t *testing.T) {
+	root, _ := filepath.Abs("test-target")
+	if !inTarget(root, filepath.Join(root, "runtime", "config.yaml")) {
+		t.Fatal("expected private child")
+	}
+	if inTarget(root, root+"-sibling/config.yaml") {
+		t.Fatal("sibling accepted")
+	}
+}

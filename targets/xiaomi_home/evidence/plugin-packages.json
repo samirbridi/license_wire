@@ -1,0 +1,55 @@
+{
+  "collectedDate": "2026-10-26",
+  "source": "Authenticated Xiaomi model plugin metadata; iot-cdn.io.mi.com HTTPS",
+  "ownerAppVersion": "11.8.701.5676-MI_APP_STORE",
+  "packages": [
+    {
+      "model": "xiaomi.camera.cw701",
+      "packageId": 1047343,
+      "version": 58,
+      "sdkVersion": 10116,
+      "bytes": 5983006,
+      "md5MatchesVendorMetadata": true,
+      "sha256": "915cb9de854d65d0b0f24581b3018434fe9b384fb7e11cd100db06c802ac6153",
+      "original": "binaries/plugins/xiaomi.camera.cw701-package-1047343-v58.mpkg",
+      "signatureValidated": false,
+      "installedOrExecuted": false
+    },
+    {
+      "model": "mxiang.camera.mod11",
+      "packageId": 1430790,
+      "version": 46,
+      "sdkVersion": 10116,
+      "bytes": 1978247,
+      "md5MatchesVendorMetadata": true,
+      "sha256": "2cd4e1e041aaecc762e0b54edd9d77632b0e45aea946604f65a335668ac8f4af",
+      "original": "binaries/plugins/mxiang.camera.mod11-package-1430790-v46.mpkg",
+      "signatureValidated": false,
+      "installedOrExecuted": false
+    },
+    {
+      "model": "isa.camera.hlc7",
+      "packageId": 1025980,
+      "version": 87,
+      "sdkVersion": 10116,
+      "bytes": 7046757,
+      "md5MatchesVendorMetadata": true,
+      "sha256": "f662a40d491ef505789c5e0f2b6a86d56ea60723c602bd1eb7fad6e0132d95eb",
+      "original": "binaries/plugins/isa.camera.hlc7-package-1025980-v87.mpkg",
+      "signatureValidated": false,
+      "installedOrExecuted": false
+    },
+    {
+      "model": "isa.camera.hlc7",
+      "packageId": 1427598,
+      "version": 127,
+      "sdkVersion": 10116,
+      "bytes": 6275182,
+      "md5MatchesVendorMetadata": true,
+      "sha256": "1d766f6db8234e6304559b10d6054195fd54e7c7f9c7c9fb89af4cfa0ebb0023",
+      "original": "binaries/plugins/isa.camera.hlc7-package-1427598-v127.mpkg",
+      "signatureValidated": false,
+      "installedOrExecuted": false
+    }
+  ]
+}

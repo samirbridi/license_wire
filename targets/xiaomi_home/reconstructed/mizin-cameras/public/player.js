@@ -88,6 +88,7 @@ export class LivePlayer {
       channel.focus.setAttribute('aria-pressed', String(channel.view?.id === this.select.value));
     }
     document.querySelector('#control-target').textContent = this.selected()?.view.label || '';
+    this.status();
     this.audioLabel();
   }
   startVisible() { for (const channel of this.channels) if (channel.view && !channel.pane.hidden) { channel.retries = 0; this.start(channel); } }

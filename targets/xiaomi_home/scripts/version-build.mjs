@@ -26,6 +26,7 @@ export function release({ target, mode = 'plan', runId = randomUUID() }) {
   const statePath = join(target, 'release-state.json');
   const git = args => execFileSync('git', args, { cwd: repo, encoding: 'utf8', windowsHide: true });
   const generated = path => ['VERSION', 'CHANGELOG.md', 'release-state.json', 'reconstructed/mizin-cameras/public/version.json'].includes(path) || /^evidence\/builds\/[^/]+\.json$/.test(path);
+  const buildInput = path => path.startsWith('reconstructed/mizin-cameras/') || path.startsWith('reconstructed/xiaomi-readonly/') || ['scripts/version-build.mjs', 'scripts/start-central.ps1', 'scripts/start-bridge.ps1', 'scripts/restore-bridge-streams.mjs', 'scripts/build-readonly-probe.ps1'].includes(path);
   const state = existsSync(statePath) ? JSON.parse(readFileSync(statePath, 'utf8')) : null;
   if (mode === 'build' && state?.runId === runId) return state;
   const sourceCommit = git(['rev-parse', 'HEAD']).trim();
@@ -47,7 +48,7 @@ export function release({ target, mode = 'plan', runId = randomUUID() }) {
   const dirty = git(['status', '--porcelain', '--untracked-files=all', '--', scope]).trimEnd();
   if (dirty) {
     const paths = dirty.split('\n').map(line => { let path = line.slice(3).trim(); if (path.startsWith('"')) path = JSON.parse(path); return path.startsWith(scope + '/') ? path.slice(scope.length + 1) : path; });
-    if (paths.some(path => !generated(path))) throw new Error('Commit target sources before building');
+    if (paths.some(path => !generated(path) && buildInput(path))) throw new Error('Commit target sources before building');
   }
   const lock = join(target, 'runtime/version-build.lock'); mkdirSync(dirname(lock), { recursive: true });
   mkdirSync(lock);

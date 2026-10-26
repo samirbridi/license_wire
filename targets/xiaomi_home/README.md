@@ -14,6 +14,8 @@ O painel inclui exibição simultânea das duas vistas, seleção apenas de foco
 
 A abertura concorrente e a reprodução simultânea das duas vistas passaram no teste real e no navegador. O inicializador recupera a ponte e o cadastro de fontes após reinício a partir dos arquivos privados existentes. Não há execução automática no boot do Windows configurada.
 
+A investigação sem USB obteve metadados e pacotes oficiais dos três modelos ao identificar o serviço de autenticação China. O módulo da Outdoor expõe os formatos de catálogo SD, replay, download, posições e rondas; ver [plugins e protocolo](notes/13_plugins_sem_usb.md). Esses formatos ainda exigem adaptação e teste de transporte antes de liberar os controles físicos e o cartão na interface.
+
 - Pesquisa inicial: [notas de viabilidade](notes/00_viabilidade.md).
 - Referências e limites de cada evidência: [fontes públicas](evidence/fontes_publicas.json).
 - Identificação e suporte: [inventário das três câmeras](notes/05_modelos_identificados.md), com referências e limites por modelo.
@@ -42,6 +44,8 @@ Foram recebidos prints de produtos, firmware, erro de login e lista de câmeras.
 ## Versionamento
 
 O script `scripts/version-build.mjs` calcula versão e build pelos commits deste alvo desde o cursor de release. Não usa os dez commits globais do helper antigo. `VERSION`, `CHANGELOG.md`, `release-state.json`, manifesto da interface e recibo de build são gerados juntos. Artefatos são preservados em diretórios novos a cada build. Consulte o README do cliente para comandos e pré-requisitos; não atribuir versões manualmente.
+
+O build exige fontes limpas nos dois componentes reconstruídos e nos scripts efetivos de compilação/inicialização. Scripts de investigação paralelos fora desses inputs não são empacotados nem alterados pelo build; seus commits futuros continuam entrando no histórico do alvo. Isso preserva trabalho em andamento de outras IDEs sem incluir fontes não rastreadas no artefato.
 
 ## Comandos e coleta
 

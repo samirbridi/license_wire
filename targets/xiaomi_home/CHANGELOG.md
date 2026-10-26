@@ -1,5 +1,23 @@
 # CHANGELOG — xiaomi_home
 
+## v0.5.3 (build 0010) - 2026-10-26
+
+### 💥 Breaking Changes
+
+- Nenhum.
+
+### ✨ Features
+
+- Nenhum.
+
+### 🐛 Fixes
+
+- fix: inicia ponte YAML com rede restrita ao computador local (commit `8b4c5eb8133b8fd1d843bd50bb42d29060a1c6f1`)
+
+### ⚡ Improvements
+
+- Nenhum.
+
 ## v0.5.2 (build 0009) - 2026-10-26
 
 ### 💥 Breaking Changes
