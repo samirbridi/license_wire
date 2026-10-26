@@ -3331,7 +3331,6 @@ function openPtzModal(camId) {
   if (aliasEl) aliasEl.innerText = `Stream local: ${camObj.sourceAlias || camId} • go2rtc`;
   const streamAlias = camObj.sourceAlias || camId;
   const videoEl = document.getElementById('ptzMainVideoElement');
-  const feedImg = document.getElementById('ptzMainVideoFeed');
   const spinnerEl = document.getElementById('ptzVideoSpinner');
 
   if (feedImg) {

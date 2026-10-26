@@ -5,6 +5,14 @@ Formato de versão obrigatório: `vX.Y.Z (build XXXX)`.
 
 ---
 
+## v0.16.1 (build 0018) - 2026-10-26
+
+### 🐛 Fixes
+- fix: corrige erro crítico de sintaxe (`SyntaxError: Identifier 'feedImg' has already been declared`) que travava a inicialização do JavaScript no portal residencial, restaurando imediatamente a interatividade de todas as abas, botões, modais e controles
+- improve: atualiza versionamento de assets para `?v=0.16.1` e publica nova compilação no Cloudflare Pages (`https://myhomemizin.pages.dev`), restabelecendo acesso remoto imediato
+
+---
+
 ## v0.16.0 (build 0017) - 2026-10-26
 
 ### ✨ Features

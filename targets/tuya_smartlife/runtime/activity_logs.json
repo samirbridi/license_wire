@@ -1,5 +1,33 @@
 [
   {
+    "id": "log_1793031234649_wc52",
+    "timestamp": 1793031234649,
+    "timeFormatted": "13:13:54",
+    "dateFormatted": "26/10/2026",
+    "devId": "eb49c5d1977172327aqb1q",
+    "devName": "Portão da Garagem",
+    "action": "Portão Fechado com Sucesso",
+    "details": "Sensor magnético confirmou fechamento total (permaneceu aberto por 50s). Garagem segura.",
+    "origin": "Sensor Magnético",
+    "icon": "✅",
+    "level": "success",
+    "read": false
+  },
+  {
+    "id": "log_1793031184895_4vuo",
+    "timestamp": 1793031184895,
+    "timeFormatted": "13:13:04",
+    "dateFormatted": "26/10/2026",
+    "devId": "eb49c5d1977172327aqb1q",
+    "devName": "Portão da Garagem",
+    "action": "Portão Aberto",
+    "details": "Sensor magnético detectou abertura do portão da garagem",
+    "origin": "Sensor Magnético",
+    "icon": "🚪",
+    "level": "warning",
+    "read": false
+  },
+  {
     "id": "log_1793025097279_2010",
     "timestamp": 1793025097279,
     "timeFormatted": "11:31:37",
