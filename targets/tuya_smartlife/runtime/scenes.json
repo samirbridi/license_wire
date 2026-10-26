@@ -1,0 +1,126 @@
+[
+  {
+    "id": "scene_good_night",
+    "name": "Modo Boa Noite (Dormir)",
+    "icon": "🌙",
+    "description": "Apaga a iluminação da sala e rua, desliga ar condicionado e certifica que a residência está segura.",
+    "actions": [
+      {
+        "devId": "eb6227b63a58b256579aim",
+        "dps": "all",
+        "value": false,
+        "name": "Luzes da Sala"
+      },
+      {
+        "devId": "ebe317c237358405b8h5n8",
+        "dps": "all",
+        "value": false,
+        "name": "Luzes da Rua"
+      },
+      {
+        "devId": "eb786ebb970e6a20ffj0ls",
+        "dps": "1",
+        "value": false,
+        "name": "Ar Condicionado"
+      }
+    ]
+  },
+  {
+    "id": "scene_leaving_home",
+    "name": "Saindo de Casa",
+    "icon": "🏃",
+    "description": "Desliga luzes internas e climatização, e envia comando de acionamento do portão da garagem.",
+    "actions": [
+      {
+        "devId": "eb6227b63a58b256579aim",
+        "dps": "all",
+        "value": false,
+        "name": "Luzes da Sala"
+      },
+      {
+        "devId": "eb786ebb970e6a20ffj0ls",
+        "dps": "1",
+        "value": false,
+        "name": "Ar Condicionado"
+      },
+      {
+        "devId": "eb49c5d1977172327aqb1q",
+        "dps": "1",
+        "value": true,
+        "name": "Portão da Garagem (Pulso)"
+      }
+    ]
+  },
+  {
+    "id": "scene_arriving_home",
+    "name": "Chegando em Casa",
+    "icon": "🏠",
+    "description": "Aciona o portão da garagem e acende as luzes de recepção (Rua e Sala).",
+    "actions": [
+      {
+        "devId": "eb49c5d1977172327aqb1q",
+        "dps": "1",
+        "value": true,
+        "name": "Portão da Garagem (Pulso)"
+      },
+      {
+        "devId": "ebe317c237358405b8h5n8",
+        "dps": "1",
+        "value": true,
+        "name": "Luzes da Rua"
+      },
+      {
+        "devId": "eb6227b63a58b256579aim",
+        "dps": "1",
+        "value": true,
+        "name": "Luz da Sala"
+      }
+    ]
+  },
+  {
+    "id": "scene_movie_night",
+    "name": "Modo Cinema & Relax",
+    "icon": "🎬",
+    "description": "Apaga iluminação forte da sala para assistir filmes e climatiza o ambiente.",
+    "actions": [
+      {
+        "devId": "eb6227b63a58b256579aim",
+        "dps": "all",
+        "value": false,
+        "name": "Luzes da Sala"
+      },
+      {
+        "devId": "eb786ebb970e6a20ffj0ls",
+        "dps": "1",
+        "value": true,
+        "name": "Ar Condicionado"
+      }
+    ]
+  },
+  {
+    "id": "scene_all_lights_off",
+    "name": "Apagar Todas as Luzes",
+    "icon": "💡",
+    "description": "Varredura geral desligando todos os interruptores de iluminação da residência.",
+    "actions": [
+      {
+        "devId": "eb6227b63a58b256579aim",
+        "dps": "all",
+        "value": false,
+        "name": "Luzes da Sala"
+      },
+      {
+        "devId": "ebe317c237358405b8h5n8",
+        "dps": "all",
+        "value": false,
+        "name": "Luzes da Rua"
+      },
+      {
+        "devId": "ebaee623fb5d8b4545zhx3",
+        "dps": "all",
+        "value": false,
+        "name": "Interruptor Mizin"
+      }
+    ]
+  }
+]

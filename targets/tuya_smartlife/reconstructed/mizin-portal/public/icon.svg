@@ -1,0 +1,40 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0b132b"/>
+      <stop offset="50%" stop-color="#0f172a"/>
+      <stop offset="100%" stop-color="#020617"/>
+    </linearGradient>
+    <linearGradient id="cyanGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#38bdf8"/>
+      <stop offset="100%" stop-color="#0284c7"/>
+    </linearGradient>
+    <linearGradient id="amberGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#fbbf24"/>
+      <stop offset="100%" stop-color="#f59e0b"/>
+    </linearGradient>
+    <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="16" result="blur"/>
+      <feComposite in="SourceGraphic" in2="blur" operator="over"/>
+    </filter>
+  </defs>
+
+  <!-- Background Squircle -->
+  <rect width="512" height="512" rx="128" fill="url(#bgGrad)"/>
+  <rect width="504" height="504" x="4" y="4" rx="124" fill="none" stroke="rgba(56, 189, 248, 0.25)" stroke-width="4"/>
+
+  <!-- Glowing Aura -->
+  <circle cx="256" cy="256" r="140" fill="url(#cyanGrad)" opacity="0.15" filter="url(#glow)"/>
+
+  <!-- Smart House Icon -->
+  <path d="M256 100 L410 226 C416 231 416 240 410 245 C405 250 396 250 391 245 L380 236 L380 390 C380 401 371 410 360 410 L152 410 C141 410 132 401 132 390 L132 236 L121 245 C116 250 107 250 102 245 C96 240 96 231 102 226 Z" 
+        fill="none" stroke="url(#cyanGrad)" stroke-width="24" stroke-linejoin="round" stroke-linecap="round" filter="url(#glow)"/>
+
+  <!-- Lightning Energy Bolt in Center -->
+  <polygon points="266,190 220,280 260,280 246,350 300,260 260,260" fill="url(#amberGrad)" filter="url(#glow)"/>
+
+  <!-- Connectivity Wave Nodes -->
+  <circle cx="256" cy="140" r="10" fill="#38bdf8"/>
+  <circle cx="340" cy="360" r="6" fill="#34d399"/>
+  <circle cx="172" cy="360" r="6" fill="#38bdf8"/>
+</svg>

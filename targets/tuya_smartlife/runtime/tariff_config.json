@@ -1,0 +1,13 @@
+{
+  "concessionaria": "CEEE Equatorial (RS)",
+  "rateKwh": 1.0149,
+  "bandeira": "amarela",
+  "bandeiraAdicional": 0.00945,
+  "bandeiraFixaMes": 10.51,
+  "closingDay": 19,
+  "cipIluminacao": 10.53,
+  "lastBillKwh": 1112,
+  "lastBillTotalReais": 1149.61,
+  "effectiveRateKwh": 1.0338,
+  "updatedAt": 1792991100000
+}

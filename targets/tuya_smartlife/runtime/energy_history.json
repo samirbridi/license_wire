@@ -1,0 +1,263 @@
+{
+  "monthlyConsumption": [
+    {
+      "month": "Nov/26 (Em Aberto)",
+      "period": "19/10/2026 até Hoje",
+      "homeKwh": 295.0,
+      "bydKwh": 75.0,
+      "generatorKwh": 0.0,
+      "dailyAverageKwh": 36.8,
+      "isClosed": false,
+      "active": true
+    },
+    {
+      "month": "Out/26 (Mês Passado)",
+      "period": "17/09/2026 a 19/10/2026",
+      "homeKwh": 1112.0,
+      "bydKwh": 285.0,
+      "generatorKwh": 0.0,
+      "dailyAverageKwh": 34.75,
+      "isClosed": true
+    },
+    {
+      "month": "Set/26",
+      "period": "19/08/2026 a 17/09/2026",
+      "homeKwh": 1167.0,
+      "bydKwh": 295.0,
+      "generatorKwh": 0.0,
+      "dailyAverageKwh": 40.24,
+      "isClosed": true
+    },
+    {
+      "month": "Ago/26",
+      "period": "21/07/2026 a 19/08/2026",
+      "homeKwh": 1026.0,
+      "bydKwh": 270.0,
+      "generatorKwh": 18.2,
+      "dailyAverageKwh": 35.38,
+      "isClosed": true
+    },
+    {
+      "month": "Jul/26",
+      "period": "19/06/2026 a 21/07/2026",
+      "homeKwh": 1292.0,
+      "bydKwh": 310.0,
+      "generatorKwh": 0.0,
+      "dailyAverageKwh": 40.38,
+      "isClosed": true
+    },
+    {
+      "month": "Jun/26",
+      "period": "20/05/2026 a 19/06/2026",
+      "homeKwh": 1105.0,
+      "bydKwh": 265.0,
+      "generatorKwh": 0.0,
+      "dailyAverageKwh": 36.83,
+      "isClosed": true
+    },
+    {
+      "month": "Mai/26",
+      "period": "20/04/2026 a 20/05/2026",
+      "homeKwh": 1096.0,
+      "bydKwh": 250.0,
+      "generatorKwh": 0.0,
+      "dailyAverageKwh": 36.53,
+      "isClosed": true
+    },
+    {
+      "month": "Abr/26",
+      "period": "21/03/2026 a 20/04/2026",
+      "homeKwh": 991.0,
+      "bydKwh": 230.0,
+      "generatorKwh": 0.0,
+      "dailyAverageKwh": 33.03,
+      "isClosed": true
+    },
+    {
+      "month": "Mar/26",
+      "period": "19/02/2026 a 21/03/2026",
+      "homeKwh": 1033.0,
+      "bydKwh": 240.0,
+      "generatorKwh": 0.0,
+      "dailyAverageKwh": 34.43,
+      "isClosed": true
+    },
+    {
+      "month": "Nov/25",
+      "period": "20/10/2025 a 19/11/2025",
+      "homeKwh": 849.0,
+      "bydKwh": 180.0,
+      "generatorKwh": 0.0,
+      "dailyAverageKwh": 27.39,
+      "isClosed": true
+    },
+    {
+      "month": "Out/25",
+      "period": "19/09/2025 a 20/10/2025",
+      "homeKwh": 832.0,
+      "bydKwh": 160.0,
+      "generatorKwh": 0.0,
+      "dailyAverageKwh": 26.0,
+      "isClosed": true
+    }
+  ],
+  "monthlyCosts": [
+    {
+      "month": "Nov/26 (Projeção)",
+      "period": "19/10/2026 até Hoje",
+      "totalBill": 1180.5,
+      "effectiveRate": 1.0338,
+      "bydCost": 77.54,
+      "homeNetCost": 1102.96,
+      "bandeiraAdicional": 10.5,
+      "bandeiraNome": "Amarela",
+      "cipIluminacao": 10.53,
+      "generatorCostLabel": "⚪ Isento (Próprio)",
+      "bydSavingsVsGas": 192.8,
+      "isClosed": false,
+      "active": true
+    },
+    {
+      "month": "Out/26 (Mês Passado)",
+      "period": "17/09/2026 a 19/10/2026",
+      "totalBill": 1149.61,
+      "effectiveRate": 1.0338,
+      "bydCost": 294.63,
+      "homeNetCost": 854.98,
+      "bandeiraAdicional": 10.51,
+      "bandeiraNome": "Amarela + Verde",
+      "cipIluminacao": 10.53,
+      "generatorCostLabel": "⚪ Isento (Próprio)",
+      "bydSavingsVsGas": 732.67,
+      "isClosed": true
+    },
+    {
+      "month": "Set/26",
+      "period": "19/08/2026 a 17/09/2026",
+      "totalBill": 1226.86,
+      "effectiveRate": 1.0513,
+      "bydCost": 310.13,
+      "homeNetCost": 916.73,
+      "bandeiraAdicional": 27.25,
+      "bandeiraNome": "Amarela",
+      "cipIluminacao": 10.97,
+      "generatorCostLabel": "⚪ Isento (Próprio)",
+      "bydSavingsVsGas": 753.21,
+      "isClosed": true
+    },
+    {
+      "month": "Ago/26",
+      "period": "21/07/2026 a 19/08/2026",
+      "totalBill": 1078.15,
+      "effectiveRate": 1.0508,
+      "bydCost": 283.72,
+      "homeNetCost": 794.43,
+      "bandeiraAdicional": 23.93,
+      "bandeiraNome": "Amarela",
+      "cipIluminacao": 10.97,
+      "generatorCostLabel": "⚪ Isento (Próprio)",
+      "bydSavingsVsGas": 689.51,
+      "isClosed": true
+    },
+    {
+      "month": "Jul/26",
+      "period": "19/06/2026 a 21/07/2026",
+      "totalBill": 1354.18,
+      "effectiveRate": 1.0481,
+      "bydCost": 324.91,
+      "homeNetCost": 1029.27,
+      "bandeiraAdicional": 30.11,
+      "bandeiraNome": "Amarela",
+      "cipIluminacao": 10.97,
+      "generatorCostLabel": "⚪ Isento (Próprio)",
+      "bydSavingsVsGas": 792.5,
+      "isClosed": true
+    },
+    {
+      "month": "Jun/26",
+      "period": "20/05/2026 a 19/06/2026",
+      "totalBill": 1227.5,
+      "effectiveRate": 1.1109,
+      "bydCost": 294.39,
+      "homeNetCost": 933.11,
+      "bandeiraAdicional": 27.26,
+      "bandeiraNome": "Amarela",
+      "cipIluminacao": 10.97,
+      "generatorCostLabel": "⚪ Isento (Próprio)",
+      "bydSavingsVsGas": 660.81,
+      "isClosed": true
+    },
+    {
+      "month": "Mai/26",
+      "period": "20/04/2026 a 20/05/2026",
+      "totalBill": 1074.44,
+      "effectiveRate": 0.9803,
+      "bydCost": 245.07,
+      "homeNetCost": 829.37,
+      "bandeiraAdicional": 17.3,
+      "bandeiraNome": "Amarela",
+      "cipIluminacao": 10.97,
+      "generatorCostLabel": "⚪ Isento (Próprio)",
+      "bydSavingsVsGas": 656.07,
+      "isClosed": true
+    },
+    {
+      "month": "Abr/26",
+      "period": "21/03/2026 a 20/04/2026",
+      "totalBill": 1025.31,
+      "effectiveRate": 1.0346,
+      "bydCost": 237.96,
+      "homeNetCost": 787.35,
+      "bandeiraAdicional": 0.0,
+      "bandeiraNome": "Verde",
+      "cipIluminacao": 10.53,
+      "generatorCostLabel": "⚪ Isento (Próprio)",
+      "bydSavingsVsGas": 591.09,
+      "isClosed": true
+    },
+    {
+      "month": "Mar/26",
+      "period": "19/02/2026 a 21/03/2026",
+      "totalBill": 1078.46,
+      "effectiveRate": 1.044,
+      "bydCost": 250.56,
+      "homeNetCost": 827.9,
+      "bandeiraAdicional": 0.0,
+      "bandeiraNome": "Verde",
+      "cipIluminacao": 10.53,
+      "generatorCostLabel": "⚪ Isento (Próprio)",
+      "bydSavingsVsGas": 614.53,
+      "isClosed": true
+    },
+    {
+      "month": "Nov/25",
+      "period": "20/10/2025 a 19/11/2025",
+      "totalBill": 793.82,
+      "effectiveRate": 0.935,
+      "bydCost": 168.3,
+      "homeNetCost": 625.52,
+      "bandeiraAdicional": 48.7,
+      "bandeiraNome": "Vermelha P1",
+      "cipIluminacao": 9.67,
+      "generatorCostLabel": "⚪ Isento (Próprio)",
+      "bydSavingsVsGas": 480.52,
+      "isClosed": true
+    },
+    {
+      "month": "Out/25",
+      "period": "19/09/2025 a 20/10/2025",
+      "totalBill": 788.21,
+      "effectiveRate": 0.9474,
+      "bydCost": 151.58,
+      "homeNetCost": 636.63,
+      "bandeiraAdicional": 60.44,
+      "bandeiraNome": "Vermelha P1/P2",
+      "cipIluminacao": 9.67,
+      "generatorCostLabel": "⚪ Isento (Próprio)",
+      "bydSavingsVsGas": 425.15,
+      "isClosed": true
+    }
+  ],
+  "updatedAt": 1792991000000,
+  "source": "CEEE Equatorial Invoices (10 faturas PDF auditadas em C:\\Users\\Avell Mizin\\Downloads\\FATURAS CEEE)"
+}

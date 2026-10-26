@@ -1,0 +1,694 @@
+[
+  {
+    "ip": "192.168.1.1",
+    "mac": "5A:D6:1F:3D:9E:B8",
+    "vendor": "Roteador / Gateway Principal",
+    "open_ports": [
+      80,
+      443,
+      8080
+    ],
+    "http_info": "",
+    "hostname": "unifi.localdomain",
+    "tuya": null
+  },
+  {
+    "ip": "192.168.1.16",
+    "mac": "58:D6:1F:30:2C:65",
+    "vendor": "Desconhecido / OEM",
+    "open_ports": [],
+    "http_info": "",
+    "hostname": "USW-Lite-8-PoE.localdomain",
+    "tuya": null
+  },
+  {
+    "ip": "192.168.1.22",
+    "mac": "E4:AA:EC:93:72:D9",
+    "vendor": "Espressif (Tuya / Sonoff / ESP32)",
+    "open_ports": [],
+    "http_info": "",
+    "hostname": "",
+    "tuya": null
+  },
+  {
+    "ip": "192.168.1.25",
+    "mac": "44:F7:70:30:25:23",
+    "vendor": "Desconhecido / OEM",
+    "open_ports": [
+      80,
+      443,
+      8080
+    ],
+    "http_info": "HTTP 80 [nginx/1.12.2] Title: \u5c0f\u7c73\u8def\u7531\u5668",
+    "hostname": "",
+    "tuya": null
+  },
+  {
+    "ip": "192.168.1.30",
+    "mac": "N/A",
+    "vendor": "N/A",
+    "open_ports": [],
+    "http_info": "",
+    "hostname": "host.docker.internal",
+    "tuya": null
+  },
+  {
+    "ip": "192.168.1.48",
+    "mac": "3C:0B:59:14:B4:AE",
+    "vendor": "Tuya Smart (Espressif/Realtek)",
+    "open_ports": [
+      6668
+    ],
+    "http_info": "",
+    "hostname": "",
+    "tuya": {
+      "ip": "192.168.1.48",
+      "gwId": "ebaee623fb5d8b4545zhx3",
+      "active": 2,
+      "encrypt": true,
+      "productKey": "key5ckdnys3pqgec",
+      "version": "3.5",
+      "token": true,
+      "wf_cfg": true,
+      "clientLink": 3,
+      "name": "",
+      "key": "",
+      "mac": "",
+      "id": "ebaee623fb5d8b4545zhx3",
+      "ability": 0,
+      "dev_type": "default",
+      "origin": "broadcast"
+    }
+  },
+  {
+    "ip": "192.168.1.58",
+    "mac": "B0:25:AA:47:0F:97",
+    "vendor": "Xiaomi Inc.",
+    "open_ports": [],
+    "http_info": "",
+    "hostname": "DESKTOP-M34T3GL.localdomain",
+    "tuya": null
+  },
+  {
+    "ip": "192.168.1.65",
+    "mac": "4C:A9:19:96:4C:1A",
+    "vendor": "Tuya Smart Inc.",
+    "open_ports": [
+      6668
+    ],
+    "http_info": "",
+    "hostname": "",
+    "tuya": {
+      "ip": "192.168.1.65",
+      "gwId": "eb786ebb970e6a20ffj0ls",
+      "active": 2,
+      "encrypt": true,
+      "productKey": "keyjup78v54myhan",
+      "version": "3.4",
+      "token": true,
+      "wf_cfg": true,
+      "name": "",
+      "key": "",
+      "mac": "",
+      "id": "eb786ebb970e6a20ffj0ls",
+      "ability": 0,
+      "dev_type": "default",
+      "origin": "broadcast"
+    }
+  },
+  {
+    "ip": "192.168.1.67",
+    "mac": "D4:DA:21:B3:95:70",
+    "vendor": "Desconhecido / OEM",
+    "open_ports": [
+      80,
+      443,
+      8080
+    ],
+    "http_info": "HTTP 80 [nginx/1.12.2] Title: \u5c0f\u7c73\u8def\u7531\u5668",
+    "hostname": "",
+    "tuya": null
+  },
+  {
+    "ip": "192.168.1.70",
+    "mac": "78:22:88:44:A7:B8",
+    "vendor": "Xiaomi Inc. / Smart Home",
+    "open_ports": [
+      554,
+      6668
+    ],
+    "http_info": "",
+    "hostname": "IPC.localdomain",
+    "tuya": {
+      "ip": "192.168.1.70",
+      "gwId": "ebddcf746536e0f01az4dv",
+      "active": 2,
+      "encrypt": true,
+      "productKey": "rt90jaznls6wlq5j",
+      "version": "3.4",
+      "token": true,
+      "wf_cfg": true,
+      "clientLink": 3,
+      "name": "",
+      "key": "",
+      "mac": "",
+      "id": "ebddcf746536e0f01az4dv",
+      "ability": 0,
+      "dev_type": "default",
+      "origin": "broadcast"
+    }
+  },
+  {
+    "ip": "192.168.1.80",
+    "mac": "10:D5:61:30:11:D5",
+    "vendor": "Desconhecido / OEM",
+    "open_ports": [
+      6668
+    ],
+    "http_info": "",
+    "hostname": "",
+    "tuya": {
+      "ip": "192.168.1.80",
+      "gwId": "eb5911cf8227d3e955ihbv",
+      "active": 2,
+      "encrypt": true,
+      "productKey": "keyfa7hya4gfa7g9",
+      "version": "3.3",
+      "name": "",
+      "key": "",
+      "mac": "",
+      "id": "eb5911cf8227d3e955ihbv",
+      "ability": 0,
+      "token": "",
+      "wf_cfg": "",
+      "dev_type": "default",
+      "origin": "broadcast"
+    }
+  },
+  {
+    "ip": "192.168.1.83",
+    "mac": "C8:12:0B:C3:46:EF",
+    "vendor": "Xiaomi Inc.",
+    "open_ports": [
+      8080
+    ],
+    "http_info": "",
+    "hostname": "",
+    "tuya": null
+  },
+  {
+    "ip": "192.168.1.84",
+    "mac": "BC:35:1E:7B:D1:68",
+    "vendor": "Tuya Smart Inc.",
+    "open_ports": [
+      6668
+    ],
+    "http_info": "",
+    "hostname": "lwip0.localdomain",
+    "tuya": {
+      "ip": "192.168.1.84",
+      "gwId": "eb6227b63a58b256579aim",
+      "uuid": "2a20136d74038f96",
+      "active": 2,
+      "encrypt": true,
+      "productKey": "keyfxuj3d5wg53wx",
+      "version": "3.5",
+      "token": true,
+      "wf_cfg": true,
+      "sl": 0,
+      "clientLink": 3,
+      "name": "",
+      "key": "",
+      "mac": "",
+      "id": "eb6227b63a58b256579aim",
+      "ability": 0,
+      "dev_type": "default",
+      "origin": "broadcast"
+    }
+  },
+  {
+    "ip": "192.168.1.85",
+    "mac": "E4:AA:EC:FC:A9:36",
+    "vendor": "Espressif (Tuya / Sonoff / ESP32)",
+    "open_ports": [],
+    "http_info": "",
+    "hostname": "xiaomi.localdomain",
+    "tuya": null
+  },
+  {
+    "ip": "192.168.1.87",
+    "mac": "B6:73:C6:44:97:10",
+    "vendor": "Desconhecido / OEM",
+    "open_ports": [],
+    "http_info": "",
+    "hostname": "S26-Ultra-de-Cris.localdomain",
+    "tuya": null
+  },
+  {
+    "ip": "192.168.1.92",
+    "mac": "D8:C8:0C:CC:B9:C2",
+    "vendor": "Tuya Smart Inc.",
+    "open_ports": [
+      6668
+    ],
+    "http_info": "",
+    "hostname": "",
+    "tuya": {
+      "ip": "192.168.1.92",
+      "gwId": "ebce2ea581c2690311qvem",
+      "uuid": "f961a58e18585914",
+      "active": 2,
+      "encrypt": true,
+      "productKey": "rw34oa0bvgg3arsh",
+      "version": "3.5",
+      "token": true,
+      "wf_cfg": true,
+      "sl": 0,
+      "clientLink": 3,
+      "name": "",
+      "key": "",
+      "mac": "",
+      "id": "ebce2ea581c2690311qvem",
+      "ability": 0,
+      "dev_type": "default",
+      "origin": "broadcast"
+    }
+  },
+  {
+    "ip": "192.168.1.101",
+    "mac": "EC:2C:CD:51:03:71",
+    "vendor": "Desconhecido / OEM",
+    "open_ports": [],
+    "http_info": "",
+    "hostname": "",
+    "tuya": null
+  },
+  {
+    "ip": "192.168.1.102",
+    "mac": "40:F5:20:1A:AD:58",
+    "vendor": "Tuya Smart Inc.",
+    "open_ports": [
+      6668
+    ],
+    "http_info": "",
+    "hostname": "ESP_1AAD58.localdomain",
+    "tuya": {
+      "ip": "192.168.1.102",
+      "gwId": "0070600140f5201aad58",
+      "active": 2,
+      "ability": 0,
+      "mode": 0,
+      "encrypt": true,
+      "productKey": "keyf9fsmuufeywsr",
+      "version": "3.3",
+      "name": "",
+      "key": "",
+      "mac": "40:f5:20:1a:ad:58",
+      "id": "0070600140f5201aad58",
+      "token": "",
+      "wf_cfg": "",
+      "dev_type": "default",
+      "origin": "broadcast"
+    }
+  },
+  {
+    "ip": "192.168.1.104",
+    "mac": "20:1F:3B:8F:72:F9",
+    "vendor": "Samsung / Smart TV",
+    "open_ports": [
+      8008,
+      8009
+    ],
+    "http_info": "",
+    "hostname": "",
+    "tuya": null
+  },
+  {
+    "ip": "192.168.1.106",
+    "mac": "D4:DA:21:5F:A0:68",
+    "vendor": "Desconhecido / OEM",
+    "open_ports": [
+      80,
+      443,
+      8080
+    ],
+    "http_info": "HTTP 80 [nginx/1.12.2] Title: \u5c0f\u7c73\u8def\u7531\u5668",
+    "hostname": "",
+    "tuya": null
+  },
+  {
+    "ip": "192.168.1.112",
+    "mac": "3C:0B:59:B1:B3:FE",
+    "vendor": "Tuya Smart (Espressif/Realtek)",
+    "open_ports": [
+      6668
+    ],
+    "http_info": "",
+    "hostname": "",
+    "tuya": {
+      "ip": "192.168.1.112",
+      "gwId": "ebb5f986e16519ef82o3oa",
+      "uuid": "e0fa05744cc5e012",
+      "active": 2,
+      "encrypt": true,
+      "productKey": "u0cxoxtfelys3ufx",
+      "version": "3.5",
+      "token": true,
+      "wf_cfg": true,
+      "sl": 0,
+      "clientLink": 3,
+      "name": "",
+      "key": "",
+      "mac": "",
+      "id": "ebb5f986e16519ef82o3oa",
+      "ability": 0,
+      "dev_type": "default",
+      "origin": "broadcast"
+    }
+  },
+  {
+    "ip": "192.168.1.115",
+    "mac": "D4:DA:21:B9:12:27",
+    "vendor": "Desconhecido / OEM",
+    "open_ports": [
+      80,
+      443,
+      8080
+    ],
+    "http_info": "HTTP 80 [nginx/1.12.2] Title: \u5c0f\u7c73\u8def\u7531\u5668",
+    "hostname": "MiWiFi-RA80.localdomain",
+    "tuya": null
+  },
+  {
+    "ip": "192.168.1.121",
+    "mac": "7C:64:56:6B:75:35",
+    "vendor": "Google LLC / Smart Home",
+    "open_ports": [],
+    "http_info": "",
+    "hostname": "Samsung.localdomain",
+    "tuya": null
+  },
+  {
+    "ip": "192.168.1.126",
+    "mac": "E4:AA:EC:AC:69:F0",
+    "vendor": "Espressif (Tuya / Sonoff / ESP32)",
+    "open_ports": [],
+    "http_info": "",
+    "hostname": "",
+    "tuya": null
+  },
+  {
+    "ip": "192.168.1.129",
+    "mac": "00:15:99:CF:E5:7D",
+    "vendor": "Desconhecido / OEM",
+    "open_ports": [
+      80
+    ],
+    "http_info": "HTTP 80 OK",
+    "hostname": "SEC001599CFE57D.localdomain",
+    "tuya": null
+  },
+  {
+    "ip": "192.168.1.146",
+    "mac": "BC:35:1E:7B:D4:4F",
+    "vendor": "Tuya Smart Inc.",
+    "open_ports": [
+      6668
+    ],
+    "http_info": "",
+    "hostname": "",
+    "tuya": {
+      "ip": "192.168.1.146",
+      "gwId": "ebe317c237358405b8h5n8",
+      "uuid": "969531526797696c",
+      "active": 2,
+      "encrypt": true,
+      "productKey": "keyfxuj3d5wg53wx",
+      "version": "3.5",
+      "token": true,
+      "wf_cfg": true,
+      "sl": 0,
+      "clientLink": 3,
+      "name": "",
+      "key": "",
+      "mac": "",
+      "id": "ebe317c237358405b8h5n8",
+      "ability": 0,
+      "dev_type": "default",
+      "origin": "broadcast"
+    }
+  },
+  {
+    "ip": "192.168.1.165",
+    "mac": "4C:60:BA:8A:EB:DC",
+    "vendor": "Xiaomi Inc. (Chuangmi Cams)",
+    "open_ports": [],
+    "http_info": "",
+    "hostname": "",
+    "tuya": null
+  },
+  {
+    "ip": "192.168.1.183",
+    "mac": "54:EF:44:CA:B8:DC",
+    "vendor": "Desconhecido / OEM",
+    "open_ports": [],
+    "http_info": "",
+    "hostname": "lumi_gateway_mgl03.localdomain",
+    "tuya": null
+  },
+  {
+    "ip": "192.168.1.186",
+    "mac": "90:09:D0:6C:7A:9B",
+    "vendor": "Tuya / Smart Life",
+    "open_ports": [
+      80,
+      443
+    ],
+    "http_info": "HTTP 80 [nginx] Title: ",
+    "hostname": "NAS-CRISBRIDI.localdomain",
+    "tuya": null
+  },
+  {
+    "ip": "192.168.1.192",
+    "mac": "38:A5:C9:0B:3D:2B",
+    "vendor": "Desconhecido / OEM",
+    "open_ports": [
+      6668
+    ],
+    "http_info": "",
+    "hostname": "",
+    "tuya": {
+      "ip": "192.168.1.192",
+      "gwId": "eb49c5d1977172327aqb1q",
+      "active": 2,
+      "encrypt": true,
+      "productKey": "key8tg9kykj4g8dw",
+      "version": "3.4",
+      "token": true,
+      "wf_cfg": true,
+      "name": "",
+      "key": "",
+      "mac": "",
+      "id": "eb49c5d1977172327aqb1q",
+      "ability": 0,
+      "dev_type": "default",
+      "origin": "broadcast"
+    }
+  },
+  {
+    "ip": "192.168.1.196",
+    "mac": "4C:60:BA:89:8D:06",
+    "vendor": "Xiaomi Inc. (Chuangmi Cams)",
+    "open_ports": [],
+    "http_info": "",
+    "hostname": "",
+    "tuya": null
+  },
+  {
+    "ip": "192.168.1.208",
+    "mac": "4C:A9:19:96:33:E6",
+    "vendor": "Tuya Smart Inc.",
+    "open_ports": [
+      6668
+    ],
+    "http_info": "",
+    "hostname": "",
+    "tuya": {
+      "ip": "192.168.1.208",
+      "gwId": "eb75753e5d4f53f3dbf4sv",
+      "active": 2,
+      "encrypt": true,
+      "productKey": "keyjup78v54myhan",
+      "version": "3.4",
+      "token": true,
+      "wf_cfg": true,
+      "name": "",
+      "key": "",
+      "mac": "",
+      "id": "eb75753e5d4f53f3dbf4sv",
+      "ability": 0,
+      "dev_type": "default",
+      "origin": "broadcast"
+    }
+  },
+  {
+    "ip": "192.168.1.211",
+    "mac": "C0:F8:53:B9:D2:E9",
+    "vendor": "Tuya Smart Inc.",
+    "open_ports": [
+      6668
+    ],
+    "http_info": "",
+    "hostname": "",
+    "tuya": {
+      "ip": "192.168.1.211",
+      "gwId": "eba364bce4af5a110fyw70",
+      "active": 2,
+      "encrypt": true,
+      "productKey": "key5ckdnys3pqgec",
+      "version": "3.4",
+      "token": true,
+      "wf_cfg": true,
+      "name": "",
+      "key": "",
+      "mac": "",
+      "id": "eba364bce4af5a110fyw70",
+      "ability": 0,
+      "dev_type": "default",
+      "origin": "broadcast"
+    }
+  },
+  {
+    "ip": "192.168.1.213",
+    "mac": "F8:0F:F9:66:89:FF",
+    "vendor": "Google LLC (Nest / Chromecast)",
+    "open_ports": [
+      8008,
+      8009
+    ],
+    "http_info": "",
+    "hostname": "Google-Nest-Mini.localdomain",
+    "tuya": null
+  },
+  {
+    "ip": "192.168.1.218",
+    "mac": "74:E9:D8:C8:54:FC",
+    "vendor": "Xiaomi Inc.",
+    "open_ports": [],
+    "http_info": "",
+    "hostname": "HF-LPT6200.localdomain",
+    "tuya": null
+  },
+  {
+    "ip": "192.168.1.222",
+    "mac": "BC:35:1E:7A:54:E8",
+    "vendor": "Tuya Smart Inc.",
+    "open_ports": [
+      6668
+    ],
+    "http_info": "",
+    "hostname": "",
+    "tuya": {
+      "ip": "192.168.1.222",
+      "gwId": "eb7f7b175bf04774f0qnwh",
+      "uuid": "be8a524601d6f7a8",
+      "active": 2,
+      "encrypt": true,
+      "productKey": "4kfqpaat5buefsv0",
+      "version": "3.5",
+      "token": true,
+      "wf_cfg": true,
+      "sl": 0,
+      "clientLink": 3,
+      "name": "",
+      "key": "",
+      "mac": "",
+      "id": "eb7f7b175bf04774f0qnwh",
+      "ability": 0,
+      "dev_type": "default",
+      "origin": "broadcast"
+    }
+  },
+  {
+    "ip": "192.168.1.225",
+    "mac": "E4:AA:EC:93:73:3B",
+    "vendor": "Espressif (Tuya / Sonoff / ESP32)",
+    "open_ports": [],
+    "http_info": "",
+    "hostname": "",
+    "tuya": null
+  },
+  {
+    "ip": "192.168.1.226",
+    "mac": "C0:F8:53:65:BB:13",
+    "vendor": "Tuya Smart Inc.",
+    "open_ports": [
+      6668
+    ],
+    "http_info": "",
+    "hostname": "",
+    "tuya": {
+      "ip": "192.168.1.226",
+      "gwId": "ebce5d26e60a8e1addob31",
+      "active": 2,
+      "encrypt": true,
+      "productKey": "keym4vvjhx4sd9kk",
+      "version": "3.3",
+      "name": "",
+      "key": "",
+      "mac": "",
+      "id": "ebce5d26e60a8e1addob31",
+      "ability": 0,
+      "token": "",
+      "wf_cfg": "",
+      "dev_type": "default",
+      "origin": "broadcast"
+    }
+  },
+  {
+    "ip": "192.168.1.230",
+    "mac": "D8:43:AE:86:50:08",
+    "vendor": "Xiaomi / Tuya",
+    "open_ports": [],
+    "http_info": "",
+    "hostname": "DESKTOP-UJ82JOM.localdomain",
+    "tuya": null
+  },
+  {
+    "ip": "192.168.1.234",
+    "mac": "DA:C8:CF:C6:6A:BE",
+    "vendor": "Google / Smart Device",
+    "open_ports": [],
+    "http_info": "",
+    "hostname": "S24-de-Mizin.localdomain",
+    "tuya": null
+  },
+  {
+    "ip": "192.168.1.242",
+    "mac": "3C:0B:59:14:C0:14",
+    "vendor": "Tuya Smart (Espressif/Realtek)",
+    "open_ports": [
+      6668
+    ],
+    "http_info": "",
+    "hostname": "wlan0.localdomain",
+    "tuya": {
+      "ip": "192.168.1.242",
+      "gwId": "eb1d9c1e1b02ea717178cd",
+      "active": 2,
+      "encrypt": true,
+      "productKey": "key5ckdnys3pqgec",
+      "version": "3.5",
+      "token": true,
+      "wf_cfg": true,
+      "clientLink": 3,
+      "name": "",
+      "key": "",
+      "mac": "",
+      "id": "eb1d9c1e1b02ea717178cd",
+      "ability": 0,
+      "dev_type": "default",
+      "origin": "broadcast"
+    }
+  }
+]

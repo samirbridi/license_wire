@@ -1,0 +1,1315 @@
+{
+  "homes": [
+    {
+      "background": "",
+      "geoName": "R. Eng. Otacílio Oliveira, 106 - Ipanema, Porto Alegre - RS, 91760-090, Brasil",
+      "gmtCreate": 1701393587,
+      "gmtModified": 1753323121,
+      "groupId": 177809995,
+      "id": 131017765,
+      "lat": -30.14,
+      "lon": -51.22,
+      "name": "Bridi's House",
+      "ownerId": "177809995",
+      "source": 0,
+      "status": true,
+      "uid": "az17013103628178HQfj"
+    }
+  ],
+  "devices": [
+    {
+      "active_time": 1770748543,
+      "biz_type": 18,
+      "category": "mal",
+      "create_time": 1770748543,
+      "icon": "smart/icon/ay1544185183501IhqNw/6142514e94d1d0b874c43ece34d2f028.png",
+      "id": "ebb33c061ca4c8c9227o6m",
+      "ip": "179.217.229.116",
+      "lat": "-30.14",
+      "local_key": "7nTy+D$XI:&O;OjQ",
+      "lon": "-51.22",
+      "model": "ZX-DB11B",
+      "name": "SOS Tereza 🆘️",
+      "online": false,
+      "owner_id": "177809995",
+      "product_id": "4kfqpaat5buefsv0",
+      "product_name": "Multifunction alarm",
+      "status": [
+        {
+          "code": "master_mode",
+          "value": "disarmed"
+        },
+        {
+          "code": "delay_set",
+          "value": 0
+        },
+        {
+          "code": "alarm_time",
+          "value": 1
+        },
+        {
+          "code": "switch_alarm_sound",
+          "value": true
+        },
+        {
+          "code": "switch_alarm_light",
+          "value": false
+        },
+        {
+          "code": "switch_mode_light",
+          "value": true
+        },
+        {
+          "code": "switch_kb_sound",
+          "value": false
+        },
+        {
+          "code": "switch_kb_light",
+          "value": false
+        },
+        {
+          "code": "charge_state",
+          "value": false
+        },
+        {
+          "code": "battery_percentage",
+          "value": 20
+        },
+        {
+          "code": "switch_low_battery",
+          "value": false
+        },
+        {
+          "code": "muffling",
+          "value": true
+        },
+        {
+          "code": "alarm_msg",
+          "value": "AEIAYQB0AGUAcgBpAGEAIABmAHIAYQBjAGE="
+        },
+        {
+          "code": "switch_alarm_propel",
+          "value": true
+        },
+        {
+          "code": "alarm_delay_time",
+          "value": 0
+        },
+        {
+          "code": "switch_mode_dl_sound",
+          "value": true
+        },
+        {
+          "code": "doorbell_volume",
+          "value": "upper_middle"
+        },
+        {
+          "code": "master_state",
+          "value": "normal"
+        },
+        {
+          "code": "master_information",
+          "value": ""
+        },
+        {
+          "code": "factory_reset",
+          "value": false
+        },
+        {
+          "code": "sub_admin",
+          "value": "AQAC"
+        }
+      ],
+      "sub": false,
+      "time_zone": "-03:00",
+      "uid": "az1701481542885RAAGZ",
+      "update_time": 1770748543,
+      "uuid": "321e366f12ff6e71",
+      "homeName": "Bridi's House",
+      "homeId": "177809995"
+    },
+    {
+      "active_time": 1769018444,
+      "biz_type": 18,
+      "category": "ckmkzq",
+      "create_time": 1769018444,
+      "icon": "smart/icon/ay1540090774726g5666/ca09387fb3d859e0d220fc2f1b2e5c62.png",
+      "id": "eb49c5d1977172327aqb1q",
+      "ip": "152.243.210.224",
+      "lat": "-30.14",
+      "local_key": "[&S3rV(v*yV^G~3w",
+      "lon": "-51.22",
+      "model": "EKAC-T3099WB",
+      "name": "Portão - Interruptor",
+      "online": true,
+      "owner_id": "177809995",
+      "product_id": "tqnkoelkhtlwv1qb",
+      "product_name": "EKAZA Interruptor Pulso para Garagem",
+      "status": [
+        {
+          "code": "switch_1",
+          "value": false
+        },
+        {
+          "code": "countdown_1",
+          "value": 0
+        },
+        {
+          "code": "doorcontact_state",
+          "value": false
+        },
+        {
+          "code": "door_time_1",
+          "value": 10
+        },
+        {
+          "code": "alarm_countdown_1",
+          "value": 60
+        },
+        {
+          "code": "door_control_1",
+          "value": "close"
+        },
+        {
+          "code": "voice_control_1",
+          "value": true
+        },
+        {
+          "code": "door_state_1",
+          "value": "none"
+        }
+      ],
+      "sub": false,
+      "time_zone": "-03:00",
+      "uid": "az17013103628178HQfj",
+      "update_time": 1769018444,
+      "uuid": "aa2cc17af622f9c3",
+      "homeName": "Bridi's House",
+      "homeId": "177809995"
+    },
+    {
+      "active_time": 1754332102,
+      "biz_type": 18,
+      "category": "dj",
+      "create_time": 1754332102,
+      "icon": "smart/icon/ay1540090774726g5666/70163e6d79a3c129137257cb68e0bb09.png",
+      "id": "eb2d554c1cc3878f810lhh",
+      "ip": "191.32.6.23",
+      "lat": "-30.14",
+      "local_key": "B1CgOT|A>&ExYOqX",
+      "lon": "-51.22",
+      "model": "EKGC-T261-E27",
+      "name": "Lampada 1",
+      "online": false,
+      "owner_id": "177809995",
+      "product_id": "qbpeoed3iqkv3jha",
+      "product_name": "Lampada Inteligente 9W+RGB WB T261",
+      "status": [
+        {
+          "code": "switch_led",
+          "value": false
+        },
+        {
+          "code": "work_mode",
+          "value": "white"
+        },
+        {
+          "code": "bright_value_v2",
+          "value": 1000
+        },
+        {
+          "code": "temp_value_v2",
+          "value": 671
+        },
+        {
+          "code": "colour_data_v2",
+          "value": "{\"h\":48,\"s\":10,\"v\":1000}"
+        },
+        {
+          "code": "scene_data_v2",
+          "value": "{\"scene_num\":1,\"scene_units\":[{\"bright\":200,\"h\":0,\"s\":0,\"temperature\":0,\"unit_change_mode\":\"static\",\"unit_gradient_duration\":13,\"unit_switch_duration\":14,\"v\":0}]}"
+        },
+        {
+          "code": "countdown_1",
+          "value": 0
+        },
+        {
+          "code": "music_data",
+          "value": ""
+        },
+        {
+          "code": "control_data",
+          "value": ""
+        },
+        {
+          "code": "rhythm_mode",
+          "value": "AAAAAAA="
+        },
+        {
+          "code": "sleep_mode",
+          "value": "AAA="
+        },
+        {
+          "code": "wakeup_mode",
+          "value": "AAA="
+        },
+        {
+          "code": "power_memory",
+          "value": "AAEAAAPoA+gD6APo"
+        },
+        {
+          "code": "do_not_disturb",
+          "value": true
+        },
+        {
+          "code": "cycle_timing",
+          "value": "AAAA"
+        },
+        {
+          "code": "random_timing",
+          "value": "AAAA"
+        }
+      ],
+      "sub": false,
+      "time_zone": "-03:00",
+      "uid": "az17013103628178HQfj",
+      "update_time": 1754332102,
+      "uuid": "43481cf897feb386",
+      "homeName": "Bridi's House",
+      "homeId": "177809995"
+    },
+    {
+      "active_time": 1754332614,
+      "biz_type": 18,
+      "category": "dj",
+      "create_time": 1754332614,
+      "icon": "smart/icon/ay1540090774726g5666/70163e6d79a3c129137257cb68e0bb09.png",
+      "id": "eb82adf958accea153epmc",
+      "ip": "191.32.6.23",
+      "lat": "-30.14",
+      "local_key": "3vssPM=ATt1-47*1",
+      "lon": "-51.22",
+      "model": "EKGC-T261-E27",
+      "name": "Lampada 2",
+      "online": false,
+      "owner_id": "177809995",
+      "product_id": "qbpeoed3iqkv3jha",
+      "product_name": "Lampada Inteligente 9W+RGB WB T261",
+      "status": [
+        {
+          "code": "switch_led",
+          "value": true
+        },
+        {
+          "code": "work_mode",
+          "value": "white"
+        },
+        {
+          "code": "bright_value_v2",
+          "value": 1000
+        },
+        {
+          "code": "temp_value_v2",
+          "value": 671
+        },
+        {
+          "code": "colour_data_v2",
+          "value": "{\"h\":48,\"s\":10,\"v\":1000}"
+        },
+        {
+          "code": "scene_data_v2",
+          "value": "{\"scene_num\":1,\"scene_units\":[{\"bright\":200,\"h\":0,\"s\":0,\"temperature\":0,\"unit_change_mode\":\"static\",\"unit_gradient_duration\":13,\"unit_switch_duration\":14,\"v\":0}]}"
+        },
+        {
+          "code": "countdown_1",
+          "value": 0
+        },
+        {
+          "code": "music_data",
+          "value": ""
+        },
+        {
+          "code": "control_data",
+          "value": ""
+        },
+        {
+          "code": "rhythm_mode",
+          "value": "AAAAAAA="
+        },
+        {
+          "code": "sleep_mode",
+          "value": "AAA="
+        },
+        {
+          "code": "wakeup_mode",
+          "value": "AAA="
+        },
+        {
+          "code": "power_memory",
+          "value": "AAEAAAPoA+gD6APo"
+        },
+        {
+          "code": "do_not_disturb",
+          "value": true
+        },
+        {
+          "code": "cycle_timing",
+          "value": "AAAA"
+        },
+        {
+          "code": "random_timing",
+          "value": "AAAA"
+        }
+      ],
+      "sub": false,
+      "time_zone": "-03:00",
+      "uid": "az17013103628178HQfj",
+      "update_time": 1754332614,
+      "uuid": "de2bc40549500c1d",
+      "homeName": "Bridi's House",
+      "homeId": "177809995"
+    },
+    {
+      "active_time": 1754697070,
+      "biz_type": 18,
+      "category": "cz",
+      "create_time": 1754697070,
+      "icon": "smart/icon/bay1619534613947ASwy/f4e49175e0ddfc68e1398a3739e09318.jpg",
+      "id": "eb786ebb970e6a20ffj0ls",
+      "ip": "191.32.6.202",
+      "lat": "-30.14",
+      "local_key": "T2LoNzx?V|30Vf)l",
+      "lon": "-51.22",
+      "model": "SA-42TM03-20BR",
+      "name": "Tomada Ar - JR",
+      "online": true,
+      "owner_id": "177809995",
+      "product_id": "p2nh0qkii5mitzwk",
+      "product_name": "Tomada 2P+T 20A c/Monitor de energia",
+      "status": [
+        {
+          "code": "switch_1",
+          "value": false
+        },
+        {
+          "code": "countdown_1",
+          "value": 0
+        },
+        {
+          "code": "add_ele",
+          "value": 1
+        },
+        {
+          "code": "cur_current",
+          "value": 0
+        },
+        {
+          "code": "cur_power",
+          "value": 0
+        },
+        {
+          "code": "cur_voltage",
+          "value": 2097
+        },
+        {
+          "code": "voltage_coe",
+          "value": 574
+        },
+        {
+          "code": "electric_coe",
+          "value": 23604
+        },
+        {
+          "code": "power_coe",
+          "value": 12909
+        },
+        {
+          "code": "electricity_coe",
+          "value": 3230
+        },
+        {
+          "code": "fault",
+          "value": 0
+        },
+        {
+          "code": "relay_status",
+          "value": "last"
+        },
+        {
+          "code": "overcharge_switch",
+          "value": false
+        },
+        {
+          "code": "light_mode",
+          "value": "relay"
+        },
+        {
+          "code": "child_lock",
+          "value": false
+        },
+        {
+          "code": "cycle_time",
+          "value": ""
+        },
+        {
+          "code": "random_time",
+          "value": ""
+        },
+        {
+          "code": "switch_inching",
+          "value": ""
+        }
+      ],
+      "sub": false,
+      "time_zone": "-03:00",
+      "uid": "az17013103628178HQfj",
+      "update_time": 1754697070,
+      "uuid": "8cf746f04e50a15a",
+      "homeName": "Bridi's House",
+      "homeId": "177809995"
+    },
+    {
+      "active_time": 1754698075,
+      "biz_type": 18,
+      "category": "kg",
+      "create_time": 1754698075,
+      "icon": "smart/icon/ay1540090774726g5666/f85d6a7775c84f65a6b6de0e76160fac.png",
+      "id": "eba364bce4af5a110fyw70",
+      "ip": "191.32.6.202",
+      "lat": "-30.14",
+      "local_key": "w[fQG:o4r47ttX'Y",
+      "lon": "-51.22",
+      "model": "EKAC-T217",
+      "name": "Tomadas Cama - JR",
+      "online": true,
+      "owner_id": "177809995",
+      "product_id": "zrb8kvagt7n0uruc",
+      "product_name": "EKAZA Tomada Inteligente Duplo 10A +1A1C",
+      "status": [
+        {
+          "code": "switch_1",
+          "value": false
+        },
+        {
+          "code": "switch_2",
+          "value": true
+        },
+        {
+          "code": "countdown_1",
+          "value": 0
+        },
+        {
+          "code": "countdown_2",
+          "value": 0
+        },
+        {
+          "code": "relay_status",
+          "value": "last"
+        },
+        {
+          "code": "light_mode",
+          "value": "relay"
+        },
+        {
+          "code": "cycle_time",
+          "value": ""
+        },
+        {
+          "code": "random_time",
+          "value": ""
+        },
+        {
+          "code": "switch_inching",
+          "value": "AAJY"
+        }
+      ],
+      "sub": false,
+      "time_zone": "-03:00",
+      "uid": "az17013103628178HQfj",
+      "update_time": 1754698075,
+      "uuid": "1660b13c656fccb5",
+      "homeName": "Bridi's House",
+      "homeId": "177809995"
+    },
+    {
+      "active_time": 1754698741,
+      "biz_type": 18,
+      "category": "cz",
+      "create_time": 1754698741,
+      "icon": "smart/icon/bay1619534613947ASwy/f4e49175e0ddfc68e1398a3739e09318.jpg",
+      "id": "eb75753e5d4f53f3dbf4sv",
+      "ip": "191.32.6.202",
+      "lat": "-30.14",
+      "local_key": "OOhgYK[WU_T='35w",
+      "lon": "-51.22",
+      "model": "SA-42TM03-20BR",
+      "name": "Tomada Ar - Cris",
+      "online": true,
+      "owner_id": "177809995",
+      "product_id": "p2nh0qkii5mitzwk",
+      "product_name": "Tomada 2P+T 20A c/Monitor de energia",
+      "status": [
+        {
+          "code": "switch_1",
+          "value": true
+        },
+        {
+          "code": "countdown_1",
+          "value": 0
+        },
+        {
+          "code": "add_ele",
+          "value": 1
+        },
+        {
+          "code": "cur_current",
+          "value": 0
+        },
+        {
+          "code": "cur_power",
+          "value": 0
+        },
+        {
+          "code": "cur_voltage",
+          "value": 2100
+        },
+        {
+          "code": "voltage_coe",
+          "value": 570
+        },
+        {
+          "code": "electric_coe",
+          "value": 23395
+        },
+        {
+          "code": "power_coe",
+          "value": 12802
+        },
+        {
+          "code": "electricity_coe",
+          "value": 3250
+        },
+        {
+          "code": "fault",
+          "value": 0
+        },
+        {
+          "code": "relay_status",
+          "value": "last"
+        },
+        {
+          "code": "overcharge_switch",
+          "value": false
+        },
+        {
+          "code": "light_mode",
+          "value": "relay"
+        },
+        {
+          "code": "child_lock",
+          "value": false
+        },
+        {
+          "code": "cycle_time",
+          "value": ""
+        },
+        {
+          "code": "random_time",
+          "value": ""
+        },
+        {
+          "code": "switch_inching",
+          "value": ""
+        }
+      ],
+      "sub": false,
+      "time_zone": "-03:00",
+      "uid": "az17013103628178HQfj",
+      "update_time": 1754698741,
+      "uuid": "c66019aa50af9b4b",
+      "homeName": "Bridi's House",
+      "homeId": "177809995"
+    },
+    {
+      "active_time": 1755188138,
+      "biz_type": 18,
+      "category": "wnykq",
+      "create_time": 1755188138,
+      "icon": "smart/icon/ay15427647462366edzT/8602fde0035e51c152cd2df3b0c1208a.png",
+      "id": "ebce5d26e60a8e1addob31",
+      "ip": "191.32.6.202",
+      "lat": "-30.14",
+      "local_key": "i#=`W+scuw^|QLL|",
+      "lon": "-51.22",
+      "model": "",
+      "name": "Wi-Fi IR+RF Remote Control",
+      "online": true,
+      "owner_id": "177809995",
+      "product_id": "ciyh5hylwsntogfx",
+      "product_name": "Wi-Fi IR+RF Remote Control",
+      "sub": false,
+      "time_zone": "-03:00",
+      "uid": "az17013103628178HQfj",
+      "update_time": 1755188138,
+      "uuid": "b712665a1f651447",
+      "homeName": "Bridi's House",
+      "homeId": "177809995"
+    },
+    {
+      "active_time": 1755224297,
+      "biz_type": 18,
+      "category": "infrared_ac",
+      "create_time": 1755224297,
+      "icon": "smart/ir/icon/9knfrm4eawao.png",
+      "id": "ebbe3e7e35f15b989avdos",
+      "ip": "",
+      "lat": "-30.14",
+      "local_key": "i#=`W+scuw^|QLL|",
+      "lon": "-51.22",
+      "model": "",
+      "name": "Ar Mizin",
+      "node_id": "07a8473e280a5bb8",
+      "online": true,
+      "owner_id": "177809995",
+      "product_id": "1nrzjc",
+      "product_name": "Air Conditioner",
+      "sub": true,
+      "time_zone": "-03:00",
+      "uid": "az17013103628178HQfj",
+      "update_time": 1755224297,
+      "uuid": "ebbe3e7e35f15b989avdos",
+      "homeName": "Bridi's House",
+      "homeId": "177809995"
+    },
+    {
+      "active_time": 1769016167,
+      "biz_type": 18,
+      "category": "dlq",
+      "create_time": 1769016167,
+      "icon": "smart/icon/bay1626428014043QkLC/e6eab774bdef044b6c63880fbf814214.png",
+      "id": "ebb5f986e16519ef82o3oa",
+      "ip": "152.243.210.224",
+      "lat": "-30.14",
+      "local_key": "?e^gmO=ViyuBUks@",
+      "lon": "-51.22",
+      "model": "",
+      "name": "Wallbox BYD",
+      "online": true,
+      "owner_id": "177809995",
+      "product_id": "u0cxoxtfelys3ufx",
+      "product_name": "Breaker",
+      "status": [
+        {
+          "code": "total_forward_energy",
+          "value": 230258
+        },
+        {
+          "code": "phase_a",
+          "value": "CHYAADIAAAI="
+        },
+        {
+          "code": "fault",
+          "value": 0
+        },
+        {
+          "code": "switch_prepayment",
+          "value": false
+        },
+        {
+          "code": "energy_reset",
+          "value": ""
+        },
+        {
+          "code": "balance_energy",
+          "value": 0
+        },
+        {
+          "code": "charge_energy",
+          "value": 0
+        },
+        {
+          "code": "leakage_current",
+          "value": 0
+        },
+        {
+          "code": "switch",
+          "value": true
+        },
+        {
+          "code": "alarm_set_1",
+          "value": "BAEAHg=="
+        },
+        {
+          "code": "alarm_set_2",
+          "value": "AQEAKAMBAQ4EAQCq"
+        },
+        {
+          "code": "breaker_number",
+          "value": "1234"
+        },
+        {
+          "code": "leakagecurr_test",
+          "value": false
+        },
+        {
+          "code": "supply_frequency",
+          "value": 600
+        }
+      ],
+      "sub": false,
+      "time_zone": "-03:00",
+      "uid": "az17013103628178HQfj",
+      "update_time": 1769016167,
+      "uuid": "e0fa05744cc5e012",
+      "homeName": "Bridi's House",
+      "homeId": "177809995"
+    },
+    {
+      "active_time": 1769015928,
+      "biz_type": 18,
+      "category": "zndb",
+      "create_time": 1769015928,
+      "icon": "smart/icon/bay1628049589964ZR5T/8e5dd509a2414fe6a36a8373054a06ce.png",
+      "id": "ebce2ea581c2690311qvem",
+      "ip": "152.243.210.224",
+      "lat": "-30.14",
+      "local_key": "20-sX&[mr[8N7.d2",
+      "lon": "-51.22",
+      "model": "KWS-306WF",
+      "name": "Wattímetro | Home",
+      "online": true,
+      "owner_id": "177809995",
+      "product_id": "rw34oa0bvgg3arsh",
+      "product_name": "KWS-306WF",
+      "status": [
+        {
+          "code": "forward_energy_total",
+          "value": 1110309
+        },
+        {
+          "code": "power_total",
+          "value": 0
+        },
+        {
+          "code": "fault",
+          "value": 0
+        },
+        {
+          "code": "switch",
+          "value": true
+        },
+        {
+          "code": "supply_frequency",
+          "value": 60
+        }
+      ],
+      "sub": false,
+      "time_zone": "-03:00",
+      "uid": "az17013103628178HQfj",
+      "update_time": 1769015928,
+      "uuid": "f961a58e18585914",
+      "homeName": "Bridi's House",
+      "homeId": "177809995"
+    },
+    {
+      "active_time": 1773609617,
+      "biz_type": 18,
+      "category": "dlq",
+      "create_time": 1773609617,
+      "icon": "smart/icon/bay1626428014043QkLC/e6eab774bdef044b6c63880fbf814214.png",
+      "id": "eb887c762b83806650kele",
+      "ip": "177.62.196.26",
+      "lat": "-30.14",
+      "local_key": "XoA$1<l~xA4$sGZg",
+      "lon": "-51.22",
+      "model": "",
+      "name": "Wattímetro | Gerador",
+      "online": false,
+      "owner_id": "177809995",
+      "product_id": "u0cxoxtfelys3ufx",
+      "product_name": "Breaker",
+      "status": [
+        {
+          "code": "total_forward_energy",
+          "value": 1821
+        },
+        {
+          "code": "phase_a",
+          "value": "CIwAAGQAAAA="
+        },
+        {
+          "code": "fault",
+          "value": 0
+        },
+        {
+          "code": "switch_prepayment",
+          "value": false
+        },
+        {
+          "code": "energy_reset",
+          "value": ""
+        },
+        {
+          "code": "balance_energy",
+          "value": 0
+        },
+        {
+          "code": "charge_energy",
+          "value": 0
+        },
+        {
+          "code": "leakage_current",
+          "value": 0
+        },
+        {
+          "code": "switch",
+          "value": true
+        },
+        {
+          "code": "alarm_set_1",
+          "value": "BAEAHg=="
+        },
+        {
+          "code": "alarm_set_2",
+          "value": "AQEAKAMBAQ4EAQCq"
+        },
+        {
+          "code": "breaker_number",
+          "value": "1234"
+        },
+        {
+          "code": "leakagecurr_test",
+          "value": false
+        },
+        {
+          "code": "supply_frequency",
+          "value": 500
+        }
+      ],
+      "sub": false,
+      "time_zone": "-03:00",
+      "uid": "az17013103628178HQfj",
+      "update_time": 1773609617,
+      "uuid": "5da21b783df70bba",
+      "homeName": "Bridi's House",
+      "homeId": "177809995"
+    },
+    {
+      "active_time": 1760317885,
+      "biz_type": 18,
+      "category": "kg",
+      "create_time": 1760317885,
+      "icon": "smart/icon/ay1540090774726g5666/acbe429409c136223fcfeb7a76e095a0.jpg",
+      "id": "ebaee623fb5d8b4545zhx3",
+      "ip": "191.251.127.180",
+      "lat": "-30.14",
+      "local_key": "g7c6i<r#'V/bBf!9",
+      "lon": "-51.22",
+      "model": "EKAT-T218-1WB",
+      "name": "Interruptor Mizin",
+      "online": true,
+      "owner_id": "177809995",
+      "product_id": "fdg9rculfivryrjb",
+      "product_name": "EKAZA Interruptor com tomada 20A WB",
+      "status": [
+        {
+          "code": "switch_1",
+          "value": false
+        },
+        {
+          "code": "switch_2",
+          "value": true
+        },
+        {
+          "code": "countdown_1",
+          "value": 0
+        },
+        {
+          "code": "countdown_2",
+          "value": 0
+        },
+        {
+          "code": "relay_status",
+          "value": "last"
+        },
+        {
+          "code": "switch_backlight",
+          "value": true
+        },
+        {
+          "code": "cycle_time",
+          "value": ""
+        },
+        {
+          "code": "random_time",
+          "value": ""
+        },
+        {
+          "code": "switch_inching",
+          "value": ""
+        }
+      ],
+      "sub": false,
+      "time_zone": "-03:00",
+      "uid": "az17013103628178HQfj",
+      "update_time": 1760317885,
+      "uuid": "2d0be8fb8c29b13d",
+      "homeName": "Bridi's House",
+      "homeId": "177809995"
+    },
+    {
+      "active_time": 1765327790,
+      "biz_type": 18,
+      "category": "infrared_tv",
+      "create_time": 1765327790,
+      "icon": "smart/ir/icon/9knfsb0vv9c0.png",
+      "id": "eb35b86cd7ac03787dejnn",
+      "ip": "",
+      "lat": "-30.14",
+      "local_key": "i#=`W+scuw^|QLL|",
+      "lon": "-51.22",
+      "model": "",
+      "name": "TV Mizin",
+      "node_id": "f39216944ca9d771",
+      "online": true,
+      "owner_id": "177809995",
+      "product_id": "1nrzm4",
+      "product_name": "TV",
+      "sub": true,
+      "time_zone": "-03:00",
+      "uid": "az17013103628178HQfj",
+      "update_time": 1765327790,
+      "uuid": "eb35b86cd7ac03787dejnn",
+      "homeName": "Bridi's House",
+      "homeId": "177809995"
+    },
+    {
+      "active_time": 1769015737,
+      "biz_type": 18,
+      "category": "jtmspro",
+      "create_time": 1769015737,
+      "icon": "smart/icon/ay1540090774726g5666/47b142509ec0e6d8db1244576f98d35c.png",
+      "id": "eb8e5475187db23842hfcm",
+      "ip": "152.243.210.224",
+      "lat": "-30.14",
+      "local_key": "C41<Cr1$yE6NQwVC",
+      "lon": "-51.22",
+      "model": "EKHD-T429",
+      "name": "Fechadura",
+      "online": true,
+      "owner_id": "177809995",
+      "product_id": "lutjrjk3igfza1iw",
+      "product_name": "EKAZA Fechadura WiFi T429",
+      "status": [
+        {
+          "code": "unlock_fingerprint",
+          "value": 11
+        },
+        {
+          "code": "unlock_password",
+          "value": 4
+        },
+        {
+          "code": "unlock_temporary",
+          "value": 0
+        },
+        {
+          "code": "unlock_card",
+          "value": 3
+        },
+        {
+          "code": "alarm_lock",
+          "value": "wrong_finger"
+        },
+        {
+          "code": "unlock_request",
+          "value": 0
+        },
+        {
+          "code": "battery_state",
+          "value": "high"
+        },
+        {
+          "code": "reverse_lock",
+          "value": false
+        },
+        {
+          "code": "unlock_app",
+          "value": 0
+        },
+        {
+          "code": "hijack",
+          "value": false
+        },
+        {
+          "code": "doorbell",
+          "value": true
+        },
+        {
+          "code": "unlock_offline_pd",
+          "value": ""
+        },
+        {
+          "code": "unlock_double_kit",
+          "value": ""
+        },
+        {
+          "code": "remote_no_pd_setkey",
+          "value": "AAAB"
+        },
+        {
+          "code": "remote_no_dp_key",
+          "value": ""
+        },
+        {
+          "code": "initiative_message",
+          "value": ""
+        }
+      ],
+      "sub": false,
+      "time_zone": "-03:00",
+      "uid": "az17013103628178HQfj",
+      "update_time": 1769015737,
+      "uuid": "d84c1019c0b2b226",
+      "homeName": "Bridi's House",
+      "homeId": "177809995"
+    },
+    {
+      "active_time": 1767302168,
+      "biz_type": 18,
+      "category": "kg",
+      "create_time": 1767302168,
+      "icon": "smart/icon/ay1540090774726g5666/552b36ee8d25cec6e39f17472cce7a9d.png",
+      "id": "eb6227b63a58b256579aim",
+      "ip": "191.32.0.59",
+      "lat": "-30.14",
+      "local_key": "@~OWJ?hyNRWgKB)S",
+      "lon": "-51.22",
+      "model": "EKAT-T307-2",
+      "name": "Luzes Sala",
+      "online": true,
+      "owner_id": "177809995",
+      "product_id": "ibkr8aj5saud6wou",
+      "product_name": "Interruptor Inteligente 2CH Wifi",
+      "status": [
+        {
+          "code": "switch_1",
+          "value": true
+        },
+        {
+          "code": "switch_2",
+          "value": false
+        },
+        {
+          "code": "countdown_1",
+          "value": 0
+        },
+        {
+          "code": "countdown_2",
+          "value": 0
+        },
+        {
+          "code": "relay_status",
+          "value": "power_off"
+        },
+        {
+          "code": "switch_backlight",
+          "value": true
+        },
+        {
+          "code": "cycle_time",
+          "value": ""
+        },
+        {
+          "code": "random_time",
+          "value": ""
+        },
+        {
+          "code": "switch_inching",
+          "value": ""
+        }
+      ],
+      "sub": false,
+      "time_zone": "-03:00",
+      "uid": "az17013103628178HQfj",
+      "update_time": 1767302168,
+      "uuid": "2a20136d74038f96",
+      "homeName": "Bridi's House",
+      "homeId": "177809995"
+    },
+    {
+      "active_time": 1767309356,
+      "biz_type": 18,
+      "category": "kg",
+      "create_time": 1767309356,
+      "icon": "smart/icon/ay1540090774726g5666/552b36ee8d25cec6e39f17472cce7a9d.png",
+      "id": "ebe317c237358405b8h5n8",
+      "ip": "191.32.0.59",
+      "lat": "-30.14",
+      "local_key": "r{5i3b~#vQ+td2UG",
+      "lon": "-51.22",
+      "model": "EKAT-T307-2",
+      "name": "Luzes Rua",
+      "online": true,
+      "owner_id": "177809995",
+      "product_id": "ibkr8aj5saud6wou",
+      "product_name": "Interruptor Inteligente 2CH Wifi",
+      "status": [
+        {
+          "code": "switch_1",
+          "value": true
+        },
+        {
+          "code": "switch_2",
+          "value": false
+        },
+        {
+          "code": "countdown_1",
+          "value": 0
+        },
+        {
+          "code": "countdown_2",
+          "value": 0
+        },
+        {
+          "code": "relay_status",
+          "value": "power_off"
+        },
+        {
+          "code": "switch_backlight",
+          "value": true
+        },
+        {
+          "code": "cycle_time",
+          "value": ""
+        },
+        {
+          "code": "random_time",
+          "value": ""
+        },
+        {
+          "code": "switch_inching",
+          "value": ""
+        }
+      ],
+      "sub": false,
+      "time_zone": "-03:00",
+      "uid": "az17013103628178HQfj",
+      "update_time": 1767309356,
+      "uuid": "969531526797696c",
+      "homeName": "Bridi's House",
+      "homeId": "177809995"
+    },
+    {
+      "active_time": 1780065414,
+      "biz_type": 18,
+      "category": "mal",
+      "create_time": 1780065414,
+      "icon": "smart/icon/ay1544185183501IhqNw/6142514e94d1d0b874c43ece34d2f028.png",
+      "id": "eb7f7b175bf04774f0qnwh",
+      "ip": "177.62.196.243",
+      "lat": "-30.14",
+      "local_key": "Q.I}v6Qk1A.NTxCj",
+      "lon": "-51.22",
+      "model": "ZX-DB11B",
+      "name": "Campanhia",
+      "online": true,
+      "owner_id": "177809995",
+      "product_id": "4kfqpaat5buefsv0",
+      "product_name": "Multifunction alarm",
+      "status": [
+        {
+          "code": "master_mode",
+          "value": "disarmed"
+        },
+        {
+          "code": "delay_set",
+          "value": 0
+        },
+        {
+          "code": "alarm_time",
+          "value": 1
+        },
+        {
+          "code": "switch_alarm_sound",
+          "value": true
+        },
+        {
+          "code": "switch_alarm_light",
+          "value": true
+        },
+        {
+          "code": "switch_mode_light",
+          "value": true
+        },
+        {
+          "code": "switch_kb_sound",
+          "value": false
+        },
+        {
+          "code": "switch_kb_light",
+          "value": false
+        },
+        {
+          "code": "charge_state",
+          "value": true
+        },
+        {
+          "code": "battery_percentage",
+          "value": 100
+        },
+        {
+          "code": "switch_low_battery",
+          "value": true
+        },
+        {
+          "code": "muffling",
+          "value": false
+        },
+        {
+          "code": "alarm_msg",
+          "value": "AFAAbwBzAHMAdQBpACAAdgBpAHMAaQB0AGEAbgB0AGUACgAgACgAIwAwADAAIAB6AG8AbgBhACAAZABlACAAcAByAG8AdABlAOcA4wBvACk="
+        },
+        {
+          "code": "switch_alarm_propel",
+          "value": true
+        },
+        {
+          "code": "alarm_delay_time",
+          "value": 0
+        },
+        {
+          "code": "switch_mode_dl_sound",
+          "value": false
+        },
+        {
+          "code": "doorbell_volume",
+          "value": "high"
+        },
+        {
+          "code": "master_state",
+          "value": "normal"
+        },
+        {
+          "code": "master_information",
+          "value": ""
+        },
+        {
+          "code": "factory_reset",
+          "value": false
+        },
+        {
+          "code": "sub_admin",
+          "value": "AQAC"
+        }
+      ],
+      "sub": false,
+      "time_zone": "-03:00",
+      "uid": "az17013103628178HQfj",
+      "update_time": 1780065414,
+      "uuid": "be8a524601d6f7a8",
+      "homeName": "Bridi's House",
+      "homeId": "177809995"
+    }
+  ]
+}

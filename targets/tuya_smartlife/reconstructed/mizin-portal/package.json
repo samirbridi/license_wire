@@ -1,0 +1,10 @@
+{
+  "name": "mizin-portal",
+  "version": "1.0.0",
+  "description": "Central Unificada Mizin Home - Tuya Local + Xiaomi Câmeras",
+  "type": "module",
+  "main": "server.mjs",
+  "scripts": {
+    "start": "node server.mjs"
+  }
+}

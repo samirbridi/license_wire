@@ -1,0 +1,81 @@
+[
+  {
+    "id": "auto_gate_prolonged",
+    "name": "Alerta de Portão Aberto (> 1 min)",
+    "icon": "🚨",
+    "enabled": true,
+    "triggerType": "gate_prolonged",
+    "triggerDescription": "Quando o portão permanecer aberto por mais de 60 segundos",
+    "condition": "Sensor de contato magnético do portão acusa estado aberto",
+    "actionDescription": "Emitir notificação visual e sonora no painel e registrar alerta crítico no Logbook",
+    "actions": [],
+    "lastTriggered": null,
+    "totalExecutions": 0
+  },
+  {
+    "id": "auto_gate_lights",
+    "name": "Iluminação Noturna do Portão",
+    "icon": "🚪",
+    "enabled": true,
+    "triggerType": "gate_opened",
+    "triggerDescription": "Quando o portão for acionado entre 18:00 e 06:00",
+    "condition": "Horário Noturno (18h às 06h)",
+    "actionDescription": "Acender Luz da Rua para manobra segura",
+    "actions": [
+      {
+        "devId": "ebe317c237358405b8h5n8",
+        "dps": "1",
+        "value": true,
+        "name": "Luz da Rua"
+      }
+    ],
+    "lastTriggered": null,
+    "totalExecutions": 4
+  },
+  {
+    "id": "auto_byd_cutoff",
+    "name": "Wallbox BYD — Desarme Pós-Carga",
+    "icon": "⚡",
+    "enabled": true,
+    "triggerType": "power_drop",
+    "triggerDescription": "Quando a potência do disjuntor BYD cair abaixo de 15W por 15min",
+    "condition": "Carro 100% carregado em modo standby",
+    "actionDescription": "Desarmar disjuntor DIN TOMPD-63SW para proteger a bateria e economizar energia",
+    "actions": [
+      {
+        "devId": "ebb5f986e16519ef82o3oa",
+        "dps": "16",
+        "value": false,
+        "name": "Disjuntor Wallbox BYD"
+      }
+    ],
+    "lastTriggered": null,
+    "totalExecutions": 12
+  },
+  {
+    "id": "auto_ceee_failover",
+    "name": "Alerta de Queda de Rede CEEE & Gerador",
+    "icon": "⚠️",
+    "enabled": true,
+    "triggerType": "grid_fail",
+    "triggerDescription": "Quando a tensão nas 3 fases cair abaixo de 50V",
+    "condition": "Interrupção de fornecimento da concessionária",
+    "actionDescription": "Registrar evento crítico no Logbook, acionar notificação de emergência e monitorar gerador",
+    "actions": [],
+    "lastTriggered": null,
+    "totalExecutions": 1
+  },
+  {
+    "id": "auto_temp_protection",
+    "name": "Proteção Térmica do Quadro de Disjuntores",
+    "icon": "🔥",
+    "enabled": true,
+    "triggerType": "temperature_high",
+    "triggerDescription": "Quando o sensor NTC da caixa acusar temperatura acima de 65°C",
+    "condition": "Sobreaquecimento detectado no barramento",
+    "actionDescription": "Emite alerta sonoro de risco elétrico e envia notificação imediata",
+    "actions": [],
+    "lastTriggered": null,
+    "totalExecutions": 0
+  }
+]

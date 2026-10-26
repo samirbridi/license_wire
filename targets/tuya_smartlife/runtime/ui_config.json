@@ -1,0 +1,100 @@
+{
+  "shortcuts": [
+    {
+      "id": "sc_gate",
+      "name": "Acionar Portão",
+      "icon": "🚪",
+      "type": "gate",
+      "targetId": "eb49c5d1977172327aqb1q",
+      "channel": 1,
+      "action": "pulse",
+      "showOverview": true,
+      "showCameras": true,
+      "showPopup": true
+    },
+    {
+      "id": "sc_logs",
+      "name": "Registro Atividades",
+      "icon": "📋",
+      "type": "nav",
+      "targetId": "logs",
+      "channel": null,
+      "action": "nav",
+      "showOverview": true,
+      "showCameras": false,
+      "showPopup": false
+    }
+  ],
+  "pinnedDevices": [
+    "eb49c5d1977172327aqb1q",
+    "eb6227b63a58b256579aim",
+    "eb786ebb970e6a20ffj0ls",
+    "ebb5f986e16519ef82o3oa",
+    "ebce2ea581c2690311qvem",
+    "ebaee623fb5d8b4545zhx3",
+    "ebe317c237358405b8h5n8"
+  ],
+  "favorites": [
+    "eb49c5d1977172327aqb1q"
+  ],
+  "showGlanceBar": false,
+  "glanceBadges": [
+    {
+      "id": "gb_lights",
+      "name": "Luzes Acesas",
+      "icon": "💡",
+      "enabled": true,
+      "action": "turn_off_all"
+    },
+    {
+      "id": "gb_gate",
+      "name": "Portão Garagem",
+      "icon": "🔒",
+      "enabled": true,
+      "action": "gate_pulse"
+    },
+    {
+      "id": "gb_byd",
+      "name": "Wallbox BYD",
+      "icon": "🚗",
+      "enabled": true,
+      "action": "byd_toggle"
+    },
+    {
+      "id": "gb_ac",
+      "name": "Ar Mizin",
+      "icon": "❄️",
+      "enabled": true,
+      "action": "ac_toggle"
+    },
+    {
+      "id": "gb_energy",
+      "name": "Rede CEEE",
+      "icon": "⚡",
+      "enabled": true,
+      "action": "open_energy"
+    },
+    {
+      "id": "gb_temp",
+      "name": "Temperatura Caixa NTC",
+      "icon": "🌡️",
+      "enabled": false,
+      "action": "open_energy"
+    },
+    {
+      "id": "gb_generator",
+      "name": "Gerador Residencial",
+      "icon": "⚙️",
+      "enabled": false,
+      "action": "open_energy"
+    },
+    {
+      "id": "gb_cameras",
+      "name": "Câmeras de Segurança",
+      "icon": "📹",
+      "enabled": false,
+      "action": "open_cameras"
+    }
+  ],
+  "updatedAt": 1793025253350
+}
