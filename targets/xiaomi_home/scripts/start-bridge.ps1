@@ -8,15 +8,29 @@ $bridgeConfigPath = (Resolve-Path -LiteralPath $bridgeMetadata.config).Path
 foreach ($bridgePath in @($bridgeExecutable, $bridgeConfigPath)) {
     if (-not $bridgePath.StartsWith($bridgeTarget + [IO.Path]::DirectorySeparatorChar, [StringComparison]::OrdinalIgnoreCase)) { throw 'Caminho da ponte fora do alvo Xiaomi.' }
 }
-$bridgeConfig = Get-Content -LiteralPath $bridgeConfigPath -Raw | ConvertFrom-Json
-if ($bridgeConfig.api.listen -ne '127.0.0.1:19843' -or $bridgeConfig.webrtc.listen -ne '127.0.0.1:19844' -or $bridgeConfig.rtsp.listen -ne '') { throw 'A ponte exige configuracao restrita ao computador local.' }
 # Never stop another process or displace a listener on these ports.
 foreach ($bridgePort in @(19843, 19844)) {
     $bridgeProbe = [Net.Sockets.TcpListener]::new([Net.IPAddress]::Loopback, $bridgePort)
     try { $bridgeProbe.Start() } finally { $bridgeProbe.Stop() }
 }
 $bridgeLogBase = Join-Path $bridgeTarget ('runtime/qr-login/restart-' + [datetime]::UtcNow.ToString('yyyyMMdd-HHmmss-fff'))
-$bridgeProcess = Start-Process -FilePath $bridgeExecutable -ArgumentList @('-config', ('"' + $bridgeConfigPath + '"')) -WorkingDirectory (Split-Path -Parent $bridgeConfigPath) -WindowStyle Hidden -RedirectStandardOutput ($bridgeLogBase + '.log') -RedirectStandardError ($bridgeLogBase + '.stderr.log') -PassThru
+# A separate final config source forces loopback without parsing or rewriting credentials.
+# It stays private because go2rtc may persist registered stream URLs into a config file.
+$bridgeNetworkPath = $bridgeLogBase + '.network.yaml'
+$bridgeNetwork = @'
+api:
+  listen: 127.0.0.1:19843
+rtsp:
+  listen: ""
+webrtc:
+  listen: 127.0.0.1:19844
+  ice_servers: []
+  candidates:
+    - 127.0.0.1:19844
+'@
+[IO.File]::WriteAllText($bridgeNetworkPath, $bridgeNetwork, (New-Object Text.UTF8Encoding $false))
+$bridgeProcess = Start-Process -FilePath $bridgeExecutable -ArgumentList @('-config', ('"' + $bridgeConfigPath + '"'), '-config', ('"' + $bridgeNetworkPath + '"')) -WorkingDirectory (Split-Path -Parent $bridgeConfigPath) -WindowStyle Hidden -RedirectStandardOutput ($bridgeLogBase + '.log') -RedirectStandardError ($bridgeLogBase + '.stderr.log') -PassThru
+$bridgeMetadata | Add-Member -NotePropertyName network_config -NotePropertyValue $bridgeNetworkPath -Force
 $bridgeMetadata.pid = $bridgeProcess.Id
 $bridgeMetadata.started_utc_epoch = [datetimeoffset]::UtcNow.ToUnixTimeMilliseconds() / 1000
 [IO.File]::WriteAllText($bridgeMetadataPath, ($bridgeMetadata | ConvertTo-Json), (New-Object Text.UTF8Encoding $false))

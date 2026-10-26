@@ -1,20 +1,20 @@
 {
-  "runId": "20261026-dual-startup-01",
-  "sourceCommit": "ec978e94fcbdaab0c3bf22e8c042c09eb1c80e2c",
-  "previous": "v0.5.0 (build 0007)",
-  "version": "v0.5.1 (build 0008)",
-  "build": 8,
+  "runId": "20261026-bridge-recovery-01",
+  "sourceCommit": "ea8306a72be5fed496904069a074584cfd840bca",
+  "previous": "v0.5.1 (build 0008)",
+  "version": "v0.5.2 (build 0009)",
+  "build": 9,
   "date": "2026-10-26",
   "status": "built",
   "commits": [
     {
-      "sha": "ec978e94fcbdaab0c3bf22e8c042c09eb1c80e2c",
-      "subject": "fix: ordena inicializacao das vistas sem interromper video simultaneo",
+      "sha": "ea8306a72be5fed496904069a074584cfd840bca",
+      "subject": "fix: recupera ponte e perfis de video apos reiniciar a central",
       "body": "",
       "type": "fix",
-      "description": "ordena inicializacao das vistas sem interromper video simultaneo",
+      "description": "recupera ponte e perfis de video apos reiniciar a central",
       "breaking": false
     }
   ],
-  "artifact": "runtime/builds/build-0008"
+  "artifact": "runtime/builds/build-0009"
 }

@@ -1,5 +1,23 @@
 # CHANGELOG — xiaomi_home
 
+## v0.5.2 (build 0009) - 2026-10-26
+
+### 💥 Breaking Changes
+
+- Nenhum.
+
+### ✨ Features
+
+- Nenhum.
+
+### 🐛 Fixes
+
+- fix: recupera ponte e perfis de video apos reiniciar a central (commit `ea8306a72be5fed496904069a074584cfd840bca`)
+
+### ⚡ Improvements
+
+- Nenhum.
+
 ## v0.5.1 (build 0008) - 2026-10-26
 
 ### 💥 Breaking Changes
