@@ -67,6 +67,15 @@ export function createCentral(options = {}) {
   const snapshots = new Map();
   const processes = new Set();
   const activeVideos = new Map();
+  const cameraStarts = new Map();
+  async function acquireCameraStart(id) {
+    const previous = cameraStarts.get(id) ?? Promise.resolve();
+    let advance; const next = new Promise(accept => { advance = accept; });
+    const tail = previous.catch(() => {}).then(() => next); cameraStarts.set(id, tail);
+    await previous.catch(() => {});
+    let released = false;
+    return () => { if (released) return; released = true; advance(); if (cameraStarts.get(id) === tail) cameraStarts.delete(id); };
+  }
   function stopSessionVideos(sessionKey) {
     for (const [key, entry] of activeVideos) if (entry.sessionKey === sessionKey) { entry.child.kill(); activeVideos.delete(key); }
   }
@@ -133,12 +142,17 @@ export function createCentral(options = {}) {
     const cached = snapshots.get(camera.id);
     if (cached?.data && Date.now() - cached.at < 60_000) return cached;
     if (cached?.pending) return cached.pending;
-    const pending = scheduleSnapshot(() => new Promise((accept, reject) => {
-      const child = spawnMedia(['-hide_banner', '-nostdin', '-loglevel', 'error', '-rw_timeout', '25000000', '-i', source(camera), '-map', '0:v:0', '-an', '-frames:v', '1', '-vf', 'scale=640:-2', '-q:v', '5', '-f', 'image2pipe', 'pipe:1']);
+    const pending = scheduleSnapshot(async () => {
+      const releaseStart = await acquireCameraStart(camera.physicalId ?? camera.id);
+      if (closing) { releaseStart(); throw new Error('Central stopped'); }
+      return new Promise((accept, reject) => {
+      let child;
+      try { child = spawnMedia(['-hide_banner', '-nostdin', '-loglevel', 'error', '-rw_timeout', '25000000', '-analyzeduration', '1000000', '-probesize', '262144', '-i', source(camera), '-map', '0:v:0', '-an', '-frames:v', '1', '-vf', 'scale=640:-2', '-q:v', '5', '-f', 'image2pipe', 'pipe:1']); }
+      catch (error) { releaseStart(); reject(error); return; }
       const chunks = []; let size = 0, finished = false;
       const timer = setTimeout(() => { child.kill(); done(new Error('Snapshot timeout')); }, 40_000);
       function done(error) {
-        if (finished) return; finished = true; clearTimeout(timer);
+        if (finished) return; finished = true; clearTimeout(timer); releaseStart();
         if (error) { snapshots.delete(camera.id); reject(error); return; }
         const data = Buffer.concat(chunks);
         if (data.length < 4 || data[0] !== 0xff || data[1] !== 0xd8) { snapshots.delete(camera.id); reject(new Error('No image')); return; }
@@ -147,7 +161,8 @@ export function createCentral(options = {}) {
       child.stdout.on('data', chunk => { size += chunk.length; if (size > 2_000_000) { child.kill(); done(new Error('Image too large')); } else chunks.push(chunk); });
       child.once('error', done);
       child.once('close', code => done(code === 0 ? null : new Error('Camera unavailable')));
-    }));
+    });
+    });
     snapshots.set(camera.id, { pending });
     return pending;
   }
@@ -235,7 +250,7 @@ export function createCentral(options = {}) {
     if (!view) return json(res, 400, { error: 'Visão da câmera não encontrada.' });
     if (match[1] === 'snapshot') {
       try {
-        const snapshot = await getSnapshot({ ...camera, id: camera.id + ':' + view.id, sourceAlias: view.sourceAlias });
+        const snapshot = await getSnapshot({ ...camera, physicalId: camera.id, id: camera.id + ':' + view.id, sourceAlias: view.sourceAlias });
         if (res.destroyed) return;
         headers(res, 'image/jpeg'); res.setHeader('X-Captured-At', String(snapshot.at)); res.end(snapshot.data);
       } catch { if (!res.destroyed) json(res, 503, { error: 'Prévia indisponível. Tente abrir o vídeo.' }); }
@@ -243,24 +258,29 @@ export function createCentral(options = {}) {
     }
     const quality = ['economy', 'balanced', 'detail', 'original'].includes(url.searchParams.get('quality')) ? url.searchParams.get('quality') : 'balanced';
     const streamKey = `${session.key}:${camera.id}:${view.id}`;
+    const releaseStart = await acquireCameraStart(camera.id);
+    if (closing || res.destroyed) { releaseStart(); return; }
+    if (sessionFor(req)?.key !== session.key) { releaseStart(); return json(res, 401, { error: 'Conecte este dispositivo à central.' }); }
     const clients = new Set([...activeVideos.values()].map(entry => entry.sessionKey));
-    if (clients.size >= 2 && !clients.has(session.key)) return json(res, 429, { error: 'A central já está transmitindo para dois dispositivos.' });
+    if (clients.size >= 2 && !clients.has(session.key)) { releaseStart(); return json(res, 429, { error: 'A central já está transmitindo para dois dispositivos.' }); }
     for (const [key, entry] of activeVideos) if (entry.sessionKey === session.key && entry.cameraId !== camera.id) { entry.child.kill(); activeVideos.delete(key); }
     const currentViews = [...activeVideos.values()].filter(entry => entry.sessionKey === session.key);
-    if (currentViews.length >= 2 && !activeVideos.has(streamKey)) return json(res, 429, { error: 'Este dispositivo já está exibindo duas visões.' });
+    if (currentViews.length >= 2 && !activeVideos.has(streamKey)) { releaseStart(); return json(res, 429, { error: 'Este dispositivo já está exibindo duas visões.' }); }
     activeVideos.get(streamKey)?.child.kill();
     const width = quality === 'original' ? 3840 : quality === 'economy' ? 640 : quality === 'detail' ? 1920 : 1280;
     const bitrate = width === 640 ? '700k' : width === 1280 ? '1800k' : width === 1920 ? '3000k' : '6000k';
     const sourceAlias = quality !== 'economy' && view.originalAlias ? view.originalAlias : view.sourceAlias;
     const encoding = encoder === 'h264_nvenc' ? ['-c:v', 'h264_nvenc', '-preset', 'p4', '-tune', 'ull'] : ['-c:v', 'libx264', '-preset', 'veryfast', '-tune', 'zerolatency'];
-    const child = spawnMedia(['-hide_banner', '-nostdin', '-loglevel', 'error', '-rw_timeout', '25000000', '-i', source({ sourceAlias }), '-map', '0:v:0', '-map', '0:a:0?', '-c:a', 'aac', '-b:a', '64k', '-ar', '48000', '-vf', `scale=w='min(${width},iw)':h=-2`, '-r', '15', ...encoding, '-b:v', bitrate, '-maxrate', bitrate, '-bufsize', bitrate, '-g', '15', '-keyint_min', '15', '-sc_threshold', '0', '-pix_fmt', 'yuv420p', '-movflags', '+frag_keyframe+empty_moov+default_base_moof', '-f', 'mp4', 'pipe:1']);
+    let child;
+    try { child = spawnMedia(['-hide_banner', '-nostdin', '-loglevel', 'error', '-rw_timeout', '25000000', '-analyzeduration', '1000000', '-probesize', '262144', '-i', source({ sourceAlias }), '-map', '0:v:0', '-map', '0:a:0?', '-c:a', 'aac', '-b:a', '64k', '-ar', '48000', '-vf', `scale=w='min(${width},iw)':h=-2`, '-r', '15', ...encoding, '-b:v', bitrate, '-maxrate', bitrate, '-bufsize', bitrate, '-g', '15', '-keyint_min', '15', '-sc_threshold', '0', '-pix_fmt', 'yuv420p', '-movflags', '+frag_keyframe+empty_moov+default_base_moof', '-f', 'mp4', 'pipe:1']); }
+    catch (error) { releaseStart(); throw error; }
     activeVideos.set(streamKey, { child, sessionKey: session.key, cameraId: camera.id, viewId: view.id });
     let sent = false;
-    const timer = setTimeout(() => { child.kill(); if (!res.headersSent) json(res, 504, { error: 'A câmera não respondeu a tempo.' }); else res.destroy(); }, 45_000);
-    child.stdout.once('data', chunk => { if (res.destroyed) return; sent = true; clearTimeout(timer); headers(res, 'video/mp4'); res.setHeader('Accept-Ranges', 'none'); res.write(chunk); child.stdout.pipe(res); });
-    child.once('error', () => { clearTimeout(timer); if (!res.headersSent && !res.destroyed) json(res, 503, { error: 'Não foi possível iniciar o vídeo.' }); });
-    child.once('close', () => { clearTimeout(timer); if (activeVideos.get(streamKey)?.child === child) activeVideos.delete(streamKey); if (!res.destroyed) { if (!sent && !res.headersSent) json(res, 503, { error: 'Não foi possível conectar à câmera.' }); else res.end(); } });
-    res.once('close', () => { clearTimeout(timer); child.kill(); if (activeVideos.get(streamKey)?.child === child) activeVideos.delete(streamKey); });
+    const timer = setTimeout(() => { releaseStart(); child.kill(); if (!res.headersSent) json(res, 504, { error: 'A câmera não respondeu a tempo.' }); else res.destroy(); }, 45_000);
+    child.stdout.once('data', chunk => { releaseStart(); if (res.destroyed) return; sent = true; clearTimeout(timer); headers(res, 'video/mp4'); res.setHeader('Accept-Ranges', 'none'); res.write(chunk); child.stdout.pipe(res); });
+    child.once('error', () => { releaseStart(); clearTimeout(timer); if (!res.headersSent && !res.destroyed) json(res, 503, { error: 'Não foi possível iniciar o vídeo.' }); });
+    child.once('close', () => { releaseStart(); clearTimeout(timer); if (activeVideos.get(streamKey)?.child === child) activeVideos.delete(streamKey); if (!res.destroyed) { if (!sent && !res.headersSent) json(res, 503, { error: 'Não foi possível conectar à câmera.' }); else res.end(); } });
+    res.once('close', () => { releaseStart(); clearTimeout(timer); child.kill(); if (activeVideos.get(streamKey)?.child === child) activeVideos.delete(streamKey); });
   }
 
   const server = http.createServer((req, res) => { route(req, res).catch(() => { if (!res.headersSent && !res.destroyed) json(res, 400, { error: 'Não foi possível atender a solicitação.' }); else res.destroy(); }); });

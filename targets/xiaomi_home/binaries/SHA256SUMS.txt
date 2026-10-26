@@ -1,2 +1,3 @@
 # Hashes SHA-256 dos binários originais sob análise
 # Formato: <SHA256> *<NomeDoArquivo>
+2746ba8d14155eb301661b25851c0e37e15b55a2052295d84428573885f063fc *SmartHome-DB-Sdk-Dev-11.7.599-original.apk

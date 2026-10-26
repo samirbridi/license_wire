@@ -1,20 +1,20 @@
 {
-  "runId": "20261025-camera-audio-02",
-  "sourceCommit": "bfd3407679119065d9caa7fe50d88361a9706561",
-  "previous": "v0.4.0 (build 0005)",
-  "version": "v0.4.1 (build 0006)",
-  "build": 6,
-  "date": "2026-10-25",
+  "runId": "20261026-dual-sd-navigation-01",
+  "sourceCommit": "8c5ac989ef77efcd3743115b024eadfbb2ecd950",
+  "previous": "v0.4.1 (build 0006)",
+  "version": "v0.5.0 (build 0007)",
+  "build": 7,
+  "date": "2026-10-26",
   "status": "built",
   "commits": [
     {
-      "sha": "bfd3407679119065d9caa7fe50d88361a9706561",
-      "subject": "fix: distingue FourCC da resolucao real nos recibos de audio e video",
+      "sha": "8c5ac989ef77efcd3743115b024eadfbb2ecd950",
+      "subject": "feat: exibe duas visoes simultaneas e prepara calendario timeline e trechos do SD",
       "body": "",
-      "type": "fix",
-      "description": "distingue FourCC da resolucao real nos recibos de audio e video",
+      "type": "feat",
+      "description": "exibe duas visoes simultaneas e prepara calendario timeline e trechos do SD",
       "breaking": false
     }
   ],
-  "artifact": "runtime/builds/build-0006"
+  "artifact": "runtime/builds/build-0007"
 }

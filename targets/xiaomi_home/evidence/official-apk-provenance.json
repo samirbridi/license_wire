@@ -1,0 +1,15 @@
+{
+  "collectedDate": "2026-10-26",
+  "source": "https://cdn.cnbj1.fds.api.mi-img.com/developer-docs/resources/mijia-app/SmartHome-DB-Sdk-Dev-latest.apk",
+  "sourceDiscovery": "Android development-app QR in the official MiEcosystem SDK README",
+  "preservedOriginal": "binaries/SmartHome-DB-Sdk-Dev-11.7.599-original.apk",
+  "bytes": 366660582,
+  "sha256": "2746ba8d14155eb301661b25851c0e37e15b55a2052295d84428573885f063fc",
+  "package": "com.xiaomi.smarthome",
+  "versionName": "11.7.599",
+  "versionCode": 110717091,
+  "distribution": "Official development distribution; not verified to match the owner's Android installation",
+  "signatureValidated": false,
+  "installedOrExecuted": false,
+  "staticInspection": "110 root DEX files; selected string, method and instruction references. Full private evidence remains in ignored runtime/apk-research."
+}

@@ -10,7 +10,7 @@ Criar acesso dedicado em Android e Windows, na rede local e pela internet. As c�
 
 Estado: PROTOTIPO_LOCAL_WINDOWS_VALIDADO, com vistas, qualidade nativa e escuta de áudio. Autorização QR confirmada pelo proprietário; seis câmeras com quadros e áudio decodificados, e prévias reais no painel. As três famílias reproduziram vídeo H.264 no navegador. Outdoor Pro tem dois canais comprovados a 2880×1620; AW300/Mi 2K chegaram a 2304×1296. Ver [teste nativo](notes/09_video_local_validado.md), [central Windows](notes/10_central_windows.md), [recursos e Cloudflare](notes/11_recursos_nativos_e_cloudflare.md) e os recibos em evidence. Android físico, acesso remoto, audição física, fala, SD, PTZ e estabilidade prolongada permanecem pendentes.
 
-O ciclo seguinte inclui exibição simultânea das duas vistas, seleção apenas de foco/áudio, ampliação opcional e navegação de gravações por mês/dia. A consulta real do SD e os downloads continuam indisponíveis até o protocolo nativo ser integrado; veja [estado da visão dupla, gravações e rondas](notes/12_visao_dupla_gravacoes_rondas.md). A validação de serviço e a visual são registradas separadamente.
+O painel inclui exibição simultânea das duas vistas, seleção apenas de foco/áudio, ampliação opcional e navegação de gravações por mês/dia. A consulta real do SD e os downloads continuam indisponíveis até o protocolo nativo ser integrado; veja [estado da visão dupla, gravações e rondas](notes/12_visao_dupla_gravacoes_rondas.md). A validação de serviço e a visual são registradas separadamente.
 
 - Pesquisa inicial: [notas de viabilidade](notes/00_viabilidade.md).
 - Referências e limites de cada evidência: [fontes públicas](evidence/fontes_publicas.json).
@@ -35,7 +35,7 @@ Google Home é uma integração posterior; SmartLife/Tuya exige investigação p
 
 ## Integridade e limites
 
-Foram recebidos prints de produtos, firmware, erro de login e lista de câmeras. Somente imagens de produto sem credenciais foram copiadas para evidência pública. A autenticação foi confirmada pelo proprietário no app; tokens e identificação privada ficam em runtime/evidence privados ignorados pelo Git. Houve cadastro de fontes somente na ponte local e liberação UDP estritamente delimitada, aplicada com UAC Windows. Não houve alteração de firmware, senha, região, cadastro Xiaomi ou roteador. Vídeos de QA foram decodificados sem gravação; capturas de tela do novo painel ficam somente na evidência privada. O go2rtc é ferramenta externa de diagnóstico; nenhum APK/firmware Xiaomi foi submetido a REA/Ghidra. Arquivos de outros alvos permanecem preservados.
+Foram recebidos prints de produtos, firmware, erro de login e lista de câmeras. Somente imagens de produto sem credenciais foram copiadas para evidência pública. A autenticação foi confirmada pelo proprietário no app; tokens e identificação privada ficam em runtime/evidence privados ignorados pelo Git. Houve cadastro de fontes somente na ponte local e liberação UDP estritamente delimitada, aplicada com UAC Windows. Não houve alteração de firmware, senha, região, cadastro Xiaomi ou roteador. Vídeos de QA foram decodificados sem gravação; capturas de tela do novo painel ficam somente na evidência privada. O go2rtc é ferramenta externa de diagnóstico. O APK oficial foi preservado e inspecionado estaticamente; a tentativa REA/JADX do APK completo atingiu o prazo de 120 s, sem resultado de decompilação confirmado. Arquivos de outros alvos permanecem preservados.
 
 ## Versionamento
 
@@ -43,4 +43,4 @@ O script `scripts/version-build.mjs` calcula versão e build pelos commits deste
 
 ## Comandos e coleta
 
-O comando de inicialização e os critérios de validação estão em [registro da sessão](evidence/sessao_2026-10-25.md).
+O comando de inicialização e os critérios de validação estão em [registro da sessão](evidence/sessao_2026-10-25.md). O APK oficial de desenvolvimento foi preservado em binaries com SHA256; proveniência em [coleta do APK](evidence/official-apk-provenance.json). A investigação estática não instala ou executa o aplicativo.

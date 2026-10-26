@@ -1,5 +1,5 @@
 // Validate the authenticated app output without putting its cookie in process arguments.
-import { readFileSync, writeFileSync } from 'node:fs';
+import { readFileSync, writeFileSync, existsSync, copyFileSync } from 'node:fs';
 import { dirname, resolve, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { spawn } from 'node:child_process';
@@ -40,5 +40,8 @@ try {
   await fetch(origin + '/api/logout', { method: 'POST', headers: { ...headers, 'X-CSRF-Token': session.csrf } });
 }
 const version = await (await fetch(origin + '/api/version')).json();
-writeFileSync(join(target, 'evidence/builds', '20261025-central-av-qa.json'), JSON.stringify({ version: version.display, sourceCommit: version.sourceCommit, results, method: 'Authenticated HTTP to stdin; H264 and AAC decoded to null; no audio played or recorded' }, null, 2));
+const observedDate = new Intl.DateTimeFormat('en-CA', { timeZone: 'America/Sao_Paulo', year: 'numeric', month: '2-digit', day: '2-digit' }).format(new Date());
+const receiptPath = join(target, 'evidence/builds', observedDate.replaceAll('-', '') + '-central-av-qa.json');
+if (existsSync(receiptPath)) copyFileSync(receiptPath, receiptPath.replace('.json', '-previous-' + Date.now() + '.json'));
+writeFileSync(receiptPath, JSON.stringify({ observedDate, version: version.display, sourceCommit: version.sourceCommit, results, method: 'Authenticated HTTP to stdin; H264 and AAC decoded to null; no audio played or recorded' }, null, 2));
 if (results.some(result => !result.pass)) process.exitCode = 1;

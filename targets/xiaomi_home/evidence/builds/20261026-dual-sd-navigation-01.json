@@ -1,0 +1,20 @@
+{
+  "runId": "20261026-dual-sd-navigation-01",
+  "sourceCommit": "8c5ac989ef77efcd3743115b024eadfbb2ecd950",
+  "previous": "v0.4.1 (build 0006)",
+  "version": "v0.5.0 (build 0007)",
+  "build": 7,
+  "date": "2026-10-26",
+  "status": "built",
+  "commits": [
+    {
+      "sha": "8c5ac989ef77efcd3743115b024eadfbb2ecd950",
+      "subject": "feat: exibe duas visoes simultaneas e prepara calendario timeline e trechos do SD",
+      "body": "",
+      "type": "feat",
+      "description": "exibe duas visoes simultaneas e prepara calendario timeline e trechos do SD",
+      "breaking": false
+    }
+  ],
+  "artifact": "runtime/builds/build-0007"
+}

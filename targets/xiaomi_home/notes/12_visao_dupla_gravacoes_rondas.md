@@ -15,6 +15,8 @@ O painel tem duas prévias por Outdoor Pro e um player com dois vídeos independ
 
 Os testes unitários usam processos sintéticos explicitamente identificados como fixtures; não são apresentados como dados reais. O teste de mídia real é separado em `scripts/probe-central-dual.mjs`, que lê os dois canais reais e decodifica H.264/AAC para descarte. Resultados finais constam nos recibos de build.
 
+O diagnóstico de abertura concorrente encontrou timeout UDP no go2rtc para uma vista enquanto a outra conectava. Iniciar a segunda após a primeira produzir dados permitiu ambas decodificarem 120 quadros a 2880×1620, com 3946 ms de sobreposição. Esse primeiro resultado usou inicialização ordenada no cliente de diagnóstico. A correção do servidor ordena apenas a inicialização por câmera física, compartilhada entre prévias e vídeo, e libera a próxima conexão no primeiro dado do vídeo; os fluxos continuam simultâneos depois. A suíte verifica essa concorrência e o limite de clientes. A prova final usa duas requisições concorrentes sem escalonamento no cliente.
+
 A consulta de gravações tem mês, dia, navegação anterior/próximo, eixo diário e campos de trecho. Enquanto o adaptador SD não existir, `periods` e `availableDays` retornam null, os controles de reprodução/exportação ficam desabilitados e o painel informa que o acesso está em preparação. Não há gravações fictícias nem inferência de cartão vazio.
 
 O modelo de timeline já trata mudança de mês/ano e fevereiro bissexto, busca no próximo período gravado ao atravessar lacunas, recorte nos limites de arquivos e remoção de sobreposições. Os testes desse modelo usam intervalos sintéticos. Isso não representa leitura ou exportação do SD implementada.
@@ -35,9 +37,9 @@ Será necessário mapear catálogo do cartão, busca/seek, sessão de playback e
 
 ## Investigação sem USB
 
-Foi localizada uma distribuição oficial de desenvolvimento do Xiaomi Home no QR Android do README MiEcosystem. Inspeção parcial por HTTP Range preservou manifesto e DEX em `runtime/apk-research/`; tamanho/CRC originais e SHA256 individual foram registrados. Não há APK completo, hash integral ou validação de assinatura do APK completo nesta fase.
+Foi localizada uma distribuição oficial de desenvolvimento do Xiaomi Home no QR Android do README MiEcosystem. O APK completo foi baixado e preservado em `runtime/apk-research/`, com 366660582 bytes e SHA256 `2746ba8d14155eb301661b25851c0e37e15b55a2052295d84428573885f063fc`. O hash confirma a cópia coletada; a assinatura APK ainda não foi validada.
 
-O manifesto indica com.xiaomi.smarthome 11.7.599, versão de desenvolvimento distinta da versão 11.8.707 anunciada pela loja. As tabelas DEX contêm referências a PluginUpdateManager.downloadPluginInternal, PluginPackageUtils.getStdPluginVersion e CoreApi.getPluginInfo/getRnPluginInfo. Endpoint, parâmetros e pacotes dos três modelos ainda não foram confirmados. Nenhum APK foi instalado/executado, aparelho acessado ou comando de câmera adivinhado.
+O manifesto indica com.xiaomi.smarthome 11.7.599, versão de desenvolvimento distinta da versão 11.8.707 anunciada pela loja. A inspeção dos 110 DEX identificou PluginUpdateManager.downloadPluginInternal → PluginPackageManager.createPluginInfoParams → PluginUpdateApi.updatePlugin → POST /v2/plugin/fetch_plugin → SmartHomeRc4Api.sendRequest. Model/package_id/type, latest_req/backup_req e download_url aparecem no contrato estático; os valores completos e os pacotes dos três modelos ainda precisam ser confirmados. Nenhum APK foi instalado/executado, aparelho acessado ou comando de câmera adivinhado. O provider JADX oficial foi localizado e teve SHA256 conferido com o upstream; seus resultados devem ser registrados separadamente da inspeção DEX própria.
 
 ## Validação visual
 

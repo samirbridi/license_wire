@@ -1,5 +1,23 @@
 # CHANGELOG — xiaomi_home
 
+## v0.5.0 (build 0007) - 2026-10-26
+
+### 💥 Breaking Changes
+
+- Nenhum.
+
+### ✨ Features
+
+- feat: exibe duas visoes simultaneas e prepara calendario timeline e trechos do SD (commit `8c5ac989ef77efcd3743115b024eadfbb2ecd950`)
+
+### 🐛 Fixes
+
+- Nenhum.
+
+### ⚡ Improvements
+
+- Nenhum.
+
 ## v0.4.1 (build 0006) - 2026-10-25
 
 ### 💥 Breaking Changes
