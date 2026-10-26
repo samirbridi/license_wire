@@ -5,6 +5,9 @@ $xiaomiRuntime = Join-Path $xiaomiTarget 'runtime/central'
 $xiaomiProcessFile = Join-Path $xiaomiRuntime 'process.json'
 $xiaomiTools = Get-Content -LiteralPath (Join-Path $xiaomiRuntime 'tool-paths.json') -Raw | ConvertFrom-Json
 $xiaomiNodePath = (Get-Command node.exe).Source
+& (Join-Path $PSScriptRoot 'start-bridge.ps1')
+& $xiaomiNodePath (Join-Path $PSScriptRoot 'restore-bridge-streams.mjs')
+if ($LASTEXITCODE -ne 0) { throw 'As fontes locais nao foram restauradas; a central atual foi preservada.' }
 $xiaomiExisting = $null
 if (Test-Path -LiteralPath $xiaomiProcessFile) {
     $xiaomiMetadata = Get-Content -LiteralPath $xiaomiProcessFile -Raw | ConvertFrom-Json
@@ -18,7 +21,7 @@ if (Test-Path -LiteralPath $xiaomiProcessFile) {
     }
 }
 if (-not $xiaomiExisting) {
-    Invoke-WebRequest -Uri 'http://127.0.0.1:19843/api/streams' -TimeoutSec 5 | Out-Null
+    Invoke-WebRequest -UseBasicParsing -Uri 'http://127.0.0.1:19843/api/streams' -TimeoutSec 5 | Out-Null
     $xiaomiRelease = Get-Content -LiteralPath (Join-Path $xiaomiTarget 'release-state.json') -Raw | ConvertFrom-Json
     if ($xiaomiRelease.status -ne 'built') { throw 'Nao existe build concluido.' }
     $xiaomiEntry = Join-Path $xiaomiTarget ($xiaomiRelease.artifact + '/server.mjs')
@@ -32,7 +35,7 @@ if (-not $xiaomiExisting) {
     } finally { $env:MIZIN_CAMERAS_TARGET = $xiaomiPreviousTarget; $env:MIZIN_CAMERAS_FFMPEG = $xiaomiPreviousFfmpeg }
     $xiaomiReady = $false
     for ($xiaomiAttempt = 0; $xiaomiAttempt -lt 20; $xiaomiAttempt++) {
-        try { Invoke-WebRequest -Uri 'http://127.0.0.1:19845/' -TimeoutSec 1 | Out-Null; $xiaomiReady = $true; break } catch { Start-Sleep -Milliseconds 250 }
+        try { Invoke-WebRequest -UseBasicParsing -Uri 'http://127.0.0.1:19845/' -TimeoutSec 1 | Out-Null; $xiaomiReady = $true; break } catch { Start-Sleep -Milliseconds 250 }
     }
     if (-not $xiaomiReady) { throw 'A central nao respondeu. Consulte o log privado.' }
 }

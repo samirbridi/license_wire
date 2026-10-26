@@ -1,0 +1,47 @@
+{
+  "observedDate": "2026-10-26",
+  "originalApkSha256": "2746ba8d14155eb301661b25851c0e37e15b55a2052295d84428573885f063fc",
+  "derivedApkSha256": "8db58f90d2162c5622df2f9648c35fee0cd68b72cf54497160df1d70beb98d36",
+  "derivedMapping": {
+    "AndroidManifest.xml": "unchanged original",
+    "classes.dex": "original classes27.dex"
+  },
+  "unsignedAnalysisSubset": true,
+  "apkExecuted": false,
+  "evidenceId": "ev_b80ecfe890581e0a8446e3de330a2793c420000e8f017dcaf5b238be2458c58b",
+  "provider": {
+    "name": "REA/JADX",
+    "jarSha256": "6e5eacf500b64292bfb73c49797c1958f6ee44646e43e868039ae7feb573ff75"
+  },
+  "method": "com.xiaomi.smarthome.server.api.PluginUpdateApi.updatePlugin",
+  "representation": "smali",
+  "javaDecompilationSucceeded": false,
+  "smaliBodyAvailable": true,
+  "route": {
+    "method": "POST",
+    "path": "/v2/plugin/fetch_plugin",
+    "transport": "SmartHomeRc4Api.sendRequest"
+  },
+  "facts": {
+    "latest_req": {
+      "api_version": "PluginSetting.RN_NATIVE_API_LEVEL",
+      "app_platform": "Android",
+      "region": "configured countryCode, CN fallback",
+      "plugins": "caller array",
+      "package_type": ""
+    },
+    "backup_req": {
+      "plugins": "same caller array",
+      "api_level": "caller integer",
+      "app_platform": "caller string"
+    },
+    "is_car_mihome": "GlobalSetting.isCar()"
+  },
+  "unverified": [
+    "complete caller values",
+    "host routing",
+    "per-model package response",
+    "PTZ/zoom/patrol/SD commands"
+  ],
+  "authenticatedEndpointCalled": false
+}

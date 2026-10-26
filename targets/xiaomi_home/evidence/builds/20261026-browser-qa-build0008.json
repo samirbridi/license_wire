@@ -1,0 +1,35 @@
+{
+  "observedDate": "2026-10-26",
+  "version": "v0.5.1 (build 0008)",
+  "sourceCommit": "ec978e94fcbdaab0c3bf22e8c042c09eb1c80e2c",
+  "method": "CUA in-app browser, actual cameras, both videos muted",
+  "dual": {
+    "resolutions": [
+      "2880x1620",
+      "2880x1620"
+    ],
+    "beforeFocusSeconds": [
+      184.896375,
+      179.756289
+    ],
+    "afterFocusSeconds": [
+      195.342896,
+      190.202915
+    ],
+    "bothUnpaused": true,
+    "focusChangePreservedPlayback": true
+  },
+  "recordings": {
+    "availability": "unknown",
+    "playbackEnabled": false,
+    "downloadEnabled": false,
+    "leapDay": "2024-02-29",
+    "nextDay": "2024-03-01",
+    "monthFollowedDay": true
+  },
+  "physicalAndroid": false,
+  "privateScreenshots": [
+    "outdoor-dual-native-build0008.jpg",
+    "calendar-mobile-build0008.jpg"
+  ]
+}

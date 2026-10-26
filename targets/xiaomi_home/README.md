@@ -12,6 +12,8 @@ Estado: PROTOTIPO_LOCAL_WINDOWS_VALIDADO, com vistas, qualidade nativa e escuta 
 
 O painel inclui exibição simultânea das duas vistas, seleção apenas de foco/áudio, ampliação opcional e navegação de gravações por mês/dia. A consulta real do SD e os downloads continuam indisponíveis até o protocolo nativo ser integrado; veja [estado da visão dupla, gravações e rondas](notes/12_visao_dupla_gravacoes_rondas.md). A validação de serviço e a visual são registradas separadamente.
 
+A abertura concorrente e a reprodução simultânea das duas vistas passaram no teste real e no navegador. O inicializador recupera a ponte e o cadastro de fontes após reinício a partir dos arquivos privados existentes. Não há execução automática no boot do Windows configurada.
+
 - Pesquisa inicial: [notas de viabilidade](notes/00_viabilidade.md).
 - Referências e limites de cada evidência: [fontes públicas](evidence/fontes_publicas.json).
 - Identificação e suporte: [inventário das três câmeras](notes/05_modelos_identificados.md), com referências e limites por modelo.

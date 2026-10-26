@@ -1,0 +1,30 @@
+{
+  "observedDate": "2026-10-26",
+  "version": "v0.5.1 (build 0008)",
+  "sourceCommit": "ec978e94fcbdaab0c3bf22e8c042c09eb1c80e2c",
+  "results": [
+    {
+      "family": "Mi 2K",
+      "exit": 0,
+      "videoCodec": "h264",
+      "width": 2304,
+      "height": 1296,
+      "audioCodec": "aac",
+      "sampleRate": 48000,
+      "decodedAudioKiB": 285,
+      "pass": true
+    },
+    {
+      "family": "AW300",
+      "exit": 0,
+      "videoCodec": "h264",
+      "width": 2304,
+      "height": 1296,
+      "audioCodec": "aac",
+      "sampleRate": 48000,
+      "decodedAudioKiB": 570,
+      "pass": true
+    }
+  ],
+  "method": "Authenticated HTTP to stdin; H264 and AAC decoded to null; no audio played or recorded"
+}

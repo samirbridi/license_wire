@@ -1,5 +1,23 @@
 # CHANGELOG — xiaomi_home
 
+## v0.5.1 (build 0008) - 2026-10-26
+
+### 💥 Breaking Changes
+
+- Nenhum.
+
+### ✨ Features
+
+- Nenhum.
+
+### 🐛 Fixes
+
+- fix: ordena inicializacao das vistas sem interromper video simultaneo (commit `ec978e94fcbdaab0c3bf22e8c042c09eb1c80e2c`)
+
+### ⚡ Improvements
+
+- Nenhum.
+
 ## v0.5.0 (build 0007) - 2026-10-26
 
 ### 💥 Breaking Changes

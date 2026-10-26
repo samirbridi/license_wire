@@ -1,5 +1,7 @@
 # Mizin Câmeras — central Windows
 
+Inicialização: `powershell -File targets/xiaomi_home/scripts/start-central.ps1`, a partir da raiz do repositório. O script usa o build gerado, recupera a ponte local quando encerrada e restaura os aliases ausentes a partir de runtime/central/bridge-streams.json. Esses arquivos privados e a autorização Xiaomi devem existir neste computador; não são distribuídos no Git. A qualidade escolhida controla resolução/bitrate da saída; a entrada usa o perfil nativo validado.
+
 Protótipo local com seis câmeras reais, interface responsiva e vídeo H.264 transcodificado sob demanda. Não é um APK nem um instalador Windows nesta fase.
 
 ## Executar no ambiente preparado

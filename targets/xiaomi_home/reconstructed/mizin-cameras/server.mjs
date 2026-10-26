@@ -250,7 +250,7 @@ export function createCentral(options = {}) {
     if (!view) return json(res, 400, { error: 'Visão da câmera não encontrada.' });
     if (match[1] === 'snapshot') {
       try {
-        const snapshot = await getSnapshot({ ...camera, physicalId: camera.id, id: camera.id + ':' + view.id, sourceAlias: view.sourceAlias });
+        const snapshot = await getSnapshot({ ...camera, physicalId: camera.id, id: camera.id + ':' + view.id, sourceAlias: view.originalAlias ?? camera.originalAlias ?? view.sourceAlias });
         if (res.destroyed) return;
         headers(res, 'image/jpeg'); res.setHeader('X-Captured-At', String(snapshot.at)); res.end(snapshot.data);
       } catch { if (!res.destroyed) json(res, 503, { error: 'Prévia indisponível. Tente abrir o vídeo.' }); }
@@ -269,7 +269,7 @@ export function createCentral(options = {}) {
     activeVideos.get(streamKey)?.child.kill();
     const width = quality === 'original' ? 3840 : quality === 'economy' ? 640 : quality === 'detail' ? 1920 : 1280;
     const bitrate = width === 640 ? '700k' : width === 1280 ? '1800k' : width === 1920 ? '3000k' : '6000k';
-    const sourceAlias = quality !== 'economy' && view.originalAlias ? view.originalAlias : view.sourceAlias;
+    const sourceAlias = view.originalAlias ?? camera.originalAlias ?? view.sourceAlias;
     const encoding = encoder === 'h264_nvenc' ? ['-c:v', 'h264_nvenc', '-preset', 'p4', '-tune', 'ull'] : ['-c:v', 'libx264', '-preset', 'veryfast', '-tune', 'zerolatency'];
     let child;
     try { child = spawnMedia(['-hide_banner', '-nostdin', '-loglevel', 'error', '-rw_timeout', '25000000', '-analyzeduration', '1000000', '-probesize', '262144', '-i', source({ sourceAlias }), '-map', '0:v:0', '-map', '0:a:0?', '-c:a', 'aac', '-b:a', '64k', '-ar', '48000', '-vf', `scale=w='min(${width},iw)':h=-2`, '-r', '15', ...encoding, '-b:v', bitrate, '-maxrate', bitrate, '-bufsize', bitrate, '-g', '15', '-keyint_min', '15', '-sc_threshold', '0', '-pix_fmt', 'yuv420p', '-movflags', '+frag_keyframe+empty_moov+default_base_moof', '-f', 'mp4', 'pipe:1']); }

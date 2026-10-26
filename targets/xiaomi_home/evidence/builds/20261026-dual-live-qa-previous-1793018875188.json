@@ -1,0 +1,27 @@
+{
+  "observedDate": "2026-10-26",
+  "version": "v0.5.1 (build 0008)",
+  "sourceCommit": "ec978e94fcbdaab0c3bf22e8c042c09eb1c80e2c",
+  "startupMode": "concurrent_client_requests",
+  "twoViewsSameSession": true,
+  "sameDevice": true,
+  "method": "Concurrent authenticated H264/AAC decode to null, no video/audio recording or playback",
+  "overlapMilliseconds": 0,
+  "pass": false,
+  "results": [
+    {
+      "view": "view1",
+      "pass": false,
+      "error": "Video returned HTTP 503",
+      "firstBytesAt": null,
+      "endedAt": 1793018568862
+    },
+    {
+      "view": "view2",
+      "pass": false,
+      "error": "Video returned HTTP 503",
+      "firstBytesAt": null,
+      "endedAt": 1793018568937
+    }
+  ]
+}

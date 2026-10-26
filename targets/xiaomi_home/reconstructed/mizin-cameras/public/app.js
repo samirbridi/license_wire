@@ -28,7 +28,7 @@ function render(items) {
     for (const view of camera.views.slice(0, 2)) {
       const preview = document.createElement('div'); preview.className = 'camera-preview';
       const placeholder = document.createElement('span'); placeholder.className = 'preview-placeholder'; placeholder.textContent = '◉';
-      const label = document.createElement('span'); label.className = 'preview-label'; label.textContent = camera.views.length > 1 ? view.label.toUpperCase() : camera.sd ? 'PRÉVIA · SD' : 'PRÉVIA';
+      const label = document.createElement('span'); label.className = 'preview-label'; label.textContent = camera.views.length > 1 ? view.label.toUpperCase() : camera.sd ? 'PRÉVIA · LEVE' : 'PRÉVIA';
       const play = document.createElement('button'); play.className = 'card-play'; play.textContent = '▶'; play.setAttribute('aria-label', 'Assistir ' + camera.name + ' — ' + view.label);
       const state = document.createElement('span'); state.className = 'preview-state'; state.textContent = 'Carregando prévia';
       preview.append(placeholder, label, play, state); previews.append(preview);
