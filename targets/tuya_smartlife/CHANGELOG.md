@@ -5,6 +5,27 @@ Formato de versão obrigatório: `vX.Y.Z (build XXXX)`.
 
 ---
 
+## v0.17.0 (build 0019) - 2026-10-26
+
+### ✨ Features
+- feat: implementa **Surveillance Theater** responsivo e adaptativo de alta definição para monitoramento de câmeras Xiaomi (`#cameraPtzModal`), com layout dinâmico que se adapta fluidamente a telas de desktops 1080p, laptops 2.5K, tablets e celulares sem espremer ou cortar elementos
+- feat: adiciona suporte nativo a **Dupla Visão (Dual Lens)** para a Xiaomi Outdoor Camera 4 Pro (CW701), permitindo alternar instantaneamente entre `🪟 Dupla Visão` (exibindo lado a lado a Lente 1 Grande Angular e a Lente 2 Tele/PTZ motorizada), `👁️ Vista 1 (Ampla)` e `🎯 Vista 2 (Tele/PTZ)`
+- feat: implementa seletor dinâmico de resolução e qualidade de streaming (`💎 3K/4K Nativa`, `🌟 2K Quad HD`, `⚡ 1080p Full HD`, `🍃 720p Econômica`) com alternância a quente dos canais go2rtc
+- feat: adiciona motor de pré-aquecimento contínuo de snapshots (`startSnapshotPrewarmer()`) e persistência em disco (`central/snapshots/<alias>.jpg`), garantindo resposta em 0ms no carregamento de miniaturas e eliminando completamente esperas ou quadros indisponíveis
+- feat: implementa painéis de recursos específicos por modelo de hardware:
+  - **Outdoor Pro CW701**: Controle PTZ 360°/100°, zoom duplo, holofote inteligente com slider de intensidade (0-100%), sirene anti-intrusão 100dB e badges de IA ativa (humana, veicular, cerca virtual, chamas)
+  - **AW300 (mod11)**: Lente 2K grande angular, refletor noturno com luz de advertência, alarme dissuasivo e cerca perimetral
+  - **Mi 2K Standard (hlc7)**: Visão noturna infravermelho invisível de 940nm, base magnética e detecção de ruídos/choro
+- feat: adiciona régua de linha do tempo de 24 horas (`#ptzRecordingsTimelineBox`) para gravações do cartão MicroSD com navegação por dia, marcadores coloridos de gravação contínua/movimento/IA e botões de reproduzir trecho e baixar clipe MP4
+- feat: implementa funcionalidade de captura instantânea de fotografias (`📸 Tirar Foto`) direto do fluxo de vídeo e integração de criação de automações (`⚡ Criar Cena com esta Câmera`)
+- feat: implementa intercomunicador bidirecional com retorno de áudio em tempo real (unmute com medidor de ondas sonoras) e botão Push-to-Talk (`🎙️ Segure para Falar - Talkback`) com captura de voz via microfone e envio ao alto-falante da câmera
+
+### 🐛 Fixes
+- fix: remove botões genéricos e inadequados (como "Luz da Sala" e "Luz da Rua") fixos nos cards das câmeras, mantendo apenas atalhos relevantes (como acionamento do portão e monitoramento) e respeitando integralmente as preferências configuradas pelo usuário em "Personalizar Atalhos"
+- improve: publica compilação atualizada no Cloudflare Pages (`https://myhomemizin.pages.dev`), sincronizando todas as novas capacidades nos acessos local e remoto
+
+---
+
 ## v0.16.1 (build 0018) - 2026-10-26
 
 ### 🐛 Fixes

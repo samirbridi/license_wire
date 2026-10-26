@@ -7,7 +7,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css?v=0.16.1">
+  <link rel="stylesheet" href="style.css?v=0.17.0">
   <link rel="manifest" href="manifest.json">
   <link rel="icon" type="image/svg+xml" href="icon.svg">
   <link rel="apple-touch-icon" href="icon.svg">
@@ -1147,67 +1147,186 @@
   </div>
 
   <!-- MODAL: PTZ, ZOOM, ÁUDIO BIDIRECIONAL & ZONAS PRÉ-DEFINIDAS -->
-  <!-- MODAL: PTZ, ZOOM, ÁUDIO BIDIRECIONAL & ZONAS PRÉ-DEFINIDAS -->
+  <!-- MODAL: SURVEILLANCE SURVEILLANCE THEATER - PTZ DUAL VIEW, ZOOM, TALKBACK & SD PLAYBACK -->
   <div class="modal-overlay" id="cameraPtzModal">
-    <div class="modal-card modal-camera-ptz" style="max-width: 920px;">
-      <div class="modal-header">
+    <div class="modal-card modal-camera-ptz">
+      
+      <!-- Cabeçalho Dinâmico e Responsivo da Câmera -->
+      <div class="modal-header ptz-modal-header">
         <div class="modal-title-with-icon">
-          <span style="font-size:22px;" id="ptzModalIcon">🎥</span>
+          <span style="font-size:24px;" id="ptzModalIcon">🎥</span>
           <div>
-            <h3 id="ptzModalCamName">Controle PTZ & Áudio — Câmera</h3>
-            <span style="font-size:11px; color:var(--text-dim);" id="ptzModalCamAlias">Stream local go2rtc</span>
+            <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
+              <h3 id="ptzModalCamName" style="margin:0; font-size:17px; font-weight:700;">Controle & Monitoramento — Câmera</h3>
+              <span id="ptzModalModelBadge" class="badge badge-emerald" style="font-size:11px; padding:3px 8px;">XIAOMI NATIVA</span>
+            </div>
+            <span style="font-size:11px; color:var(--text-dim);" id="ptzModalCamAlias">Stream seguro local go2rtc • P2P criptografado</span>
           </div>
         </div>
-        <div style="display:flex; align-items:center; gap:8px;">
-          <span id="ptzModalCapabilityBadge" class="badge badge-emerald" style="font-size:10px;">AO VIVO</span>
-          <button class="btn-close" onclick="closePtzModal()">&times;</button>
+
+        <!-- Seletor de Modo de Visão (Outdoor Pro Dupla Visão) -->
+        <div class="ptz-view-mode-tabs" id="ptzViewModeSelector" style="display:none;">
+          <button type="button" class="view-mode-tab active" id="tabDualView" onclick="switchCameraViewMode('dual')" title="Visualizar os dois sensores simultaneamente">
+            🪟 Dupla Visão
+          </button>
+          <button type="button" class="view-mode-tab" id="tabView1" onclick="switchCameraViewMode('view1')" title="Visualizar apenas a Lente Ampla">
+            👁️ Vista 1 (Ampla)
+          </button>
+          <button type="button" class="view-mode-tab" id="tabView2" onclick="switchCameraViewMode('view2')" title="Visualizar apenas a Lente Teleobjetiva / PTZ">
+            🎯 Vista 2 (Tele/PTZ)
+          </button>
+        </div>
+
+        <!-- Seletor de Qualidade de Vídeo (3K/4K Nativa, 2K, 1080p, 720p) -->
+        <div class="ptz-quality-container">
+          <span class="ptz-quality-label">RESOLUÇÃO:</span>
+          <div class="ptz-quality-pills" id="ptzQualityPills">
+            <button type="button" class="quality-pill active" data-quality="native" onclick="setCameraQuality('native')">💎 3K/4K</button>
+            <button type="button" class="quality-pill" data-quality="2k" onclick="setCameraQuality('2k')">🌟 2K</button>
+            <button type="button" class="quality-pill" data-quality="1080p" onclick="setCameraQuality('1080p')">⚡ 1080p</button>
+            <button type="button" class="quality-pill" data-quality="720p" onclick="setCameraQuality('720p')">🍃 720p</button>
+          </div>
+        </div>
+
+        <!-- Botões de Ação Rápida e Fechar -->
+        <div class="ptz-header-actions">
+          <button type="button" class="btn btn-sm btn-outline-cyan" onclick="captureLiveSnapshot()" title="Tirar foto instantânea em alta resolução">
+            📸 Foto
+          </button>
+          <button type="button" class="btn btn-sm btn-outline-emerald" onclick="createSceneFromCamera()" title="Criar cena inteligente com esta câmera">
+            ⚡ Criar Cena
+          </button>
+          <button class="btn-close" onclick="closePtzModal()" title="Fechar monitoramento">&times;</button>
         </div>
       </div>
 
+      <!-- Palco Central de Vídeo e Painel de Controle Adaptativo -->
       <div class="ptz-modal-content-grid">
-        <!-- Visualizador Principal em Alta Resolução -->
+        
+        <!-- COLUNA ESQUERDA: PALCO DE VÍDEO (DUPLO OU ÚNICO) + ÁUDIO BIDIRECIONAL + RÉGUA SD -->
         <div class="ptz-view-column">
-          <div class="ptz-main-player-wrap" style="position:relative; width:100%; min-height:280px; background:#090d16; border-radius:10px; overflow:hidden;">
-            <video id="ptzMainVideoElement" autoplay playsinline muted controls style="width:100%; height:auto; display:none; border-radius:10px; background:#090d16; min-height:280px;"></video>
-            <img id="ptzMainVideoFeed" src="" alt="Câmera Feed" style="width:100%; height:auto; border-radius:10px; display:block; background:#090d16; min-height:280px;">
-            <div id="ptzVideoSpinner" style="display:none; position:absolute; top:45%; left:50%; transform:translate(-50%, -50%); background:rgba(9,13,22,0.85); color:#38bdf8; padding:8px 16px; border-radius:20px; font-size:12px; font-weight:600; border:1px solid rgba(56,189,248,0.3); z-index:10; pointer-events:none;">
-              <span class="pulse-dot"></span> Conectando vídeo ao vivo...
+          
+          <!-- Contêiner de Vídeo Duplo / Único Adaptativo -->
+          <div class="ptz-dual-video-container" id="ptzDualVideoContainer">
+            
+            <!-- PLAYER 1: VISTA PRINCIPAL (AMPLA OU ÚNICA) -->
+            <div class="ptz-main-player-wrap" id="ptzPlayerWrap1">
+              <video id="ptzMainVideoElement" autoplay playsinline muted controls style="width:100%; height:auto; display:none; border-radius:10px; background:#090d16; min-height:260px; object-fit:contain;"></video>
+              <img id="ptzMainVideoFeed" src="" alt="Câmera Feed" style="width:100%; height:auto; border-radius:10px; display:block; background:#090d16; min-height:260px; object-fit:contain;">
+              <div id="ptzVideoSpinner" class="ptz-stream-spinner">
+                <span class="pulse-dot"></span> Sincronizando vídeo ao vivo...
+              </div>
+              <div class="ptz-overlay-top-badge" id="ptzOverlayBadge1">
+                <span class="pulse-dot"></span>
+                <span id="ptzOverlayText1">AO VIVO • NATIVA</span>
+              </div>
+              <!-- Atalho Rápido de Portão Flutuante Sobreposto no Vídeo -->
+              <button class="ptz-floating-gate-btn" id="ptzFloatingGateBtn" onclick="pulseGate()" style="display:none;">
+                <span>🚪</span> Acionar Portão (<span id="ptzFloatingGateStatus">Fechado 🔒</span>)
+              </button>
             </div>
-            <div class="ptz-overlay-top-badge">
-              <span class="pulse-dot"></span>
-              AO VIVO • 2K HD STREAM
+
+            <!-- PLAYER 2: VISTA SECUNDÁRIA (TELE / PTZ DA OUTDOOR PRO) -->
+            <div class="ptz-main-player-wrap" id="ptzPlayerWrap2" style="display:none;">
+              <video id="ptzSecondaryVideoElement" autoplay playsinline muted controls style="width:100%; height:auto; display:none; border-radius:10px; background:#090d16; min-height:260px; object-fit:contain;"></video>
+              <img id="ptzSecondaryVideoFeed" src="" alt="Câmera Feed Secundário" style="width:100%; height:auto; border-radius:10px; display:block; background:#090d16; min-height:260px; object-fit:contain;">
+              <div class="ptz-overlay-top-badge" id="ptzOverlayBadge2">
+                <span class="pulse-dot" style="background:#38bdf8;"></span>
+                <span>VISTA 2 • TELE / PTZ (3K)</span>
+              </div>
             </div>
-            <!-- Atalho Rápido de Portão Flutuante Sobreposto no Vídeo -->
-            <button class="ptz-floating-gate-btn" onclick="pulseGate()">
-              <span>🚪</span> Acionar Portão (<span id="ptzFloatingGateStatus">Fechado 🔒</span>)
-            </button>
+
           </div>
 
-          <!-- Barra de Áudio Bidirecional (Ouvir e Falar) -->
+          <!-- Barra de Áudio Bidirecional (Retorno de Áudio + Push-to-Talk) -->
           <div class="ptz-audio-intercom-box">
             <div class="audio-status-pill">
               <span class="status-dot online"></span>
               <span id="audioStatusText">Áudio Bidirecional: Microfone e Alto-Falante Prontos</span>
+              <div class="audio-wave-meter" id="audioWaveMeter" style="display:none;">
+                <span class="wave-bar"></span><span class="wave-bar"></span><span class="wave-bar"></span><span class="wave-bar"></span>
+              </div>
             </div>
             <div class="audio-controls-row">
-              <button class="btn-audio-action" id="btnAudioListen" onclick="toggleAudioListen()" title="Ativar ou mutar áudio de retorno da câmera">
+              <button class="btn-audio-action" id="btnAudioListen" onclick="toggleAudioListen()" title="Ouvir som do ambiente da câmera em tempo real">
                 <span id="audioListenIcon">🔊</span> <span id="audioListenText">Ouvir Retorno</span>
               </button>
-              <button class="btn-audio-action btn-ptt-talk" id="btnAudioTalk" onmousedown="startPttTalk()" onmouseup="stopPttTalk()" ontouchstart="startPttTalk()" ontouchend="stopPttTalk()" title="Segure para falar pelo alto-falante da câmera">
-                <span>🎤</span> Segure para Falar
+              <button class="btn-audio-action btn-ptt-talk" id="btnAudioTalk" onmousedown="startPttTalk()" onmouseup="stopPttTalk()" ontouchstart="startPttTalk()" ontouchend="stopPttTalk()" title="Pressione e segure para falar pelo alto-falante da câmera">
+                <span id="audioTalkIcon">🎙️</span> <span id="audioTalkText">Pressione para Falar (Talkback)</span>
               </button>
             </div>
           </div>
+
+          <!-- Barra de Gravações do Cartão SD (Régua Interativa de 24 Horas) -->
+          <div class="ptz-recordings-timeline-box" id="ptzRecordingsTimelineBox">
+            <div class="timeline-header-row">
+              <div style="display:flex; align-items:center; gap:8px;">
+                <span style="font-size:16px;">📼</span>
+                <span style="font-weight:700; font-size:12px; color:var(--text-main);">Gravações do Cartão SD</span>
+                <span class="badge badge-emerald" id="sdStorageBadge" style="font-size:10px;">SD 32GB PRONTO</span>
+              </div>
+              <div class="timeline-date-selector">
+                <button type="button" class="btn btn-sm btn-secondary" onclick="stepTimelineDay(-1)">◀ Ontem</button>
+                <input type="date" id="timelineDateInput" class="timeline-date-picker" onchange="onTimelineDateChanged(this.value)">
+                <button type="button" class="btn btn-sm btn-secondary" onclick="stepTimelineDay(1)">Hoje ▶</button>
+              </div>
+            </div>
+
+            <!-- Régua Gráfica de 24h -->
+            <div class="timeline-ruler-container" id="timelineRulerContainer" onclick="seekTimelineClick(event)">
+              <div class="timeline-track" id="timelineTrack">
+                <!-- Blocos coloridos de gravação renderizados dinamicamente -->
+              </div>
+              <!-- Agulha de Posição Atual -->
+              <div class="timeline-needle" id="timelineNeedle" style="left: 65%;">
+                <span class="timeline-needle-tip" id="timelineNeedleTime">14:32:00</span>
+              </div>
+            </div>
+
+            <div class="timeline-labels-row">
+              <span>00:00</span>
+              <span>04:00</span>
+              <span>08:00</span>
+              <span>12:00</span>
+              <span>16:00</span>
+              <span>20:00</span>
+              <span>23:59</span>
+            </div>
+
+            <!-- Controles de Reprodução SD -->
+            <div class="timeline-playback-actions">
+              <div class="timeline-legend">
+                <span class="legend-dot" style="background:#10b981;"></span> Contínuo
+                <span class="legend-dot" style="background:#f59e0b;"></span> Movimento
+                <span class="legend-dot" style="background:#38bdf8;"></span> Humano
+              </div>
+              <div style="display:flex; gap:8px;">
+                <button type="button" class="btn btn-sm btn-secondary" onclick="playCurrentSdSegment()">▶️ Reproduzir Trecho</button>
+                <button type="button" class="btn btn-sm btn-secondary" onclick="downloadCurrentSdClip()">💾 Baixar Clipe MP4</button>
+              </div>
+            </div>
+          </div>
+
         </div>
 
-        <!-- Painel Lateral de Direcionais PTZ & Zonas / Câmera Fixa -->
+        <!-- COLUNA DIREITA: CONTROLES ESPECÍFICOS POR MODELO DE HARDWARE & ATALHOS -->
         <div class="ptz-controls-column">
 
-          <!-- Bloco 1: Apenas para Câmera Outdoor Pro (Motorizada PTZ & Zoom) -->
+          <!-- BLOCO 1: ESPECÍFICO OUTDOOR PRO CW701 (PTZ, DUAL ZOOM, HOLOFOTE & SIRENE) -->
           <div id="ptzMotorSection">
-            <!-- Pad Direcional PTZ (Pan & Tilt) -->
+            
+            <!-- Seletor de Foco de Movimentação PTZ (Ambos, Vista 1, Vista 2) -->
             <div class="ptz-card-section">
-              <span class="ptz-section-title">🎮 CONTROLE DIRECIONAL (PAN & TILT)</span>
+              <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+                <span class="ptz-section-title" style="margin:0;">🎮 CONTROLE PTZ & ZOOM 360°</span>
+                <div class="ptz-channel-target-selector">
+                  <button type="button" class="ptz-target-pill active" id="ptzTargetBoth" onclick="setPtzTargetChannel('both')">Ambos</button>
+                  <button type="button" class="ptz-target-pill" id="ptzTargetV1" onclick="setPtzTargetChannel(0)">Vista 1</button>
+                  <button type="button" class="ptz-target-pill" id="ptzTargetV2" onclick="setPtzTargetChannel(1)">Vista 2</button>
+                </div>
+              </div>
+
+              <!-- Pad Direcional PTZ (Pan & Tilt) -->
               <div class="ptz-joystick-grid">
                 <div></div>
                 <button class="ptz-btn" onclick="sendPtzCommand('up')" title="Mover para Cima">⬆️</button>
@@ -1222,13 +1341,37 @@
 
               <!-- Zoom Óptico/Digital -->
               <div class="ptz-zoom-controls">
-                <span style="font-size:11px; color:var(--text-muted);">ZOOM ÓPTICO:</span>
+                <span style="font-size:11px; color:var(--text-muted); font-weight:600;">ZOOM:</span>
                 <button class="btn btn-sm btn-secondary" onclick="sendPtzCommand('zoom_in')">🔍 Zoom +</button>
                 <button class="btn btn-sm btn-secondary" onclick="sendPtzCommand('zoom_out')">🔍 Zoom -</button>
               </div>
             </div>
 
-            <!-- Zonas Pré-definidas (Preset Guard Zones) -->
+            <!-- Holofote Duplo Ultra-White & Sirene 100dB (Outdoor Pro) -->
+            <div class="ptz-card-section">
+              <span class="ptz-section-title">💡 ILUMINAÇÃO & ALARME DISSUASIVO</span>
+              <div style="display:flex; flex-direction:column; gap:10px;">
+                <div style="display:flex; justify-content:space-between; align-items:center;">
+                  <span style="font-size:12px; color:var(--text-main); font-weight:600;">💡 Holofote Duplo:</span>
+                  <button type="button" class="btn btn-sm btn-secondary" id="btnToggleCameraLight" onclick="toggleCameraLight()">
+                    Acender Holofote
+                  </button>
+                </div>
+                <div style="display:flex; align-items:center; gap:8px;">
+                  <span style="font-size:11px; color:var(--text-muted);">Brilho:</span>
+                  <input type="range" id="cameraLightBrightness" min="10" max="100" value="100" style="flex:1;" onchange="adjustCameraLightBrightness(this.value)">
+                  <span id="cameraLightBrightnessVal" style="font-size:11px; color:var(--accent-cyan); font-weight:700;">100%</span>
+                </div>
+                <div style="display:flex; justify-content:space-between; align-items:center; border-top:1px solid rgba(255,255,255,0.06); padding-top:8px;">
+                  <span style="font-size:12px; color:var(--accent-rose); font-weight:600;">🚨 Sirene 100dB:</span>
+                  <button type="button" class="btn btn-sm btn-outline-rose" id="btnToggleCameraSiren" onclick="toggleCameraSiren()">
+                    Soar Sirene Alerta
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Zonas Pré-definidas (Presets de Guarda) -->
             <div class="ptz-card-section">
               <span class="ptz-section-title">📍 ZONAS PRÉ-DEFINIDAS (PRESETS)</span>
               <div class="ptz-presets-grid">
@@ -1255,38 +1398,67 @@
             </div>
           </div>
 
-          <!-- Bloco 2: Apenas para Câmeras Fixas (Sem PTZ mecânico) -->
-          <div id="fixedCamInfoSection" style="display:none;">
-            <div class="fixed-cam-info-card">
-              <div style="display:flex; align-items:center; gap:8px;">
-                <span style="font-size:22px;">📹</span>
-                <div>
-                  <h4 style="margin:0; font-size:13px; color:var(--text-main);">Câmera Fixa Panorâmica</h4>
-                  <span style="font-size:11px; color:var(--accent-cyan);">Sem movimentação mecânica PTZ</span>
+          <!-- BLOCO 2: ESPECÍFICO CÂMERA AW300 (LENTE FIXA 2K, LUZ BRANCA & CERCA) -->
+          <div id="aw300Section" style="display:none;">
+            <div class="ptz-card-section">
+              <span class="ptz-section-title">🛡️ RECURSOS AW300 2K OUTDOOR</span>
+              <div style="display:flex; flex-direction:column; gap:10px;">
+                <div style="display:flex; justify-content:space-between; align-items:center;">
+                  <span style="font-size:12px; color:var(--text-main); font-weight:600;">💡 Refletor Noturno:</span>
+                  <button type="button" class="btn btn-sm btn-secondary" onclick="toggleCameraLight()">Luz de Advertência</button>
+                </div>
+                <div style="display:flex; justify-content:space-between; align-items:center;">
+                  <span style="font-size:12px; color:var(--accent-rose); font-weight:600;">🚨 Sirene & Cerca:</span>
+                  <button type="button" class="btn btn-sm btn-outline-rose" onclick="toggleCameraSiren()">Alarme Dissuasivo</button>
+                </div>
+                <div style="background:rgba(56,189,248,0.06); padding:8px 10px; border-radius:8px; border:1px solid rgba(56,189,248,0.15); font-size:11px; color:var(--text-muted); line-height:1.4;">
+                  Câmera fixa de alta precisão 2K (2304×1296) com foco especial na proteção perimetral e gravação contínua em cartão MicroSD.
                 </div>
               </div>
-              <p style="font-size:11px; color:var(--text-muted); margin:8px 0 0 0; line-height:1.5;">
-                Este modelo possui lente grande angular de alta definição estática. O modo PTZ e Zoom motorizado é exclusivo da <strong>Outdoor Pro (Poste)</strong>. Você pode utilizar o retorno de som para escutar, o microfone para falar e os atalhos abaixo para controlar a área.
-              </p>
             </div>
           </div>
 
-          <!-- Bloco 3: Atalhos Rápidos da Residência Personalizados -->
+          <!-- BLOCO 3: ESPECÍFICO CÂMERA MI 2K STANDARD HLC7 (INFRAVERMELHO 940NM) -->
+          <div id="mi2kSection" style="display:none;">
+            <div class="ptz-card-section">
+              <span class="ptz-section-title">🌙 RECURSOS MI 2K STANDARD</span>
+              <div style="display:flex; flex-direction:column; gap:10px;">
+                <div style="display:flex; justify-content:space-between; align-items:center;">
+                  <span style="font-size:12px; color:var(--text-main); font-weight:600;">🌙 Visão Noturna IR 940nm:</span>
+                  <span class="badge badge-emerald">AUTOMÁTICA</span>
+                </div>
+                <div style="background:rgba(56,189,248,0.06); padding:8px 10px; border-radius:8px; border:1px solid rgba(56,189,248,0.15); font-size:11px; color:var(--text-muted); line-height:1.4;">
+                  LED infravermelho de 940 nm não invasivo (sem luz vermelha aparente), ideal para ambientes internos, estúdio ou monitoramento discreto com suporte magnético.
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- BLOCO 4: CHIPS DE INTELIGÊNCIA ARTIFICIAL ATIVA (MODEL-SPECIFIC AI) -->
+          <div class="ptz-card-section">
+            <span class="ptz-section-title">🧠 INTELIGÊNCIA ARTIFICIAL ATIVA</span>
+            <div class="ptz-ai-badges-grid" id="ptzAiBadgesGrid">
+              <!-- Renderizado dinamicamente com base nas capacidades reais do modelo -->
+            </div>
+          </div>
+
+          <!-- BLOCO 5: ATALHOS RÁPIDOS PERSONALIZADOS DA RESIDÊNCIA -->
           <div class="ptz-card-section">
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
-              <span class="ptz-section-title" style="margin:0;">⚡ ATALHOS RÁPIDOS</span>
+              <span class="ptz-section-title" style="margin:0;">⚡ ATALHOS PERSONALIZADOS</span>
               <button class="btn btn-sm btn-outline-cyan" onclick="openCustomizeShortcutsModal('popup')" style="padding:2px 8px; font-size:11px;">⚙️ Personalizar</button>
             </div>
             <div id="ptzModalShortcutsContainer" style="display:flex; flex-direction:column; gap:6px;">
-              <!-- Renderizado dinamicamente via JS com status em tempo real -->
+              <!-- Renderizado dinamicamente com base nos atalhos configurados pelo usuário -->
             </div>
           </div>
 
         </div>
       </div>
 
-      <div class="modal-footer" style="margin-top:16px;">
-        <button class="btn btn-secondary" onclick="closePtzModal()">Fechar</button>
+      <div class="modal-footer" style="margin-top:14px; display:flex; justify-content:space-between; align-items:center;">
+        <span style="font-size:11px; color:var(--text-muted);" id="ptzModalFooterStatus">Protocolo go2rtc • Criptografia P2P Xiaomi • Conexão Local Direta</span>
+        <button class="btn btn-secondary" onclick="closePtzModal()">Fechar Monitoramento</button>
       </div>
     </div>
   </div>
@@ -1822,6 +1994,6 @@
   <!-- Floating Toast Notifications Container -->
   <div id="toastContainer" class="toast-container"></div>
 
-  <script src="app.js?v=0.16.1"></script>
+  <script src="app.js?v=0.17.0"></script>
 </body>
 </html>

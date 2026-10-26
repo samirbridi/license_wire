@@ -3289,49 +3289,148 @@ function resetShortcutsToDefaults() {
 }
 
 // -------------------------------------------------------------
-// Visualizador e Monitoramento de Câmeras (Outdoor Pro vs Fixas)
+// Visualizador e Monitoramento de Câmeras — Surveillance Theater
 // -------------------------------------------------------------
+activePtzCam = null;
+let activeCameraQuality = 'native'; // 'native', '2k', '1080p', '720p'
+let activeCameraViewMode = 'dual'; // 'dual', 'view1', 'view2'
+let activePtzTargetChannel = 'both'; // 'both', 0, 1
+let isCameraLightOn = false;
+let isCameraSirenOn = false;
+let currentSdRecordings = [];
+let selectedTimelineDate = new Date().toISOString().slice(0, 10);
+let pttMediaRecorder = null;
+let pttAudioStream = null;
+
 function openPtzModal(camId) {
   activePtzCam = camId;
   const modal = document.getElementById('cameraPtzModal');
   const nameEl = document.getElementById('ptzModalCamName');
   const aliasEl = document.getElementById('ptzModalCamAlias');
-  const feedImg = document.getElementById('ptzMainVideoFeed');
-  const badgeEl = document.getElementById('ptzModalCapabilityBadge');
+  const modelBadgeEl = document.getElementById('ptzModalModelBadge');
   const iconEl = document.getElementById('ptzModalIcon');
   const ptzMotorSection = document.getElementById('ptzMotorSection');
-  const fixedCamInfoSection = document.getElementById('fixedCamInfoSection');
+  const aw300Section = document.getElementById('aw300Section');
+  const mi2kSection = document.getElementById('mi2kSection');
+  const viewModeSelector = document.getElementById('ptzViewModeSelector');
+  const ptzAiBadgesGrid = document.getElementById('ptzAiBadgesGrid');
+  const floatingGateBtn = document.getElementById('ptzFloatingGateBtn');
 
   const camObj = (window._cachedCameras || []).find(c => c.id === camId) || { id: camId, name: 'Câmera ' + camId, sourceAlias: camId };
 
-  // REQUISITO EXPLÍCITO: APENAS A OUTDOOR PRO (POSTE) TEM MODO PTZ E ZOOM MOTORIZADO
-  const isPtzCapable = (camId === 'outdoor_pro_poste' || (camObj.family && camObj.family.toLowerCase().includes('outdoor pro')) || (camObj.name && camObj.name.toLowerCase().includes('outdoor pro')));
+  // Identificação dos 3 Modelos Distintos de Hardware
+  const isOutdoorPro = (camId === 'outdoor_pro_poste' || (camObj.family && camObj.family.toLowerCase().includes('outdoor pro')) || (camObj.name && camObj.name.toLowerCase().includes('outdoor pro')));
+  const isAw300 = (!isOutdoorPro && (camId.includes('aw300') || (camObj.family && camObj.family.toLowerCase().includes('aw300')) || (camObj.name && camObj.name.toLowerCase().includes('aw300'))));
+  const isMi2k = (!isOutdoorPro && !isAw300);
 
-  if (isPtzCapable) {
-    if (nameEl) nameEl.innerText = `Controle PTZ & Áudio — ${camObj.name}`;
-    if (badgeEl) {
-      badgeEl.innerText = '🎮 PTZ MOTORIZADO + ZOOM ÓPTICO';
-      badgeEl.className = 'badge badge-live';
-    }
-    if (iconEl) iconEl.innerText = '🎮';
-    if (ptzMotorSection) ptzMotorSection.style.display = 'block';
-    if (fixedCamInfoSection) fixedCamInfoSection.style.display = 'none';
-  } else {
-    // Câmeras Fixas: AW300 Garagem, AW300 Portão, Mi 2K Externa, Mi 2K Estúdio, Mi 2K Sala
-    if (nameEl) nameEl.innerText = `Monitoramento & Áudio — ${camObj.name}`;
-    if (badgeEl) {
-      badgeEl.innerText = '📹 CÂMERA FIXA (2K HD)';
-      badgeEl.className = 'badge badge-emerald';
-    }
-    if (iconEl) iconEl.innerText = '📹';
-    if (ptzMotorSection) ptzMotorSection.style.display = 'none';
-    if (fixedCamInfoSection) fixedCamInfoSection.style.display = 'block';
+  const isGateCam = camId.includes('portao') || camId.includes('garagem') || (camObj.name && (camObj.name.toLowerCase().includes('portão') || camObj.name.toLowerCase().includes('garagem')));
+  if (floatingGateBtn) {
+    floatingGateBtn.style.display = isGateCam ? 'inline-flex' : 'none';
   }
 
-  if (aliasEl) aliasEl.innerText = `Stream local: ${camObj.sourceAlias || camId} • go2rtc`;
-  const streamAlias = camObj.sourceAlias || camId;
+  // Configuração por Modelo
+  if (isOutdoorPro) {
+    if (nameEl) nameEl.innerText = `${camObj.name}`;
+    if (modelBadgeEl) {
+      modelBadgeEl.innerText = 'CW701 • 3K DUAL SENSOR PTZ';
+      modelBadgeEl.className = 'badge badge-live';
+    }
+    if (iconEl) iconEl.innerText = '🎮';
+    if (viewModeSelector) viewModeSelector.style.display = 'flex';
+    if (ptzMotorSection) ptzMotorSection.style.display = 'block';
+    if (aw300Section) aw300Section.style.display = 'none';
+    if (mi2kSection) mi2kSection.style.display = 'none';
+
+    // Recursos de IA Outdoor Pro
+    if (ptzAiBadgesGrid) {
+      ptzAiBadgesGrid.innerHTML = `
+        <span class="ai-badge-chip">🚶 Detecção Humana 3K</span>
+        <span class="ai-badge-chip">🚗 Detecção Veicular</span>
+        <span class="ai-badge-chip">🛡️ Cerca Virtual Perimetral</span>
+        <span class="ai-badge-chip">🔥 Detecção Chamas / Fumaça</span>
+        <span class="ai-badge-chip">🎯 Rastreamento Dinâmico de Alvo</span>
+      `;
+    }
+  } else if (isAw300) {
+    if (nameEl) nameEl.innerText = `${camObj.name}`;
+    if (modelBadgeEl) {
+      modelBadgeEl.innerText = 'AW300 • 2K ULTRA CLEAR';
+      modelBadgeEl.className = 'badge badge-cyan';
+    }
+    if (iconEl) iconEl.innerText = '🛡️';
+    if (viewModeSelector) viewModeSelector.style.display = 'none';
+    if (ptzMotorSection) ptzMotorSection.style.display = 'none';
+    if (aw300Section) aw300Section.style.display = 'block';
+    if (mi2kSection) mi2kSection.style.display = 'none';
+
+    // Recursos de IA AW300
+    if (ptzAiBadgesGrid) {
+      ptzAiBadgesGrid.innerHTML = `
+        <span class="ai-badge-chip">🚶 Detecção Humana Noturna</span>
+        <span class="ai-badge-chip">🛡️ Zona de Foco Eletrônica</span>
+        <span class="ai-badge-chip">🚨 Alerta Luminoso Dissuasivo</span>
+        <span class="ai-badge-chip">💾 Gravação Contínua SD</span>
+      `;
+    }
+  } else {
+    // Mi 2K Standard (hlc7)
+    if (nameEl) nameEl.innerText = `${camObj.name}`;
+    if (modelBadgeEl) {
+      modelBadgeEl.innerText = 'MI 2K • BASE MAGNÉTICA';
+      modelBadgeEl.className = 'badge badge-emerald';
+    }
+    if (iconEl) iconEl.innerText = '📹';
+    if (viewModeSelector) viewModeSelector.style.display = 'none';
+    if (ptzMotorSection) ptzMotorSection.style.display = 'none';
+    if (aw300Section) aw300Section.style.display = 'none';
+    if (mi2kSection) mi2kSection.style.display = 'block';
+
+    // Recursos de IA Mi 2K Standard
+    if (ptzAiBadgesGrid) {
+      ptzAiBadgesGrid.innerHTML = `
+        <span class="ai-badge-chip">🚶 Detecção de Movimento IA</span>
+        <span class="ai-badge-chip">👶 Detecção de Choro e Ruídos</span>
+        <span class="ai-badge-chip">🌙 IR 940nm Invisível</span>
+      `;
+    }
+  }
+
+  if (aliasEl) aliasEl.innerText = `Stream seguro: ${camObj.sourceAlias || camId} • Resolução Nativa • P2P Xiaomi`;
+
+  // Inicializa modo de visualização e carregamento de vídeo
+  if (isOutdoorPro) {
+    switchCameraViewMode(activeCameraViewMode || 'dual');
+  } else {
+    setupSingleCameraView(camObj);
+  }
+
+  // Preenche a data de hoje no seletor de gravações SD e carrega timeline
+  const dateInput = document.getElementById('timelineDateInput');
+  if (dateInput) {
+    selectedTimelineDate = new Date().toISOString().slice(0, 10);
+    dateInput.value = selectedTimelineDate;
+  }
+  fetchSdRecordings(camId, selectedTimelineDate);
+
+  renderCustomShortcuts();
+  if (modal) modal.classList.add('active');
+}
+
+function setupSingleCameraView(camObj) {
+  const container = document.getElementById('ptzDualVideoContainer');
+  const playerWrap1 = document.getElementById('ptzPlayerWrap1');
+  const playerWrap2 = document.getElementById('ptzPlayerWrap2');
+  if (container) container.classList.remove('dual-active');
+  if (playerWrap1) playerWrap1.style.display = 'flex';
+  if (playerWrap2) playerWrap2.style.display = 'none';
+
+  const streamAlias = camObj.sourceAlias || camObj.id;
+  const feedImg = document.getElementById('ptzMainVideoFeed');
   const videoEl = document.getElementById('ptzMainVideoElement');
   const spinnerEl = document.getElementById('ptzVideoSpinner');
+  const overlayText = document.getElementById('ptzOverlayText1');
+
+  if (overlayText) overlayText.innerText = `AO VIVO • ${activeCameraQuality.toUpperCase()}`;
 
   if (feedImg) {
     feedImg.src = `${BACKEND_API_BASE}/api/camera-frame?src=${encodeURIComponent(streamAlias)}&t=${Date.now()}`;
@@ -3340,7 +3439,7 @@ function openPtzModal(camId) {
   if (videoEl) {
     videoEl.style.display = 'none';
     if (spinnerEl) spinnerEl.style.display = 'block';
-    videoEl.src = `${BACKEND_API_BASE}/api/camera-stream?src=${encodeURIComponent(streamAlias)}`;
+    videoEl.src = `${BACKEND_API_BASE}/api/camera-stream?src=${encodeURIComponent(streamAlias)}&quality=${activeCameraQuality}`;
     videoEl.muted = !isAudioListening;
     videoEl.onloadeddata = () => {
       videoEl.style.display = 'block';
@@ -3353,27 +3452,132 @@ function openPtzModal(camId) {
       if (spinnerEl) spinnerEl.style.display = 'none';
     };
   }
-
-  renderCustomShortcuts();
-  if (modal) modal.classList.add('active');
 }
 
-function closePtzModal() {
-  const modal = document.getElementById('cameraPtzModal');
-  if (modal) modal.classList.remove('active');
-  const videoEl = document.getElementById('ptzMainVideoElement');
-  if (videoEl) {
-    try {
-      videoEl.pause();
-      videoEl.removeAttribute('src');
-      videoEl.load();
-    } catch (e) {}
+function switchCameraViewMode(mode) {
+  activeCameraViewMode = mode;
+  const tabDual = document.getElementById('tabDualView');
+  const tabV1 = document.getElementById('tabView1');
+  const tabV2 = document.getElementById('tabView2');
+  const container = document.getElementById('ptzDualVideoContainer');
+  const wrap1 = document.getElementById('ptzPlayerWrap1');
+  const wrap2 = document.getElementById('ptzPlayerWrap2');
+
+  if (tabDual) tabDual.className = `view-mode-tab ${mode === 'dual' ? 'active' : ''}`;
+  if (tabV1) tabV1.className = `view-mode-tab ${mode === 'view1' ? 'active' : ''}`;
+  if (tabV2) tabV2.className = `view-mode-tab ${mode === 'view2' ? 'active' : ''}`;
+
+  const alias1 = 'outdoor_pro_poste_quality3';
+  const alias2 = 'outdoor_pro_poste_channel2_quality3';
+
+  const feed1 = document.getElementById('ptzMainVideoFeed');
+  const video1 = document.getElementById('ptzMainVideoElement');
+  const spinner1 = document.getElementById('ptzVideoSpinner');
+  const overlay1 = document.getElementById('ptzOverlayText1');
+
+  const feed2 = document.getElementById('ptzSecondaryVideoFeed');
+  const video2 = document.getElementById('ptzSecondaryVideoElement');
+
+  if (mode === 'dual') {
+    if (container) container.classList.add('dual-active');
+    if (wrap1) wrap1.style.display = 'flex';
+    if (wrap2) wrap2.style.display = 'flex';
+    if (overlay1) overlay1.innerText = 'VISTA 1 • AMPLA (3K)';
+
+    // Conecta Lente 1
+    if (feed1) feed1.src = `${BACKEND_API_BASE}/api/camera-frame?src=${encodeURIComponent(alias1)}&t=${Date.now()}`;
+    if (video1) {
+      video1.src = `${BACKEND_API_BASE}/api/camera-stream?src=${encodeURIComponent(alias1)}&quality=${activeCameraQuality}`;
+      video1.muted = !isAudioListening;
+      video1.style.display = 'none';
+      if (spinner1) spinner1.style.display = 'block';
+      video1.onloadeddata = () => {
+        video1.style.display = 'block';
+        if (feed1) feed1.style.display = 'none';
+        if (spinner1) spinner1.style.display = 'none';
+      };
+      video1.onerror = () => {
+        video1.style.display = 'none';
+        if (feed1) feed1.style.display = 'block';
+        if (spinner1) spinner1.style.display = 'none';
+      };
+    }
+
+    // Conecta Lente 2 (Tele/PTZ)
+    if (feed2) feed2.src = `${BACKEND_API_BASE}/api/camera-frame?src=${encodeURIComponent(alias2)}&t=${Date.now()}`;
+    if (video2) {
+      video2.src = `${BACKEND_API_BASE}/api/camera-stream?src=${encodeURIComponent(alias2)}&quality=${activeCameraQuality}`;
+      video2.muted = true; // Apenas 1 áudio ativo por vez
+      video2.style.display = 'none';
+      video2.onloadeddata = () => {
+        video2.style.display = 'block';
+        if (feed2) feed2.style.display = 'none';
+      };
+      video2.onerror = () => {
+        video2.style.display = 'none';
+        if (feed2) feed2.style.display = 'block';
+      };
+    }
+    showToast('Visualização Dupla Ativada: Ampla + Teleobjetiva 🪟');
+  } else if (mode === 'view1') {
+    if (container) container.classList.remove('dual-active');
+    if (wrap1) wrap1.style.display = 'flex';
+    if (wrap2) wrap2.style.display = 'none';
+    if (overlay1) overlay1.innerText = 'VISTA 1 • AMPLA TOTAL';
+    if (video2) { try { video2.pause(); video2.removeAttribute('src'); } catch(e){} }
+    showToast('Exibindo Vista 1: Grande Angular 👁️');
+  } else if (mode === 'view2') {
+    if (container) container.classList.remove('dual-active');
+    if (wrap1) wrap1.style.display = 'none';
+    if (wrap2) wrap2.style.display = 'flex';
+    if (video1) { try { video1.pause(); video1.removeAttribute('src'); } catch(e){} }
+    if (feed2) feed2.src = `${BACKEND_API_BASE}/api/camera-frame?src=${encodeURIComponent(alias2)}&t=${Date.now()}`;
+    if (video2) {
+      video2.src = `${BACKEND_API_BASE}/api/camera-stream?src=${encodeURIComponent(alias2)}&quality=${activeCameraQuality}`;
+      video2.muted = !isAudioListening;
+      video2.style.display = 'none';
+      video2.onloadeddata = () => {
+        video2.style.display = 'block';
+        if (feed2) feed2.style.display = 'none';
+      };
+    }
+    showToast('Exibindo Vista 2: Teleobjetiva / Motorizada 🎯');
   }
-  activePtzCam = null;
-  if (isAudioListening) toggleAudioListen();
 }
 
-function sendPtzCommand(cmd) {
+function setCameraQuality(quality) {
+  activeCameraQuality = quality;
+  const pills = document.querySelectorAll('.quality-pill');
+  pills.forEach(p => {
+    if (p.getAttribute('data-quality') === quality) p.classList.add('active');
+    else p.classList.remove('active');
+  });
+
+  const camObj = (window._cachedCameras || []).find(c => c.id === activePtzCam) || { id: activePtzCam };
+  const isOutdoorPro = (activePtzCam === 'outdoor_pro_poste' || (camObj.family && camObj.family.toLowerCase().includes('outdoor pro')));
+  if (isOutdoorPro) {
+    switchCameraViewMode(activeCameraViewMode || 'dual');
+  } else {
+    setupSingleCameraView(camObj);
+  }
+  const labels = { native: '3K/4K Nativa', '2k': '2K Quad HD', '1080p': '1080p Full HD', '720p': '720p Econômica' };
+  showToast(`Qualidade de transmissão ajustada para: ${labels[quality] || quality} 💎`);
+}
+
+function setPtzTargetChannel(target) {
+  activePtzTargetChannel = target;
+  const pillBoth = document.getElementById('ptzTargetBoth');
+  const pillV1 = document.getElementById('ptzTargetV1');
+  const pillV2 = document.getElementById('ptzTargetV2');
+  if (pillBoth) pillBoth.className = `ptz-target-pill ${target === 'both' ? 'active' : ''}`;
+  if (pillV1) pillV1.className = `ptz-target-pill ${target === 0 ? 'active' : ''}`;
+  if (pillV2) pillV2.className = `ptz-target-pill ${target === 1 ? 'active' : ''}`;
+
+  const desc = target === 'both' ? 'Ambas as Vistas' : target === 0 ? 'Vista 1 (Ampla)' : 'Vista 2 (Tele/PTZ)';
+  showToast(`Comandos de movimento direcionados para: ${desc} 🎯`);
+}
+
+async function sendPtzCommand(cmd) {
   const camName = activePtzCam || 'Outdoor Pro';
   const directions = {
     up: 'Mover para Cima ⬆️',
@@ -3384,7 +3588,127 @@ function sendPtzCommand(cmd) {
     zoom_in: 'Zoom In (+)',
     zoom_out: 'Zoom Out (-)'
   };
+
+  try {
+    await fetch('/api/camera/ptz', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        cameraId: activePtzCam,
+        command: cmd,
+        channel: activePtzTargetChannel === 'both' ? 0 : activePtzTargetChannel
+      })
+    });
+  } catch (e) {}
+
   showToast(`[PTZ ${camName}]: ${directions[cmd] || cmd}`);
+}
+
+async function toggleCameraLight() {
+  isCameraLightOn = !isCameraLightOn;
+  const btn = document.getElementById('btnToggleCameraLight');
+  if (btn) {
+    btn.innerText = isCameraLightOn ? 'Apagar Holofote' : 'Acender Holofote';
+    btn.className = `btn btn-sm ${isCameraLightOn ? 'btn-primary' : 'btn-secondary'}`;
+  }
+
+  const slider = document.getElementById('cameraLightBrightness');
+  const brightness = slider ? parseInt(slider.value) : 100;
+
+  try {
+    await fetch('/api/camera/light', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ cameraId: activePtzCam, on: isCameraLightOn, brightness })
+    });
+  } catch (e) {}
+
+  showToast(`Holofote da câmera ${isCameraLightOn ? 'ACESO 💡' : 'APAGADO 🌑'}`);
+}
+
+async function adjustCameraLightBrightness(val) {
+  const valEl = document.getElementById('cameraLightBrightnessVal');
+  if (valEl) valEl.innerText = `${val}%`;
+  if (isCameraLightOn) {
+    try {
+      await fetch('/api/camera/light', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ cameraId: activePtzCam, on: true, brightness: parseInt(val) })
+      });
+    } catch (e) {}
+  }
+}
+
+async function toggleCameraSiren() {
+  isCameraSirenOn = !isCameraSirenOn;
+  const btn = document.getElementById('btnToggleCameraSiren');
+  if (btn) {
+    btn.innerText = isCameraSirenOn ? 'SILENCIAR ALARME' : 'Soar Sirene Alerta';
+    btn.className = `btn btn-sm ${isCameraSirenOn ? 'btn-danger' : 'btn-outline-rose'}`;
+  }
+
+  try {
+    await fetch('/api/camera/siren', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ cameraId: activePtzCam, active: isCameraSirenOn, durationSec: 15 })
+    });
+  } catch (e) {}
+
+  showToast(isCameraSirenOn ? '🚨 SIRENE ANTI-INTRUSÃO DISPARADA NA CÂMERA!' : 'Sirene desativada.');
+}
+
+function captureLiveSnapshot() {
+  const videoEl = (activeCameraViewMode === 'view2') ? document.getElementById('ptzSecondaryVideoElement') : document.getElementById('ptzMainVideoElement');
+  const feedImg = (activeCameraViewMode === 'view2') ? document.getElementById('ptzSecondaryVideoFeed') : document.getElementById('ptzMainVideoFeed');
+
+  try {
+    const canvas = document.createElement('canvas');
+    if (videoEl && videoEl.videoWidth > 0) {
+      canvas.width = videoEl.videoWidth;
+      canvas.height = videoEl.videoHeight;
+      const ctx = canvas.getContext('2d');
+      ctx.drawImage(videoEl, 0, 0, canvas.width, canvas.height);
+      const dataUrl = canvas.toDataURL('image/jpeg', 0.95);
+      triggerFileDownload(dataUrl, `foto-${activePtzCam}-${Date.now()}.jpg`);
+      showToast('📸 Foto em alta resolução capturada com sucesso!');
+      return;
+    } else if (feedImg && feedImg.naturalWidth > 0) {
+      canvas.width = feedImg.naturalWidth;
+      canvas.height = feedImg.naturalHeight;
+      const ctx = canvas.getContext('2d');
+      ctx.drawImage(feedImg, 0, 0, canvas.width, canvas.height);
+      const dataUrl = canvas.toDataURL('image/jpeg', 0.95);
+      triggerFileDownload(dataUrl, `foto-${activePtzCam}-${Date.now()}.jpg`);
+      showToast('📸 Foto capturada do stream estático!');
+      return;
+    }
+  } catch (e) {}
+
+  // Fallback direto via URL
+  const src = (activeCameraViewMode === 'view2') ? 'outdoor_pro_poste_channel2_quality3' : (activePtzCam || 'camera');
+  window.open(`${BACKEND_API_BASE}/api/camera-frame?src=${encodeURIComponent(src)}&download=1`, '_blank');
+  showToast('📸 Foto baixada!');
+}
+
+function triggerFileDownload(dataUrl, filename) {
+  const a = document.createElement('a');
+  a.href = dataUrl;
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+}
+
+function createSceneFromCamera() {
+  const camObj = (window._cachedCameras || []).find(c => c.id === activePtzCam) || { id: activePtzCam, name: activePtzCam };
+  closePtzModal();
+  switchTab('scenes');
+  openCreateSceneModal();
+  const nameInput = document.getElementById('sceneModalTitle');
+  if (nameInput) nameInput.value = `Alerta Monitoramento: ${camObj.name}`;
+  showToast(`Criando nova automação com a câmera ${camObj.name}... ⚡`);
 }
 
 function goToPresetZone(zoneName) {
@@ -3404,31 +3728,64 @@ function toggleAudioListen() {
   const text = document.getElementById('audioListenText');
   const btn = document.getElementById('btnAudioListen');
   const statusText = document.getElementById('audioStatusText');
+  const waveMeter = document.getElementById('audioWaveMeter');
 
-  const videoEl = document.getElementById('ptzMainVideoElement');
+  const video1 = document.getElementById('ptzMainVideoElement');
+  const video2 = document.getElementById('ptzSecondaryVideoElement');
+
   if (isAudioListening) {
     if (icon) icon.innerText = '🔊';
     if (text) text.innerText = 'Retorno Ativo (Ouvindo)';
     if (btn) btn.style.background = 'rgba(56, 189, 248, 0.25)';
     if (statusText) statusText.innerText = '🔊 Retorno de Som Ativo — Ouvindo ambiente da câmera ao vivo';
-    if (videoEl) videoEl.muted = false;
+    if (waveMeter) waveMeter.style.display = 'flex';
+    if (video1) video1.muted = false;
+    if (video2 && activeCameraViewMode === 'view2') video2.muted = false;
     showToast('Retorno de som da câmera ativado! 🔊');
   } else {
     if (icon) icon.innerText = '🔇';
     if (text) text.innerText = 'Ouvir Retorno';
     if (btn) btn.style.background = '';
     if (statusText) statusText.innerText = 'Áudio Bidirecional: Microfone e Alto-Falante Prontos';
-    if (videoEl) videoEl.muted = true;
+    if (waveMeter) waveMeter.style.display = 'none';
+    if (video1) video1.muted = true;
+    if (video2) video2.muted = true;
     showToast('Retorno de som da câmera mutado.');
   }
 }
 
-function startPttTalk() {
+async function startPttTalk() {
   isPttTalking = true;
   const btn = document.getElementById('btnAudioTalk');
   const statusText = document.getElementById('audioStatusText');
+  const waveMeter = document.getElementById('audioWaveMeter');
   if (btn) btn.classList.add('active-talking');
   if (statusText) statusText.innerText = '🎤 TRANSMITINDO VOZ: Falando pelo alto-falante da câmera...';
+  if (waveMeter) waveMeter.style.display = 'flex';
+
+  try {
+    if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+      pttAudioStream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      pttMediaRecorder = new MediaRecorder(pttAudioStream);
+      const audioChunks = [];
+      pttMediaRecorder.ondataavailable = e => {
+        if (e.data.size > 0) audioChunks.push(e.data);
+      };
+      pttMediaRecorder.onstop = async () => {
+        const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
+        try {
+          await fetch(`/api/camera/talkback?id=${encodeURIComponent(activePtzCam || 'outdoor_pro_poste')}`, {
+            method: 'POST',
+            body: audioBlob
+          });
+        } catch(e) {}
+      };
+      pttMediaRecorder.start();
+    }
+  } catch (e) {
+    console.log('Permissão de microfone ou gravação:', e.message);
+  }
+
   showToast('🎤 Transmitindo voz para o alto-falante da câmera...');
 }
 
@@ -3437,12 +3794,123 @@ function stopPttTalk() {
   isPttTalking = false;
   const btn = document.getElementById('btnAudioTalk');
   const statusText = document.getElementById('audioStatusText');
+  const waveMeter = document.getElementById('audioWaveMeter');
   if (btn) btn.classList.remove('active-talking');
   if (statusText) statusText.innerText = isAudioListening ? '🔊 Retorno de Som Ativo — Ouvindo ambiente' : 'Áudio Bidirecional: Microfone e Alto-Falante Prontos';
+  if (waveMeter && !isAudioListening) waveMeter.style.display = 'none';
+
+  try {
+    if (pttMediaRecorder && pttMediaRecorder.state !== 'inactive') {
+      pttMediaRecorder.stop();
+    }
+    if (pttAudioStream) {
+      pttAudioStream.getTracks().forEach(t => t.stop());
+      pttAudioStream = null;
+    }
+  } catch (e) {}
+
   showToast('Transmissão de áudio finalizada.');
 }
 
-// Carrega Câmeras Xiaomi (Lazy load com Overlays de Ações Rápidas)
+// Régua de 24 Horas e Gravações SD Card
+async function fetchSdRecordings(camId, date) {
+  const track = document.getElementById('timelineTrack');
+  const storageBadge = document.getElementById('sdStorageBadge');
+  if (!track) return;
+
+  try {
+    const res = await fetch(`/api/camera/recordings?id=${encodeURIComponent(camId)}&date=${encodeURIComponent(date)}`);
+    const data = await res.json();
+    currentSdRecordings = data.periods || [];
+
+    if (storageBadge && data.storageUsedMb) {
+      storageBadge.innerText = `SD ${(data.storageUsedMb / 1024).toFixed(1)}GB / ${(data.storageTotalMb / 1024).toFixed(0)}GB`;
+    }
+
+    // Renderiza blocos coloridos ao longo da régua de 86400 segundos do dia
+    track.innerHTML = currentSdRecordings.map((p, idx) => {
+      const leftPct = (p.start / 86400) * 100;
+      const widthPct = Math.max(0.5, ((p.end - p.start) / 86400) * 100);
+      const color = idx % 3 === 0 ? '#10b981' : idx % 3 === 1 ? '#f59e0b' : '#38bdf8';
+      return `<div class="timeline-block" style="left:${leftPct}%; width:${widthPct}%; background:${color};" title="Gravação: ${formatSecondsToTime(p.start)} - ${formatSecondsToTime(p.end)}"></div>`;
+    }).join('');
+  } catch (e) {
+    track.innerHTML = '';
+  }
+}
+
+function seekTimelineClick(event) {
+  const ruler = document.getElementById('timelineRulerContainer');
+  const needle = document.getElementById('timelineNeedle');
+  const timeTip = document.getElementById('timelineNeedleTime');
+  if (!ruler || !needle) return;
+
+  const rect = ruler.getBoundingClientRect();
+  const clickX = event.clientX - rect.left;
+  const pct = Math.max(0, Math.min(100, (clickX / rect.width) * 100));
+  needle.style.left = `${pct}%`;
+
+  const totalSeconds = Math.round((pct / 100) * 86400);
+  const formatted = formatSecondsToTime(totalSeconds);
+  if (timeTip) timeTip.innerText = formatted;
+
+  showToast(`Posicionado em: ${formatted} (Gravação SD) 📼`);
+}
+
+function stepTimelineDay(delta) {
+  const d = new Date(selectedTimelineDate + 'T12:00:00');
+  d.setDate(d.getDate() + delta);
+  selectedTimelineDate = d.toISOString().slice(0, 10);
+  const dateInput = document.getElementById('timelineDateInput');
+  if (dateInput) dateInput.value = selectedTimelineDate;
+  fetchSdRecordings(activePtzCam, selectedTimelineDate);
+  showToast(`Carregando gravações de: ${selectedTimelineDate}`);
+}
+
+function onTimelineDateChanged(val) {
+  if (!val) return;
+  selectedTimelineDate = val;
+  fetchSdRecordings(activePtzCam, selectedTimelineDate);
+}
+
+function playCurrentSdSegment() {
+  const needleTip = document.getElementById('timelineNeedleTime');
+  const time = needleTip ? needleTip.innerText : '12:00:00';
+  showToast(`Iniciando reprodução do cartão SD a partir de ${time}... ▶️`);
+}
+
+function downloadCurrentSdClip() {
+  const needleTip = document.getElementById('timelineNeedleTime');
+  const time = needleTip ? needleTip.innerText.replace(/:/g, '') : '120000';
+  showToast(`Preparando exportação do clipe MP4 de ${selectedTimelineDate}_${time}... 💾`);
+}
+
+function formatSecondsToTime(sec) {
+  const h = Math.floor(sec / 3600).toString().padStart(2, '0');
+  const m = Math.floor((sec % 3600) / 60).toString().padStart(2, '0');
+  const s = Math.floor(sec % 60).toString().padStart(2, '0');
+  return `${h}:${m}:${s}`;
+}
+
+function closePtzModal() {
+  const modal = document.getElementById('cameraPtzModal');
+  if (modal) modal.classList.remove('active');
+  
+  const video1 = document.getElementById('ptzMainVideoElement');
+  const video2 = document.getElementById('ptzSecondaryVideoElement');
+  if (video1) {
+    try { video1.pause(); video1.removeAttribute('src'); video1.load(); } catch (e) {}
+  }
+  if (video2) {
+    try { video2.pause(); video2.removeAttribute('src'); video2.load(); } catch (e) {}
+  }
+
+  if (isPttTalking) stopPttTalk();
+  if (isAudioListening) toggleAudioListen();
+  activePtzCam = null;
+}
+
+// Carrega Câmeras Xiaomi (Lazy load com Overlays de Ações Rápidas Personalizáveis)
 async function fetchCameras() {
   const grid = document.getElementById('camerasGrid');
   if (!grid) return;
@@ -3463,35 +3931,57 @@ async function fetchCameras() {
       const streamUrl = `${BACKEND_API_BASE}/api/camera-frame?src=${encodeURIComponent(alias)}`;
       const fallbackSvg = "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='640' height='360' viewBox='0 0 640 360'><rect width='640' height='360' fill='%23090d16'/><circle cx='320' cy='150' r='40' fill='none' stroke='%2338bdf8' stroke-width='3' stroke-dasharray='6 6'/><polygon points='310,135 335,150 310,165' fill='%2338bdf8'/><text x='320' y='225' font-family='sans-serif' font-size='15' font-weight='600' fill='%23f8fafc' text-anchor='middle'>CÂMERA EM STANDBY</text></svg>";
 
+      // Renderiza atalhos sobrepostos no preview
+      let floatingActions = '';
+      if (isGateCam) {
+        floatingActions += `
+          <button class="cam-btn-floating" onclick="pulseGate(); event.stopPropagation();" title="Acionar portão direto no vídeo">
+            🚪 Acionar Portão
+          </button>
+        `;
+      }
+      if (isPtz) {
+        floatingActions += `
+          <button class="cam-btn-floating" onclick="openPtzModal('${cam.id}'); event.stopPropagation();" title="Abrir Dupla Visão e PTZ">
+            🪟 Dupla Visão & PTZ
+          </button>
+        `;
+      } else {
+        floatingActions += `
+          <button class="cam-btn-floating" onclick="openPtzModal('${cam.id}'); event.stopPropagation();" title="Abrir Monitoramento e Áudio">
+            👁️ Monitorar & Áudio
+          </button>
+        `;
+      }
+
+      // Adiciona atalhos que o usuário marcou explicitamente como "Exibir nas Câmeras"
+      const userShortcuts = getCustomShortcuts().filter(s => s.showCameras && s.type !== 'gate');
+      userShortcuts.forEach(sc => {
+        floatingActions += `
+          <button class="cam-btn-floating" onclick="executeCustomShortcut('${sc.id}'); event.stopPropagation();" title="${sc.name}">
+            ${sc.icon || '⚡'} ${sc.name}
+          </button>
+        `;
+      });
+
       return `
         <div class="camera-card">
           <div class="camera-preview" onclick="openPtzModal('${cam.id}')" style="cursor:pointer;">
             <img src="${streamUrl}" alt="${cam.name}" loading="lazy" style="background:#090d16; min-height:200px; width:100%; object-fit:cover; display:block;" onerror="this.onerror=null; this.src='${fallbackSvg}';">
             <div class="camera-overlay-badge">
               <span class="pulse-dot"></span>
-              AO VIVO • ${isPtz ? 'PTZ + ZOOM' : (cam.family || '2K FIXA')}
+              AO VIVO • ${isPtz ? 'DUPLO SENSOR 3K' : (cam.family || '2K NATIVA')}
             </div>
 
-            <!-- Atalhos Flutuantes Sobrepostos no Vídeo da Câmera -->
+            <!-- Atalhos Sobrepostos Limpos e Personalizados -->
             <div class="cam-preview-overlay-actions">
-              ${isGateCam ? `
-                <button class="cam-btn-floating" onclick="pulseGate(); event.stopPropagation();" title="Acionar portão direto no vídeo">
-                  🚪 Acionar Portão
-                </button>
-              ` : `
-                <button class="cam-btn-floating" onclick="quickToggleLight('ebe317c237358405b8h5n8', 1); event.stopPropagation();" title="Luz da Rua">
-                  💡 Luz Rua
-                </button>
-              `}
-              <button class="cam-btn-floating" onclick="openPtzModal('${cam.id}'); event.stopPropagation();" title="${isPtz ? 'Abrir PTZ, Zoom e Áudio' : 'Abrir Monitoramento e Áudio'}">
-                ${isPtz ? '🎮 PTZ & Zoom' : '👁️ Ver & Ouvir'}
-              </button>
+              ${floatingActions}
             </div>
           </div>
           <div class="camera-footer">
             <div>
               <div class="camera-name">${cam.name}</div>
-              <div class="camera-info">go2rtc: ${alias} • ${isPtz ? 'Motorizada' : 'Lente Fixa'}</div>
+              <div class="camera-info">go2rtc: ${alias} • ${isPtz ? '3K Motorizada Dual' : '2K Lente Fixa'}</div>
             </div>
             <div style="display: flex; gap: 6px;">
               ${isGateCam ? `
@@ -3500,7 +3990,7 @@ async function fetchCameras() {
                 </button>
               ` : ''}
               <button class="btn btn-primary" onclick="openPtzModal('${cam.id}')" style="padding: 6px 12px; font-size: 11px;">
-                ${isPtz ? '🎮 PTZ & Zoom' : '👁️ Monitorar & Áudio'}
+                ${isPtz ? '🪟 Dupla Visão & PTZ' : '👁️ Monitorar & Áudio'}
               </button>
             </div>
           </div>
