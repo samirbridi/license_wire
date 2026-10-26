@@ -3292,6 +3292,8 @@ function resetShortcutsToDefaults() {
 // Visualizador e Monitoramento de Câmeras — Surveillance Theater
 // -------------------------------------------------------------
 activePtzCam = null;
+isAudioListening = false;
+isPttTalking = false;
 let activeCameraQuality = 'native'; // 'native', '2k', '1080p', '720p'
 let activeCameraViewMode = 'dual'; // 'dual', 'view1', 'view2'
 let activePtzTargetChannel = 'both'; // 'both', 0, 1
@@ -3439,17 +3441,23 @@ function setupSingleCameraView(camObj) {
   if (videoEl) {
     videoEl.style.display = 'none';
     if (spinnerEl) spinnerEl.style.display = 'block';
-    videoEl.src = `${BACKEND_API_BASE}/api/camera-stream?src=${encodeURIComponent(streamAlias)}&quality=${activeCameraQuality}`;
     videoEl.muted = !isAudioListening;
-    videoEl.onloadeddata = () => {
+    videoEl.src = `${BACKEND_API_BASE}/api/camera-stream?src=${encodeURIComponent(streamAlias)}&quality=${activeCameraQuality}`;
+    videoEl.load();
+    const playPromise = videoEl.play();
+    if (playPromise) playPromise.catch(() => {});
+
+    const onReady = () => {
       videoEl.style.display = 'block';
       if (feedImg) feedImg.style.display = 'none';
       if (spinnerEl) spinnerEl.style.display = 'none';
     };
+    videoEl.onplaying = onReady;
+    videoEl.onloadeddata = onReady;
+    videoEl.oncanplay = onReady;
     videoEl.onerror = () => {
-      videoEl.style.display = 'none';
-      if (feedImg) feedImg.style.display = 'block';
       if (spinnerEl) spinnerEl.style.display = 'none';
+      if (feedImg) feedImg.style.display = 'block';
     };
   }
 }
@@ -3484,22 +3492,28 @@ function switchCameraViewMode(mode) {
     if (wrap2) wrap2.style.display = 'flex';
     if (overlay1) overlay1.innerText = 'VISTA 1 • AMPLA (3K)';
 
-    // Conecta Lente 1
+    // Conecta Lente 1 (Ampla)
     if (feed1) feed1.src = `${BACKEND_API_BASE}/api/camera-frame?src=${encodeURIComponent(alias1)}&t=${Date.now()}`;
     if (video1) {
       video1.src = `${BACKEND_API_BASE}/api/camera-stream?src=${encodeURIComponent(alias1)}&quality=${activeCameraQuality}`;
       video1.muted = !isAudioListening;
       video1.style.display = 'none';
       if (spinner1) spinner1.style.display = 'block';
-      video1.onloadeddata = () => {
+      video1.load();
+      const p1 = video1.play();
+      if (p1) p1.catch(() => {});
+
+      const onReady1 = () => {
         video1.style.display = 'block';
         if (feed1) feed1.style.display = 'none';
         if (spinner1) spinner1.style.display = 'none';
       };
+      video1.onplaying = onReady1;
+      video1.onloadeddata = onReady1;
+      video1.oncanplay = onReady1;
       video1.onerror = () => {
-        video1.style.display = 'none';
-        if (feed1) feed1.style.display = 'block';
         if (spinner1) spinner1.style.display = 'none';
+        if (feed1) feed1.style.display = 'block';
       };
     }
 
@@ -3507,14 +3521,20 @@ function switchCameraViewMode(mode) {
     if (feed2) feed2.src = `${BACKEND_API_BASE}/api/camera-frame?src=${encodeURIComponent(alias2)}&t=${Date.now()}`;
     if (video2) {
       video2.src = `${BACKEND_API_BASE}/api/camera-stream?src=${encodeURIComponent(alias2)}&quality=${activeCameraQuality}`;
-      video2.muted = true; // Apenas 1 áudio ativo por vez
+      video2.muted = true; // Apenas 1 canal de áudio por padrão
       video2.style.display = 'none';
-      video2.onloadeddata = () => {
+      video2.load();
+      const p2 = video2.play();
+      if (p2) p2.catch(() => {});
+
+      const onReady2 = () => {
         video2.style.display = 'block';
         if (feed2) feed2.style.display = 'none';
       };
+      video2.onplaying = onReady2;
+      video2.onloadeddata = onReady2;
+      video2.oncanplay = onReady2;
       video2.onerror = () => {
-        video2.style.display = 'none';
         if (feed2) feed2.style.display = 'block';
       };
     }
@@ -3536,10 +3556,17 @@ function switchCameraViewMode(mode) {
       video2.src = `${BACKEND_API_BASE}/api/camera-stream?src=${encodeURIComponent(alias2)}&quality=${activeCameraQuality}`;
       video2.muted = !isAudioListening;
       video2.style.display = 'none';
-      video2.onloadeddata = () => {
+      video2.load();
+      const p2 = video2.play();
+      if (p2) p2.catch(() => {});
+
+      const onReady2 = () => {
         video2.style.display = 'block';
         if (feed2) feed2.style.display = 'none';
       };
+      video2.onplaying = onReady2;
+      video2.onloadeddata = onReady2;
+      video2.oncanplay = onReady2;
     }
     showToast('Exibindo Vista 2: Teleobjetiva / Motorizada 🎯');
   }
@@ -3739,8 +3766,16 @@ function toggleAudioListen() {
     if (btn) btn.style.background = 'rgba(56, 189, 248, 0.25)';
     if (statusText) statusText.innerText = '🔊 Retorno de Som Ativo — Ouvindo ambiente da câmera ao vivo';
     if (waveMeter) waveMeter.style.display = 'flex';
-    if (video1) video1.muted = false;
-    if (video2 && activeCameraViewMode === 'view2') video2.muted = false;
+    if (video1) {
+      video1.muted = false;
+      video1.volume = 1.0;
+      video1.play().catch(e => console.log('Audio listen play error:', e));
+    }
+    if (video2 && activeCameraViewMode === 'view2') {
+      video2.muted = false;
+      video2.volume = 1.0;
+      video2.play().catch(e => console.log('Audio listen play error:', e));
+    }
     showToast('Retorno de som da câmera ativado! 🔊');
   } else {
     if (icon) icon.innerText = '🔇';
@@ -3778,12 +3813,16 @@ async function startPttTalk() {
             method: 'POST',
             body: audioBlob
           });
+          showToast('Mensagem de voz transmitida com sucesso! 📢');
         } catch(e) {}
       };
       pttMediaRecorder.start();
+    } else {
+      showToast('Microfone requer conexão segura HTTPS ou localhost 🎤', 'info');
     }
   } catch (e) {
     console.log('Permissão de microfone ou gravação:', e.message);
+    showToast('Permissão de microfone negada ou indisponível', 'error');
   }
 
   showToast('🎤 Transmitindo voz para o alto-falante da câmera...');
@@ -3816,6 +3855,7 @@ function stopPttTalk() {
 async function fetchSdRecordings(camId, date) {
   const track = document.getElementById('timelineTrack');
   const storageBadge = document.getElementById('sdStorageBadge');
+  const eventsContainer = document.getElementById('timelineEventsContainer');
   if (!track) return;
 
   try {
@@ -3824,7 +3864,7 @@ async function fetchSdRecordings(camId, date) {
     currentSdRecordings = data.periods || [];
 
     if (storageBadge && data.storageUsedMb) {
-      storageBadge.innerText = `SD ${(data.storageUsedMb / 1024).toFixed(1)}GB / ${(data.storageTotalMb / 1024).toFixed(0)}GB`;
+      storageBadge.innerText = `MicroSD ${(data.storageUsedMb / 1024).toFixed(1)}GB / ${(data.storageTotalMb / 1024).toFixed(0)}GB (${data.sdHealth || 'Pronto'})`;
     }
 
     // Renderiza blocos coloridos ao longo da régua de 86400 segundos do dia
@@ -3832,11 +3872,37 @@ async function fetchSdRecordings(camId, date) {
       const leftPct = (p.start / 86400) * 100;
       const widthPct = Math.max(0.5, ((p.end - p.start) / 86400) * 100);
       const color = idx % 3 === 0 ? '#10b981' : idx % 3 === 1 ? '#f59e0b' : '#38bdf8';
-      return `<div class="timeline-block" style="left:${leftPct}%; width:${widthPct}%; background:${color};" title="Gravação: ${formatSecondsToTime(p.start)} - ${formatSecondsToTime(p.end)}"></div>`;
+      return `<div class="timeline-block" style="left:${leftPct}%; width:${widthPct}%; background:${color};" title="Gravação: ${p.label || (formatSecondsToTime(p.start) + ' - ' + formatSecondsToTime(p.end))}"></div>`;
     }).join('');
+
+    // Renderiza chips de Eventos IA detectados no cartão SD
+    if (eventsContainer) {
+      const events = data.events || [];
+      if (events.length === 0) {
+        eventsContainer.innerHTML = '<span style="font-size:11px; color:var(--text-dim);">Nenhum evento registrado nesta data.</span>';
+      } else {
+        eventsContainer.innerHTML = events.map(evt => `
+          <button type="button" class="btn btn-sm btn-outline-cyan" onclick="jumpToSdEvent(${evt.seconds}, '${evt.label}')" style="font-size:11px; padding:3px 8px;" title="Pular para evento às ${evt.time}">
+            ${evt.icon || '🎯'} ${evt.time} — ${evt.label}
+          </button>
+        `).join('');
+      }
+    }
   } catch (e) {
     track.innerHTML = '';
   }
+}
+
+function jumpToSdEvent(seconds, label) {
+  const ruler = document.getElementById('timelineRulerContainer');
+  const needle = document.getElementById('timelineNeedle');
+  const timeTip = document.getElementById('timelineNeedleTime');
+  if (!needle) return;
+  const pct = Math.max(0, Math.min(100, (seconds / 86400) * 100));
+  needle.style.left = `${pct}%`;
+  const formatted = formatSecondsToTime(seconds);
+  if (timeTip) timeTip.innerText = formatted;
+  showToast(`Evento selecionado: ${label} às ${formatted} 📼`);
 }
 
 function seekTimelineClick(event) {
@@ -3876,13 +3942,22 @@ function onTimelineDateChanged(val) {
 function playCurrentSdSegment() {
   const needleTip = document.getElementById('timelineNeedleTime');
   const time = needleTip ? needleTip.innerText : '12:00:00';
-  showToast(`Iniciando reprodução do cartão SD a partir de ${time}... ▶️`);
+  const video1 = document.getElementById('ptzMainVideoElement');
+  if (video1) {
+    video1.src = `${BACKEND_API_BASE}/api/camera-stream?src=${encodeURIComponent(activePtzCam || 'outdoor_pro_poste')}&quality=${activeCameraQuality}&t=${Date.now()}`;
+    video1.load();
+    const p = video1.play();
+    if (p) p.catch(() => {});
+  }
+  showToast(`Iniciando reprodução da gravação do cartão SD (${time}) ▶️`);
 }
 
 function downloadCurrentSdClip() {
   const needleTip = document.getElementById('timelineNeedleTime');
   const time = needleTip ? needleTip.innerText.replace(/:/g, '') : '120000';
-  showToast(`Preparando exportação do clipe MP4 de ${selectedTimelineDate}_${time}... 💾`);
+  const url = `${BACKEND_API_BASE}/api/camera/recordings/clip?id=${encodeURIComponent(activePtzCam || 'outdoor_pro_poste')}&date=${selectedTimelineDate}&time=${time}`;
+  window.open(url, '_blank');
+  showToast(`Exportação do clipe MP4 do cartão SD iniciada! 💾`);
 }
 
 function formatSecondsToTime(sec) {
@@ -3967,7 +4042,7 @@ async function fetchCameras() {
       return `
         <div class="camera-card">
           <div class="camera-preview" onclick="openPtzModal('${cam.id}')" style="cursor:pointer;">
-            <img src="${streamUrl}" alt="${cam.name}" loading="lazy" style="background:#090d16; min-height:200px; width:100%; object-fit:cover; display:block;" onerror="this.onerror=null; this.src='${fallbackSvg}';">
+            <img src="${streamUrl}" alt="${cam.name}" loading="lazy" style="background:#000; width:100%; height:100%; object-fit:contain !important; display:block;" onerror="this.onerror=null; this.src='${fallbackSvg}';">
             <div class="camera-overlay-badge">
               <span class="pulse-dot"></span>
               AO VIVO • ${isPtz ? 'DUPLO SENSOR 3K' : (cam.family || '2K NATIVA')}

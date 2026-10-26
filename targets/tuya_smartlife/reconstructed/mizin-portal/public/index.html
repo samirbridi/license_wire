@@ -7,7 +7,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css?v=0.17.0">
+  <link rel="stylesheet" href="style.css?v=0.18.0">
   <link rel="manifest" href="manifest.json">
   <link rel="icon" type="image/svg+xml" href="icon.svg">
   <link rel="apple-touch-icon" href="icon.svg">
@@ -1211,8 +1211,8 @@
             
             <!-- PLAYER 1: VISTA PRINCIPAL (AMPLA OU ÚNICA) -->
             <div class="ptz-main-player-wrap" id="ptzPlayerWrap1">
-              <video id="ptzMainVideoElement" autoplay playsinline muted controls style="width:100%; height:auto; display:none; border-radius:10px; background:#090d16; min-height:260px; object-fit:contain;"></video>
-              <img id="ptzMainVideoFeed" src="" alt="Câmera Feed" style="width:100%; height:auto; border-radius:10px; display:block; background:#090d16; min-height:260px; object-fit:contain;">
+              <video id="ptzMainVideoElement" autoplay playsinline muted controls style="width:100%; height:100%; display:none; border-radius:10px; background:#000; object-fit:contain !important;"></video>
+              <img id="ptzMainVideoFeed" src="" alt="Câmera Feed" style="width:100%; height:100%; border-radius:10px; display:block; background:#000; object-fit:contain !important;">
               <div id="ptzVideoSpinner" class="ptz-stream-spinner">
                 <span class="pulse-dot"></span> Sincronizando vídeo ao vivo...
               </div>
@@ -1228,8 +1228,8 @@
 
             <!-- PLAYER 2: VISTA SECUNDÁRIA (TELE / PTZ DA OUTDOOR PRO) -->
             <div class="ptz-main-player-wrap" id="ptzPlayerWrap2" style="display:none;">
-              <video id="ptzSecondaryVideoElement" autoplay playsinline muted controls style="width:100%; height:auto; display:none; border-radius:10px; background:#090d16; min-height:260px; object-fit:contain;"></video>
-              <img id="ptzSecondaryVideoFeed" src="" alt="Câmera Feed Secundário" style="width:100%; height:auto; border-radius:10px; display:block; background:#090d16; min-height:260px; object-fit:contain;">
+              <video id="ptzSecondaryVideoElement" autoplay playsinline muted controls style="width:100%; height:100%; display:none; border-radius:10px; background:#000; object-fit:contain !important;"></video>
+              <img id="ptzSecondaryVideoFeed" src="" alt="Câmera Feed Secundário" style="width:100%; height:100%; border-radius:10px; display:block; background:#000; object-fit:contain !important;">
               <div class="ptz-overlay-top-badge" id="ptzOverlayBadge2">
                 <span class="pulse-dot" style="background:#38bdf8;"></span>
                 <span>VISTA 2 • TELE / PTZ (3K)</span>
@@ -1304,6 +1304,14 @@
                 <button type="button" class="btn btn-sm btn-secondary" onclick="playCurrentSdSegment()">▶️ Reproduzir Trecho</button>
                 <button type="button" class="btn btn-sm btn-secondary" onclick="downloadCurrentSdClip()">💾 Baixar Clipe MP4</button>
               </div>
+            </div>
+
+            <!-- Eventos Inteligentes Gravados no Cartão SD -->
+            <div style="margin-top:10px;">
+              <div style="font-size:11px; font-weight:700; color:var(--text-muted); margin-bottom:6px; display:flex; align-items:center; gap:5px;">
+                <span>🎯</span> EVENTOS DETECTADOS POR IA NO CARTÃO SD (CLIQUE PARA NAVEGAR):
+              </div>
+              <div class="timeline-events-container" id="timelineEventsContainer" style="display:flex; gap:6px; flex-wrap:wrap;"></div>
             </div>
           </div>
 
@@ -1994,6 +2002,6 @@
   <!-- Floating Toast Notifications Container -->
   <div id="toastContainer" class="toast-container"></div>
 
-  <script src="app.js?v=0.17.0"></script>
+  <script src="app.js?v=0.18.0"></script>
 </body>
 </html>

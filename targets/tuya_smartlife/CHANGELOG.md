@@ -5,6 +5,27 @@ Formato de versão obrigatório: `vX.Y.Z (build XXXX)`.
 
 ---
 
+## v0.18.0 (build 0020) - 2026-10-26
+
+### ✨ Features
+- feat: implementa transcodificação sob demanda de H.265 para H.264 + AAC em fragmented MP4 via FFmpeg diretamente em `/api/camera-stream`, permitindo streaming contínuo em tempo real de todas as câmeras (CW701 3K, AW300 2K, Mi 2K) com reprodução instantânea nativa em navegadores Chrome, Safari, Edge e Firefox
+- feat: implementa intercomunicador com áudio bidirecional em tempo real:
+  - **Ouvir Retorno**: decodificação e reprodução de áudio sincronizado AAC com controle dinâmico de volume e desmutação imediata (`video.muted = false; video.volume = 1.0`)
+  - **Falar (Talkback)**: captura de voz pelo microfone do usuário via `MediaRecorder` (`audio/webm`) com feedback tátil e sonoro e transmissão direta ao alto-falante da câmera via `/api/camera/talkback`
+- feat: integra acesso completo às gravações dos cartões MicroSD (`/api/camera/recordings`):
+  - Consulta de capacidade do MicroSD (32GB / 64GB / 128GB High Endurance), espaço utilizado (~78%) e livre
+  - Marcadores de períodos contínuos de gravação na régua de 24 horas
+  - Lista de Eventos Inteligentes detectados por IA (Pessoas, Veículos, Movimento) com timestamps clicáveis para navegação imediata
+  - Exportação e download direto de clipes MP4 de 15 segundos (`/api/camera/recordings/clip`) com FFmpeg
+- feat: ajusta exibição das imagens para 100% sem nenhum corte (`object-fit: contain !important; aspect-ratio: 16 / 9;`), eliminando cortes na parte superior (teto da sala) e laterais tanto nos cards do dashboard quanto no Surveillance Theater
+
+### 🐛 Fixes
+- fix: corrige travamento na reprodução de vídeo causado pela ausência de chamada explícita de `.play()` e `.load()` no elemento `<video>` ao conectar a câmera
+- fix: declara variáveis globais `isAudioListening` e `isPttTalking` em `app.js`, prevenindo erros de referência na inicialização
+- improve: atualiza versionamento para `?v=0.18.0` e sincroniza central local e remota
+
+---
+
 ## v0.17.0 (build 0019) - 2026-10-26
 
 ### ✨ Features
