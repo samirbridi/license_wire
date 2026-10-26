@@ -1,5 +1,7 @@
 import { LivePlayer } from './player.js';
 import { RecordingsPanel } from './recordings.js';
+import { createIcon, hydrateIcons } from './icons.js';
+hydrateIcons();
 const $ = selector => document.querySelector(selector);
 let cameras = [], csrf = '';
 const livePlayer = new LivePlayer();
@@ -27,9 +29,9 @@ function render(items) {
     const previews = document.createElement('div'); previews.className = 'preview-group';
     for (const view of camera.views.slice(0, 2)) {
       const preview = document.createElement('div'); preview.className = 'camera-preview';
-      const placeholder = document.createElement('span'); placeholder.className = 'preview-placeholder'; placeholder.textContent = '◉';
+      const placeholder = document.createElement('span'); placeholder.className = 'preview-placeholder'; placeholder.append(createIcon('camera'));
       const label = document.createElement('span'); label.className = 'preview-label'; label.textContent = camera.views.length > 1 ? view.label.toUpperCase() : camera.sd ? 'PRÉVIA · LEVE' : 'PRÉVIA';
-      const play = document.createElement('button'); play.className = 'card-play'; play.textContent = '▶'; play.setAttribute('aria-label', 'Assistir ' + camera.name + ' — ' + view.label);
+      const play = document.createElement('button'); play.className = 'card-play'; play.append(createIcon('play')); play.setAttribute('aria-label', 'Assistir ' + camera.name + ' — ' + view.label);
       const state = document.createElement('span'); state.className = 'preview-state'; state.textContent = 'Carregando prévia';
       preview.append(placeholder, label, play, state); previews.append(preview);
       preview.addEventListener('click', () => livePlayer.open(camera, view.id));
@@ -41,8 +43,8 @@ function render(items) {
     family.className = 'camera-family'; family.textContent = camera.family + (camera.views.length > 1 ? ' · Duas visões' : '');
     text.append(title, family);
     const actions = document.createElement('div'); actions.className = 'camera-actions';
-    const recordings = document.createElement('button'); recordings.className = 'text-button'; recordings.textContent = 'Gravações'; recordings.setAttribute('aria-label', 'Gravações de ' + camera.name); recordings.onclick = () => recordingsPanel.open(camera);
-    const open = document.createElement('button'); open.className = 'camera-open'; open.textContent = '↗'; open.setAttribute('aria-label', 'Abrir ' + camera.name); open.onclick = () => livePlayer.open(camera);
+    const recordings = document.createElement('button'); recordings.className = 'text-button with-icon'; recordings.append(createIcon('calendar'), document.createTextNode('Gravações')); recordings.setAttribute('aria-label', 'Gravações de ' + camera.name); recordings.onclick = () => recordingsPanel.open(camera);
+    const open = document.createElement('button'); open.className = 'camera-open'; open.append(createIcon('open')); open.setAttribute('aria-label', 'Abrir ' + camera.name); open.onclick = () => livePlayer.open(camera);
     actions.append(recordings, open); body.append(text, actions); card.append(previews, body); $('#camera-grid').append(card);
   }
 }

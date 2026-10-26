@@ -1,0 +1,40 @@
+{
+  "package": "morphicons",
+  "version": "2.0.2",
+  "source": "https://registry.npmjs.org/morphicons/-/morphicons-2.0.2.tgz",
+  "integrity": "sha512-/GFSrsZDuyZ3a2QK8wXnVpsHzrVIZ8eLhg0QbGxeeOPyOZmtKUC8i0z3QQ3bbIX5DV/LOLYpp/8unJMWQU0Qgw==",
+  "license": "MIT",
+  "installScriptsExecuted": false,
+  "files": [
+    {
+      "file": "dom.js",
+      "sha256": "ddac5665b67fb4ea3bd2792592e98da26c3d08cd202230640a8d4f60c0f8c73d",
+      "bytes": 13870
+    },
+    {
+      "file": "normalize-CYnN3Npw.js",
+      "sha256": "7da2964e74cff390949302e7c771dc89eaf6daa107cd8f5356865277542cc9c3",
+      "bytes": 13517
+    },
+    {
+      "file": "region-BjECuWZR.js",
+      "sha256": "8e4f9297b346fceac5ed79f94fe89022e40aee36939d3777b0b0b390a9652b1e",
+      "bytes": 2777
+    },
+    {
+      "file": "region.js",
+      "sha256": "c9455cd1de439a429f69b776c778399f382c65c2b3a8f1f2c603b1d947b72126",
+      "bytes": 24987
+    },
+    {
+      "file": "resample-CXlaZ5ZQ.js",
+      "sha256": "3c6b457510d0362b98346cce45df3cdb079eaca7596d289a29cf212feddaf983",
+      "bytes": 16008
+    },
+    {
+      "file": "spring-B_P92nf6.js",
+      "sha256": "4a426a9c984585b87a743d744bd729e7deaf34761999b6d2f40906a2654c74dc",
+      "bytes": 2700
+    }
+  ]
+}

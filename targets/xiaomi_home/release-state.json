@@ -1,20 +1,20 @@
 {
-  "runId": "20261026-yaml-startup-01",
-  "sourceCommit": "8b4c5eb8133b8fd1d843bd50bb42d29060a1c6f1",
-  "previous": "v0.5.2 (build 0009)",
-  "version": "v0.5.3 (build 0010)",
-  "build": 10,
+  "runId": "20261026-readonly-models-01",
+  "sourceCommit": "6b6fa8d3013f3e0590d87d1a9a551b4c564fb34b",
+  "previous": "v0.5.3 (build 0010)",
+  "version": "v0.6.0 (build 0011)",
+  "build": 11,
   "date": "2026-10-26",
   "status": "built",
   "commits": [
     {
-      "sha": "8b4c5eb8133b8fd1d843bd50bb42d29060a1c6f1",
-      "subject": "fix: inicia ponte YAML com rede restrita ao computador local",
+      "sha": "6b6fa8d3013f3e0590d87d1a9a551b4c564fb34b",
+      "subject": "feat: mapeia plugins Xiaomi sem USB e adiciona diagnostico de leitura",
       "body": "",
-      "type": "fix",
-      "description": "inicia ponte YAML com rede restrita ao computador local",
+      "type": "feat",
+      "description": "mapeia plugins Xiaomi sem USB e adiciona diagnostico de leitura",
       "breaking": false
     }
   ],
-  "artifact": "runtime/builds/build-0010"
+  "artifact": "runtime/builds/build-0011"
 }

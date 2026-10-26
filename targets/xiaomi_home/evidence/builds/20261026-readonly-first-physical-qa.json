@@ -1,0 +1,13 @@
+{
+  "camera": "outdoor_pro_poste",
+  "errorType": "*net.OpError",
+  "mediaStarted": false,
+  "observedAt": "2026-10-26T15:43:38Z",
+  "operation": "device-info",
+  "pass": false,
+  "readOnly": true,
+  "requestSent": false,
+  "sourceCommit": "6b6fa8d3013f3e0590d87d1a9a551b4c564fb34b",
+  "stage": "connect-read-session",
+  "interpretation": "Owner session resolved; P2P connection failed before device-info command; not a successful camera query"
+}

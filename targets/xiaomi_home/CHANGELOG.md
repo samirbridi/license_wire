@@ -1,5 +1,23 @@
 # CHANGELOG — xiaomi_home
 
+## v0.6.0 (build 0011) - 2026-10-26
+
+### 💥 Breaking Changes
+
+- Nenhum.
+
+### ✨ Features
+
+- feat: mapeia plugins Xiaomi sem USB e adiciona diagnostico de leitura (commit `6b6fa8d3013f3e0590d87d1a9a551b4c564fb34b`)
+
+### 🐛 Fixes
+
+- Nenhum.
+
+### ⚡ Improvements
+
+- Nenhum.
+
 ## v0.5.3 (build 0010) - 2026-10-26
 
 ### 💥 Breaking Changes

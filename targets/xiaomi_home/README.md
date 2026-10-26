@@ -16,6 +16,8 @@ A abertura concorrente e a reprodução simultânea das duas vistas passaram no 
 
 A investigação sem USB obteve metadados e pacotes oficiais dos três modelos ao identificar o serviço de autenticação China. O módulo da Outdoor expõe os formatos de catálogo SD, replay, download, posições e rondas; ver [plugins e protocolo](notes/13_plugins_sem_usb.md). Esses formatos ainda exigem adaptação e teste de transporte antes de liberar os controles físicos e o cartão na interface.
 
+Os ícones usam SVG próprio e Morphicons local com movimento reduzido; o layout estreito prioriza cartões legíveis e controles de toque. O proprietário manteve a validação somente no navegador. As referências Artemis, Home Assistant oficial e Map Extractor foram avaliadas em [interface e Android](notes/14_referencias_interface_android.md). A primeira consulta do diagnóstico independente falhou na conexão P2P antes de enviar o comando; isso não valida leitura de SD ou posições.
+
 - Pesquisa inicial: [notas de viabilidade](notes/00_viabilidade.md).
 - Referências e limites de cada evidência: [fontes públicas](evidence/fontes_publicas.json).
 - Identificação e suporte: [inventário das três câmeras](notes/05_modelos_identificados.md), com referências e limites por modelo.

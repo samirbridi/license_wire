@@ -20,12 +20,17 @@ const STATIC = new Map([
   ['/', ['index.html', 'text/html; charset=utf-8']],
   ['/app.js', ['app.js', 'text/javascript; charset=utf-8']],
   ['/player.js', ['player.js', 'text/javascript; charset=utf-8']],
+  ['/icons.js', ['icons.js', 'text/javascript; charset=utf-8']],
   ['/recordings.js', ['recordings.js', 'text/javascript; charset=utf-8']],
   ['/recordings-core.js', ['recordings-core.js', 'text/javascript; charset=utf-8']],
   ['/style.css', ['style.css', 'text/css; charset=utf-8']],
   ['/manifest.webmanifest', ['manifest.webmanifest', 'application/manifest+json']],
   ['/icon.svg', ['icon.svg', 'image/svg+xml']],
 ]);
+for (const file of ['dom.js', 'region.js', 'region-BjECuWZR.js', 'resample-CXlaZ5ZQ.js', 'normalize-CYnN3Npw.js', 'spring-B_P92nf6.js', 'LICENSE.txt']) {
+  const path = 'vendor/morphicons/' + file;
+  STATIC.set('/' + path, [path, file.endsWith('.js') ? 'text/javascript; charset=utf-8' : 'text/plain; charset=utf-8']);
+}
 
 function atomicJson(path, data) {
   const temp = path + '.' + randomBytes(4).toString('hex') + '.tmp';

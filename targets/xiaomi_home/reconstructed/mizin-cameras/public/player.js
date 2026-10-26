@@ -1,3 +1,5 @@
+import { setIconButton } from './icons.js';
+
 export class LivePlayer {
   constructor() {
     this.dialog = document.querySelector('#player-dialog');
@@ -78,7 +80,7 @@ export class LivePlayer {
     if (!this.camera) return;
     const dual = this.camera.views.length > 1 && !this.expanded;
     document.querySelector('#video-grid').classList.toggle('dual', dual);
-    document.querySelector('#toggle-views').textContent = this.expanded ? 'Ver duas visões' : 'Ampliar visão';
+    setIconButton(document.querySelector('#toggle-views'), this.expanded ? 'dual' : 'expand', this.expanded ? 'Ver duas visões' : 'Ampliar visão');
     for (const channel of this.channels) {
       const visible = !!channel.view && (!this.expanded || channel.view.id === this.select.value);
       channel.pane.hidden = !visible;
@@ -115,7 +117,7 @@ export class LivePlayer {
     const connected = visible.filter(channel => channel.active && channel.connected).length;
     document.querySelector('#playback-state').textContent = connected === visible.length && connected ? (connected > 1 ? '● Duas visões conectadas' : '● Vídeo conectado') : `${connected}/${visible.length} visões conectadas`;
   }
-  audioLabel() { const channel = this.selected(); document.querySelector('#listen-audio').textContent = !channel || channel.video.muted || !channel.video.volume ? '◖ Ouvir visão selecionada' : '◖ Silenciar'; }
+  audioLabel() { const channel = this.selected(), muted = !channel || channel.video.muted || !channel.video.volume; setIconButton(document.querySelector('#listen-audio'), muted ? 'volumeOff' : 'volumeOn', muted ? 'Ouvir visão selecionada' : 'Silenciar'); }
   stop() { for (const channel of this.channels) this.stopChannel(channel); this.camera = null; }
   close() { this.stop(); if (this.dialog.open) this.dialog.close(); }
 }
