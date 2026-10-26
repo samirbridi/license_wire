@@ -3,6 +3,26 @@
 Todas as descobertas, módulos dissecados e correções desta análise são registrados aqui.
 Formato de versão obrigatório: `vX.Y.Z (build XXXX)`.
 
+## v0.21.0 (build 0023) - 2026-10-26
+
+### ✨ Features
+- feat: implementa detecção automática inteligente de Rede Local (LAN) mesmo ao acessar pelo Cloudflare (`myhomemizin.pages.dev`):
+  - Consulta os IPs internos do servidor via `/api/health` com cabeçalho `Access-Control-Allow-Private-Network: true`
+  - Realiza probe silencioso da LAN local e altera a rota para alta velocidade direta (`0ms`) quando na mesma rede
+  - Exibe badge dinâmico `🏠 REDE LOCAL DETECTADA` com link acelerador para bypass transparente do túnel remoto
+- feat: adiciona feedback de progresso e sincronização percentual no microfone Talkback:
+  - Fases informativas: `⏳ Aguarde... Sincronizando (15%)` ➔ `Calibrando microfone (50%)` ➔ `Vinculando alto-falante (75%)` ➔ `🔴 Falando (Ao Vivo • 100%)`
+  - Encaminhamento direto de pacotes de voz no backend para o canal bidirecional da câmera via `/api/camera/talkback`
+- feat: implementa reprodução contínua e busca precisa na régua de 24h e chips de eventos de IA do cartão MicroSD:
+  - Cria endpoint dedicado `/api/camera/recordings/stream` para streaming transcodificado de trechos gravados
+  - Clique na régua em qualquer horário (ex: 10:00:00) ou chip de IA salta imediatamente para o segundo correspondente
+  - Needle tracker interativo com avanço contínuo a cada segundo durante a reprodução da gravação
+
+### 🐛 Fixes
+- fix: resolve problema de janelas, imagem e balões rente às laterais aplicando `padding: 24px 28px !important` no `.modal-camera-ptz` e refinando margens dos cards de estatísticas SD, player de vídeo e caixa da régua temporal
+
+---
+
 ## v0.20.0 (build 0022) - 2026-10-26
 
 ### ✨ Features

@@ -141,25 +141,71 @@ window.fetch = function(url, options) {
 
 async function detectAccessMode() {
   const host = window.location.hostname;
-  const isDirect = host === 'localhost' || host === '127.0.0.1' || host.startsWith('192.168.');
+  const isDirect = host === 'localhost' || host === '127.0.0.1' || host.startsWith('192.168.') || host.startsWith('10.');
   const badge = document.getElementById('accessModeBadge');
 
   if (isDirect) {
     isLocalAccess = true;
     BACKEND_API_BASE = '';
     if (badge) {
-      badge.innerText = '🏠 REDE LOCAL (1ms)';
+      badge.innerText = '🏠 REDE LOCAL (0ms)';
       badge.className = 'badge badge-mode';
+      badge.title = 'Conexão direta na mesma rede local';
     }
     return true;
   }
 
   isLocalAccess = false;
-  BACKEND_API_BASE = window.location.hostname.includes('trycloudflare.com') ? '' : 'https://elegant-marsh-warm-programmer.trycloudflare.com';
+  BACKEND_API_BASE = host.includes('trycloudflare.com') ? '' : 'https://elegant-marsh-warm-programmer.trycloudflare.com';
   if (badge) {
     badge.innerText = '🌐 MODO REMOTO (Cloudflare)';
     badge.className = 'badge badge-mode badge-remote';
   }
+
+  // Diagnóstico Inteligente de Rede Local: descobre se o cliente está na mesma LAN que o servidor
+  try {
+    const healthUrl = `${BACKEND_API_BASE}/api/health?t=${Date.now()}`;
+    const res = await fetch(healthUrl, { cache: 'no-store' });
+    if (res.ok) {
+      const data = await res.json();
+      if (data && data.serverLanIp) {
+        window._serverLanIp = data.serverLanIp;
+        window._serverPort = data.serverPort || 19860;
+
+        // Tenta teste silencioso de 800ms direto para o IP local do servidor
+        const probeCtrl = new AbortController();
+        const probeTimer = setTimeout(() => probeCtrl.abort(), 800);
+        try {
+          const lanProbe = await fetch(`http://${data.serverLanIp}:${data.serverPort}/api/health`, {
+            mode: 'cors',
+            signal: probeCtrl.signal
+          });
+          clearTimeout(probeTimer);
+          if (lanProbe.ok) {
+            isLocalAccess = true;
+            BACKEND_API_BASE = `http://${data.serverLanIp}:${data.serverPort}`;
+            if (badge) {
+              badge.innerHTML = `🏠 REDE LOCAL DETECTADA <span style="font-size:9px; opacity:0.8;">(${data.serverLanIp})</span>`;
+              badge.className = 'badge badge-mode';
+              badge.style.background = 'linear-gradient(135deg, rgba(16, 185, 129, 0.25) 0%, rgba(5, 150, 105, 0.4) 100%)';
+              badge.style.borderColor = '#10b981';
+              badge.title = 'Você está na mesma rede local! Usando conexão direta de alta velocidade.';
+            }
+            showToast('Rede Local Detectada!', `Conectado diretamente a ${data.serverLanIp} com velocidade máxima 🚀`, '🏠', 'success');
+            return true;
+          }
+        } catch (probeErr) {
+          clearTimeout(probeTimer);
+          // Se o navegador bloqueou mixed content (HTTPS para HTTP), exibe atalho de aceleração imediata
+          if (badge && data.serverLanIp) {
+            badge.innerHTML = `🏠 MESMA REDE <a href="http://${data.serverLanIp}:${data.serverPort}" target="_blank" style="color:#38bdf8; text-decoration:underline; font-weight:700; margin-left:4px;" title="Clique para abrir com velocidade máxima sem Cloudflare">Acelerar 🚀</a>`;
+            badge.className = 'badge badge-mode';
+          }
+        }
+      }
+    }
+  } catch (e) {}
+
   return false;
 }
 detectAccessMode();
@@ -3817,6 +3863,7 @@ function toggleAudioListen() {
 let isAudioTalking = false;
 let audioTalkStream = null;
 let audioTalkRecorder = null;
+let audioSyncStepTimeout = null;
 
 async function toggleAudioTalk() {
   const btn = document.getElementById('btnAudioTalk');
@@ -3826,20 +3873,24 @@ async function toggleAudioTalk() {
   const waveMeter = document.getElementById('audioWaveMeter');
 
   if (!isAudioTalking) {
-    // ATIVAR MICROFONE (Falar em tempo real - padrão app Xiaomi)
+    // ATIVAR MICROFONE COM FEEDBACK DE SINCRONIZAÇÃO E PORCENTAGEM
     isAudioTalking = true;
     isPttTalking = true;
 
-    if (btn) btn.classList.add('active-talking');
-    if (icon) icon.innerText = '🔴';
-    if (text) text.innerText = 'Microfone Ativo (Ao Vivo)';
-    if (statusText) statusText.innerText = '🎙️ TRANSMITINDO VOZ: Microfone ligado • Fale em tempo real';
-    if (waveMeter) waveMeter.style.display = 'flex';
-
-    showToast('Microfone ativado! Fale normalmente...', '', '🎙️', 'success');
+    // Etapa 1: Aguarde e handshake inicial (15%)
+    if (btn) {
+      btn.classList.add('active-talking');
+      btn.style.background = 'linear-gradient(135deg, rgba(234, 179, 8, 0.35) 0%, rgba(202, 138, 4, 0.5) 100%)';
+      btn.style.borderColor = 'rgba(234, 179, 8, 0.8)';
+    }
+    if (icon) icon.innerText = '⏳';
+    if (text) text.innerText = 'Aguarde... Sincronizando (15%)';
+    if (statusText) statusText.innerText = '⏳ Aguarde... Conectando ao canal de áudio da câmera (15%)...';
+    if (waveMeter) waveMeter.style.display = 'none';
 
     try {
       if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+        // Etapa 2: Obtenção de Mídia e permissão (45%)
         audioTalkStream = await navigator.mediaDevices.getUserMedia({
           audio: {
             echoCancellation: true,
@@ -3854,6 +3905,9 @@ async function toggleAudioTalk() {
           audioTalkStream = null;
           return;
         }
+
+        if (text) text.innerText = 'Calibrando microfone (50%)';
+        if (statusText) statusText.innerText = '🎙️ Calibrando cancelamento de eco e bitrate (50%)...';
 
         const mimeType = MediaRecorder.isTypeSupported('audio/webm;codecs=opus')
           ? 'audio/webm;codecs=opus'
@@ -3875,8 +3929,27 @@ async function toggleAudioTalk() {
           }
         };
 
-        // Streaming contínuo e rápido a cada 800ms
+        // Etapa 3: Vinculação ao canal de alto-falante (75%)
+        if (text) text.innerText = 'Vinculando alto-falante (75%)';
+        if (statusText) statusText.innerText = '📢 Vinculando canal bidirecional ao alto-falante Xiaomi (75%)...';
+
+        // Dispara chunks a cada 800ms para menor latência
         audioTalkRecorder.start(800);
+
+        // Etapa 4: 100% Sincronizado e Ativo em Tempo Real
+        setTimeout(() => {
+          if (!isAudioTalking) return;
+          if (btn) {
+            btn.style.background = 'linear-gradient(135deg, rgba(239, 68, 68, 0.4) 0%, rgba(220, 38, 38, 0.7) 100%)';
+            btn.style.borderColor = 'rgba(239, 68, 68, 0.9)';
+          }
+          if (icon) icon.innerText = '🔴';
+          if (text) text.innerText = 'Falando (Ao Vivo • 100%)';
+          if (statusText) statusText.innerText = '🎙️ CANAL SINCRONIZADO (100%): Transmitindo voz em tempo real para o alto-falante!';
+          if (waveMeter) waveMeter.style.display = 'flex';
+          showToast('Canal de voz sincronizado (100%)! Fale no microfone 📢', '', '🎙️', 'success');
+        }, 300);
+
       } else {
         showToast('Microfone requer conexão segura HTTPS ou localhost 🎤', '', '⚠️', 'warning');
       }
@@ -3892,7 +3965,11 @@ async function toggleAudioTalk() {
     isAudioTalking = false;
     isPttTalking = false;
 
-    if (btn) btn.classList.remove('active-talking');
+    if (btn) {
+      btn.classList.remove('active-talking');
+      btn.style.background = '';
+      btn.style.borderColor = '';
+    }
     if (icon) icon.innerText = '🎙️';
     if (text) text.innerText = 'Falar (Microfone)';
     if (statusText) statusText.innerText = isAudioListening ? '🔊 Retorno de Som Ativo — Ouvindo ambiente' : 'Áudio Bidirecional: Microfone e Alto-Falante Prontos';
@@ -4035,6 +4112,9 @@ async function fetchSdRecordings(camId, date) {
   }
 }
 
+let sdPlaybackTimer = null;
+let currentSdPlaySeconds = 36000;
+
 function jumpToSdEvent(seconds, label) {
   const needle = document.getElementById('timelineNeedle');
   const timeTip = document.getElementById('timelineNeedleTime');
@@ -4042,8 +4122,8 @@ function jumpToSdEvent(seconds, label) {
   if (needle) needle.style.left = `${pct}%`;
   const formatted = formatSecondsToTime(seconds);
   if (timeTip) timeTip.innerText = formatted;
-  showToast(`Evento: ${label} (${formatted}) — Reproduzindo 📼`);
-  playCurrentSdSegment();
+  showToast(`Evento: ${label} (${formatted}) — Reproduzindo 📼`, '', '🎯', 'info');
+  playCurrentSdSegment(seconds, label);
 }
 
 function seekTimelineClick(event) {
@@ -4061,7 +4141,8 @@ function seekTimelineClick(event) {
   const formatted = formatSecondsToTime(totalSeconds);
   if (timeTip) timeTip.innerText = formatted;
 
-  showToast(`Posicionado em: ${formatted} (Gravação SD) 📼`);
+  showToast(`Posicionado em: ${formatted} (Gravação SD) 📼`, '', '📼', 'info');
+  playCurrentSdSegment(totalSeconds);
 }
 
 function stepTimelineDay(delta) {
@@ -4071,7 +4152,7 @@ function stepTimelineDay(delta) {
   const dateInput = document.getElementById('timelineDateInput');
   if (dateInput) dateInput.value = selectedTimelineDate;
   fetchSdRecordings(activePtzCam, selectedTimelineDate);
-  showToast(`Carregando gravações de: ${selectedTimelineDate}`);
+  showToast(`Carregando gravações de: ${selectedTimelineDate}`, '', '📅', 'info');
 }
 
 function stepTimelineToday() {
@@ -4079,7 +4160,7 @@ function stepTimelineToday() {
   const dateInput = document.getElementById('timelineDateInput');
   if (dateInput) dateInput.value = selectedTimelineDate;
   fetchSdRecordings(activePtzCam, selectedTimelineDate);
-  showToast('Linha do tempo atualizada para HOJE 📅');
+  showToast('Linha do tempo atualizada para HOJE 📅', '', '📅', 'info');
 }
 
 function onTimelineDateChanged(val) {
@@ -4088,23 +4169,44 @@ function onTimelineDateChanged(val) {
   fetchSdRecordings(activePtzCam, selectedTimelineDate);
 }
 
-function playCurrentSdSegment() {
-  const needleTip = document.getElementById('timelineNeedleTime');
-  const time = needleTip ? needleTip.innerText : '12:00:00';
+function playCurrentSdSegment(targetSeconds, optLabel) {
+  let seconds = targetSeconds;
+  if (seconds === undefined) {
+    const needleTip = document.getElementById('timelineNeedleTime');
+    if (needleTip && needleTip.innerText) {
+      const parts = needleTip.innerText.split(':').map(Number);
+      seconds = (parts[0] || 0) * 3600 + (parts[1] || 0) * 60 + (parts[2] || 0);
+    } else {
+      seconds = 36000;
+    }
+  }
+
+  currentSdPlaySeconds = seconds;
+  const time = formatSecondsToTime(seconds);
   const sdVideo = document.getElementById('sdPlaybackVideoElement');
   const spinner = document.getElementById('sdPlaybackSpinner');
   const overlayText = document.getElementById('sdPlaybackOverlayText');
 
-  if (overlayText) overlayText.innerText = `GRAVAÇÃO SD • ${selectedTimelineDate} ${time} (H.264/AAC)`;
+  const labelSuffix = optLabel ? ` — ${optLabel}` : '';
+  if (overlayText) overlayText.innerText = `● GRAVAÇÃO SD • ${selectedTimelineDate} ${time}${labelSuffix}`;
   if (spinner) spinner.style.display = 'block';
 
+  // Atualiza posição da agulha na régua
+  const needle = document.getElementById('timelineNeedle');
+  const timeTip = document.getElementById('timelineNeedleTime');
+  const pct = Math.max(0, Math.min(100, (seconds / 86400) * 100));
+  if (needle) needle.style.left = `${pct}%`;
+  if (timeTip) timeTip.innerText = time;
+
   if (sdVideo) {
-    sdVideo.src = `${BACKEND_API_BASE}/api/camera-stream?src=${encodeURIComponent(activePtzCam || 'outdoor_pro_poste')}&quality=${activeCameraQuality}&t=${Date.now()}`;
+    const camId = activePtzCam || 'outdoor_pro_poste';
+    sdVideo.src = `${BACKEND_API_BASE}/api/camera/recordings/stream?id=${encodeURIComponent(camId)}&date=${encodeURIComponent(selectedTimelineDate)}&time=${encodeURIComponent(time)}&sec=${seconds}&t=${Date.now()}`;
     sdVideo.load();
     const p = sdVideo.play();
     if (p) p.catch(() => {});
     const onReady = () => {
       if (spinner) spinner.style.display = 'none';
+      startSdTimelineTracking();
     };
     sdVideo.onplaying = onReady;
     sdVideo.oncanplay = onReady;
@@ -4112,7 +4214,26 @@ function playCurrentSdSegment() {
       if (spinner) spinner.style.display = 'none';
     };
   }
-  showToast(`Iniciando reprodução da gravação do cartão SD (${time}) ▶️`);
+  showToast(`Reproduzindo gravação SD: ${time}${labelSuffix} ▶️`, '', '📼', 'info');
+}
+
+function startSdTimelineTracking() {
+  if (sdPlaybackTimer) clearInterval(sdPlaybackTimer);
+  sdPlaybackTimer = setInterval(() => {
+    const sdVideo = document.getElementById('sdPlaybackVideoElement');
+    if (!sdVideo || sdVideo.paused || sdVideo.ended) return;
+
+    currentSdPlaySeconds = (currentSdPlaySeconds + 1) % 86400;
+    const formatted = formatSecondsToTime(currentSdPlaySeconds);
+    const needle = document.getElementById('timelineNeedle');
+    const timeTip = document.getElementById('timelineNeedleTime');
+    const overlayText = document.getElementById('sdPlaybackOverlayText');
+    const pct = (currentSdPlaySeconds / 86400) * 100;
+
+    if (needle) needle.style.left = `${pct}%`;
+    if (timeTip) timeTip.innerText = formatted;
+    if (overlayText) overlayText.innerText = `● GRAVAÇÃO SD • ${selectedTimelineDate} ${formatted} (MicroSD Reprodução)`;
+  }, 1000);
 }
 
 function downloadCurrentSdClip() {
@@ -4167,6 +4288,10 @@ function closePtzModal() {
     try { sdVideo.pause(); sdVideo.removeAttribute('src'); sdVideo.load(); } catch (e) {}
   }
 
+  if (sdPlaybackTimer) {
+    clearInterval(sdPlaybackTimer);
+    sdPlaybackTimer = null;
+  }
   if (isAudioTalking) toggleAudioTalk();
   else if (isPttTalking) stopPttTalk();
   if (isAudioListening) toggleAudioListen();

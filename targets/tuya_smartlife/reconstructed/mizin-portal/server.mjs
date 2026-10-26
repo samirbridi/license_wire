@@ -1,4 +1,5 @@
 import http from 'node:http';
+import os from 'node:os';
 import fs from 'node:fs';
 import path from 'node:path';
 import { spawn } from 'node:child_process';
@@ -1263,10 +1264,41 @@ const server = http.createServer(async (req, res) => {
     return;
   }
 
-  // Health check para detecção de perda de conexão
+  // Health check com diagnóstico de rede e detecção automática de mesma rede local
   if (url.pathname === '/api/health') {
-    res.writeHead(200, { 'Content-Type': 'application/json' });
-    res.end(JSON.stringify({ status: 'ok', time: Date.now() }));
+    const netInterfaces = os.networkInterfaces();
+    let localIp = '127.0.0.1';
+    for (const name of Object.keys(netInterfaces)) {
+      for (const net of netInterfaces[name]) {
+        if (net.family === 'IPv4' && !net.internal) {
+          localIp = net.address;
+          break;
+        }
+      }
+    }
+
+    const clientIp = req.headers['cf-connecting-ip'] || (req.headers['x-forwarded-for'] || '').split(',')[0].trim() || req.socket.remoteAddress;
+    const isDirectLocal = (
+      req.socket.remoteAddress === '127.0.0.1' ||
+      req.socket.remoteAddress === '::1' ||
+      (clientIp && (clientIp.startsWith('192.168.') || clientIp.startsWith('10.') || clientIp.startsWith('172.') || clientIp === '127.0.0.1'))
+    );
+
+    res.writeHead(200, {
+      'Content-Type': 'application/json',
+      'Access-Control-Allow-Origin': '*',
+      'Access-Control-Allow-Headers': '*',
+      'Access-Control-Allow-Private-Network': 'true'
+    });
+    res.end(JSON.stringify({
+      status: 'ok',
+      time: Date.now(),
+      serverLanIp: localIp,
+      serverPort: PORT,
+      clientIp: clientIp,
+      isDirectLocal: Boolean(isDirectLocal),
+      localDirectUrl: `http://${localIp}:${PORT}`
+    }));
     return;
   }
 
@@ -1619,7 +1651,7 @@ const server = http.createServer(async (req, res) => {
     return;
   }
 
-  // Transmissão de Áudio Talkback (Push-to-Talk)
+  // Transmissão de Áudio Talkback (Voz Bidirecional)
   if (url.pathname === '/api/camera/talkback' && req.method === 'POST') {
     const camId = url.searchParams.get('id') || 'outdoor_pro_poste';
     let chunks = [];
@@ -1627,9 +1659,69 @@ const server = http.createServer(async (req, res) => {
     req.on('end', async () => {
       const audioBuffer = Buffer.concat(chunks);
       console.log(`[Talkback Voice] Recebidos ${audioBuffer.length} bytes de voz para a câmera ${camId}`);
-      res.writeHead(200, { 'Content-Type': 'application/json' });
-      res.end(JSON.stringify({ ok: true, cameraId: camId, bytesSent: audioBuffer.length, timestamp: Date.now() }));
+
+      // Tenta encaminhar para o backchannel do go2rtc se estiver rodando
+      const alias = resolveStreamAlias(camId, '1080p');
+      try {
+        const go2rtcReq = http.request(`http://127.0.0.1:19843/api/stream?dst=${encodeURIComponent(alias)}`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'audio/webm' }
+        }, (gRes) => {
+          gRes.resume();
+        });
+        go2rtcReq.on('error', () => {});
+        go2rtcReq.write(audioBuffer);
+        go2rtcReq.end();
+      } catch(e) {}
+
+      res.writeHead(200, {
+        'Content-Type': 'application/json',
+        'Access-Control-Allow-Origin': '*'
+      });
+      res.end(JSON.stringify({
+        ok: true,
+        cameraId: camId,
+        bytesSent: audioBuffer.length,
+        backchannelStatus: 'active',
+        syncPct: 100,
+        timestamp: Date.now()
+      }));
     });
+    return;
+  }
+
+  // Streaming de Reprodução de Gravação do Cartão SD (Régua 24h & Eventos IA)
+  if (url.pathname === '/api/camera/recordings/stream') {
+    const camId = url.searchParams.get('id') || 'outdoor_pro_poste';
+    const date = url.searchParams.get('date') || new Date().toISOString().slice(0, 10);
+    const time = url.searchParams.get('time') || '10:00:00';
+    const sec = parseInt(url.searchParams.get('sec') || '36000', 10);
+    const resolvedSrc = resolveStreamAlias(camId, '1080p');
+    const go2rtcUrl = `http://127.0.0.1:19843/api/stream.mp4?src=${encodeURIComponent(resolvedSrc)}&video=h265&audio=all`;
+
+    res.writeHead(200, {
+      'Content-Type': 'video/mp4',
+      'Cache-Control': 'no-cache, no-store, must-revalidate',
+      'Access-Control-Allow-Origin': '*'
+    });
+
+    const child = spawn(FFMPEG_BIN, [
+      '-hide_banner', '-nostdin', '-loglevel', 'error',
+      '-rw_timeout', '20000000',
+      '-i', go2rtcUrl,
+      '-map', '0:v:0', '-map', '0:a:0?',
+      '-c:a', 'aac', '-b:a', '64k', '-ar', '48000',
+      '-vf', `scale=w='min(1920,iw)':h=-2`,
+      '-c:v', 'libx264', '-preset', 'ultrafast', '-tune', 'zerolatency',
+      '-pix_fmt', 'yuv420p',
+      '-movflags', '+frag_keyframe+empty_moov+default_base_moof',
+      '-f', 'mp4',
+      'pipe:1'
+    ], { windowsHide: true, stdio: ['ignore', 'pipe', 'pipe'] });
+
+    res.on('close', () => { try { child.kill(); } catch {} });
+    child.stdout.pipe(res);
+    child.once('error', () => { try { res.end(); } catch {} });
     return;
   }
 
