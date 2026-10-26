@@ -1,0 +1,20 @@
+{
+  "runId": "20261025-camera-audio-02",
+  "sourceCommit": "bfd3407679119065d9caa7fe50d88361a9706561",
+  "previous": "v0.4.0 (build 0005)",
+  "version": "v0.4.1 (build 0006)",
+  "build": 6,
+  "date": "2026-10-25",
+  "status": "built",
+  "commits": [
+    {
+      "sha": "bfd3407679119065d9caa7fe50d88361a9706561",
+      "subject": "fix: distingue FourCC da resolucao real nos recibos de audio e video",
+      "body": "",
+      "type": "fix",
+      "description": "distingue FourCC da resolucao real nos recibos de audio e video",
+      "breaking": false
+    }
+  ],
+  "artifact": "runtime/builds/build-0006"
+}

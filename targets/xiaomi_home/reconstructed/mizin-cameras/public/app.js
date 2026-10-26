@@ -1,11 +1,13 @@
+import { LivePlayer } from './player.js';
+import { RecordingsPanel } from './recordings.js';
 const $ = selector => document.querySelector(selector);
-let cameras = [], csrf = '', current = null, retryTimer = null, retries = 0, sourceGeneration = 0;
+let cameras = [], csrf = '';
+const livePlayer = new LivePlayer();
+const recordingsPanel = new RecordingsPanel(api);
 const objects = new Map();
-const quality = $('#quality');
-quality.value = localStorage.getItem('camera-quality') || 'balanced';
 function toast(message) { $('#toast').textContent = message; $('#toast').hidden = false; setTimeout(() => { $('#toast').hidden = true; }, 4000); }
 async function api(path, init = {}) { const response = await fetch(path, { cache: 'no-store', ...init }); if (!response.ok) { if (response.status === 401) showLogin(); throw new Error((await response.json()).error || 'Não foi possível conectar.'); } return response.json(); }
-function showLogin() { $('#dashboard').hidden = true; $('#login').hidden = false; }
+function showLogin() { livePlayer.close(); recordingsPanel.close(); for (const value of objects.values()) URL.revokeObjectURL(value); objects.clear(); cameras = []; $('#camera-grid').replaceChildren(); $('#dashboard').hidden = true; $('#login').hidden = false; }
 async function connect(code) { await api('/api/session', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ code }) }); await load(); }
 async function load() {
   try {
@@ -18,59 +20,44 @@ async function load() {
 }
 function render(items) {
   $('#camera-grid').replaceChildren();
+  for (const value of objects.values()) URL.revokeObjectURL(value); objects.clear();
   for (const camera of items) {
     const card = document.createElement('article'); card.className = 'camera-card';
-    const preview = document.createElement('div'); preview.className = 'camera-preview';
-    const placeholder = document.createElement('span'); placeholder.className = 'preview-placeholder'; placeholder.textContent = '◉';
-    const label = document.createElement('span'); label.className = 'preview-label'; label.textContent = camera.sd ? 'PRÉVIA · SD' : 'PRÉVIA';
-    const play = document.createElement('button'); play.className = 'card-play'; play.textContent = '▶'; play.setAttribute('aria-label', 'Assistir ' + camera.name);
-    const state = document.createElement('span'); state.className = 'preview-state'; state.textContent = 'Carregando prévia';
-    preview.append(placeholder, label, play, state);
+    card.classList.toggle('multi-view-card', camera.views.length > 1);
+    const previews = document.createElement('div'); previews.className = 'preview-group';
+    for (const view of camera.views.slice(0, 2)) {
+      const preview = document.createElement('div'); preview.className = 'camera-preview';
+      const placeholder = document.createElement('span'); placeholder.className = 'preview-placeholder'; placeholder.textContent = '◉';
+      const label = document.createElement('span'); label.className = 'preview-label'; label.textContent = camera.views.length > 1 ? view.label.toUpperCase() : camera.sd ? 'PRÉVIA · SD' : 'PRÉVIA';
+      const play = document.createElement('button'); play.className = 'card-play'; play.textContent = '▶'; play.setAttribute('aria-label', 'Assistir ' + camera.name + ' — ' + view.label);
+      const state = document.createElement('span'); state.className = 'preview-state'; state.textContent = 'Carregando prévia';
+      preview.append(placeholder, label, play, state); previews.append(preview);
+      preview.addEventListener('click', () => livePlayer.open(camera, view.id));
+      fetchSnapshot(camera, view, preview, state);
+    }
     const body = document.createElement('div'); body.className = 'camera-body';
     const text = document.createElement('div'), title = document.createElement('h2'), family = document.createElement('span');
     title.className = 'camera-name'; title.textContent = camera.name;
-    family.className = 'camera-family'; family.textContent = camera.family + (camera.views.length > 1 ? ` · ${camera.views.length} visões` : '');
+    family.className = 'camera-family'; family.textContent = camera.family + (camera.views.length > 1 ? ' · Duas visões' : '');
     text.append(title, family);
-    const open = document.createElement('button'); open.className = 'camera-open'; open.textContent = '↗'; open.setAttribute('aria-label', 'Abrir ' + camera.name);
-    body.append(text, open); card.append(preview, body); $('#camera-grid').append(card);
-    preview.addEventListener('click', () => openCamera(camera)); open.addEventListener('click', () => openCamera(camera));
-    fetchSnapshot(camera, preview, state);
+    const actions = document.createElement('div'); actions.className = 'camera-actions';
+    const recordings = document.createElement('button'); recordings.className = 'text-button'; recordings.textContent = 'Gravações'; recordings.setAttribute('aria-label', 'Gravações de ' + camera.name); recordings.onclick = () => recordingsPanel.open(camera);
+    const open = document.createElement('button'); open.className = 'camera-open'; open.textContent = '↗'; open.setAttribute('aria-label', 'Abrir ' + camera.name); open.onclick = () => livePlayer.open(camera);
+    actions.append(recordings, open); body.append(text, actions); card.append(previews, body); $('#camera-grid').append(card);
   }
 }
-async function fetchSnapshot(camera, preview, state) {
+async function fetchSnapshot(camera, view, preview, state) {
   try {
-    const response = await fetch('/api/snapshot/' + camera.id, { cache: 'no-store', signal: AbortSignal.timeout(120000) });
+    const response = await fetch(`/api/snapshot/${camera.id}?view=${encodeURIComponent(view.id)}`, { cache: 'no-store', signal: AbortSignal.timeout(120000) });
     if (!response.ok) throw new Error('Prévia indisponível');
-    const blob = await response.blob(), object = URL.createObjectURL(blob);
+    const object = URL.createObjectURL(await response.blob()), key = camera.id + ':' + view.id;
     if (!preview.isConnected) { URL.revokeObjectURL(object); return; }
-    if (objects.has(camera.id)) URL.revokeObjectURL(objects.get(camera.id)); objects.set(camera.id, object);
-    const image = document.createElement('img'); image.alt = 'Prévia de ' + camera.name; image.src = object; preview.prepend(image);
+    if (objects.has(key)) URL.revokeObjectURL(objects.get(key)); objects.set(key, object);
+    const image = document.createElement('img'); image.alt = `Prévia de ${camera.name} — ${view.label}`; image.src = object; preview.prepend(image);
     state.textContent = 'Prévia atualizada';
   } catch { if (state.isConnected) state.textContent = 'Toque para conectar'; }
 }
 async function refreshStatus() { try { const state = await api('/api/status'); $('#central-status').classList.toggle('error', !state.bridge); $('#central-status').replaceChildren(); const dot = document.createElement('span'); dot.className = 'pulse-dot'; $('#central-status').append(dot, document.createTextNode(state.bridge ? 'Central conectada' : 'Central sem conexão')); $('#remote-status').textContent = state.remoteConfigured ? 'HTTPS configurado' : 'Em preparação'; $('#pair-device').hidden = !state.pairingAvailable; $('#revoke-remote').hidden = !state.pairingAvailable; } catch {} }
-function openCamera(camera) { current = camera; retries = 0; $('#player').muted = true; $('#player-title').textContent = camera.name; $('#camera-view').replaceChildren(); for (const view of camera.views) { const option = document.createElement('option'); option.value = view.id; option.textContent = view.label; $('#camera-view').append(option); } $('#view-control').hidden = camera.views.length < 2; if (!$('#player-dialog').open) $('#player-dialog').showModal(); startVideo(); }
-function startVideo() {
-  clearTimeout(retryTimer); sourceGeneration++; const generation = sourceGeneration;
-  $('#player-state').hidden = false; $('#player-state').lastElementChild.textContent = retries ? 'Reconectando à câmera…' : 'Conectando à câmera…';
-  $('#playback-state').textContent = 'Preparando vídeo';
-  const player = $('#player'); player.pause(); player.removeAttribute('src'); player.load();
-  player.src = '/api/video/' + current.id + '?quality=' + quality.value + '&view=' + encodeURIComponent($('#camera-view').value) + '&attempt=' + Date.now(); player.load();
-  player.play().catch(() => {});
-  retryTimer = setTimeout(() => { if (generation === sourceGeneration && $('#player-dialog').open && player.readyState < 2) retryVideo(); }, 48000);
-}
-function retryVideo() { clearTimeout(retryTimer); if (!current || !$('#player-dialog').open) return; if (retries >= 2) { $('#player-state').hidden = false; $('#player-state').lastElementChild.textContent = 'A câmera não respondeu. Use Reconectar para tentar novamente.'; $('#playback-state').textContent = 'Conexão interrompida'; return; } retries++; retryTimer = setTimeout(startVideo, 2000); }
-function stopVideo() { sourceGeneration++; clearTimeout(retryTimer); const player = $('#player'); player.pause(); player.removeAttribute('src'); player.load(); current = null; }
-$('#player').addEventListener('playing', () => { clearTimeout(retryTimer); $('#player-state').hidden = true; $('#playback-state').textContent = '● Vídeo conectado'; });
-$('#player').addEventListener('loadedmetadata', () => { const video = $('#player'); $('#player-title').textContent = current ? current.name + ` · ${video.videoWidth}×${video.videoHeight}` : ''; });
-$('#listen-audio').onclick = () => { const video = $('#player'); video.muted = !video.muted; if (!video.muted) video.volume = 1; };
-$('#player').addEventListener('volumechange', () => { $('#listen-audio').textContent = $('#player').muted || $('#player').volume === 0 ? '◖ Ouvir' : '◖ Silenciar'; });
-$('#player').addEventListener('error', () => { if (current && $('#player-dialog').open) retryVideo(); });
-$('#player').addEventListener('ended', () => { if (current && $('#player-dialog').open) retryVideo(); });
-$('#close-player').onclick = () => $('#player-dialog').close(); $('#player-dialog').addEventListener('close', stopVideo);
-$('#retry-video').onclick = () => { retries = 0; startVideo(); };
-quality.onchange = () => { localStorage.setItem('camera-quality', quality.value); if (current) { retries = 0; startVideo(); } };
-$('#camera-view').onchange = () => { if (current) { retries = 0; startVideo(); } };
 document.querySelectorAll('[data-filter]').forEach(button => button.onclick = () => { document.querySelectorAll('[data-filter]').forEach(other => other.classList.toggle('active', other === button)); render(cameras.filter(camera => button.dataset.filter === 'all' || camera.family === button.dataset.filter)); });
 $('#refresh').onclick = () => { const active = document.querySelector('[data-filter].active'); active.click(); toast('Atualizando as prévias disponíveis.'); };
 $('#settings').onclick = () => $('#settings-dialog').showModal(); $('#close-settings').onclick = () => $('#settings-dialog').close();
@@ -83,4 +70,5 @@ const bootstrap = new URLSearchParams(location.hash.slice(1)).get('pair');
 if (bootstrap) { history.replaceState({}, '', '/'); connect(bootstrap).catch(error => { showLogin(); $('#login-error').textContent = error.message; }); } else load();
 api('/api/version').then(version => { $('#version').textContent = version.display; }).catch(() => {});
 setInterval(() => { if (!$('#dashboard').hidden) refreshStatus(); }, 30000);
-document.addEventListener('visibilitychange', () => { if (document.hidden && $('#player-dialog').open) { stopVideo(); $('#player-dialog').close(); } });
+
+

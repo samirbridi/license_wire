@@ -5,6 +5,7 @@ import { dirname, resolve, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { spawn } from 'node:child_process';
 import { isIP } from 'node:net';
+import { validDay } from './public/recordings-core.js';
 
 const HERE = dirname(fileURLToPath(import.meta.url));
 const TARGET = process.env.MIZIN_CAMERAS_TARGET ? resolve(process.env.MIZIN_CAMERAS_TARGET) : resolve(HERE, '../..');
@@ -18,6 +19,9 @@ const constantEquals = (a, b) => {
 const STATIC = new Map([
   ['/', ['index.html', 'text/html; charset=utf-8']],
   ['/app.js', ['app.js', 'text/javascript; charset=utf-8']],
+  ['/player.js', ['player.js', 'text/javascript; charset=utf-8']],
+  ['/recordings.js', ['recordings.js', 'text/javascript; charset=utf-8']],
+  ['/recordings-core.js', ['recordings-core.js', 'text/javascript; charset=utf-8']],
   ['/style.css', ['style.css', 'text/css; charset=utf-8']],
   ['/manifest.webmanifest', ['manifest.webmanifest', 'application/manifest+json']],
   ['/icon.svg', ['icon.svg', 'image/svg+xml']],
@@ -63,6 +67,9 @@ export function createCentral(options = {}) {
   const snapshots = new Map();
   const processes = new Set();
   const activeVideos = new Map();
+  function stopSessionVideos(sessionKey) {
+    for (const [key, entry] of activeVideos) if (entry.sessionKey === sessionKey) { entry.child.kill(); activeVideos.delete(key); }
+  }
   const attempts = new Map();
   let snapshotJobs = 0;
   const snapshotQueue = [];
@@ -102,7 +109,7 @@ export function createCentral(options = {}) {
     return JSON.parse(body);
   }
   function spawnMedia(args) {
-    const child = spawn(ffmpeg, args, { windowsHide: true, stdio: ['ignore', 'pipe', 'pipe'] });
+    const child = (options.spawnProcess ?? spawn)(ffmpeg, args, { windowsHide: true, stdio: ['ignore', 'pipe', 'pipe'] });
     processes.add(child);
     child.once('close', () => processes.delete(child));
     // Drain diagnostics; source URLs and authentication are never sent to the UI.
@@ -196,13 +203,13 @@ export function createCentral(options = {}) {
     if (req.method === 'POST' && url.pathname === '/api/revoke-remote-sessions') {
       if (isRemote || !validOrigin(req) || !constantEquals(req.headers['x-csrf-token'], session.csrf)) return json(res, 403, { error: 'Requisição não autorizada.' });
       let revoked = 0;
-      for (const [key, entry] of Object.entries(sessions)) if (entry.audience === 'remote') { activeVideos.get(key)?.kill(); activeVideos.delete(key); delete sessions[key]; revoked++; }
+      for (const [key, entry] of Object.entries(sessions)) if (entry.audience === 'remote') { stopSessionVideos(key); delete sessions[key]; revoked++; }
       for (const [key, invitation] of invitations) if (invitation.audience === 'remote') invitations.delete(key);
       saveSessions(); return json(res, 200, { revoked });
     }
     if (req.method === 'POST' && url.pathname === '/api/logout') {
       if (!validOrigin(req) || !constantEquals(req.headers['x-csrf-token'], session.csrf)) return json(res, 403, { error: 'Requisição não autorizada.' });
-      activeVideos.get(session.key)?.kill(); activeVideos.delete(session.key);
+      stopSessionVideos(session.key);
       delete sessions[session.key]; saveSessions();
       res.setHeader('Set-Cookie', `mizin_camera=; HttpOnly; SameSite=Strict; Path=/; Max-Age=0${isRemote ? '; Secure' : ''}`);
       return json(res, 200, { ok: true });
@@ -211,37 +218,49 @@ export function createCentral(options = {}) {
     if (req.method === 'GET' && url.pathname === '/api/status') {
       let bridge = false;
       try { const response = await fetch(upstream + '/api/streams', { signal: AbortSignal.timeout(3000) }); bridge = response.ok; await response.body?.cancel(); } catch {}
-      return json(res, 200, { bridge, cameras: cameras.length, uptime: Math.floor((Date.now() - started) / 1000), remoteEnabled: !!remote, remoteConfigured: !!remote, pairingAvailable: !!remote && !isRemote });
+      return json(res, 200, { bridge, cameras: cameras.length, uptime: Math.floor((Date.now() - started) / 1000), remoteEnabled: !!remote, remoteConfigured: !!remote, pairingAvailable: !!remote && !isRemote, videoLimits: { clients: 2, viewsPerClient: 2 } });
+    }
+    const recordingMatch = /^\/api\/recordings\/([a-z0-9_]{1,64})$/.exec(url.pathname);
+    if (req.method === 'GET' && recordingMatch) {
+      if (!byId.has(recordingMatch[1])) return json(res, 404, { error: 'Câmera não encontrada.' });
+      const date = url.searchParams.get('date') ?? '';
+      if (!validDay(date)) return json(res, 400, { error: 'Escolha uma data válida.' });
+      return json(res, 200, { source: 'sd', status: 'not_integrated', date, displayTimeZone: 'America/Sao_Paulo', sourceTimeZone: null, periods: null, availableDays: null, capabilities: { playback: false, export: false } });
     }
     const match = /^\/api\/(snapshot|video)\/([a-z0-9_]{1,64})$/.exec(url.pathname);
     if (req.method !== 'GET' || !match || !byId.has(match[2])) return json(res, 404, { error: 'Recurso não encontrado.' });
     const camera = byId.get(match[2]);
+    const views = viewsFor(camera), selectedView = url.searchParams.get('view') ?? views[0].id;
+    const view = views.find(v => v.id === selectedView);
+    if (!view) return json(res, 400, { error: 'Visão da câmera não encontrada.' });
     if (match[1] === 'snapshot') {
       try {
-        const snapshot = await getSnapshot(camera);
+        const snapshot = await getSnapshot({ ...camera, id: camera.id + ':' + view.id, sourceAlias: view.sourceAlias });
         if (res.destroyed) return;
         headers(res, 'image/jpeg'); res.setHeader('X-Captured-At', String(snapshot.at)); res.end(snapshot.data);
       } catch { if (!res.destroyed) json(res, 503, { error: 'Prévia indisponível. Tente abrir o vídeo.' }); }
       return;
     }
-    activeVideos.get(session.key)?.kill();
-    if (activeVideos.size >= 2 && !activeVideos.has(session.key)) return json(res, 429, { error: 'A central já está transmitindo para dois dispositivos.' });
     const quality = ['economy', 'balanced', 'detail', 'original'].includes(url.searchParams.get('quality')) ? url.searchParams.get('quality') : 'balanced';
-    const views = viewsFor(camera), selectedView = url.searchParams.get('view') ?? views[0].id;
-    const view = views.find(v => v.id === selectedView);
-    if (!view) return json(res, 400, { error: 'Visão da câmera não encontrada.' });
+    const streamKey = `${session.key}:${camera.id}:${view.id}`;
+    const clients = new Set([...activeVideos.values()].map(entry => entry.sessionKey));
+    if (clients.size >= 2 && !clients.has(session.key)) return json(res, 429, { error: 'A central já está transmitindo para dois dispositivos.' });
+    for (const [key, entry] of activeVideos) if (entry.sessionKey === session.key && entry.cameraId !== camera.id) { entry.child.kill(); activeVideos.delete(key); }
+    const currentViews = [...activeVideos.values()].filter(entry => entry.sessionKey === session.key);
+    if (currentViews.length >= 2 && !activeVideos.has(streamKey)) return json(res, 429, { error: 'Este dispositivo já está exibindo duas visões.' });
+    activeVideos.get(streamKey)?.child.kill();
     const width = quality === 'original' ? 3840 : quality === 'economy' ? 640 : quality === 'detail' ? 1920 : 1280;
     const bitrate = width === 640 ? '700k' : width === 1280 ? '1800k' : width === 1920 ? '3000k' : '6000k';
     const sourceAlias = quality !== 'economy' && view.originalAlias ? view.originalAlias : view.sourceAlias;
     const encoding = encoder === 'h264_nvenc' ? ['-c:v', 'h264_nvenc', '-preset', 'p4', '-tune', 'ull'] : ['-c:v', 'libx264', '-preset', 'veryfast', '-tune', 'zerolatency'];
     const child = spawnMedia(['-hide_banner', '-nostdin', '-loglevel', 'error', '-rw_timeout', '25000000', '-i', source({ sourceAlias }), '-map', '0:v:0', '-map', '0:a:0?', '-c:a', 'aac', '-b:a', '64k', '-ar', '48000', '-vf', `scale=w='min(${width},iw)':h=-2`, '-r', '15', ...encoding, '-b:v', bitrate, '-maxrate', bitrate, '-bufsize', bitrate, '-g', '15', '-keyint_min', '15', '-sc_threshold', '0', '-pix_fmt', 'yuv420p', '-movflags', '+frag_keyframe+empty_moov+default_base_moof', '-f', 'mp4', 'pipe:1']);
-    activeVideos.set(session.key, child);
+    activeVideos.set(streamKey, { child, sessionKey: session.key, cameraId: camera.id, viewId: view.id });
     let sent = false;
     const timer = setTimeout(() => { child.kill(); if (!res.headersSent) json(res, 504, { error: 'A câmera não respondeu a tempo.' }); else res.destroy(); }, 45_000);
     child.stdout.once('data', chunk => { if (res.destroyed) return; sent = true; clearTimeout(timer); headers(res, 'video/mp4'); res.setHeader('Accept-Ranges', 'none'); res.write(chunk); child.stdout.pipe(res); });
     child.once('error', () => { clearTimeout(timer); if (!res.headersSent && !res.destroyed) json(res, 503, { error: 'Não foi possível iniciar o vídeo.' }); });
-    child.once('close', () => { clearTimeout(timer); if (activeVideos.get(session.key) === child) activeVideos.delete(session.key); if (!res.destroyed) { if (!sent && !res.headersSent) json(res, 503, { error: 'Não foi possível conectar à câmera.' }); else res.end(); } });
-    res.once('close', () => { clearTimeout(timer); child.kill(); if (activeVideos.get(session.key) === child) activeVideos.delete(session.key); });
+    child.once('close', () => { clearTimeout(timer); if (activeVideos.get(streamKey)?.child === child) activeVideos.delete(streamKey); if (!res.destroyed) { if (!sent && !res.headersSent) json(res, 503, { error: 'Não foi possível conectar à câmera.' }); else res.end(); } });
+    res.once('close', () => { clearTimeout(timer); child.kill(); if (activeVideos.get(streamKey)?.child === child) activeVideos.delete(streamKey); });
   }
 
   const server = http.createServer((req, res) => { route(req, res).catch(() => { if (!res.headersSent && !res.destroyed) json(res, 400, { error: 'Não foi possível atender a solicitação.' }); else res.destroy(); }); });

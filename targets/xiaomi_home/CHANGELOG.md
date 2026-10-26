@@ -1,5 +1,41 @@
 # CHANGELOG — xiaomi_home
 
+## v0.4.1 (build 0006) - 2026-10-25
+
+### 💥 Breaking Changes
+
+- Nenhum.
+
+### ✨ Features
+
+- Nenhum.
+
+### 🐛 Fixes
+
+- fix: distingue FourCC da resolucao real nos recibos de audio e video (commit `bfd3407679119065d9caa7fe50d88361a9706561`)
+
+### ⚡ Improvements
+
+- Nenhum.
+
+## v0.4.0 (build 0005) - 2026-10-25
+
+### 💥 Breaking Changes
+
+- Nenhum.
+
+### ✨ Features
+
+- feat: adiciona escuta AAC das seis cameras e validacao integrada de audio e video (commit `27936458d63205cd87525f6d10d4a703e6fa4b52`)
+
+### 🐛 Fixes
+
+- Nenhum.
+
+### ⚡ Improvements
+
+- Nenhum.
+
 ## v0.3.0 (build 0004) - 2026-10-25
 
 ### 💥 Breaking Changes

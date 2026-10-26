@@ -1,0 +1,20 @@
+{
+  "runId": "20261025-camera-audio-01",
+  "sourceCommit": "27936458d63205cd87525f6d10d4a703e6fa4b52",
+  "previous": "v0.3.0 (build 0004)",
+  "version": "v0.4.0 (build 0005)",
+  "build": 5,
+  "date": "2026-10-25",
+  "status": "built",
+  "commits": [
+    {
+      "sha": "27936458d63205cd87525f6d10d4a703e6fa4b52",
+      "subject": "feat: adiciona escuta AAC das seis cameras e validacao integrada de audio e video",
+      "body": "",
+      "type": "feat",
+      "description": "adiciona escuta AAC das seis cameras e validacao integrada de audio e video",
+      "breaking": false
+    }
+  ],
+  "artifact": "runtime/builds/build-0005"
+}

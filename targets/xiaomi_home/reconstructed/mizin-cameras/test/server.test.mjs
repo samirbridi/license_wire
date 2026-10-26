@@ -96,6 +96,19 @@ test('multiple views expose only display labels and reject unknown media views',
     assert.equal((await fetch(f.origin + '/api/video/test_camera?view=unknown&quality=original', { headers })).status, 400);
   } finally { await f.app.close(); }
 });
+test('SD availability remains unknown until an actual camera adapter exists', async () => {
+  const f = await fixture();
+  try {
+    const route = '/api/recordings/test_camera?date=2026-10-25';
+    assert.equal((await fetch(f.origin + route)).status, 401);
+    const cookie = await login(f), headers = { Cookie: cookie };
+    const state = await (await fetch(f.origin + route, { headers })).json();
+    assert.equal(state.status, 'not_integrated'); assert.equal(state.periods, null); assert.equal(state.availableDays, null);
+    assert.deepEqual(state.capabilities, { playback: false, export: false });
+    assert.equal((await fetch(f.origin + '/api/recordings/test_camera?date=2026-02-29', { headers })).status, 400);
+    assert.equal((await fetch(f.origin + '/api/recordings/unknown?date=2026-10-25', { headers })).status, 404);
+  } finally { await f.app.close(); }
+});
 test.after(() => {
   const safeRoot = resolve(tmpdir()) + sep;
   for (const path of roots) {

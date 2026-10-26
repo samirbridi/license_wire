@@ -14,14 +14,18 @@ Depois de um build concluído, executar a partir da raiz do repositório:
 
 `-Restart` reinicia apenas o processo registrado desta central, após conferir executável e horário de início. O navegador recebe um link local de uso único; a sessão persiste por até 30 dias. Não compartilhar o arquivo privado `local-access.json`. Uma sessão expirada exige novo vínculo; não há promessa de login permanente.
 
-O protótipo limita vídeo a dois clientes simultâneos, um vídeo por cliente. As prévias são imagens estáticas e têm cache de até 60 segundos. A Outdoor Pro oferece seleção entre Visão 1 e Visão 2; Resolução nativa mantém até 3840 pixels de largura sem ampliar fontes menores. A imagem continua sendo convertida para H.264 a 15 fps. O encoder pode ser libx264/CPU ou h264_nvenc; a configuração privada deste Windows seleciona NVENC após teste local. Decodificação/redimensionamento não foram movidos para GPU. Desempenho com dois clientes não foi medido.
+O protótipo permite até dois clientes, com duas vistas da mesma câmera por cliente. A Outdoor Pro abre as duas juntas, com seleção de foco/áudio e ampliação opcional de uma. Trocar de câmera ou encerrar sessão encerra os processos correspondentes. As prévias são imagens estáticas com cache de até 60 segundos, separadas por câmera/vista.
+
+Resolução nativa mantém até 3840 pixels de largura sem ampliar fontes menores. A imagem continua sendo convertida para H.264 a 15 fps. O encoder pode ser libx264/CPU ou h264_nvenc; este Windows seleciona NVENC após teste local. Decodificação/redimensionamento não foram movidos para GPU. Desempenho com dois clientes exibindo quatro vídeos não foi medido.
 
 Ouvir/Silenciar controla a escuta do áudio AAC convertido a partir do áudio nativo das câmeras. Cada câmera abre inicialmente mutada. O aplicativo não solicita microfone nesta fase. O teste físico de audição é distinto dos recibos de recepção/decodificação. Fala, PTZ, zoom e reprodução do SD continuam pendentes.
+
+Gravações abre a navegação por mês/dia e a estrutura de timeline/trecho. O adaptador SD ainda retorna disponibilidade desconhecida (`periods: null`), com reprodução/download desabilitados. A interface não contém períodos de gravação fictícios. O modelo de recorte/busca tem testes próprios; acesso e exportação do cartão ainda precisam de validação real.
 
 ## Verificar e gerar versão
 
 ```powershell
-node --test targets/xiaomi_home/reconstructed/mizin-cameras/test/server.test.mjs targets/xiaomi_home/reconstructed/mizin-cameras/test/remote.test.mjs targets/xiaomi_home/scripts/test-version-build.mjs targets/xiaomi_home/scripts/test-version-build-integration.mjs
+node --test targets/xiaomi_home/reconstructed/mizin-cameras/test/*.test.mjs targets/xiaomi_home/scripts/test-*.mjs
 node targets/xiaomi_home/scripts/version-build.mjs --plan
 ```
 

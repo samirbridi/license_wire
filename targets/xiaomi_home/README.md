@@ -10,6 +10,8 @@ Criar acesso dedicado em Android e Windows, na rede local e pela internet. As c�
 
 Estado: PROTOTIPO_LOCAL_WINDOWS_VALIDADO, com vistas, qualidade nativa e escuta de áudio. Autorização QR confirmada pelo proprietário; seis câmeras com quadros e áudio decodificados, e prévias reais no painel. As três famílias reproduziram vídeo H.264 no navegador. Outdoor Pro tem dois canais comprovados a 2880×1620; AW300/Mi 2K chegaram a 2304×1296. Ver [teste nativo](notes/09_video_local_validado.md), [central Windows](notes/10_central_windows.md), [recursos e Cloudflare](notes/11_recursos_nativos_e_cloudflare.md) e os recibos em evidence. Android físico, acesso remoto, audição física, fala, SD, PTZ e estabilidade prolongada permanecem pendentes.
 
+O ciclo seguinte inclui exibição simultânea das duas vistas, seleção apenas de foco/áudio, ampliação opcional e navegação de gravações por mês/dia. A consulta real do SD e os downloads continuam indisponíveis até o protocolo nativo ser integrado; veja [estado da visão dupla, gravações e rondas](notes/12_visao_dupla_gravacoes_rondas.md). A validação de serviço e a visual são registradas separadamente.
+
 - Pesquisa inicial: [notas de viabilidade](notes/00_viabilidade.md).
 - Referências e limites de cada evidência: [fontes públicas](evidence/fontes_publicas.json).
 - Identificação e suporte: [inventário das três câmeras](notes/05_modelos_identificados.md), com referências e limites por modelo.

@@ -1,20 +1,20 @@
 {
-  "runId": "20261025-native-views-01",
-  "sourceCommit": "7f42ad9f77db2cc14c3bb01d3ad259b9c06ca348",
-  "previous": "v0.2.1 (build 0003)",
-  "version": "v0.3.0 (build 0004)",
-  "build": 4,
+  "runId": "20261025-camera-audio-02",
+  "sourceCommit": "bfd3407679119065d9caa7fe50d88361a9706561",
+  "previous": "v0.4.0 (build 0005)",
+  "version": "v0.4.1 (build 0006)",
+  "build": 6,
   "date": "2026-10-25",
   "status": "built",
   "commits": [
     {
-      "sha": "7f42ad9f77db2cc14c3bb01d3ad259b9c06ca348",
-      "subject": "feat: adiciona duas visoes Outdoor qualidade nativa NVENC e vinculo HTTPS protegido",
+      "sha": "bfd3407679119065d9caa7fe50d88361a9706561",
+      "subject": "fix: distingue FourCC da resolucao real nos recibos de audio e video",
       "body": "",
-      "type": "feat",
-      "description": "adiciona duas visoes Outdoor qualidade nativa NVENC e vinculo HTTPS protegido",
+      "type": "fix",
+      "description": "distingue FourCC da resolucao real nos recibos de audio e video",
       "breaking": false
     }
   ],
-  "artifact": "runtime/builds/build-0004"
+  "artifact": "runtime/builds/build-0006"
 }
