@@ -3261,6 +3261,7 @@ button.btn-close:active {
 .modal-camera-ptz {
   width: 96vw !important;
   max-width: 1480px !important;
+  height: 92vh !important;
   max-height: 94vh !important;
   background: rgba(11, 17, 32, 0.97) !important;
   backdrop-filter: blur(28px) !important;
@@ -3468,8 +3469,11 @@ button.btn-close:active {
 }
 
 .theater-tab-panel.active {
-  display: flex;
+  display: flex !important;
   flex-direction: column;
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
 }
 
 /* Painel Dedicado de Gravações SD */
@@ -3478,8 +3482,9 @@ button.btn-close:active {
   flex-direction: column;
   gap: 14px;
   overflow-y: auto;
-  padding-right: 4px;
+  padding: 4px 8px 16px 4px;
   flex: 1;
+  min-height: 0;
 }
 
 .sd-stat-cards-grid {
@@ -3544,6 +3549,7 @@ button.btn-close:active {
   justify-content: center;
   box-shadow: 0 4px 24px rgba(0, 0, 0, 0.6);
   aspect-ratio: 16 / 9;
+  min-height: 280px;
   max-height: 48vh;
   width: 100%;
 }
