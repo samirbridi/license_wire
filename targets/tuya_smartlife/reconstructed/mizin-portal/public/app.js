@@ -154,33 +154,10 @@ async function detectAccessMode() {
     return true;
   }
 
-  // Se estiver em domínio externo (ex: myhomemizin.pages.dev ou túnel),
-  // testa probe silencioso no IP local da residência para uso rápido se estiver no mesmo Wi-Fi/cabo:
-  try {
-    const controller = new AbortController();
-    const timeout = setTimeout(() => controller.abort(), 500);
-    const probe = await origFetch('http://192.168.1.30:19860/api/health', {
-      signal: controller.signal,
-      mode: 'cors'
-    });
-    clearTimeout(timeout);
-    if (probe.ok) {
-      isLocalAccess = true;
-      BACKEND_API_BASE = 'http://192.168.1.30:19860';
-      if (badge) {
-        badge.innerText = '🏠 REDE LOCAL (1ms)';
-        badge.className = 'badge badge-mode';
-      }
-      return true;
-    }
-  } catch (e) {
-    // Não alcançou o IP da rede local direta
-  }
-
   isLocalAccess = false;
   BACKEND_API_BASE = window.location.hostname.includes('trycloudflare.com') ? '' : 'https://elegant-marsh-warm-programmer.trycloudflare.com';
   if (badge) {
-    badge.innerText = '🌐 ACESSO REMOTO (Cloudflare)';
+    badge.innerText = '🌐 MODO REMOTO (Cloudflare)';
     badge.className = 'badge badge-mode badge-remote';
   }
   return false;
@@ -213,7 +190,7 @@ async function checkConnection(isManualRetry = false) {
     disconnectedSince = null;
     if (alertEl) alertEl.classList.remove('active');
     if (statusEl) {
-      statusEl.innerHTML = `ONLINE (<span id="pingMs">~${latency}ms</span>) • ${isLocalAccess ? 'REDE LOCAL' : 'NUVEM'}`;
+      statusEl.innerHTML = `ONLINE (<span id="pingMs">~${latency}ms</span>) • ${isLocalAccess ? 'REDE LOCAL' : 'MODO REMOTO'}`;
     }
     if (pulseEl) pulseEl.className = 'pulse-dot';
     if (indicatorEl) indicatorEl.className = 'status-indicator';
@@ -3352,7 +3329,31 @@ function openPtzModal(camId) {
   }
 
   if (aliasEl) aliasEl.innerText = `Stream local: ${camObj.sourceAlias || camId} • go2rtc`;
-  if (feedImg) feedImg.src = `/api/camera-frame?src=${encodeURIComponent(camObj.sourceAlias || camId)}&t=${Date.now()}`;
+  const streamAlias = camObj.sourceAlias || camId;
+  const videoEl = document.getElementById('ptzMainVideoElement');
+  const feedImg = document.getElementById('ptzMainVideoFeed');
+  const spinnerEl = document.getElementById('ptzVideoSpinner');
+
+  if (feedImg) {
+    feedImg.src = `${BACKEND_API_BASE}/api/camera-frame?src=${encodeURIComponent(streamAlias)}&t=${Date.now()}`;
+    feedImg.style.display = 'block';
+  }
+  if (videoEl) {
+    videoEl.style.display = 'none';
+    if (spinnerEl) spinnerEl.style.display = 'block';
+    videoEl.src = `${BACKEND_API_BASE}/api/camera-stream?src=${encodeURIComponent(streamAlias)}`;
+    videoEl.muted = !isAudioListening;
+    videoEl.onloadeddata = () => {
+      videoEl.style.display = 'block';
+      if (feedImg) feedImg.style.display = 'none';
+      if (spinnerEl) spinnerEl.style.display = 'none';
+    };
+    videoEl.onerror = () => {
+      videoEl.style.display = 'none';
+      if (feedImg) feedImg.style.display = 'block';
+      if (spinnerEl) spinnerEl.style.display = 'none';
+    };
+  }
 
   renderCustomShortcuts();
   if (modal) modal.classList.add('active');
@@ -3361,6 +3362,14 @@ function openPtzModal(camId) {
 function closePtzModal() {
   const modal = document.getElementById('cameraPtzModal');
   if (modal) modal.classList.remove('active');
+  const videoEl = document.getElementById('ptzMainVideoElement');
+  if (videoEl) {
+    try {
+      videoEl.pause();
+      videoEl.removeAttribute('src');
+      videoEl.load();
+    } catch (e) {}
+  }
   activePtzCam = null;
   if (isAudioListening) toggleAudioListen();
 }
@@ -3397,17 +3406,20 @@ function toggleAudioListen() {
   const btn = document.getElementById('btnAudioListen');
   const statusText = document.getElementById('audioStatusText');
 
+  const videoEl = document.getElementById('ptzMainVideoElement');
   if (isAudioListening) {
     if (icon) icon.innerText = '🔊';
     if (text) text.innerText = 'Retorno Ativo (Ouvindo)';
     if (btn) btn.style.background = 'rgba(56, 189, 248, 0.25)';
     if (statusText) statusText.innerText = '🔊 Retorno de Som Ativo — Ouvindo ambiente da câmera ao vivo';
+    if (videoEl) videoEl.muted = false;
     showToast('Retorno de som da câmera ativado! 🔊');
   } else {
     if (icon) icon.innerText = '🔇';
     if (text) text.innerText = 'Ouvir Retorno';
     if (btn) btn.style.background = '';
     if (statusText) statusText.innerText = 'Áudio Bidirecional: Microfone e Alto-Falante Prontos';
+    if (videoEl) videoEl.muted = true;
     showToast('Retorno de som da câmera mutado.');
   }
 }
@@ -3449,12 +3461,13 @@ async function fetchCameras() {
       const alias = cam.sourceAlias || cam.id;
       const isGateCam = cam.id.includes('portao') || cam.id.includes('garagem') || (cam.name && (cam.name.toLowerCase().includes('portão') || cam.name.toLowerCase().includes('garagem')));
       const isPtz = (cam.id === 'outdoor_pro_poste' || (cam.family && cam.family.toLowerCase().includes('outdoor pro')) || (cam.name && cam.name.toLowerCase().includes('outdoor pro')));
-      const streamUrl = `/api/camera-frame?src=${encodeURIComponent(alias)}`;
+      const streamUrl = `${BACKEND_API_BASE}/api/camera-frame?src=${encodeURIComponent(alias)}`;
+      const fallbackSvg = "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='640' height='360' viewBox='0 0 640 360'><rect width='640' height='360' fill='%23090d16'/><circle cx='320' cy='150' r='40' fill='none' stroke='%2338bdf8' stroke-width='3' stroke-dasharray='6 6'/><polygon points='310,135 335,150 310,165' fill='%2338bdf8'/><text x='320' y='225' font-family='sans-serif' font-size='15' font-weight='600' fill='%23f8fafc' text-anchor='middle'>CÂMERA EM STANDBY</text></svg>";
 
       return `
         <div class="camera-card">
-          <div class="camera-preview">
-            <img src="${streamUrl}" alt="${cam.name}" loading="lazy" style="background:#090d16; min-height:200px;">
+          <div class="camera-preview" onclick="openPtzModal('${cam.id}')" style="cursor:pointer;">
+            <img src="${streamUrl}" alt="${cam.name}" loading="lazy" style="background:#090d16; min-height:200px; width:100%; object-fit:cover; display:block;" onerror="this.onerror=null; this.src='${fallbackSvg}';">
             <div class="camera-overlay-badge">
               <span class="pulse-dot"></span>
               AO VIVO • ${isPtz ? 'PTZ + ZOOM' : (cam.family || '2K FIXA')}

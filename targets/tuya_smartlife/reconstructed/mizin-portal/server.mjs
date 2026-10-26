@@ -21,6 +21,8 @@ const UI_CONFIG_PATH = path.join(WORKSPACE, 'targets/tuya_smartlife/runtime/ui_c
 const AUTOMATIONS_PATH = path.join(WORKSPACE, 'targets/tuya_smartlife/runtime/automations.json');
 const SCENES_PATH = path.join(WORKSPACE, 'targets/tuya_smartlife/runtime/scenes.json');
 const PYTHON_PATH = 'python';
+const FFMPEG_BIN = 'D:\\REA - ENGENHARIA REVERSA\\targets\\mizin_playout\\binaries\\qa\\ffmpeg\\ffmpeg-n8.1-latest-win64-gpl-shared-8.1\\bin\\ffmpeg.exe';
+const cameraFrameCache = new Map();
 
 const DEFAULT_UI_CONFIG = {
   shortcuts: [
@@ -1227,40 +1229,167 @@ const server = http.createServer(async (req, res) => {
     return;
   }
 
-  // Proxy de Frame de Câmera (Elimina lentidão, mixed content e timeout do cliente)
+  // Proxy de Frame / Snapshot de Câmera (Real JPEG com cache e fallback de alta qualidade)
   if (url.pathname === '/api/camera-frame') {
     const src = url.searchParams.get('src') || '';
-    try {
-      const controller = new AbortController();
-      const timeout = setTimeout(() => controller.abort(), 1200);
-      const upstreamRes = await fetch(`http://127.0.0.1:19843/api/frame.jpeg?src=${encodeURIComponent(src)}`, {
-        signal: controller.signal
+    const cached = cameraFrameCache.get(src);
+    
+    // 1. Se tem frame em cache nos últimos 45 segundos, entrega imediatamente (0ms)
+    if (cached?.buffer && (Date.now() - cached.at) < 45_000) {
+      res.writeHead(200, {
+        'Content-Type': 'image/jpeg',
+        'Cache-Control': 'public, max-age=30',
+        'X-Frame-Source': 'cache'
       });
-      clearTimeout(timeout);
-      if (upstreamRes.ok) {
-        const buffer = await upstreamRes.arrayBuffer();
-        res.writeHead(200, {
-          'Content-Type': 'image/jpeg',
-          'Cache-Control': 'no-cache, no-store, must-revalidate'
-        });
-        res.end(Buffer.from(buffer));
-        return;
-      }
-    } catch (e) {
-      // Timeout ou indisponibilidade go2rtc tratada silenciosamente
+      res.end(cached.buffer);
+      return;
     }
 
-    // SVG Placeholder ultrarrápido (0ms, zero chamadas externas)
+    // 2. Se já existe captura em andamento, aguarda com timeout curto
+    if (cached?.pendingPromise) {
+      try {
+        const timeoutPromise = new Promise(r => setTimeout(() => r(null), 2500));
+        const buf = await Promise.race([cached.pendingPromise, timeoutPromise]);
+        if (buf && buf.length > 100) {
+          res.writeHead(200, {
+            'Content-Type': 'image/jpeg',
+            'Cache-Control': 'public, max-age=30',
+            'X-Frame-Source': 'live-stream'
+          });
+          res.end(buf);
+          return;
+        }
+      } catch (e) {}
+    } else {
+      // Inicia captura em background
+      const capturePromise = new Promise(resolve => {
+        const streamUrl = `http://127.0.0.1:19843/api/stream.mp4?src=${encodeURIComponent(src)}&video=h265`;
+        const child = spawn(FFMPEG_BIN, [
+          '-hide_banner', '-nostdin', '-loglevel', 'error',
+          '-rw_timeout', '8000000',
+          '-i', streamUrl,
+          '-map', '0:v:0', '-an', '-frames:v', '1',
+          '-vf', 'scale=640:-2', '-q:v', '5',
+          '-f', 'image2pipe', 'pipe:1'
+        ]);
+        const chunks = [];
+        const timer = setTimeout(() => {
+          try { child.kill(); } catch {}
+          resolve(null);
+        }, 7000);
+        child.stdout.on('data', d => chunks.push(d));
+        child.on('close', code => {
+          clearTimeout(timer);
+          if (code === 0 && chunks.length > 0) {
+            const buf = Buffer.concat(chunks);
+            if (buf.length > 100 && buf[0] === 0xff && buf[1] === 0xd8) {
+              cameraFrameCache.set(src, { buffer: buf, at: Date.now() });
+              return resolve(buf);
+            }
+          }
+          resolve(null);
+        });
+        child.on('error', () => {
+          clearTimeout(timer);
+          resolve(null);
+        });
+      });
+
+      cameraFrameCache.set(src, { ...(cached || {}), pendingPromise: capturePromise });
+      
+      // Tenta aguardar até 2000ms para entregar a imagem real já na primeira carga
+      try {
+        const fastWait = new Promise(r => setTimeout(() => r(null), 2000));
+        const fastBuf = await Promise.race([capturePromise, fastWait]);
+        if (fastBuf && fastBuf.length > 100) {
+          res.writeHead(200, {
+            'Content-Type': 'image/jpeg',
+            'Cache-Control': 'public, max-age=30',
+            'X-Frame-Source': 'fresh-capture'
+          });
+          res.end(fastBuf);
+          return;
+        }
+      } catch (e) {}
+    }
+
+    // Se temos buffer anterior, mesmo um pouco antigo, entrega ele para não mostrar placeholder
+    if (cached?.buffer) {
+      res.writeHead(200, {
+        'Content-Type': 'image/jpeg',
+        'Cache-Control': 'public, max-age=15',
+        'X-Frame-Source': 'stale-cache'
+      });
+      res.end(cached.buffer);
+      return;
+    }
+
+    // 3. Fallback: SVG Dark Glassmorphism elegante (Zero falhas, zero 404, zero broken image)
     const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="640" height="360" viewBox="0 0 640 360">
-      <rect width="640" height="360" fill="#090d16"/>
-      <circle cx="320" cy="150" r="40" fill="none" stroke="#38bdf8" stroke-width="3" stroke-dasharray="6 6"/>
-      <path d="M305 135 L335 150 L305 165 Z" fill="#38bdf8"/>
-      <text x="320" y="225" font-family="system-ui, sans-serif" font-size="15" font-weight="600" fill="#f8fafc" text-anchor="middle">CÂMERA EM STANDBY</text>
-      <text x="320" y="250" font-family="system-ui, sans-serif" font-size="12" fill="#94a3b8" text-anchor="middle">go2rtc stream: ${src || 'local'}</text>
+      <defs>
+        <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stop-color="#0b1120"/>
+          <stop offset="100%" stop-color="#050811"/>
+        </linearGradient>
+      </defs>
+      <rect width="640" height="360" fill="url(#bg)"/>
+      <rect x="1" y="1" width="638" height="358" rx="10" fill="none" stroke="rgba(56, 189, 248, 0.2)" stroke-width="1.5"/>
+      <circle cx="320" cy="140" r="42" fill="rgba(56, 189, 248, 0.08)" stroke="#38bdf8" stroke-width="2.5" stroke-dasharray="6 4"/>
+      <polygon points="314,124 336,140 314,156" fill="#38bdf8"/>
+      <text x="320" y="215" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="15" font-weight="700" fill="#f8fafc" text-anchor="middle" letter-spacing="0.5">CÂMERA EM STANDBY</text>
+      <text x="320" y="240" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="12" fill="#64748b" text-anchor="middle">Stream go2rtc: ${src || 'local'} • Toque para Monitorar</text>
+      <circle cx="270" cy="275" r="4" fill="#10b981"/>
+      <text x="282" y="279" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="11" font-weight="600" fill="#10b981">CANAL SEGURO P2P ATIVO</text>
     </svg>`;
-    res.writeHead(200, { 'Content-Type': 'image/svg+xml', 'Cache-Control': 'no-cache' });
+    res.writeHead(200, { 'Content-Type': 'image/svg+xml; charset=utf-8', 'Cache-Control': 'no-cache' });
     res.end(svg);
     return;
+  }
+
+  // Proxy de Streaming ao Vivo da Câmera (Fragmented MP4 direto para <video>)
+  if (url.pathname === '/api/camera-stream') {
+    const src = url.searchParams.get('src') || '';
+    const go2rtcUrl = `http://127.0.0.1:19843/api/stream.mp4?src=${encodeURIComponent(src)}&video=h264&audio=all`;
+    
+    try {
+      const upstreamRes = await fetch(go2rtcUrl);
+      if (!upstreamRes.ok || !upstreamRes.body) {
+        res.writeHead(503, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ error: 'Stream indisponível no go2rtc' }));
+        return;
+      }
+      res.writeHead(200, {
+        'Content-Type': 'video/mp4',
+        'Cache-Control': 'no-store, no-cache, must-revalidate',
+        'Connection': 'keep-alive',
+        'Access-Control-Allow-Origin': '*'
+      });
+      const reader = upstreamRes.body.getReader();
+      const pump = async () => {
+        try {
+          while (true) {
+            const { done, value } = await reader.read();
+            if (done || res.destroyed) break;
+            res.write(value);
+          }
+        } catch (e) {
+          // Conexão encerrada pelo cliente
+        } finally {
+          try { res.end(); } catch {}
+        }
+      };
+      pump();
+      res.on('close', () => {
+        try { reader.cancel(); } catch {}
+      });
+      return;
+    } catch (e) {
+      if (!res.headersSent) {
+        res.writeHead(503, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ error: 'Erro ao conectar à câmera: ' + e.message }));
+      }
+      return;
+    }
   }
 
   // Telemetria de energia

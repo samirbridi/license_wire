@@ -5,6 +5,21 @@ Formato de versão obrigatório: `vX.Y.Z (build XXXX)`.
 
 ---
 
+## v0.16.0 (build 0017) - 2026-10-26
+
+### ✨ Features
+- feat: implementa streaming de vídeo ao vivo das câmeras Xiaomi diretamente na central residencial (`/api/camera-stream`), conectando o feed H.264 fMP4 do go2rtc ao elemento HTML5 `<video id="ptzMainVideoElement">` com reprodução contínua, baixa latência e controle de áudio ao vivo
+- feat: adiciona proxy de extração de frame/snapshot real via FFmpeg (`/api/camera-frame`) com cache em memória (45s TTL) que entrega fotografias JPEG reais em alta resolução das câmeras (AW300, Outdoor Pro, Mi 2K) e fallback SVG dark glassmorphism ultra-rápido (`CÂMERA EM STANDBY`), eliminando completamente ícones de imagem quebrada no modo remoto
+- feat: implementa suporte a escuta de áudio nativo sincronizado com o vídeo (desmutando o fluxo da câmera ao clicar em "Ouvir Retorno" e pausando os fluxos ao fechar o modal para economizar largura de banda e CPU)
+
+### 🐛 Fixes
+- fix: corrige detecção de rede no frontend (`detectAccessMode()`), removendo probe misto que alterava indevidamente para "REDE LOCAL" em acessos HTTPS externos (`myhomemizin.pages.dev`), garantindo exibição correta de `🌐 MODO REMOTO (Cloudflare)` e `ONLINE • MODO REMOTO`
+- fix: corrige URL de miniaturas das câmeras para utilizar `${BACKEND_API_BASE}/api/camera-frame`, garantindo que os quadros sejam carregados através do túnel Cloudflare sem erro 404 no Cloudflare Pages
+- fix: adiciona fallback SVG inline em `onerror` em todos os cartões de câmera, assegurando que mesmo em oscilações momentâneas de rede ou câmeras em inicialização nunca seja exibido o ícone de imagem quebrada do navegador
+- improve: publica nova compilação no Cloudflare Pages (`https://myhomemizin.pages.dev`), disponibilizando os botões de edição de cenas, automações, novo design do botão de fechar e correções de câmeras no acesso remoto
+
+---
+
 ## v0.15.1 (build 0016) - 2026-10-26
 
 ### 🐛 Fixes

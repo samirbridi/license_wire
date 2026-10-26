@@ -7,7 +7,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css?v=0.15.1">
+  <link rel="stylesheet" href="style.css?v=0.16.0">
   <link rel="manifest" href="manifest.json">
   <link rel="icon" type="image/svg+xml" href="icon.svg">
   <link rel="apple-touch-icon" href="icon.svg">
@@ -58,7 +58,7 @@
 
       <!-- Live System Status & Action Tools -->
       <div class="system-status">
-        <span id="accessModeBadge" class="badge badge-mode">🏠 REDE LOCAL</span>
+        <span id="accessModeBadge" class="badge badge-mode">DETECTANDO REDE...</span>
         <div class="status-indicator">
           <span class="pulse-dot" id="systemPulse"></span>
           <span id="systemStatusText">ONLINE (<span id="pingMs">~15ms</span>)</span>
@@ -1167,8 +1167,12 @@
       <div class="ptz-modal-content-grid">
         <!-- Visualizador Principal em Alta Resolução -->
         <div class="ptz-view-column">
-          <div class="ptz-main-player-wrap">
+          <div class="ptz-main-player-wrap" style="position:relative; width:100%; min-height:280px; background:#090d16; border-radius:10px; overflow:hidden;">
+            <video id="ptzMainVideoElement" autoplay playsinline muted controls style="width:100%; height:auto; display:none; border-radius:10px; background:#090d16; min-height:280px;"></video>
             <img id="ptzMainVideoFeed" src="" alt="Câmera Feed" style="width:100%; height:auto; border-radius:10px; display:block; background:#090d16; min-height:280px;">
+            <div id="ptzVideoSpinner" style="display:none; position:absolute; top:45%; left:50%; transform:translate(-50%, -50%); background:rgba(9,13,22,0.85); color:#38bdf8; padding:8px 16px; border-radius:20px; font-size:12px; font-weight:600; border:1px solid rgba(56,189,248,0.3); z-index:10; pointer-events:none;">
+              <span class="pulse-dot"></span> Conectando vídeo ao vivo...
+            </div>
             <div class="ptz-overlay-top-badge">
               <span class="pulse-dot"></span>
               AO VIVO • 2K HD STREAM
@@ -1818,6 +1822,6 @@
   <!-- Floating Toast Notifications Container -->
   <div id="toastContainer" class="toast-container"></div>
 
-  <script src="app.js?v=0.15.1"></script>
+  <script src="app.js?v=0.16.0"></script>
 </body>
 </html>
