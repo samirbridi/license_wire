@@ -3498,6 +3498,89 @@ function openPtzModal(camId) {
   if (modal) modal.classList.add('active');
 }
 
+function getCameraWsUrl(streamAlias) {
+  if (BACKEND_API_BASE) {
+    const wsBase = BACKEND_API_BASE.replace(/^http/, 'ws');
+    return `${wsBase}/api/ws?src=${encodeURIComponent(streamAlias)}`;
+  }
+  const proto = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+  return `${proto}//${window.location.host}/api/ws?src=${encodeURIComponent(streamAlias)}`;
+}
+
+function connectCameraPlayer(streamEl, fallbackVideoEl, feedImg, spinnerEl, streamAlias, isMuted) {
+  const wsUrl = getCameraWsUrl(streamAlias);
+  let resolved = false;
+
+  const onReady = () => {
+    if (resolved) return;
+    resolved = true;
+    if (streamEl) streamEl.style.display = 'block';
+    if (fallbackVideoEl) fallbackVideoEl.style.display = 'none';
+    if (feedImg) feedImg.style.display = 'none';
+    if (spinnerEl) spinnerEl.style.display = 'none';
+  };
+
+  // 1. WebSocket de Ultra Baixa Latência (MSE / WebRTC via go2rtc proxy)
+  if (streamEl && typeof customElements !== 'undefined' && customElements.get('video-stream')) {
+    if (spinnerEl) spinnerEl.style.display = 'block';
+    streamEl.style.display = 'block';
+    if (fallbackVideoEl) {
+      fallbackVideoEl.style.display = 'none';
+      try { fallbackVideoEl.pause(); } catch(e){}
+    }
+    streamEl.src = wsUrl;
+
+    const setupInner = () => {
+      const v = streamEl.querySelector('video') || streamEl.video;
+      if (v) {
+        v.muted = isMuted;
+        v.onplaying = onReady;
+        v.onloadeddata = onReady;
+        v.oncanplay = onReady;
+      }
+    };
+    setupInner();
+    setTimeout(setupInner, 200);
+    setTimeout(setupInner, 800);
+
+    // Fallback de segurança para stream HTTP caso o WebSocket não entregue vídeo em 6s
+    setTimeout(() => {
+      if (!resolved && fallbackVideoEl) {
+        console.warn(`[Stream Fallback] Alternando para stream HTTP para ${streamAlias}`);
+        if (streamEl) streamEl.style.display = 'none';
+        connectHttpStream(fallbackVideoEl, feedImg, spinnerEl, streamAlias, isMuted, onReady);
+      }
+    }, 6000);
+  } else if (fallbackVideoEl) {
+    connectHttpStream(fallbackVideoEl, feedImg, spinnerEl, streamAlias, isMuted, onReady);
+  }
+}
+
+function connectHttpStream(videoEl, feedImg, spinnerEl, streamAlias, isMuted, onReady) {
+  if (!videoEl) return;
+  videoEl.style.display = 'none';
+  if (spinnerEl) spinnerEl.style.display = 'block';
+  videoEl.muted = isMuted;
+  videoEl.src = `${BACKEND_API_BASE}/api/camera-stream?src=${encodeURIComponent(streamAlias)}&quality=${resolveEffectiveCameraQuality()}`;
+  videoEl.load();
+  const p = videoEl.play();
+  if (p) p.catch(() => {});
+
+  const readyHandler = () => {
+    videoEl.style.display = 'block';
+    if (feedImg) feedImg.style.display = 'none';
+    if (spinnerEl) spinnerEl.style.display = 'none';
+    if (onReady) onReady();
+  };
+  videoEl.onplaying = readyHandler;
+  videoEl.onloadeddata = readyHandler;
+  videoEl.oncanplay = readyHandler;
+  videoEl.onerror = () => {
+    if (spinnerEl) spinnerEl.style.display = 'none';
+    if (feedImg) feedImg.style.display = 'block';
+  };
+}
+
 function setupSingleCameraView(camObj) {
   const container = document.getElementById('ptzDualVideoContainer');
   const playerWrap1 = document.getElementById('ptzPlayerWrap1');
@@ -3508,6 +3591,7 @@ function setupSingleCameraView(camObj) {
 
   const streamAlias = camObj.sourceAlias || camObj.id;
   const feedImg = document.getElementById('ptzMainVideoFeed');
+  const streamEl = document.getElementById('ptzMainVideoStream');
   const videoEl = document.getElementById('ptzMainVideoElement');
   const spinnerEl = document.getElementById('ptzVideoSpinner');
   const overlayText = document.getElementById('ptzOverlayText1');
@@ -3518,28 +3602,8 @@ function setupSingleCameraView(camObj) {
     feedImg.src = `${BACKEND_API_BASE}/api/camera-frame?src=${encodeURIComponent(streamAlias)}&t=${Date.now()}`;
     feedImg.style.display = 'block';
   }
-  if (videoEl) {
-    videoEl.style.display = 'none';
-    if (spinnerEl) spinnerEl.style.display = 'block';
-    videoEl.muted = !isAudioListening;
-    videoEl.src = `${BACKEND_API_BASE}/api/camera-stream?src=${encodeURIComponent(streamAlias)}&quality=${resolveEffectiveCameraQuality()}`;
-    videoEl.load();
-    const playPromise = videoEl.play();
-    if (playPromise) playPromise.catch(() => {});
 
-    const onReady = () => {
-      videoEl.style.display = 'block';
-      if (feedImg) feedImg.style.display = 'none';
-      if (spinnerEl) spinnerEl.style.display = 'none';
-    };
-    videoEl.onplaying = onReady;
-    videoEl.onloadeddata = onReady;
-    videoEl.oncanplay = onReady;
-    videoEl.onerror = () => {
-      if (spinnerEl) spinnerEl.style.display = 'none';
-      if (feedImg) feedImg.style.display = 'block';
-    };
-  }
+  connectCameraPlayer(streamEl, videoEl, feedImg, spinnerEl, streamAlias, !isAudioListening);
 }
 
 function switchCameraViewMode(mode) {
@@ -3559,11 +3623,13 @@ function switchCameraViewMode(mode) {
   const alias2 = 'outdoor_pro_poste_channel2_quality3';
 
   const feed1 = document.getElementById('ptzMainVideoFeed');
+  const stream1 = document.getElementById('ptzMainVideoStream');
   const video1 = document.getElementById('ptzMainVideoElement');
   const spinner1 = document.getElementById('ptzVideoSpinner');
   const overlay1 = document.getElementById('ptzOverlayText1');
 
   const feed2 = document.getElementById('ptzSecondaryVideoFeed');
+  const stream2 = document.getElementById('ptzSecondaryVideoStream');
   const video2 = document.getElementById('ptzSecondaryVideoElement');
 
   const effective = resolveEffectiveCameraQuality();
@@ -3574,82 +3640,29 @@ function switchCameraViewMode(mode) {
     if (wrap2) wrap2.style.display = 'flex';
     if (overlay1) overlay1.innerText = `VISTA 1 • AMPLA (${activeCameraQuality === 'auto' ? ('AUTO ' + effective.toUpperCase()) : '3K'})`;
 
-    // Conecta Lente 1 (Ampla)
     if (feed1) feed1.src = `${BACKEND_API_BASE}/api/camera-frame?src=${encodeURIComponent(alias1)}&t=${Date.now()}`;
-    if (video1) {
-      video1.src = `${BACKEND_API_BASE}/api/camera-stream?src=${encodeURIComponent(alias1)}&quality=${effective}`;
-      video1.muted = !isAudioListening;
-      video1.style.display = 'none';
-      if (spinner1) spinner1.style.display = 'block';
-      video1.load();
-      const p1 = video1.play();
-      if (p1) p1.catch(() => {});
+    connectCameraPlayer(stream1, video1, feed1, spinner1, alias1, !isAudioListening);
 
-      const onReady1 = () => {
-        video1.style.display = 'block';
-        if (feed1) feed1.style.display = 'none';
-        if (spinner1) spinner1.style.display = 'none';
-      };
-      video1.onplaying = onReady1;
-      video1.onloadeddata = onReady1;
-      video1.oncanplay = onReady1;
-      video1.onerror = () => {
-        if (spinner1) spinner1.style.display = 'none';
-        if (feed1) feed1.style.display = 'block';
-      };
-    }
-
-    // Conecta Lente 2 (Tele/PTZ)
     if (feed2) feed2.src = `${BACKEND_API_BASE}/api/camera-frame?src=${encodeURIComponent(alias2)}&t=${Date.now()}`;
-    if (video2) {
-      video2.src = `${BACKEND_API_BASE}/api/camera-stream?src=${encodeURIComponent(alias2)}&quality=${effective}`;
-      video2.muted = true; // Apenas 1 canal de áudio por padrão
-      video2.style.display = 'none';
-      video2.load();
-      const p2 = video2.play();
-      if (p2) p2.catch(() => {});
+    connectCameraPlayer(stream2, video2, feed2, null, alias2, true);
 
-      const onReady2 = () => {
-        video2.style.display = 'block';
-        if (feed2) feed2.style.display = 'none';
-      };
-      video2.onplaying = onReady2;
-      video2.onloadeddata = onReady2;
-      video2.oncanplay = onReady2;
-      video2.onerror = () => {
-        if (feed2) feed2.style.display = 'block';
-      };
-    }
     showToast('Visualização Dupla Ativada: Ampla + Teleobjetiva 📺');
   } else if (mode === 'view1') {
     if (container) container.classList.remove('dual-active');
     if (wrap1) wrap1.style.display = 'flex';
     if (wrap2) wrap2.style.display = 'none';
     if (overlay1) overlay1.innerText = 'VISTA 1 • AMPLA TOTAL';
+    if (stream2) { try { stream2.src = ''; } catch(e){} }
     if (video2) { try { video2.pause(); video2.removeAttribute('src'); } catch(e){} }
     showToast('Exibindo Vista 1: Grande Angular 👁️');
   } else if (mode === 'view2') {
     if (container) container.classList.remove('dual-active');
     if (wrap1) wrap1.style.display = 'none';
     if (wrap2) wrap2.style.display = 'flex';
+    if (stream1) { try { stream1.src = ''; } catch(e){} }
     if (video1) { try { video1.pause(); video1.removeAttribute('src'); } catch(e){} }
     if (feed2) feed2.src = `${BACKEND_API_BASE}/api/camera-frame?src=${encodeURIComponent(alias2)}&t=${Date.now()}`;
-    if (video2) {
-      video2.src = `${BACKEND_API_BASE}/api/camera-stream?src=${encodeURIComponent(alias2)}&quality=${effective}`;
-      video2.muted = !isAudioListening;
-      video2.style.display = 'none';
-      video2.load();
-      const p2 = video2.play();
-      if (p2) p2.catch(() => {});
-
-      const onReady2 = () => {
-        video2.style.display = 'block';
-        if (feed2) feed2.style.display = 'none';
-      };
-      video2.onplaying = onReady2;
-      video2.onloadeddata = onReady2;
-      video2.oncanplay = onReady2;
-    }
+    connectCameraPlayer(stream2, video2, feed2, null, alias2, !isAudioListening);
     showToast('Exibindo Vista 2: Teleobjetiva / Motorizada 🎯');
   }
 }
@@ -3851,6 +3864,10 @@ function toggleAudioListen() {
   const statusText = document.getElementById('audioStatusText');
   const waveMeter = document.getElementById('audioWaveMeter');
 
+  const stream1 = document.getElementById('ptzMainVideoStream');
+  const stream2 = document.getElementById('ptzSecondaryVideoStream');
+  const innerVid1 = stream1 ? (stream1.querySelector('video') || stream1.video) : null;
+  const innerVid2 = stream2 ? (stream2.querySelector('video') || stream2.video) : null;
   const video1 = document.getElementById('ptzMainVideoElement');
   const video2 = document.getElementById('ptzSecondaryVideoElement');
 
@@ -3860,15 +3877,28 @@ function toggleAudioListen() {
     if (btn) btn.style.background = 'rgba(56, 189, 248, 0.25)';
     if (statusText) statusText.innerText = '🔊 Retorno de Som Ativo — Ouvindo ambiente da câmera ao vivo';
     if (waveMeter) waveMeter.style.display = 'flex';
+
+    if (innerVid1) {
+      innerVid1.muted = false;
+      innerVid1.volume = 1.0;
+      innerVid1.play().catch(e => console.log('Audio listen innerVid1 error:', e));
+    }
     if (video1) {
       video1.muted = false;
       video1.volume = 1.0;
-      video1.play().catch(e => console.log('Audio listen play error:', e));
+      video1.play().catch(e => console.log('Audio listen video1 error:', e));
     }
-    if (video2 && activeCameraViewMode === 'view2') {
-      video2.muted = false;
-      video2.volume = 1.0;
-      video2.play().catch(e => console.log('Audio listen play error:', e));
+    if (activeCameraViewMode === 'view2') {
+      if (innerVid2) {
+        innerVid2.muted = false;
+        innerVid2.volume = 1.0;
+        innerVid2.play().catch(e => console.log('Audio listen innerVid2 error:', e));
+      }
+      if (video2) {
+        video2.muted = false;
+        video2.volume = 1.0;
+        video2.play().catch(e => console.log('Audio listen video2 error:', e));
+      }
     }
     showToast('Retorno de som da câmera ativado! 🔊');
   } else {
@@ -3877,7 +3907,10 @@ function toggleAudioListen() {
     if (btn) btn.style.background = '';
     if (statusText) statusText.innerText = 'Áudio Bidirecional: Microfone e Alto-Falante Prontos';
     if (waveMeter) waveMeter.style.display = 'none';
+
+    if (innerVid1) innerVid1.muted = true;
     if (video1) video1.muted = true;
+    if (innerVid2) innerVid2.muted = true;
     if (video2) video2.muted = true;
     showToast('Retorno de som da câmera mutado.');
   }
@@ -3886,7 +3919,7 @@ function toggleAudioListen() {
 let isAudioTalking = false;
 let audioTalkStream = null;
 let audioTalkRecorder = null;
-let audioSyncStepTimeout = null;
+let audioTalkCycleTimeout = null;
 
 async function toggleAudioTalk() {
   const btn = document.getElementById('btnAudioTalk');
@@ -3926,32 +3959,50 @@ async function toggleAudioTalk() {
           return;
         }
 
-        const mimeType = MediaRecorder.isTypeSupported('audio/webm;codecs=opus')
-          ? 'audio/webm;codecs=opus'
-          : (MediaRecorder.isTypeSupported('audio/webm') ? 'audio/webm' : '');
-
-        audioTalkRecorder = mimeType ? new MediaRecorder(audioTalkStream, { mimeType }) : new MediaRecorder(audioTalkStream);
-
-        audioTalkRecorder.ondataavailable = async e => {
-          if (e.data && e.data.size > 0 && isAudioTalking) {
-            try {
-              const camId = activePtzCam || 'outdoor_pro_poste';
-              const talkUrl = `${BACKEND_API_BASE}/api/camera/talkback?id=${encodeURIComponent(camId)}`;
-              await fetch(talkUrl, {
-                method: 'POST',
-                headers: {
-                  'Content-Type': e.data.type || 'audio/webm'
-                },
-                body: e.data
-              });
-            } catch(err) {
-              console.warn('[Talkback chunk send error]:', err);
-            }
+        const sendChunk = async (blob) => {
+          if (!blob || blob.size < 50 || !isAudioTalking) return;
+          try {
+            const camId = activePtzCam || 'outdoor_pro_poste';
+            const talkUrl = `${BACKEND_API_BASE}/api/camera/talkback?id=${encodeURIComponent(camId)}`;
+            await fetch(talkUrl, {
+              method: 'POST',
+              headers: {
+                'Content-Type': blob.type || 'audio/webm'
+              },
+              body: blob
+            });
+          } catch(err) {
+            console.warn('[Talkback chunk send error]:', err);
           }
         };
 
-        // Envia chunks a cada 600ms para resposta ultra-rápida no alto-falante
-        audioTalkRecorder.start(600);
+        // Gravação contínua por ciclos curtos (800ms)
+        // Garante que todo chunk enviado tenha cabeçalho EBML completo e válido
+        const runRecordCycle = () => {
+          if (!isAudioTalking || !audioTalkStream) return;
+          const mimeType = MediaRecorder.isTypeSupported('audio/webm;codecs=opus')
+            ? 'audio/webm;codecs=opus'
+            : (MediaRecorder.isTypeSupported('audio/webm') ? 'audio/webm' : '');
+
+          const recorder = mimeType ? new MediaRecorder(audioTalkStream, { mimeType }) : new MediaRecorder(audioTalkStream);
+          audioTalkRecorder = recorder;
+          recorder.ondataavailable = e => {
+            if (e.data && e.data.size > 0) sendChunk(e.data);
+          };
+          recorder.onstop = () => {
+            if (isAudioTalking) {
+              audioTalkCycleTimeout = setTimeout(runRecordCycle, 50);
+            }
+          };
+          recorder.start();
+          setTimeout(() => {
+            if (recorder.state === 'recording') {
+              try { recorder.stop(); } catch(e){}
+            }
+          }, 800);
+        };
+
+        runRecordCycle();
         showToast('Microfone conectado! Fale no alto-falante da câmera 📢', '', '🎙️', 'success');
 
       } else {
@@ -3968,6 +4019,7 @@ async function toggleAudioTalk() {
     // DESATIVAR MICROFONE INSTANTANEAMENTE (1 TOQUE)
     isAudioTalking = false;
     isPttTalking = false;
+    if (audioTalkCycleTimeout) clearTimeout(audioTalkCycleTimeout);
 
     if (btn) {
       btn.classList.remove('active-talking');
@@ -4287,7 +4339,12 @@ function formatSecondsToTime(sec) {
 function closePtzModal() {
   const modal = document.getElementById('cameraPtzModal');
   if (modal) modal.classList.remove('active');
-  
+
+  const stream1 = document.getElementById('ptzMainVideoStream');
+  const stream2 = document.getElementById('ptzSecondaryVideoStream');
+  if (stream1) { try { stream1.src = ''; } catch(e){} }
+  if (stream2) { try { stream2.src = ''; } catch(e){} }
+
   const video1 = document.getElementById('ptzMainVideoElement');
   const video2 = document.getElementById('ptzSecondaryVideoElement');
   const sdVideo = document.getElementById('sdPlaybackVideoElement');

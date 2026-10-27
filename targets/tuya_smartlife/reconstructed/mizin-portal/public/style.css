@@ -3629,7 +3629,9 @@ button.btn-close:active {
 }
 
 .ptz-main-player-wrap video,
-.ptz-main-player-wrap img {
+.ptz-main-player-wrap img,
+.ptz-main-player-wrap video-stream,
+.ptz-main-player-wrap video-stream video {
   width: 100% !important;
   height: 100% !important;
   max-height: 100% !important;

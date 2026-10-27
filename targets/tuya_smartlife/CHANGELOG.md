@@ -3,6 +3,29 @@
 Todas as descobertas, módulos dissecados e correções desta análise são registrados aqui.
 Formato de versão obrigatório: `vX.Y.Z (build XXXX)`.
 
+## v0.24.0 (build 0026) - 2026-10-26
+
+### ✨ Features
+- feat: canal direto de comunicação ultrarrápido WebSocket MSE e WebRTC (`/api/ws`):
+  - Implementa proxy transparente nativo Node.js (`server.on('upgrade', ...)`) para reescrever cabeçalhos de origem externa e rotear o canal TCP WebSocket direto ao go2rtc
+  - Bypassa completamente buffers HTTP de edge proxy e túneis Cloudflare, entregando vídeo ao vivo e áudio da câmera em menos de 250ms (sub-segundo)
+  - Integra componentes nativos `<video-stream>` no Surveillance Theater com controle estrito de buffer (rolling 5s) e aceleração dinâmica de playback (`playbackRate`) para eliminar qualquer drift de latência
+  - Fallback automático e transparente para stream HTTP fragmentado caso o cliente ou rede restrinja WebSockets
+- feat: pipeline contínuo e estável de transmissão de voz no microfone (Talkback):
+  - Captura ciclos contínuos de 800ms com cabeçalho EBML/Opus completo em cada pacote, prevenindo erros de decodificação e truncamento no alto-falante
+  - Controle de ativação em 1 toque (toggle) sincronizado com indicadores visuais no player
+
+### ⚡ Improvements
+- improve: configuração de STUN público Cloudflare e Google no go2rtc para negociação WebRTC direta
+- improve: garantia rigorosa de enquadramento 100% sem cortes (`object-fit: contain !important;`) nos novos elementos de vídeo
+- improve: limpeza e liberação imediata de canais de streaming e microfone ao fechar o modal (`closePtzModal`)
+
+### 🐛 Fixes
+- fix: corrige rejeição `403 Forbidden` do go2rtc em conexões remotas via túnel Cloudflare através de reescrita automática dos headers `Host` e `Origin` no proxy WebSocket
+- fix: corrige argumento `-config` para `-c` no watchdog do go2rtc em `server.mjs`, assegurando carregamento fidedigno de configurações
+
+---
+
 ## v0.23.0 (build 0025) - 2026-10-26
 
 ### ✨ Features

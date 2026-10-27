@@ -1,4 +1,5 @@
 import http from 'node:http';
+import net from 'node:net';
 import os from 'node:os';
 import fs from 'node:fs';
 import path from 'node:path';
@@ -40,7 +41,7 @@ function ensureGo2rtcRunning() {
           ...process.env,
           PATH: ffmpegDir + ';' + (process.env.PATH || '')
         };
-        go2rtcChild = spawn(GO2RTC_BIN, ['-config', GO2RTC_CONFIG], {
+        go2rtcChild = spawn(GO2RTC_BIN, ['-c', GO2RTC_CONFIG], {
           cwd: path.dirname(GO2RTC_CONFIG),
           windowsHide: true,
           stdio: 'ignore',
@@ -1378,6 +1379,24 @@ const server = http.createServer(async (req, res) => {
     return;
   }
 
+  // Proxy WebRTC WHEP / SDP Offer direto para o go2rtc
+  if (url.pathname === '/api/webrtc') {
+    const targetUrl = `http://127.0.0.1:19843${req.url}`;
+    const proxyReq = http.request(targetUrl, {
+      method: req.method,
+      headers: { ...req.headers, host: '127.0.0.1:19843' }
+    }, (proxyRes) => {
+      res.writeHead(proxyRes.statusCode, proxyRes.headers);
+      proxyRes.pipe(res);
+    });
+    proxyReq.on('error', () => {
+      res.writeHead(503, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ error: 'go2rtc offline' }));
+    });
+    req.pipe(proxyReq);
+    return;
+  }
+
   // Função de Resolução de Alias para Melhor Qualidade Nativa
   function resolveStreamAlias(src, quality = 'native') {
     if (!src) return '';
@@ -2705,4 +2724,50 @@ server.listen(PORT, '0.0.0.0', () => {
   console.log(`URL Local: http://localhost:${PORT}`);
   console.log(`URL na Rede: http://192.168.1.30:${PORT}`);
   console.log(`==========================================================`);
+});
+
+// Proxy WebSocket de Ultra Baixa Latência (MSE / WebRTC) para go2rtc (127.0.0.1:19843)
+server.on('upgrade', (req, clientSocket, head) => {
+  const host = req.headers.host || '127.0.0.1';
+  let pathname = '';
+  try {
+    pathname = new URL(req.url, `http://${host}`).pathname;
+  } catch (e) {
+    pathname = (req.url || '').split('?')[0];
+  }
+
+  if (pathname.startsWith('/api/ws')) {
+    console.log(`[WS Proxy] Conexão WebSocket estabelecida para go2rtc: ${req.url}`);
+    const upstream = net.connect(19843, '127.0.0.1', () => {
+      let reqHeaders = `${req.method} ${req.url} HTTP/1.1\r\n`;
+      for (let i = 0; i < req.rawHeaders.length; i += 2) {
+        const key = req.rawHeaders[i];
+        let val = req.rawHeaders[i + 1];
+        const lowerKey = key.toLowerCase();
+        if (lowerKey === 'host') {
+          val = '127.0.0.1:19843';
+        } else if (lowerKey === 'origin') {
+          val = 'http://127.0.0.1:19843';
+        }
+        reqHeaders += `${key}: ${val}\r\n`;
+      }
+      reqHeaders += '\r\n';
+      upstream.write(reqHeaders);
+      if (head && head.length > 0) {
+        upstream.write(head);
+      }
+      clientSocket.pipe(upstream);
+      upstream.pipe(clientSocket);
+    });
+
+    upstream.on('error', (err) => {
+      console.warn('[WS Proxy Upstream Error]:', err.message);
+      try { clientSocket.destroy(); } catch {}
+    });
+    clientSocket.on('error', () => {
+      try { upstream.destroy(); } catch {}
+    });
+    return;
+  }
+  clientSocket.destroy();
 });

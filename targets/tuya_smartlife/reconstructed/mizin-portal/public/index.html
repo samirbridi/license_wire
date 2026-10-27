@@ -19,6 +19,7 @@
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
+  <script type="module" src="video-stream.js"></script>
 </head>
 <body>
 
@@ -1236,6 +1237,7 @@
               
               <!-- PLAYER 1: VISTA PRINCIPAL (AMPLA OU ÚNICA) -->
               <div class="ptz-main-player-wrap" id="ptzPlayerWrap1">
+                <video-stream id="ptzMainVideoStream" mode="webrtc,mse,mp4" style="width:100%; height:100%; display:none; border-radius:10px; background:#000; object-fit:contain !important;"></video-stream>
                 <video id="ptzMainVideoElement" autoplay playsinline muted controls style="width:100%; height:100%; display:none; border-radius:10px; background:#000; object-fit:contain !important;"></video>
                 <img id="ptzMainVideoFeed" src="" alt="Câmera Feed" style="width:100%; height:100%; border-radius:10px; display:block; background:#000; object-fit:contain !important;">
                 <div id="ptzVideoSpinner" class="ptz-stream-spinner">
@@ -1253,6 +1255,7 @@
 
               <!-- PLAYER 2: VISTA SECUNDÁRIA (TELE / PTZ DA OUTDOOR PRO) -->
               <div class="ptz-main-player-wrap" id="ptzPlayerWrap2" style="display:none;">
+                <video-stream id="ptzSecondaryVideoStream" mode="webrtc,mse,mp4" style="width:100%; height:100%; display:none; border-radius:10px; background:#000; object-fit:contain !important;"></video-stream>
                 <video id="ptzSecondaryVideoElement" autoplay playsinline muted controls style="width:100%; height:100%; display:none; border-radius:10px; background:#000; object-fit:contain !important;"></video>
                 <img id="ptzSecondaryVideoFeed" src="" alt="Câmera Feed Secundário" style="width:100%; height:100%; border-radius:10px; display:block; background:#000; object-fit:contain !important;">
                 <div class="ptz-overlay-top-badge" id="ptzOverlayBadge2">
