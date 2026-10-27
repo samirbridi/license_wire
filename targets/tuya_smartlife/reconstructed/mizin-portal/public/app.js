@@ -168,6 +168,10 @@ async function detectAccessMode() {
     const res = await fetch(healthUrl, { cache: 'no-store' });
     if (res.ok) {
       const data = await res.json();
+      if (data && data.version) {
+        const vBadge = document.getElementById('headerVersionBadge');
+        if (vBadge) vBadge.innerText = data.version;
+      }
       if (data && data.serverLanIp) {
         window._serverLanIp = data.serverLanIp;
         window._serverPort = data.serverPort || 19860;
@@ -5573,6 +5577,22 @@ function copyToClipboard(text) {
     alert(text);
   });
 }
+
+// Sincronização Dinâmica do Badge de Versão
+async function syncVersionBadge() {
+  const vBadge = document.getElementById('headerVersionBadge');
+  try {
+    const res = await fetch('/version.json?t=' + Date.now(), { cache: 'no-store' });
+    if (res.ok) {
+      const data = await res.json();
+      if (data && data.version && vBadge) {
+        vBadge.innerText = data.version;
+      }
+    }
+  } catch (e) {}
+}
+syncVersionBadge();
+
 
 
 

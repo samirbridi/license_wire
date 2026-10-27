@@ -22,6 +22,16 @@ const ENERGY_HISTORY_PATH = path.join(WORKSPACE, 'targets/tuya_smartlife/runtime
 const UI_CONFIG_PATH = path.join(WORKSPACE, 'targets/tuya_smartlife/runtime/ui_config.json');
 const AUTOMATIONS_PATH = path.join(WORKSPACE, 'targets/tuya_smartlife/runtime/automations.json');
 const SCENES_PATH = path.join(WORKSPACE, 'targets/tuya_smartlife/runtime/scenes.json');
+const VERSION_PATH = path.join(WORKSPACE, 'targets/tuya_smartlife/VERSION');
+
+function getCurrentVersion() {
+  try {
+    if (fs.existsSync(VERSION_PATH)) {
+      return fs.readFileSync(VERSION_PATH, 'utf-8').trim();
+    }
+  } catch {}
+  return 'v0.24.0 (build 0026)';
+}
 const PYTHON_PATH = 'python';
 const FFMPEG_BIN = 'D:\\REA - ENGENHARIA REVERSA\\targets\\mizin_playout\\binaries\\qa\\ffmpeg\\ffmpeg-n8.1-latest-win64-gpl-shared-8.1\\bin\\ffmpeg.exe';
 const GO2RTC_BIN = path.join(WORKSPACE, 'targets/xiaomi_home/runtime/go2rtc-v1.9.15/go2rtc.exe');
@@ -510,7 +520,7 @@ function saveAutomations(automations) {
 
 function generateBackup() {
   return {
-    version: 'v0.13.0 (build 0013)',
+    version: getCurrentVersion(),
     timestamp: new Date().toISOString(),
     host: 'mizin-portal',
     registry: fs.existsSync(REGISTRY_PATH) ? JSON.parse(fs.readFileSync(REGISTRY_PATH, 'utf-8')) : [],
@@ -1336,7 +1346,18 @@ const server = http.createServer(async (req, res) => {
       serverPort: PORT,
       clientIp: clientIp,
       isDirectLocal: Boolean(isDirectLocal),
-      localDirectUrl: `http://${localIp}:${PORT}`
+      localDirectUrl: `http://${localIp}:${PORT}`,
+      version: getCurrentVersion()
+    }));
+    return;
+  }
+
+  // Versão Atual do Sistema
+  if (url.pathname === '/api/version') {
+    res.writeHead(200, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({
+      version: getCurrentVersion(),
+      timestamp: Date.now()
     }));
     return;
   }
