@@ -56,8 +56,7 @@
       "door_control_1": "close",
       "voice_control_1": true,
       "door_state_1": "none"
-    },
-    "room": "Garagem"
+    }
   },
   {
     "id": "eb2d554c1cc3878f810lhh",
@@ -152,8 +151,7 @@
       "cycle_time": "",
       "random_time": "",
       "switch_inching": ""
-    },
-    "room": "Mizin"
+    }
   },
   {
     "id": "eba364bce4af5a110fyw70",
@@ -177,8 +175,7 @@
       "cycle_time": "",
       "random_time": "",
       "switch_inching": "AAJY"
-    },
-    "room": "Mizin"
+    }
   },
   {
     "id": "eb75753e5d4f53f3dbf4sv",
@@ -211,8 +208,7 @@
       "cycle_time": "",
       "random_time": "",
       "switch_inching": ""
-    },
-    "room": "Crisbridi"
+    }
   },
   {
     "id": "ebce5d26e60a8e1addob31",
@@ -226,8 +222,7 @@
     "model": "",
     "online": true,
     "sub": false,
-    "status": {},
-    "room": "Mizin"
+    "status": {}
   },
   {
     "id": "ebbe3e7e35f15b989avdos",
@@ -241,8 +236,7 @@
     "model": "",
     "online": true,
     "sub": true,
-    "status": {},
-    "room": "Mizin"
+    "status": {}
   },
   {
     "id": "ebb5f986e16519ef82o3oa",
@@ -271,8 +265,7 @@
       "breaker_number": "1234",
       "leakagecurr_test": false,
       "supply_frequency": 600
-    },
-    "room": "Garagem"
+    }
   },
   {
     "id": "ebce2ea581c2690311qvem",
@@ -292,8 +285,7 @@
       "fault": 0,
       "switch": true,
       "supply_frequency": 60
-    },
-    "room": "Sala"
+    }
   },
   {
     "id": "eb887c762b83806650kele",
@@ -346,8 +338,7 @@
       "cycle_time": "",
       "random_time": "",
       "switch_inching": ""
-    },
-    "room": "Mizin"
+    }
   },
   {
     "id": "eb35b86cd7ac03787dejnn",
@@ -361,8 +352,7 @@
     "model": "",
     "online": true,
     "sub": true,
-    "status": {},
-    "room": "Mizin"
+    "status": {}
   },
   {
     "id": "eb8e5475187db23842hfcm",
@@ -393,8 +383,7 @@
       "remote_no_pd_setkey": "AAAB",
       "remote_no_dp_key": "",
       "initiative_message": ""
-    },
-    "room": "Sala"
+    }
   },
   {
     "id": "eb6227b63a58b256579aim",
@@ -418,8 +407,7 @@
       "cycle_time": "",
       "random_time": "",
       "switch_inching": ""
-    },
-    "room": "Sala"
+    }
   },
   {
     "id": "ebe317c237358405b8h5n8",
@@ -443,8 +431,7 @@
       "cycle_time": "",
       "random_time": "",
       "switch_inching": ""
-    },
-    "room": "Garagem"
+    }
   },
   {
     "id": "eb7f7b175bf04774f0qnwh",
@@ -480,7 +467,6 @@
       "master_information": "",
       "factory_reset": false,
       "sub_admin": "AQAC"
-    },
-    "room": "Garagem"
+    }
   }
 ]

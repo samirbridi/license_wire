@@ -2028,19 +2028,44 @@ function openQrSmartLife() {
   window.open('http://' + window.location.hostname + ':19850', '_blank');
 }
 
+async function syncLanDevices() {
+  const btn = document.getElementById('btnSyncLanDevices');
+  const spinner = document.getElementById('syncDevicesSpinner');
+  if (spinner) spinner.style.display = 'inline-block';
+  if (btn) btn.disabled = true;
+  showToast('Varrendo Rede...', 'Procurando novos aparelhos Tuya e Smart Life na rede local...', '🔄', 'info');
+
+  try {
+    const res = await fetch(`${BACKEND_API_BASE}/api/devices/scan`, { method: 'POST' });
+    const data = await res.json();
+    if (data.success) {
+      await fetchDevices();
+      showToast('Sincronização Concluída!', `${data.count} aparelhos verificados e atualizados na rede.`, '✅', 'success');
+    } else {
+      showToast('Erro na Sincronização', data.error || 'Falha ao escanear rede', '⚠️', 'danger');
+    }
+  } catch (err) {
+    showToast('Erro de Conexão', err.message, '⚠️', 'danger');
+  } finally {
+    if (spinner) spinner.style.display = 'none';
+    if (btn) btn.disabled = false;
+  }
+}
+
 async function startNetworkScan() {
   const area = document.getElementById('scanResultsArea');
   const msg = document.getElementById('scanStatusMsg');
   const btn = document.getElementById('btnScanRun');
 
   if (area) area.style.display = 'block';
-  if (msg) msg.innerText = 'Escaneando rede 192.168.1.0/24 na porta 6668... Aguarde ~3s';
+  if (msg) msg.innerText = 'Escaneando rede 192.168.1.0/24 e sincronizando aparelhos... Aguarde ~4s';
   if (btn) btn.disabled = true;
 
   try {
-    const res = await fetch('/api/devices');
+    const res = await fetch(`${BACKEND_API_BASE}/api/devices/scan`, { method: 'POST' });
+    const data = await res.json();
     await fetchDevices();
-    if (msg) msg.innerText = `Varredura concluída! ${devices.length} dispositivos encontrados e sincronizados.`;
+    if (msg) msg.innerText = `Varredura concluída! ${data.count || devices.length} dispositivos encontrados e sincronizados.`;
   } catch (e) {
     if (msg) msg.innerText = 'Erro na varredura: ' + e.message;
   } finally {
@@ -2301,12 +2326,149 @@ document.addEventListener('click', (e) => {
   }
 });
 
+let lastSeenDoorbellLogId = null;
+let globalAudioCtx = null;
+
+function getAudioContext() {
+  const AudioCtx = window.AudioContext || window.webkitAudioContext;
+  if (!AudioCtx) return null;
+  if (!globalAudioCtx) {
+    globalAudioCtx = new AudioCtx();
+  }
+  if (globalAudioCtx.state === 'suspended') {
+    globalAudioCtx.resume().catch(() => {});
+  }
+  return globalAudioCtx;
+}
+
+window.addEventListener('click', () => {
+  if (globalAudioCtx && globalAudioCtx.state === 'suspended') {
+    globalAudioCtx.resume().catch(() => {});
+  }
+}, { passive: true });
+
+function playDoorbellChime() {
+  try {
+    const ctx = getAudioContext();
+    if (!ctx) return;
+    const now = ctx.currentTime;
+    
+    // First tone (Ding - 660 Hz - E5)
+    const osc1 = ctx.createOscillator();
+    const gain1 = ctx.createGain();
+    osc1.type = 'sine';
+    osc1.frequency.setValueAtTime(659.25, now);
+    gain1.gain.setValueAtTime(0, now);
+    gain1.gain.linearRampToValueAtTime(0.5, now + 0.05);
+    gain1.gain.exponentialRampToValueAtTime(0.001, now + 1.2);
+    osc1.connect(gain1);
+    gain1.connect(ctx.destination);
+    osc1.start(now);
+    osc1.stop(now + 1.2);
+
+    // Second tone (Dong - 523.25 Hz - C5)
+    const osc2 = ctx.createOscillator();
+    const gain2 = ctx.createGain();
+    osc2.type = 'sine';
+    osc2.frequency.setValueAtTime(523.25, now + 0.38);
+    gain2.gain.setValueAtTime(0, now + 0.38);
+    gain2.gain.linearRampToValueAtTime(0.55, now + 0.43);
+    gain2.gain.exponentialRampToValueAtTime(0.001, now + 2.0);
+    osc2.connect(gain2);
+    gain2.connect(ctx.destination);
+    osc2.start(now + 0.38);
+    osc2.stop(now + 2.0);
+  } catch (e) {
+    console.warn('Audio chime error:', e);
+  }
+}
+
+async function triggerDoorbellTest() {
+  playDoorbellChime();
+  showDoorbellAlertBanner({
+    timeFormatted: new Date().toLocaleTimeString('pt-BR'),
+    action: 'Campainha Acionada 🔔'
+  });
+  try {
+    await fetch('/api/doorbell/trigger', { method: 'POST' });
+    fetchLogs();
+  } catch (err) {}
+}
+
+function showDoorbellAlertBanner(item) {
+  let banner = document.getElementById('floatingDoorbellBanner');
+  if (!banner) {
+    banner = document.createElement('div');
+    banner.id = 'floatingDoorbellBanner';
+    banner.className = 'floating-doorbell-alert';
+    banner.style.cssText = 'position:fixed; top:24px; left:50%; transform:translateX(-50%); z-index:999999; background:linear-gradient(135deg,#0f172a,#1e293b); border:2px solid #0284c7; box-shadow:0 12px 35px rgba(2,132,199,0.45); border-radius:14px; padding:14px 20px; display:flex; align-items:center; gap:16px; min-width:340px; max-width:92vw; animation:bannerSlideDown 0.4s ease;';
+    document.body.appendChild(banner);
+  }
+  const timeStr = item.timeFormatted || new Date().toLocaleTimeString('pt-BR');
+  banner.innerHTML = `
+    <div style="font-size:28px;">🔔</div>
+    <div style="flex:1;">
+      <div style="font-weight:700; font-size:14px; color:#fff; display:flex; align-items:center; gap:6px;">
+        <span>CAMPAINHA ACIONADA!</span>
+        <span class="badge badge-rose" style="font-size:10px; background:#e11d48; color:#fff; padding:2px 6px; border-radius:6px;">AO VIVO</span>
+      </div>
+      <div style="font-size:12px; color:#cbd5e1; margin-top:2px;">
+        Visitante tocou a campainha da entrada às <strong>${timeStr}</strong>
+      </div>
+    </div>
+    <div style="display:flex; gap:6px; align-items:center;">
+      <button class="btn btn-sm btn-primary" onclick="openEntranceCameraFromDoorbell()" style="background:#0284c7; color:#fff; border:none; font-weight:600; padding:6px 12px; border-radius:8px; cursor:pointer;">👀 Ver Câmera Entrada</button>
+      <button class="btn btn-sm btn-secondary" onclick="dismissDoorbellBanner()" style="padding:6px 10px; border-radius:8px; cursor:pointer;">✕</button>
+    </div>
+  `;
+  banner.style.display = 'flex';
+
+  if (window.Notification && Notification.permission === 'granted') {
+    try {
+      new Notification('🔔 Campainha Residencial Acionada!', {
+        body: `Visitante na entrada da residência (${timeStr}). Clique para visualizar.`,
+        icon: '/favicon.ico'
+      });
+    } catch {}
+  } else if (window.Notification && Notification.permission === 'default') {
+    try { Notification.requestPermission(); } catch {}
+  }
+}
+
+function dismissDoorbellBanner() {
+  const banner = document.getElementById('floatingDoorbellBanner');
+  if (banner) banner.style.display = 'none';
+}
+
+function openEntranceCameraFromDoorbell() {
+  dismissDoorbellBanner();
+  switchTab('cameras');
+  const cam = (window._cachedCameras || []).find(c => c.id === 'outdoor_pro_poste' || c.id === 'aw300_portao');
+  if (cam) {
+    openCameraTheater(cam.id, cam.name);
+  }
+}
+
 async function fetchLogs() {
   try {
     const res = await fetch('/api/logs?limit=80');
     const data = await res.json();
     activityLogs = data.logs || [];
     unreadNotifCount = data.unreadCount || 0;
+
+    // Detecção ativa e instantânea de Campainha
+    const unreadDoorbell = activityLogs.find(l => 
+      !l.read && 
+      (l.devId === 'eb7f7b175bf04774f0qnwh' || 
+       (l.devName && l.devName.toLowerCase().includes('campan')) || 
+       (l.action && l.action.toLowerCase().includes('campainha')))
+    );
+
+    if (unreadDoorbell && unreadDoorbell.id !== lastSeenDoorbellLogId) {
+      lastSeenDoorbellLogId = unreadDoorbell.id;
+      playDoorbellChime();
+      showDoorbellAlertBanner(unreadDoorbell);
+    }
 
     // Atualiza badges no cabeçalho
     const notifBadge = document.getElementById('notifBadge');
@@ -3979,6 +4141,8 @@ function toggleAudioListen() {
 let isAudioTalking = false;
 let audioTalkStream = null;
 let audioTalkRecorder = null;
+let audioTalkCtx = null;
+let audioTalkScriptNode = null;
 let audioTalkCycleTimeout = null;
 let talkUploadChain = Promise.resolve();
 
@@ -4009,6 +4173,8 @@ async function toggleAudioTalk() {
       if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
         audioTalkStream = await navigator.mediaDevices.getUserMedia({
           audio: {
+            channelCount: 1,
+            sampleRate: 48000,
             echoCancellation: true,
             noiseSuppression: true,
             autoGainControl: true
@@ -4026,52 +4192,60 @@ async function toggleAudioTalk() {
           method: 'POST'
         }).catch(() => {});
 
+        let activeTalkUploads = 0;
         const sendChunk = (blob) => {
           if (!blob || blob.size < 40 || !isAudioTalking) return;
+          if (activeTalkUploads >= 2) return; // descarta pacote se houver acúmulo na rede para evitar atraso (latência zero)
+          activeTalkUploads++;
           const targetCamId = activePtzCam || camId;
-          talkUploadChain = talkUploadChain.then(async () => {
-            if (!isAudioTalking) return;
-            try {
-              const talkUrl = `${BACKEND_API_BASE}/api/camera/talkback?id=${encodeURIComponent(targetCamId)}`;
-              await fetch(talkUrl, {
-                method: 'POST',
-                headers: {
-                  'Content-Type': blob.type || 'audio/webm'
-                },
-                body: blob
-              });
-            } catch (err) {
-              console.warn('[Talkback chunk send error]:', err);
-            }
+          const talkUrl = `${BACKEND_API_BASE}/api/camera/talkback?id=${encodeURIComponent(targetCamId)}`;
+          fetch(talkUrl, {
+            method: 'POST',
+            headers: {
+              'Content-Type': blob.type || 'audio/webm'
+            },
+            body: blob
+          }).catch(err => {
+            console.warn('[Talkback chunk send error]:', err);
+          }).finally(() => {
+            activeTalkUploads = Math.max(0, activeTalkUploads - 1);
           });
         };
 
-        // Gravação contínua por ciclos curtos (950ms) com cabeçalho WebM/Opus íntegro
-        const runRecordCycle = () => {
-          if (!isAudioTalking || !audioTalkStream) return;
+        // Transmissão contínua em tempo real: Web Audio API com buffer PCM 16kHz
+        const AudioCtx = window.AudioContext || window.webkitAudioContext;
+        if (AudioCtx) {
+          const actx = new AudioCtx({ sampleRate: 16000 });
+          audioTalkCtx = actx;
+          const micSource = actx.createMediaStreamSource(audioTalkStream);
+          // 4096 amostras = 256ms a 16000Hz (latência baixíssima e voz limpa sem estalos)
+          const scriptNode = actx.createScriptProcessor(4096, 1, 1);
+          audioTalkScriptNode = scriptNode;
+          scriptNode.onaudioprocess = (audioEv) => {
+            if (!isAudioTalking) return;
+            const channel = audioEv.inputBuffer.getChannelData(0);
+            const pcm16 = new Int16Array(channel.length);
+            for (let i = 0; i < channel.length; i++) {
+              const s = Math.max(-1, Math.min(1, channel[i]));
+              pcm16[i] = s < 0 ? s * 0x8000 : s * 0x7FFF;
+            }
+            sendChunk(new Blob([pcm16.buffer], { type: 'audio/pcm' }));
+          };
+          micSource.connect(scriptNode);
+          scriptNode.connect(actx.destination);
+        } else {
+          // Fallback MediaRecorder contínuo
           const mimeType = MediaRecorder.isTypeSupported('audio/webm;codecs=opus')
             ? 'audio/webm;codecs=opus'
             : (MediaRecorder.isTypeSupported('audio/webm') ? 'audio/webm' : '');
-
           const recorder = mimeType ? new MediaRecorder(audioTalkStream, { mimeType }) : new MediaRecorder(audioTalkStream);
           audioTalkRecorder = recorder;
           recorder.ondataavailable = e => {
             if (e.data && e.data.size > 0) sendChunk(e.data);
           };
-          recorder.onstop = () => {
-            if (isAudioTalking) {
-              audioTalkCycleTimeout = setTimeout(runRecordCycle, 25);
-            }
-          };
-          recorder.start();
-          setTimeout(() => {
-            if (recorder.state === 'recording') {
-              try { recorder.stop(); } catch (e) {}
-            }
-          }, 950);
-        };
+          recorder.start(250);
+        }
 
-        runRecordCycle();
         showToast('Microfone conectado! Fale no alto-falante da câmera 📢', '', '🎙️', 'success');
 
       } else {
@@ -4101,6 +4275,14 @@ async function toggleAudioTalk() {
     if (waveMeter && !isAudioListening) waveMeter.style.display = 'none';
 
     try {
+      if (audioTalkScriptNode) {
+        try { audioTalkScriptNode.disconnect(); } catch (e) {}
+        audioTalkScriptNode = null;
+      }
+      if (audioTalkCtx) {
+        try { audioTalkCtx.close(); } catch (e) {}
+        audioTalkCtx = null;
+      }
       if (audioTalkRecorder && audioTalkRecorder.state !== 'inactive') {
         audioTalkRecorder.stop();
       }
@@ -4229,14 +4411,23 @@ async function fetchSdRecordings(camId, date, autoPlayOnLoad = false) {
     if (eventsCountBadge) eventsCountBadge.innerText = `${(data.events || []).length} Momentos Disponíveis`;
     if (liveSdQuickInfo) liveSdQuickInfo.innerText = `MicroSD ${totalGb}GB (${usedGb}GB ocupado) • ${(data.events || []).length} momentos`;
 
-    // Renderiza blocos coloridos clicáveis ao longo da régua de 86400 segundos do dia
+    // Renderiza blocos de gravação contínua + marcadores de movimento destacados na régua
     if (track) {
-      track.innerHTML = currentSdRecordings.map((p, idx) => {
+      const baseBlocks = currentSdRecordings.map((p, idx) => {
         const leftPct = (p.start / 86400) * 100;
         const widthPct = Math.max(0.5, ((p.end - p.start) / 86400) * 100);
-        const color = idx % 3 === 0 ? '#10b981' : idx % 3 === 1 ? '#f59e0b' : '#38bdf8';
-        return `<div class="timeline-block" onclick="seekTimelineClick(event)" style="left:${leftPct}%; width:${widthPct}%; background:${color}; cursor:pointer;" title="Clique para reproduzir: ${p.label || (formatSecondsToTime(p.start) + ' - ' + formatSecondsToTime(p.end))}"></div>`;
+        return `<div class="timeline-block" onclick="seekTimelineClick(event)" style="left:${leftPct}%; width:${widthPct}%; background:#10b981; opacity:0.65; cursor:pointer;" title="Gravação Contínua SD: ${p.label || (formatSecondsToTime(p.start) + ' - ' + formatSecondsToTime(p.end))}"></div>`;
       }).join('');
+
+      // Marcadores verticais dourados/laranja de movimento detectado
+      const motionSegments = (data.daySegments || []).filter(s => s.m > 0);
+      const motionMarkers = motionSegments.map(s => {
+        const leftPct = (s.s / 86400) * 100;
+        const widthPct = Math.max(0.35, ((s.d || 60) / 86400) * 100);
+        return `<div class="timeline-motion-marker" onclick="seekTimelineExact(${s.s}, ${s.u}, event)" style="position:absolute; left:${leftPct}%; width:${widthPct}%; height:100%; background:#f59e0b; border-radius:2px; z-index:3; cursor:pointer;" title="⚡ Movimento Detectado às ${formatSecondsToTime(s.s)}"></div>`;
+      }).join('');
+
+      track.innerHTML = baseBlocks + motionMarkers;
     }
 
     // Renderiza chips de Momentos e Eventos detectados no cartão SD
@@ -4247,8 +4438,9 @@ async function fetchSdRecordings(camId, date, autoPlayOnLoad = false) {
       } else {
         eventsContainer.innerHTML = events.map(evt => {
           const safeLabel = String(evt.label || '').replace(/'/g, '');
+          const evtUnix = evt.unix || 0;
           return `
-            <button type="button" class="btn btn-sm btn-outline-cyan" onclick="jumpToSdEvent(${evt.seconds}, '${safeLabel}')" style="font-size:11px; padding:4px 10px; display:inline-flex; align-items:center; gap:5px;" title="Assistir gravação às ${evt.time}">
+            <button type="button" class="btn btn-sm btn-outline-cyan" onclick="jumpToSdEvent(${evt.seconds}, '${safeLabel}', ${evtUnix})" style="font-size:11px; padding:4px 10px; display:inline-flex; align-items:center; gap:5px;" title="Assistir gravação às ${evt.time}">
               ${evt.icon || '🎯'} <strong>${evt.time}</strong> — ${evt.label} ▶
             </button>
           `;
@@ -4260,7 +4452,8 @@ async function fetchSdRecordings(camId, date, autoPlayOnLoad = false) {
       const events = data.events || [];
       const defaultSec = events.length > 0 ? events[0].seconds : Math.max(60, (data.maxAvailableSec || 36000) - 300);
       const defaultLabel = events.length > 0 ? events[0].label : 'Gravação MicroSD';
-      playCurrentSdSegment(defaultSec, defaultLabel);
+      const defaultUnix = events.length > 0 ? events[0].unix : 0;
+      playCurrentSdSegment(defaultSec, defaultLabel, defaultUnix);
     }
   } catch (e) {
     if (track) track.innerHTML = '';
@@ -4269,8 +4462,22 @@ async function fetchSdRecordings(camId, date, autoPlayOnLoad = false) {
 
 let sdPlaybackTimer = null;
 let currentSdPlaySeconds = 36000;
+let currentPlaybackSpeed = 1;
 
-function jumpToSdEvent(seconds, label) {
+function seekTimelineExact(seconds, unixTs, event) {
+  if (event) event.stopPropagation();
+  switchTheaterTab('sd', true);
+  const needle = document.getElementById('timelineNeedle');
+  const timeTip = document.getElementById('timelineNeedleTime');
+  const pct = Math.max(0, Math.min(100, (seconds / 86400) * 100));
+  if (needle) needle.style.left = `${pct}%`;
+  const formatted = formatSecondsToTime(seconds);
+  if (timeTip) timeTip.innerText = formatted;
+  showToast(`Momento: ${formatted} (Movimento SD) 📼`, '', '🎯', 'info');
+  playCurrentSdSegment(seconds, 'Movimento Detectado', unixTs);
+}
+
+function jumpToSdEvent(seconds, label, unixTs) {
   switchTheaterTab('sd', true);
   const needle = document.getElementById('timelineNeedle');
   const timeTip = document.getElementById('timelineNeedleTime');
@@ -4279,7 +4486,7 @@ function jumpToSdEvent(seconds, label) {
   const formatted = formatSecondsToTime(seconds);
   if (timeTip) timeTip.innerText = formatted;
   showToast(`Momento: ${label} (${formatted}) — Reproduzindo 📼`, '', '🎯', 'info');
-  playCurrentSdSegment(seconds, label);
+  playCurrentSdSegment(seconds, label, unixTs);
 }
 
 function seekTimelineClick(event) {
@@ -4327,7 +4534,26 @@ function onTimelineDateChanged(val) {
   fetchSdRecordings(activePtzCam, selectedTimelineDate, currentTheaterTab === 'sd');
 }
 
-function playCurrentSdSegment(targetSeconds, optLabel) {
+async function setPlaybackSpeed(speed, btnEl) {
+  currentPlaybackSpeed = speed;
+  const pills = document.querySelectorAll('.speed-pill');
+  pills.forEach(p => p.classList.remove('active'));
+  if (btnEl) btnEl.classList.add('active');
+
+  const camId = activePtzCam || 'outdoor_pro_poste';
+  const sdVideo = document.getElementById('sdPlaybackVideoElement');
+  if (sdVideo) {
+    try { sdVideo.playbackRate = speed; } catch {}
+  }
+
+  try {
+    await fetch(`${BACKEND_API_BASE}/api/camera/recordings/speed?id=${encodeURIComponent(camId)}&speed=${speed}`, { method: 'POST' });
+  } catch (e) {}
+
+  showToast(`Velocidade de reprodução: ${speed}x ⏩`);
+}
+
+function playCurrentSdSegment(targetSeconds, optLabel, optUnix) {
   if (currentTheaterTab !== 'sd') {
     switchTheaterTab('sd', true);
   }
@@ -4366,7 +4592,8 @@ function playCurrentSdSegment(targetSeconds, optLabel) {
     sdVideo.playsInline = true;
     sdVideo.autoplay = true;
     sdVideo.muted = !isAudioListening;
-    sdVideo.src = `${BACKEND_API_BASE}/api/camera/recordings/stream?id=${encodeURIComponent(camId)}&date=${encodeURIComponent(selectedTimelineDate)}&time=${encodeURIComponent(time)}&sec=${seconds}&t=${Date.now()}`;
+    const unixParam = (optUnix && optUnix > 1577836800) ? `&unix=${optUnix}` : '';
+    sdVideo.src = `${BACKEND_API_BASE}/api/camera/recordings/stream?id=${encodeURIComponent(camId)}&date=${encodeURIComponent(selectedTimelineDate)}&time=${encodeURIComponent(time)}&sec=${seconds}${unixParam}&speed=${currentPlaybackSpeed}&t=${Date.now()}`;
     sdVideo.load();
     const p = sdVideo.play();
     if (p) p.catch(() => {
@@ -5835,7 +6062,7 @@ function renderEvDashboard() {
   if (dTrunk) dTrunk.innerText = veh.doors.trunk ? 'Aberto ⚠️' : 'Fechado';
   if (dHood) dHood.innerText = veh.doors.hood ? 'Aberto ⚠️' : 'Fechado';
   if (dWin) dWin.innerText = 'Todos Fechados';
-  if (dRoof) dRoof.innerText = veh.windows.sunroof === 'closed' ? 'Fechado' : 'Aberto';
+  if (dRoof) dRoof.innerText = (veh.windows.sunroof === 'panoramic' || veh.windows.sunroof === 'panoramic_fixed') ? 'Panorâmico' : (veh.windows.sunroof === 'closed' ? 'Fechado' : 'Aberto');
 
   // Climatização
   const cabinTempEl = document.getElementById('evCabinTemp');
@@ -5856,6 +6083,58 @@ function renderEvDashboard() {
   if (addrEl && veh.location) addrEl.innerText = veh.location.address || 'Garagem Residencial';
   if (odomEl) odomEl.innerText = `${(veh.odometerKm || 0).toLocaleString('pt-BR')} km`;
   if (srcEl) srcEl.innerText = veh.source || 'Nuvem Oficial mTLS';
+
+  // Ficha Técnica Oficial de Engenharia
+  const specsTitleEl = document.getElementById('evSpecsTitle');
+  const specsGridEl = document.getElementById('evSpecsGrid');
+  if (specsTitleEl) {
+    specsTitleEl.innerText = `FICHA TÉCNICA OFICIAL & ENGENHARIA — ${veh.model.toUpperCase()}`;
+  }
+  if (specsGridEl) {
+    const isOra = currentEvVehicle === 'ora5';
+    const specsItems = isOra ? [
+      { lbl: 'Motorização', val: 'Elétrico FWD (204 cv • 260 Nm)' },
+      { lbl: 'Aceleração 0 a 100 km/h', val: '7,7 segundos' },
+      { lbl: 'Velocidade Máxima', val: '170 km/h' },
+      { lbl: 'Bateria de Tração', val: '58,3 kWh LFP (Lítio-Ferro-Fosfato)' },
+      { lbl: 'Autonomia Inmetro', val: '349 km (435 km ciclo WLTP)' },
+      { lbl: 'Recarga Rápida DC', val: 'Até 120 kW (30% a 80% em 20 min)' },
+      { lbl: 'Recarga AC', val: '11 kW trifásica (~8h30)' },
+      { lbl: 'Conector de Recarga', val: 'CCS2 / Tipo 2' },
+      { lbl: 'Dimensões (CxLxA)', val: '4.471 x 1.833 x 1.641 mm' },
+      { lbl: 'Entre-eixos / Vão Livre', val: '2.720 mm • 175 mm' },
+      { lbl: 'Porta-malas / Peso', val: '362 L • 1.685 kg' },
+      { lbl: 'Rodas & Pneus', val: '225/60 R18 (Liga Leve 18")' },
+      { lbl: 'Teto', val: 'Solar Panorâmico' },
+      { lbl: 'Assistência Condução', val: 'ADAS 2+ & Câmera 540°' },
+      { lbl: 'Multimídia & Painel', val: 'Tela 14,6" + Painel 10,25"' },
+      { lbl: 'Modos de Condução', val: 'Eco, Normal, Esportivo, Well Being' },
+    ] : [
+      { lbl: 'Motorização', val: 'Elétrico FWD (75 cv • 135 Nm)' },
+      { lbl: 'Aceleração 0 a 100 km/h', val: '14,9 segundos' },
+      { lbl: 'Velocidade Máxima', val: '130 km/h' },
+      { lbl: 'Bateria de Tração', val: '38,0 kWh Blade Battery (LFP)' },
+      { lbl: 'Autonomia Inmetro', val: '280 km' },
+      { lbl: 'Recarga Rápida DC', val: 'Até 40 kW (30% a 80% em 30 min)' },
+      { lbl: 'Recarga AC', val: '6,6 kW monofásica (~6h)' },
+      { lbl: 'Conector de Recarga', val: 'CCS2 / Tipo 2' },
+      { lbl: 'Dimensões (CxLxA)', val: '3.780 x 1.715 x 1.580 mm' },
+      { lbl: 'Entre-eixos / Vão Livre', val: '2.500 mm • 120 mm' },
+      { lbl: 'Porta-malas / Peso', val: '230 L • 1.058 kg' },
+      { lbl: 'Rodas & Pneus', val: '175/55 R16 (Liga Leve 16")' },
+      { lbl: 'Teto', val: 'Rígido Convencional' },
+      { lbl: 'Assistência Condução', val: 'Controle de Cruzeiro & Câmera Ré' },
+      { lbl: 'Multimídia & Painel', val: 'Tela Rotativa 10,1" + Painel 7"' },
+      { lbl: 'Modos de Condução', val: 'Eco, Normal, Sport' },
+    ];
+
+    specsGridEl.innerHTML = specsItems.map(item => `
+      <div style="background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.07); border-radius:10px; padding:10px 14px;">
+        <div style="font-size:11px; text-transform:uppercase; color:var(--text-muted); letter-spacing:0.5px;">${item.lbl}</div>
+        <div style="font-size:13px; font-weight:600; color:#fff; margin-top:3px;">${item.val}</div>
+      </div>
+    `).join('');
+  }
 }
 
 function adjustEvTemp(delta) {

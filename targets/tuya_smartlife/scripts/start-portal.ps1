@@ -24,7 +24,14 @@ Write-Host "==========================================================" -Foregro
 Write-Host "🏠 INICIANDO CENTRAL UNIFICADA MIZIN HOME" -ForegroundColor Cyan
 Write-Host "==========================================================" -ForegroundColor Cyan
 
-$proc = Start-Process node -ArgumentList $serverScript -WorkingDirectory $workspace -PassThru
+$psi = New-Object System.Diagnostics.ProcessStartInfo
+$psi.FileName = "node"
+$psi.Arguments = $serverScript
+$psi.WorkingDirectory = $workspace
+$psi.WindowStyle = [System.Diagnostics.ProcessWindowStyle]::Hidden
+$psi.CreateNoWindow = $true
+$psi.UseShellExecute = $false
+$proc = [System.Diagnostics.Process]::Start($psi)
 
 Write-Host "[+] Central iniciada com PID: $($proc.Id)" -ForegroundColor Green
 Write-Host "[+] Acesse localmente em: http://localhost:19860" -ForegroundColor White

@@ -3,6 +3,32 @@
 Todas as descobertas, módulos dissecados e correções desta análise são registrados aqui.
 Formato de versão obrigatório: `vX.Y.Z (build XXXX)`.
 
+## v0.27.0 (build 0029) - 2026-10-27
+
+### 💥 Breaking Changes
+- Nenhum.
+
+### ✨ Features
+- feat: integração e ficha técnica oficial de engenharia do **GWM Ora 5** (SUV 100% Elétrico, 204 cv, 260 Nm, Bateria LFP 58,3 kWh, Placa TRL-4I59, Cor Preto, Teto Solar Panorâmico) com dados homologados de recarga DC 120 kW e AC 11 kW
+- feat: sistema sonoro e visual instantâneo de Campainha Residencial (ZX-DB11B):
+  - Chime harmônico sintetizado via Web Audio API (660 Hz E5 -> 523 Hz C5) com desbloqueio inteligente de áudio no primeiro clique
+  - Banner flutuante persistente de alerta imediato com botão direto para "Ver Câmera Entrada" e fechamento rápido
+  - Botão "Testar Toque" no painel de notificações para validação imediata do toque sonoro
+  - Monitor contínuo `doorbell_listener.py` com socket TCP persistente e listeners UDP (6666 e 6667)
+  - Endpoint REST `POST /api/doorbell/trigger` para disparos locais, testes e automações
+- feat: linha do tempo de gravação MicroSD com marcações visuais de eventos e controle de velocidade em hardware (1x, 2x, 4x, 8x, 16x)
+
+### 🐛 Fixes
+- fix: eliminação definitiva de qualquer janela visível do prompt de comando (CMD) usando `System.Diagnostics.ProcessStartInfo` com `CreateNoWindow = $true` e `WindowStyle = Hidden` no guardião (`mizin-guardian.ps1`) e inicializador (`start-portal.ps1`)
+- fix: correção de referência indefinida (`updateAllDeviceStatus` -> `pollActiveDevices`) no endpoint `POST /api/devices/scan`, permitindo sincronização dinâmica e varredura de novos dispositivos Tuya/SmartLife sem retorno de erro 500
+- fix: correção do parâmetro `endtime` na busca de gravações do cartão SD das câmeras Xiaomi para evitar recaída indesejada para o stream ao vivo
+
+### ⚡ Improvements
+- improve: canal de voz Talkback otimizado com captura direta de áudio PCM 16kHz s16le via Web Audio API, eliminando gagueiras, cortes e perda de pacotes
+- improve: deploy contínuo automático no Cloudflare Pages (`https://homecams.pages.dev`)
+
+---
+
 ## v0.26.0 (build 0028) - 2026-10-27
 
 ### ✨ Features

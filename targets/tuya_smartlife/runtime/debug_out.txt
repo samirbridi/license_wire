@@ -1,0 +1,8 @@
+[Tuya UDP Listener] Monitorando porta 6666 para eventos em tempo real da residência
+==========================================================
+🏠 MIZIN HOME PORTAL INICIADO
+URL Local: http://localhost:19860
+URL na Rede: http://192.168.1.30:19860
+==========================================================
+[Cloudflare Watchdog] Sincronizando URL do túnel ativo: https://food-kind-ethernet-down.trycloudflare.com
+[FFmpeg] Aceleração de hardware NVIDIA h264_nvenc ATIVA

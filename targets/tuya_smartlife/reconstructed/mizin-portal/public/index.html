@@ -103,6 +103,7 @@
                 <span id="notifUnreadCountBadge" class="badge badge-live" style="margin-left:6px; font-size:10px;">0 novas</span>
               </div>
               <div class="notif-header-actions">
+                <button class="notif-action-link" onclick="triggerDoorbellTest()" title="Testar toque da campainha" style="color:var(--accent-amber); margin-right:8px; font-weight:600;">🔔 Testar Toque</button>
                 <button class="notif-action-link" onclick="markAllNotificationsAsRead()" title="Marcar todas como lidas">Marcar lidas</button>
               </div>
             </div>
@@ -276,7 +277,7 @@
                 <span id="evQuickOraLock">🔒 Trancado</span>
               </div>
               <div style="font-size:18px; font-weight:700; color:var(--accent-cyan); margin-top:2px;" id="evQuickOraSoc">84%</div>
-              <div style="font-size:11px; color:var(--text-muted);" id="evQuickOraRange">260 km autonomia</div>
+              <div style="font-size:11px; color:var(--text-muted);" id="evQuickOraRange">293 km autonomia</div>
             </div>
             <div style="flex:1; background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.07); border-radius:8px; padding:8px 10px;">
               <div style="font-size:11px; color:var(--text-muted); display:flex; justify-content:space-between;">
@@ -745,9 +746,9 @@
       <div class="ev-hero-card" id="evHeroCard">
         <div class="ev-hero-header">
           <div>
-            <div class="ev-brand-tag" id="evHeroBrand">GWM BRASIL • 100% ELÉTRICO</div>
-            <h1 class="ev-model-name" id="evHeroModel">GWM Ora 03 Skin (Ora 5)</h1>
-            <div class="ev-plate-pill" id="evHeroPlate">Placa: BRA-2E19 • Cor: Branco Nobre / Teto Preto</div>
+            <div class="ev-brand-tag" id="evHeroBrand">GWM BRASIL • SUV 100% ELÉTRICO</div>
+            <h1 class="ev-model-name" id="evHeroModel">GWM Ora 5</h1>
+            <div class="ev-plate-pill" id="evHeroPlate">Placa: TRL-4I59 • Cor: Preto • 204 cv • Bateria 58,3 kWh</div>
           </div>
           <div class="ev-hero-status-badges">
             <span class="badge badge-live" id="evHeroOnlineBadge">🟢 T-Box 4G Online</span>
@@ -769,14 +770,14 @@
                 <span class="ev-soc-lbl">Nível SoC</span>
               </div>
               <div class="ev-range-box">
-                <div class="ev-range-val" id="evRangeKm">260 <small>km</small></div>
+                <div class="ev-range-val" id="evRangeKm">293 <small>km</small></div>
                 <div class="ev-range-sub">Autonomia Restante Estimada</div>
                 <div class="ev-progress-bar">
                   <div class="ev-progress-fill" id="evBatteryBar" style="width: 84%;"></div>
                 </div>
                 <div class="ev-battery-meta">
-                  <span>Capacidade: <strong id="evBatteryCap">48.0 kWh</strong></span>
-                  <span>Máx: <strong id="evMaxRange">310 km</strong></span>
+                  <span>Capacidade: <strong id="evBatteryCap">58.3 kWh</strong></span>
+                  <span>Máx (Inmetro): <strong id="evMaxRange">349 km</strong></span>
                 </div>
               </div>
             </div>
@@ -864,7 +865,7 @@
               <div class="ev-door-chip" id="doorChipTrunk">Porta-Malas: <strong id="doorValTrunk">Fechado</strong></div>
               <div class="ev-door-chip" id="doorChipHood">Capô Dianteiro: <strong id="doorValHood">Fechado</strong></div>
               <div class="ev-door-chip" id="doorChipWindows">Vidros: <strong id="doorValWindows">Todos Fechados</strong></div>
-              <div class="ev-door-chip" id="doorChipSunroof">Teto Solar: <strong id="doorValSunroof">Fechado</strong></div>
+              <div class="ev-door-chip" id="doorChipSunroof">Teto: <strong id="doorValSunroof">Panorâmico</strong></div>
             </div>
           </div>
 
@@ -932,6 +933,18 @@
               </div>
             </div>
           </div>
+
+          <!-- Card 6: Especificações Técnicas Oficiais do Fabricante -->
+          <div class="ev-card ev-card-specs" style="grid-column: 1 / -1;">
+            <div class="ev-card-title">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:16px;height:16px;color:var(--accent-cyan);"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+              <span id="evSpecsTitle">FICHA TÉCNICA OFICIAL & ENGENHARIA — GWM ORA 5</span>
+              <span class="badge badge-cyan" id="evSpecsBadge" style="margin-left:auto;">Dados Homologados</span>
+            </div>
+            <div class="ev-specs-grid" id="evSpecsGrid" style="display:grid; grid-template-columns:repeat(auto-fit, minmax(210px, 1fr)); gap:12px; margin-top:14px;">
+              <!-- Preenchido dinamicamente via app.js -->
+            </div>
+          </div>
         </div>
       </div>
     </section>
@@ -986,7 +999,8 @@
           <span class="section-desc">18 dispositivos sincronizados com chaves criptográficas locais</span>
         </div>
         <div style="display: flex; gap: 10px; align-items: center;">
-          <input type="text" id="inventorySearchInput" class="form-input" style="max-width: 260px;" placeholder="🔍 Filtrar aparelhos..." oninput="filterInventoryTable(this.value)">
+          <input type="text" id="inventorySearchInput" class="form-input" style="max-width: 240px;" placeholder="🔍 Filtrar aparelhos..." oninput="filterInventoryTable(this.value)">
+          <button class="btn btn-outline-cyan" id="btnSyncLanDevices" onclick="syncLanDevices()" title="Escanear e atualizar novos aparelhos"><span id="syncDevicesSpinner" style="display:none;" class="spin">🔄</span> Sincronizar Novos Aparelhos</button>
           <button class="btn btn-ha-action" onclick="openManageQuickGridModal()">⚙️ Personalizar Guia</button>
         </div>
       </div>
@@ -1811,7 +1825,15 @@
                 <span class="legend-dot" style="background:#f59e0b;"></span> Movimento
                 <span class="legend-dot" style="background:#38bdf8;"></span> Humano/Veículo
               </div>
-              <div style="display:flex; gap:8px;">
+              <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
+                <div class="playback-speed-group" style="display:inline-flex; align-items:center; gap:3px; background:rgba(255,255,255,0.06); padding:2px 6px; border-radius:8px; border:1px solid rgba(255,255,255,0.1);">
+                  <span style="font-size:10px; font-weight:700; color:var(--text-muted); margin-right:2px;">VEL:</span>
+                  <button type="button" class="speed-pill active" onclick="setPlaybackSpeed(1, this)" style="border:none; background:#0284c7; color:#fff; font-size:11px; font-weight:700; padding:2px 6px; border-radius:4px; cursor:pointer;">1x</button>
+                  <button type="button" class="speed-pill" onclick="setPlaybackSpeed(2, this)" style="border:none; background:transparent; color:#94a3b8; font-size:11px; font-weight:700; padding:2px 6px; border-radius:4px; cursor:pointer;">2x</button>
+                  <button type="button" class="speed-pill" onclick="setPlaybackSpeed(4, this)" style="border:none; background:transparent; color:#94a3b8; font-size:11px; font-weight:700; padding:2px 6px; border-radius:4px; cursor:pointer;">4x</button>
+                  <button type="button" class="speed-pill" onclick="setPlaybackSpeed(8, this)" style="border:none; background:transparent; color:#94a3b8; font-size:11px; font-weight:700; padding:2px 6px; border-radius:4px; cursor:pointer;">8x</button>
+                  <button type="button" class="speed-pill" onclick="setPlaybackSpeed(16, this)" style="border:none; background:transparent; color:#94a3b8; font-size:11px; font-weight:700; padding:2px 6px; border-radius:4px; cursor:pointer;">16x</button>
+                </div>
                 <button type="button" class="btn btn-sm btn-primary" onclick="playCurrentSdSegment()">▶️ Reproduzir Deste Ponto</button>
                 <button type="button" class="btn btn-sm btn-outline-cyan" onclick="downloadCurrentSdClip()">💾 Baixar Clipe MP4 (15s)</button>
                 <button type="button" class="btn btn-sm btn-secondary" onclick="captureSdSnapshot()">📸 Foto da Gravação</button>

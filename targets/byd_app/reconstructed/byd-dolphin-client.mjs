@@ -112,3 +112,4 @@ export function saveDolphinTelemetry(data) {
   fs.writeFileSync(TELEMETRY_FILE, JSON.stringify(data, null, 2), 'utf8');
   return data;
 }
+

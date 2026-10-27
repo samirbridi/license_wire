@@ -25,21 +25,19 @@ if (Test-Path $pidFile) {
 }
 Set-Content -Path $pidFile -Value $PID -Encoding ascii
 
-$startupInfo = New-CimInstance -ClientOnly -ClassName Win32_ProcessStartup -Property @{
-    ShowWindow = [uint16]0
-}
-
 while ($true) {
     $listening = Get-NetTCPConnection -LocalPort 19860 -State Listen -ErrorAction SilentlyContinue
     if (-not $listening) {
         $nodeExe = (Get-Command node -ErrorAction SilentlyContinue).Source
         if (-not $nodeExe) { $nodeExe = "C:\Program Files\nodejs\node.exe" }
-        $cmdLine = "`"$nodeExe`" `"$serverMjs`""
-        Invoke-CimMethod -ClassName Win32_Process -MethodName Create -Arguments @{
-            CommandLine = $cmdLine
-            CurrentDirectory = $portalDir
-            ProcessStartupInformation = $startupInfo
-        } | Out-Null
+        $psi = New-Object System.Diagnostics.ProcessStartInfo
+        $psi.FileName = $nodeExe
+        $psi.Arguments = "server.mjs"
+        $psi.WorkingDirectory = $portalDir
+        $psi.WindowStyle = [System.Diagnostics.ProcessWindowStyle]::Hidden
+        $psi.CreateNoWindow = $true
+        $psi.UseShellExecute = $false
+        [System.Diagnostics.Process]::Start($psi) | Out-Null
         Start-Sleep -Seconds 5
     }
     Start-Sleep -Seconds 8

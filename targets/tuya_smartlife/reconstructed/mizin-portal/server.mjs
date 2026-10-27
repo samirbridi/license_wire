@@ -1,4 +1,5 @@
 import http from 'node:http';
+import dgram from 'node:dgram';
 import net from 'node:net';
 import os from 'node:os';
 import fs from 'node:fs';
@@ -1025,7 +1026,7 @@ async function sendCloudCommands(deviceId, commands) {
 
 function executePython(args) {
   return new Promise((resolve, reject) => {
-    const proc = spawn(PYTHON_PATH, args, { cwd: WORKSPACE });
+    const proc = spawn(PYTHON_PATH, args, { cwd: WORKSPACE, windowsHide: true });
     let stdout = '';
     let stderr = '';
     proc.stdout.on('data', d => stdout += d.toString('utf-8'));
@@ -1093,6 +1094,104 @@ function checkGateWatchdog(gateDps) {
   }
 }
 
+// Watchdog da Campainha (Tuya Multifunction Alarm ZX-DB11B na Entrada)
+let lastDoorbellTrigger = 0;
+let lastDoorbellMsg = '';
+
+function triggerDoorbellAlert(info = {}) {
+  const now = Date.now();
+  if (now - lastDoorbellTrigger < 6000) return;
+  lastDoorbellTrigger = now;
+  console.log(`[🔔 CAMPAINHA ACIONADA] Notificação em tempo real às ${new Date().toLocaleTimeString('pt-BR')} (Origem: ${info.source || 'sensor'})`);
+  logActivity(
+    'eb7f7b175bf04774f0qnwh',
+    'Campainha',
+    'Campainha Acionada 🔔',
+    'Visitante tocou a campainha na entrada principal da residência.',
+    'Sensor Entrada',
+    '🔔',
+    'warning'
+  );
+}
+
+function checkDoorbellWatchdog(dps) {
+  if (!dps) return;
+  const state32 = String(dps['32'] || dps['master_state'] || 'normal').toLowerCase();
+  const state24 = String(dps['24'] || 'normal').toLowerCase();
+  const alarmMsg = String(dps['alarm_msg'] || dps['25'] || dps['26'] || '');
+
+  const isRinging = (state32 !== 'normal' && state32 !== '') ||
+                    (state24 !== 'normal' && state24 !== '') ||
+                    (alarmMsg && alarmMsg !== lastDoorbellMsg && alarmMsg !== 'null');
+
+  if (isRinging) {
+    if (alarmMsg) lastDoorbellMsg = alarmMsg;
+    triggerDoorbellAlert({ source: 'dps_poll', dps });
+  }
+}
+
+function startDoorbellProcessListener() {
+  const listenerScript = path.join(WORKSPACE, 'targets/tuya_smartlife/scripts/doorbell_listener.py');
+  if (!fs.existsSync(listenerScript)) return;
+
+  try {
+    const child = spawn(PYTHON_PATH, [listenerScript], {
+      cwd: WORKSPACE,
+      windowsHide: true,
+      stdio: ['ignore', 'pipe', 'ignore']
+    });
+
+    let buffer = '';
+    child.stdout.on('data', (chunk) => {
+      buffer += chunk.toString('utf-8');
+      const lines = buffer.split('\n');
+      buffer = lines.pop();
+      for (const line of lines) {
+        if (!line.trim()) continue;
+        try {
+          const parsed = JSON.parse(line.trim());
+          if (parsed.event === 'doorbell_ring') {
+            triggerDoorbellAlert(parsed);
+          }
+        } catch (e) {}
+      }
+    });
+
+    child.on('close', () => {
+      setTimeout(startDoorbellProcessListener, 5000);
+    });
+    child.on('error', () => {
+      setTimeout(startDoorbellProcessListener, 10000);
+    });
+  } catch (err) {
+    console.warn('[Doorbell Listener Spawn Warning]:', err.message);
+  }
+}
+startDoorbellProcessListener();
+
+function startTuyaUdpListener() {
+  [6666, 6667].forEach((port) => {
+    try {
+      const socket = dgram.createSocket({ type: 'udp4', reuseAddr: true });
+      socket.on('message', (msg, rinfo) => {
+        const msgStr = msg.toString('utf-8');
+        if (rinfo.address === '192.168.1.222' || msgStr.includes('eb7f7b175bf04774f0qnwh')) {
+          triggerDoorbellAlert({ source: `udp_${port}`, ip: rinfo.address });
+        }
+      });
+      socket.on('error', (err) => {
+        console.warn(`[Tuya UDP ${port} Warning]:`, err.message);
+      });
+      socket.bind(port, () => {
+        console.log(`[Tuya UDP Listener] Monitorando porta ${port} para eventos em tempo real da residência`);
+      });
+    } catch (err) {
+      console.warn(`[Tuya UDP ${port} Setup Warning]:`, err.message);
+    }
+  });
+}
+startTuyaUdpListener();
+
 async function checkConnectivityWatchdog() {
   const now = Date.now();
   if (now - lastInternetCheck < 30000) return;
@@ -1135,6 +1234,9 @@ async function pollActiveDevices() {
           }
           if (devId === 'eb49c5d1977172327aqb1q' || dev?.local_ip === '192.168.1.192' || dev?.category === 'ckmkzq') {
             checkGateWatchdog(res.dps);
+          }
+          if (devId === 'eb7f7b175bf04774f0qnwh' || dev?.local_ip === '192.168.1.222' || dev?.category === 'mal' || dev?.name?.toLowerCase().includes('campan')) {
+            checkDoorbellWatchdog(res.dps);
           }
         }
       }
@@ -1679,6 +1781,73 @@ const server = http.createServer(async (req, res) => {
     return;
   }
 
+  // Sincronização e Varredura Dinâmica de Novos Dispositivos Tuya / Smart Life
+  if (url.pathname === '/api/devices/scan' && req.method === 'POST') {
+    try {
+      console.log('[Device Scan] Iniciando varredura e sincronização de dispositivos na rede local...');
+      const syncScript = path.join(WORKSPACE, 'targets/tuya_smartlife/scripts/sync_registry_with_cloud.py');
+      if (fs.existsSync(syncScript)) {
+        await new Promise((resolve) => {
+          const proc = spawn(PYTHON_PATH, [syncScript], { cwd: WORKSPACE, windowsHide: true });
+          proc.on('close', resolve);
+          proc.on('error', resolve);
+        });
+      }
+
+      let registry = [];
+      if (fs.existsSync(REGISTRY_PATH)) {
+        registry = JSON.parse(fs.readFileSync(REGISTRY_PATH, 'utf-8'));
+      }
+
+      pollActiveDevices().catch(() => {});
+
+      res.writeHead(200, { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' });
+      res.end(JSON.stringify({
+        success: true,
+        count: registry.length,
+        devices: registry,
+        message: `${registry.length} aparelhos sincronizados com sucesso!`
+      }));
+    } catch (err) {
+      res.writeHead(500, { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' });
+      res.end(JSON.stringify({ success: false, error: err.message }));
+    }
+    return;
+  }
+
+  // Disparo manual ou via Webhook de Alerta de Campainha
+  if (url.pathname === '/api/doorbell/trigger' && req.method === 'POST') {
+    triggerDoorbellAlert({ source: 'api_manual' });
+    res.writeHead(200, { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' });
+    res.end(JSON.stringify({ success: true, message: 'Alerta sonoro e visual de campainha emitido com sucesso!' }));
+    return;
+  }
+
+  if (url.pathname === '/api/devices/tuya-qr') {
+    const qrScript = path.join(WORKSPACE, 'targets/tuya_smartlife/scripts/tuya_qr_service.mjs');
+    http.get('http://127.0.0.1:19850/status', (resp) => {
+      let data = '';
+      resp.on('data', c => data += c);
+      resp.on('end', () => {
+        res.writeHead(200, { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' });
+        res.end(data);
+      });
+    }).on('error', () => {
+      try {
+        const child = spawn(process.execPath, [qrScript], {
+          cwd: path.join(WORKSPACE, 'targets/tuya_smartlife'),
+          windowsHide: true,
+          detached: true,
+          stdio: 'ignore'
+        });
+        child.unref();
+      } catch {}
+      res.writeHead(200, { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' });
+      res.end(JSON.stringify({ state: 'starting', message: 'Serviço de QR Code iniciando...' }));
+    });
+    return;
+  }
+
   // Câmeras Xiaomi
   if (url.pathname === '/api/cameras') {
     let cameras = [];
@@ -2197,6 +2366,13 @@ const server = http.createServer(async (req, res) => {
       const model = meta.model || (camId.includes('mi2k') ? 'isa.camera.hlc7' : camId.includes('aw300') ? 'mxiang.camera.mod11' : 'xiaomi.camera.cw701');
       const useOpus = model === 'xiaomi.camera.cw701' || model === 'mxiang.camera.mod11';
 
+      const isPcm = (req.headers['content-type'] || '').includes('audio/pcm') ||
+                    (req.headers['content-type'] || '').includes('audio/l16') ||
+                    (audioBuffer[0] !== 0x1A && audioBuffer[1] !== 0x45);
+      const inputFmtArgs = isPcm
+        ? ['-f', 's16le', '-ar', '16000', '-ac', '1', '-i', 'pipe:0']
+        : ['-i', 'pipe:0'];
+
       let transmitInfo = { ok: false };
       try {
         if (useOpus) {
@@ -2204,8 +2380,8 @@ const server = http.createServer(async (req, res) => {
           const oggBuf = await new Promise((resolve, reject) => {
             const ff = spawn(FFMPEG_BIN, [
               '-hide_banner', '-nostdin', '-loglevel', 'error',
-              '-i', 'pipe:0',
-              '-c:a', 'libopus', '-ar', '48000', '-ac', '2', '-b:a', '32k',
+              ...inputFmtArgs,
+              '-c:a', 'libopus', '-ar', '48000', '-ac', '1', '-b:a', '24k',
               '-vbr', 'off', '-frame_duration', '20', '-page_duration', '20000', '-application', 'voip',
               '-f', 'ogg', 'pipe:1'
             ], { windowsHide: true, stdio: ['pipe', 'pipe', 'ignore'] });
@@ -2218,7 +2394,7 @@ const server = http.createServer(async (req, res) => {
 
           const opusPackets = extractOpusPacketsFromOgg(oggBuf);
           if (opusPackets.length > 0 && meta.did) {
-            transmitInfo = await go2rtcJsonRequest('POST', '/api/xiaomi/talkback', {
+            go2rtcJsonRequest('POST', '/api/xiaomi/talkback', {
               did: meta.did,
               model,
               host: meta.host || '',
@@ -2227,14 +2403,14 @@ const server = http.createServer(async (req, res) => {
               action: 'send',
               codec: 'opus',
               framesBase64: opusPackets.map(p => p.toString('base64'))
-            }, 15000);
+            }, 15000).catch(err => console.warn('[Talkback go2rtc Error]:', err.message));
           }
         } else {
           // Transcodifica para G.711 A-law bruto (8000Hz mono, quadros de 320 bytes = 40ms) para Mi 2K (isa.camera.hlc7)
           const alawBuf = await new Promise((resolve, reject) => {
             const ff = spawn(FFMPEG_BIN, [
               '-hide_banner', '-nostdin', '-loglevel', 'error',
-              '-i', 'pipe:0',
+              ...inputFmtArgs,
               '-c:a', 'pcm_alaw', '-ar', '8000', '-ac', '1',
               '-f', 'alaw', 'pipe:1'
             ], { windowsHide: true, stdio: ['pipe', 'pipe', 'ignore'] });
@@ -2246,7 +2422,7 @@ const server = http.createServer(async (req, res) => {
           });
 
           if (alawBuf.length > 0 && meta.did) {
-            transmitInfo = await go2rtcJsonRequest('POST', '/api/xiaomi/talkback', {
+            go2rtcJsonRequest('POST', '/api/xiaomi/talkback', {
               did: meta.did,
               model,
               host: meta.host || '',
@@ -2255,7 +2431,7 @@ const server = http.createServer(async (req, res) => {
               action: 'send',
               codec: 'pcma',
               rawBase64: alawBuf.toString('base64')
-            }, 15000);
+            }, 15000).catch(err => console.warn('[Talkback go2rtc Error]:', err.message));
           }
         }
       } catch (err) {
@@ -2273,7 +2449,7 @@ const server = http.createServer(async (req, res) => {
         cameraId: camId,
         codec: useOpus ? 'opus' : 'pcma',
         bytesSent: audioBuffer.length,
-        upstream: transmitInfo,
+        queued: true,
         backchannelStatus: 'transmitted',
         syncPct: 100,
         timestamp: Date.now()
@@ -2313,8 +2489,9 @@ const server = http.createServer(async (req, res) => {
     const baseRawUrl = meta.rawUrl.replace(/[&?]channel=\d+/g, '');
     const chQuery = isCh1 ? '&channel=1' : '';
 
+    const endtimeUnix = targetUnix + 3600;
     const playbackAlias = `pb_${meta.alias}_${targetUnix}_c${isCh1 ? 1 : 0}`;
-    const playbackXiaomiUrl = `${baseRawUrl}${chQuery}&playback=${targetUnix}&endtime=0&offset=0&speed=${hwSpeed}`;
+    const playbackXiaomiUrl = `${baseRawUrl}${chQuery}&playback=${targetUnix}&endtime=${endtimeUnix}&offset=0&speed=${hwSpeed}`;
 
     try {
       await new Promise((resolve, reject) => {
@@ -3196,6 +3373,7 @@ const server = http.createServer(async (req, res) => {
           const syncScript = path.join(WORKSPACE, 'targets/gwm_app/reconstructed/gwm-ora-client.mjs');
           const child = spawn(process.execPath, [syncScript, 'sync'], {
             cwd: path.join(WORKSPACE, 'targets/gwm_app'),
+            windowsHide: true,
             detached: true,
             stdio: 'ignore'
           });
