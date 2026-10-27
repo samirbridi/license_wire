@@ -132,7 +132,11 @@
         </button>
         <button class="tab-btn" data-tab="energy" onclick="switchTab('energy')">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
-          <span>Energia & BYD</span>
+          <span>Consumo & Energia</span>
+        </button>
+        <button class="tab-btn" data-tab="ev" onclick="switchTab('ev')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 17h2c.6 0 1-.4 1-1v-3c0-.9-.7-1.7-1.5-1.9C18.7 10.6 16 10 16 10s-1.3-1.4-2.2-2.3c-.5-.4-1.1-.7-1.8-.7H5c-.6 0-1.1.4-1.4.9l-1.4 2.9A3.7 3.7 0 0 0 2 12v4c0 .6.4 1 1 1h2"/><circle cx="7" cy="17" r="2"/><path d="M9 17h6"/><circle cx="17" cy="17" r="2"/></svg>
+          <span>Elétricos</span>
         </button>
         <button class="tab-btn" data-tab="automations" onclick="switchTab('automations')">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/><circle cx="12" cy="12" r="4"/></svg>
@@ -253,6 +257,40 @@
             <div class="metric-footer-line">
               <span class="footer-lbl">Modo:</span>
               <span class="footer-val" style="color:var(--accent-emerald);">● Pulso Direto Anti-Ruído</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Card 5: Garagem & Veículos Elétricos -->
+        <div class="metric-card glow-cyan is-clickable" onclick="switchTab('ev')" title="Clique para abrir a central dos Veículos Elétricos">
+          <div class="metric-header">
+            <span class="metric-title">VEÍCULOS ELÉTRICOS (GARAGEM)</span>
+            <div class="metric-header-badges">
+              <span class="badge badge-live" id="evOverviewStatusBadge">⚡ 2 Veículos Online</span>
+            </div>
+          </div>
+          <div style="display:flex; justify-content:space-between; gap:10px; margin-top:8px;">
+            <div style="flex:1; background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.07); border-radius:8px; padding:8px 10px;">
+              <div style="font-size:11px; color:var(--text-muted); display:flex; justify-content:space-between;">
+                <span>🚗 GWM Ora 5</span>
+                <span id="evQuickOraLock">🔒 Trancado</span>
+              </div>
+              <div style="font-size:18px; font-weight:700; color:var(--accent-cyan); margin-top:2px;" id="evQuickOraSoc">84%</div>
+              <div style="font-size:11px; color:var(--text-muted);" id="evQuickOraRange">260 km autonomia</div>
+            </div>
+            <div style="flex:1; background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.07); border-radius:8px; padding:8px 10px;">
+              <div style="font-size:11px; color:var(--text-muted); display:flex; justify-content:space-between;">
+                <span>⚡ Dolphin Mini</span>
+                <span id="evQuickBydLock">🔒 Trancado</span>
+              </div>
+              <div style="font-size:18px; font-weight:700; color:#10b981; margin-top:2px;" id="evQuickBydSoc">78%</div>
+              <div style="font-size:11px; color:var(--text-muted);" id="evQuickBydRange">218 km autonomia</div>
+            </div>
+          </div>
+          <div class="metric-footer-stacked">
+            <div class="metric-footer-line">
+              <span class="footer-lbl">Status:</span>
+              <span class="footer-val" style="color:var(--accent-cyan);">Prontos para rodar • Pneus calibrados</span>
             </div>
           </div>
         </div>
@@ -674,6 +712,224 @@
                   <!-- Renderizado dinamicamente -->
                 </tbody>
               </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- TAB: VEÍCULOS ELÉTRICOS (GWM ORA 5 & BYD DOLPHIN MINI) -->
+    <section id="tab-ev" class="tab-content">
+      <div class="section-title-row">
+        <div>
+          <h2>Garagem & Veículos Elétricos</h2>
+          <span class="section-desc">Telemetria direta da nuvem via mTLS oficial, estado de carga, pneus TPMS, travas e climatização</span>
+        </div>
+        <div style="display:flex; gap:10px; align-items:center;">
+          <!-- Seletor de Veículo -->
+          <div class="ev-switch-pill">
+            <button class="ev-switch-btn active" id="evBtnOra5" onclick="selectEvVehicle('ora5')">
+              🚗 GWM Ora 5
+            </button>
+            <button class="ev-switch-btn" id="evBtnDolphin" onclick="selectEvVehicle('dolphin_mini')">
+              ⚡ BYD Dolphin Mini
+            </button>
+          </div>
+          <button class="btn btn-primary btn-sm" id="btnSyncEv" onclick="syncEvData()">
+            🔄 Sincronizar Nuvem
+          </button>
+        </div>
+      </div>
+
+      <!-- Hero Card do Veículo Selecionado -->
+      <div class="ev-hero-card" id="evHeroCard">
+        <div class="ev-hero-header">
+          <div>
+            <div class="ev-brand-tag" id="evHeroBrand">GWM BRASIL • 100% ELÉTRICO</div>
+            <h1 class="ev-model-name" id="evHeroModel">GWM Ora 03 Skin (Ora 5)</h1>
+            <div class="ev-plate-pill" id="evHeroPlate">Placa: BRA-2E19 • Cor: Branco Nobre / Teto Preto</div>
+          </div>
+          <div class="ev-hero-status-badges">
+            <span class="badge badge-live" id="evHeroOnlineBadge">🟢 T-Box 4G Online</span>
+            <span class="badge badge-emerald" id="evHeroLockBadge">🔒 Trancado</span>
+            <span class="badge" id="evHeroChargingBadge" style="background:rgba(59,130,246,0.15); color:#60a5fa; border:1px solid rgba(59,130,246,0.3);">⚡ Desconectado</span>
+          </div>
+        </div>
+
+        <div class="ev-main-grid">
+          <!-- Card 1: Bateria & Autonomia -->
+          <div class="ev-card ev-card-battery">
+            <div class="ev-card-title">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:16px;height:16px;color:var(--accent-cyan);"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+              <span>BATERIA DE TRAÇÃO & ALIMENTAÇÃO</span>
+            </div>
+            <div class="ev-battery-flex">
+              <div class="ev-soc-circle">
+                <span class="ev-soc-val" id="evBatterySoc">84%</span>
+                <span class="ev-soc-lbl">Nível SoC</span>
+              </div>
+              <div class="ev-range-box">
+                <div class="ev-range-val" id="evRangeKm">260 <small>km</small></div>
+                <div class="ev-range-sub">Autonomia Restante Estimada</div>
+                <div class="ev-progress-bar">
+                  <div class="ev-progress-fill" id="evBatteryBar" style="width: 84%;"></div>
+                </div>
+                <div class="ev-battery-meta">
+                  <span>Capacidade: <strong id="evBatteryCap">48.0 kWh</strong></span>
+                  <span>Máx: <strong id="evMaxRange">310 km</strong></span>
+                </div>
+              </div>
+            </div>
+            <div class="ev-card-divider"></div>
+            <div class="ev-metrics-row">
+              <div class="ev-sub-metric">
+                <span class="ev-sub-lbl">Cabo CCS2:</span>
+                <span class="ev-sub-val" id="evPlugStatus">🔌 Desconectado</span>
+              </div>
+              <div class="ev-sub-metric">
+                <span class="ev-sub-lbl">Potência Carga:</span>
+                <span class="ev-sub-val" id="evChargePower">0.0 kW</span>
+              </div>
+              <div class="ev-sub-metric">
+                <span class="ev-sub-lbl">Bateria 12V:</span>
+                <span class="ev-sub-val" id="ev12vSoc" style="color:#10b981;">98% (Excelente)</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Card 2: Pneus TPMS -->
+          <div class="ev-card ev-card-tpms">
+            <div class="ev-card-title">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:16px;height:16px;color:var(--accent-cyan);"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="3"/></svg>
+              <span>PRESSÃO & TEMPERATURA DOS PNEUS (TPMS)</span>
+              <span class="badge badge-emerald" style="margin-left:auto;">Calibração OK</span>
+            </div>
+            <div class="ev-tpms-diagram">
+              <div class="ev-tpms-wheel" id="wheelFL">
+                <span class="wheel-pos">DIANT. ESQ.</span>
+                <span class="wheel-psi" id="tpmsFlPsi">34.8 PSI</span>
+                <span class="wheel-temp" id="tpmsFlTemp">26°C</span>
+              </div>
+              <div class="ev-tpms-chassis">
+                <svg viewBox="0 0 100 160" class="ev-car-svg">
+                  <rect x="25" y="10" width="50" height="140" rx="15" fill="none" stroke="rgba(255,255,255,0.2)" stroke-width="2"/>
+                  <path d="M30 40 Q50 35 70 40" stroke="rgba(0,240,255,0.4)" stroke-width="2" fill="none"/>
+                  <path d="M30 110 Q50 115 70 110" stroke="rgba(0,240,255,0.4)" stroke-width="2" fill="none"/>
+                  <rect x="15" y="25" width="10" height="25" rx="3" fill="#00f0ff"/>
+                  <rect x="75" y="25" width="10" height="25" rx="3" fill="#00f0ff"/>
+                  <rect x="15" y="100" width="10" height="25" rx="3" fill="#00f0ff"/>
+                  <rect x="75" y="100" width="10" height="25" rx="3" fill="#00f0ff"/>
+                </svg>
+              </div>
+              <div class="ev-tpms-wheel" id="wheelFR">
+                <span class="wheel-pos">DIANT. DIR.</span>
+                <span class="wheel-psi" id="tpmsFrPsi">35.1 PSI</span>
+                <span class="wheel-temp" id="tpmsFrTemp">26°C</span>
+              </div>
+              <div class="ev-tpms-wheel" id="wheelRL">
+                <span class="wheel-pos">TRAS. ESQ.</span>
+                <span class="wheel-psi" id="tpmsRlPsi">34.5 PSI</span>
+                <span class="wheel-temp" id="tpmsRlTemp">25°C</span>
+              </div>
+              <div class="ev-tpms-wheel" id="wheelRR">
+                <span class="wheel-pos">TRAS. DIR.</span>
+                <span class="wheel-psi" id="tpmsRrPsi">34.7 PSI</span>
+                <span class="wheel-temp" id="tpmsRrTemp">25°C</span>
+              </div>
+            </div>
+            <div class="ev-tpms-footer">Pressão recomendada: 34 a 36 PSI • Sensores em tempo real</div>
+          </div>
+
+          <!-- Card 3: Portas, Travas & Vidros -->
+          <div class="ev-card ev-card-doors">
+            <div class="ev-card-title">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:16px;height:16px;color:var(--accent-cyan);"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+              <span>PORTAS, TRAVAS & SEGURANÇA</span>
+            </div>
+            <div class="ev-lock-banner">
+              <div class="ev-lock-info">
+                <span class="ev-lock-state" id="evLockStateText">🔒 Veículo Trancado</span>
+                <span class="ev-lock-sub">Todas as portas e porta-malas fechados</span>
+              </div>
+              <div class="ev-lock-actions">
+                <button class="btn btn-sm btn-outline-cyan" onclick="triggerEvAction('lock')">🔒 Travar</button>
+                <button class="btn btn-sm btn-outline-cyan" onclick="triggerEvAction('unlock')">🔓 Destravar</button>
+              </div>
+            </div>
+            <div class="ev-doors-status-grid">
+              <div class="ev-door-chip" id="doorChipFL">Porta Diant. Esq: <strong id="doorValFL">Fechada</strong></div>
+              <div class="ev-door-chip" id="doorChipFR">Porta Diant. Dir: <strong id="doorValFR">Fechada</strong></div>
+              <div class="ev-door-chip" id="doorChipRL">Porta Tras. Esq: <strong id="doorValRL">Fechada</strong></div>
+              <div class="ev-door-chip" id="doorChipRR">Porta Tras. Dir: <strong id="doorValRR">Fechada</strong></div>
+              <div class="ev-door-chip" id="doorChipTrunk">Porta-Malas: <strong id="doorValTrunk">Fechado</strong></div>
+              <div class="ev-door-chip" id="doorChipHood">Capô Dianteiro: <strong id="doorValHood">Fechado</strong></div>
+              <div class="ev-door-chip" id="doorChipWindows">Vidros: <strong id="doorValWindows">Todos Fechados</strong></div>
+              <div class="ev-door-chip" id="doorChipSunroof">Teto Solar: <strong id="doorValSunroof">Fechado</strong></div>
+            </div>
+          </div>
+
+          <!-- Card 4: Climatização & Conforto -->
+          <div class="ev-card ev-card-climate">
+            <div class="ev-card-title">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:16px;height:16px;color:var(--accent-cyan);"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+              <span>CLIMATIZAÇÃO & CONFORTO DA CABINE</span>
+            </div>
+            <div class="ev-climate-main">
+              <div class="ev-climate-temp-box">
+                <span class="ev-cabin-temp" id="evCabinTemp">23.5°C</span>
+                <span class="ev-cabin-lbl">Temperatura Atual Interna</span>
+              </div>
+              <div class="ev-climate-target">
+                <span class="ev-target-lbl">Temperatura Alvo</span>
+                <div class="ev-target-controls">
+                  <button class="ev-temp-btn" onclick="adjustEvTemp(-0.5)">-</button>
+                  <span class="ev-target-val" id="evTargetTemp">22.0°C</span>
+                  <button class="ev-temp-btn" onclick="adjustEvTemp(0.5)">+</button>
+                </div>
+              </div>
+            </div>
+            <div class="ev-climate-actions">
+              <button class="btn btn-primary w-100" id="btnToggleAc" onclick="triggerEvAction('toggle_ac')">
+                ❄️ Ligar Climatização (15 Minutos)
+              </button>
+            </div>
+            <div class="ev-comfort-chips">
+              <span class="ev-comfort-badge">💺 Bancos Térmicos: Off</span>
+              <span class="ev-comfort-badge">⭕ Volante Aquecido: Off</span>
+              <span class="ev-comfort-badge">💨 Desembaçador: Pronto</span>
+            </div>
+          </div>
+
+          <!-- Card 5: Localização & Odômetro -->
+          <div class="ev-card ev-card-location">
+            <div class="ev-card-title">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:16px;height:16px;color:var(--accent-cyan);"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+              <span>LOCALIZAÇÃO, HODÔMETRO & TELEMETRIA</span>
+            </div>
+            <div class="ev-loc-row">
+              <div class="ev-loc-pin">📍</div>
+              <div>
+                <div class="ev-loc-addr" id="evLocationAddr">Garagem Residencial (Home)</div>
+                <div class="ev-loc-coords" id="evLocationCoords">-29.9189, -51.1782 • Atualizado em tempo real</div>
+              </div>
+              <button class="btn btn-sm btn-outline-cyan" onclick="openEvMap()" style="margin-left:auto;">
+                🗺️ Ver no Mapa
+              </button>
+            </div>
+            <div class="ev-card-divider"></div>
+            <div class="ev-metrics-row">
+              <div class="ev-sub-metric">
+                <span class="ev-sub-lbl">Hodômetro Total:</span>
+                <span class="ev-sub-val" id="evOdometer">14.280 km</span>
+              </div>
+              <div class="ev-sub-metric">
+                <span class="ev-sub-lbl">Sinal Móvel:</span>
+                <span class="ev-sub-val" id="evSignal">📶 4G Forte (T-Box)</span>
+              </div>
+              <div class="ev-sub-metric">
+                <span class="ev-sub-lbl">Fonte de Dados:</span>
+                <span class="ev-sub-val" id="evDataSource">GWM Cloud mTLS</span>
+              </div>
             </div>
           </div>
         </div>

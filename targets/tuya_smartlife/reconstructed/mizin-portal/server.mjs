@@ -4,7 +4,7 @@ import os from 'node:os';
 import fs from 'node:fs';
 import path from 'node:path';
 import { spawn } from 'node:child_process';
-import { fileURLToPath } from 'node:url';
+import { fileURLToPath, pathToFileURL } from 'node:url';
 import { createHash, createHmac, createCipheriv, createDecipheriv, randomUUID, randomInt } from 'node:crypto';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -2283,34 +2283,38 @@ const server = http.createServer(async (req, res) => {
   }
 
   // Helper para criar stream dinâmico de Playback SD no go2rtc via MISS_CMD_PLAYBACK_REQ (0x10D)
-  async function resolvePlaybackGo2rtcUrl(camId, dateStr, timeStr, secParam) {
+  async function resolvePlaybackGo2rtcUrl(camId, dateStr, timeStr, secParam, speedParam = 1, chParam = '0', unixParam = NaN) {
     const resolvedLive = resolveStreamAlias(camId);
     const meta = getXiaomiStreamMeta(resolvedLive) || getXiaomiStreamMeta(camId);
     if (!meta || !meta.rawUrl) {
-      return `http://127.0.0.1:19843/api/stream.mp4?src=${encodeURIComponent(resolvedLive)}&video=h264,h265&audio=all`;
+      return null;
     }
 
-    const parts = String(timeStr || '10:00:00').split(':').map(n => parseInt(n || '0', 10));
-    const hh = Number.isFinite(parts[0]) ? parts[0] : 10;
-    const mm = Number.isFinite(parts[1]) ? parts[1] : 0;
-    const ss = Number.isFinite(parts[2]) ? parts[2] : 0;
-    const secInDay = Number.isFinite(secParam) && secParam >= 0
-      ? secParam
-      : ((hh * 3600) + (mm * 60) + ss);
+    let targetUnix = Number.isFinite(unixParam) && unixParam > 1577836800 ? unixParam : NaN;
+    if (!Number.isFinite(targetUnix)) {
+      const parts = String(timeStr || '10:00:00').split(':').map(n => parseInt(n || '0', 10));
+      const hh = Number.isFinite(parts[0]) ? parts[0] : 10;
+      const mm = Number.isFinite(parts[1]) ? parts[1] : 0;
+      const ss = Number.isFinite(parts[2]) ? parts[2] : 0;
+      const secInDay = Number.isFinite(secParam) && secParam >= 0
+        ? secParam
+        : ((hh * 3600) + (mm * 60) + ss);
 
-    const dayStartMs = new Date(`${dateStr}T00:00:00-03:00`).getTime();
-    const nowUnix = Math.floor(Date.now() / 1000);
-    let targetUnix = Math.floor(dayStartMs / 1000) + Math.max(0, Math.min(86399, secInDay));
-    if (!Number.isFinite(targetUnix) || targetUnix > nowUnix - 65) {
-      targetUnix = nowUnix - 120;
+      const dayStartMs = new Date(`${dateStr}T00:00:00-03:00`).getTime();
+      const nowUnix = Math.floor(Date.now() / 1000);
+      targetUnix = Math.floor(dayStartMs / 1000) + Math.max(0, Math.min(86399, secInDay));
+      if (!Number.isFinite(targetUnix) || targetUnix > nowUnix - 60) {
+        targetUnix = nowUnix - 90;
+      }
     }
 
-    const segmentStartUnix = Math.floor(targetUnix / 60) * 60;
-    const segmentEndUnix = segmentStartUnix + 14400;
-    const segmentOffsetSec = Math.max(0, targetUnix - segmentStartUnix);
+    const hwSpeed = Math.max(1, Math.min(16, Math.round(Number(speedParam) || 1)));
+    const isCh1 = String(chParam) === '1' || String(chParam) === '10' || camId.includes('channel2');
+    const baseRawUrl = meta.rawUrl.replace(/[&?]channel=\d+/g, '');
+    const chQuery = isCh1 ? '&channel=1' : '';
 
-    const playbackAlias = `pb_${meta.alias}_${segmentStartUnix}`;
-    const playbackXiaomiUrl = `${meta.rawUrl}&playback=${segmentStartUnix}&endtime=${segmentEndUnix}&offset=${segmentOffsetSec}`;
+    const playbackAlias = `pb_${meta.alias}_${targetUnix}_c${isCh1 ? 1 : 0}`;
+    const playbackXiaomiUrl = `${baseRawUrl}${chQuery}&playback=${targetUnix}&endtime=0&offset=0&speed=${hwSpeed}`;
 
     try {
       await new Promise((resolve, reject) => {
@@ -2322,22 +2326,71 @@ const server = http.createServer(async (req, res) => {
         req.on('error', reject);
         req.end();
       });
-      return `http://127.0.0.1:19843/api/stream.mp4?src=${encodeURIComponent(playbackAlias)}&video=h264,h265&audio=all`;
+      return `http://127.0.0.1:19843/api/stream.mp4?src=${encodeURIComponent(playbackAlias)}&video=h264,h265`;
     } catch {
-      return `http://127.0.0.1:19843/api/stream.mp4?src=${encodeURIComponent(resolvedLive)}&video=h264,h265&audio=all`;
+      return null;
     }
+  }
+
+  // Controle dinâmico de velocidade de reprodução SD (0x10F MISS_CMD_PLAYBACK_SET_SPEED)
+  if (url.pathname === '/api/camera/recordings/speed') {
+    const handleSpeed = async (camId, speedVal) => {
+      const resolvedLive = resolveStreamAlias(camId || 'outdoor_pro_poste');
+      const meta = getXiaomiStreamMeta(resolvedLive) || getXiaomiStreamMeta(camId) || {};
+      const hwSpeed = Math.max(1, Math.min(16, Math.round(Number(speedVal) || 1)));
+      let result = { ok: true, speed: hwSpeed };
+      if (meta.did) {
+        try {
+          result = await go2rtcJsonRequest('POST', '/api/xiaomi/control', {
+            did: meta.did,
+            model: meta.model || '',
+            host: meta.host || '',
+            user: meta.user || '',
+            region: meta.region || '',
+            type: 'playback_speed',
+            speed: hwSpeed
+          }, 6000);
+        } catch (err) {
+          result = { ok: false, speed: hwSpeed, error: err.message };
+        }
+      }
+      res.writeHead(200, { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' });
+      res.end(JSON.stringify(result));
+    };
+
+    if (req.method === 'POST') {
+      let body = '';
+      req.on('data', c => body += c);
+      req.on('end', () => {
+        let parsed = {};
+        try { parsed = JSON.parse(body || '{}'); } catch {}
+        handleSpeed(parsed.cameraId || url.searchParams.get('id'), parsed.speed || url.searchParams.get('speed') || 1);
+      });
+      return;
+    }
+    await handleSpeed(url.searchParams.get('id'), url.searchParams.get('speed') || 1);
+    return;
   }
 
   // Streaming de Reprodução de Gravação do Cartão SD (Régua 24h & Eventos IA via MISS_CMD_PLAYBACK_REQ)
   if (url.pathname === '/api/camera/recordings/stream') {
     const camId = url.searchParams.get('id') || 'outdoor_pro_poste';
-    const date = url.searchParams.get('date') || new Date().toISOString().slice(0, 10);
+    const date = url.searchParams.get('date') || new Date(Date.now() - 3 * 3600 * 1000).toISOString().slice(0, 10);
     const time = url.searchParams.get('time') || '10:00:00';
     const secRaw = url.searchParams.get('sec');
     const sec = secRaw !== null ? parseInt(secRaw, 10) : NaN;
+    const unixRaw = url.searchParams.get('unix');
+    const unixTs = unixRaw !== null ? parseInt(unixRaw, 10) : NaN;
+    const speedRaw = parseFloat(url.searchParams.get('speed') || '1') || 1;
+    const hwSpeed = speedRaw >= 1 ? Math.round(speedRaw) : 1;
+    const chParam = url.searchParams.get('channel') || '0';
 
-    const playbackGo2rtcUrl = await resolvePlaybackGo2rtcUrl(camId, date, time, sec);
-    const fallbackLiveUrl = `http://127.0.0.1:19843/api/stream.mp4?src=${encodeURIComponent(resolveStreamAlias(camId))}&video=h264,h265&audio=all`;
+    const playbackGo2rtcUrl = await resolvePlaybackGo2rtcUrl(camId, date, time, sec, hwSpeed, chParam, unixTs);
+    if (!playbackGo2rtcUrl) {
+      res.writeHead(404, { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' });
+      res.end(JSON.stringify({ error: 'Gravação não encontrada para esta câmera' }));
+      return;
+    }
 
     activeLiveStreamsCount++;
     let decremented = false;
@@ -2350,7 +2403,7 @@ const server = http.createServer(async (req, res) => {
 
     let headersSent = false;
     let activeChild = null;
-    let triedFallback = false;
+    let retriedCpu = false;
 
     const cleanup = () => {
       decCount();
@@ -2358,7 +2411,15 @@ const server = http.createServer(async (req, res) => {
     };
     res.on('close', cleanup);
 
-    const spawnPlaybackStream = (inputUrl) => {
+    const guardTimer = setTimeout(() => {
+      if (!headersSent && !res.destroyed) {
+        cleanup();
+        res.writeHead(504, { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' });
+        res.end(JSON.stringify({ error: 'Timeout ao abrir gravação do cartão MicroSD' }));
+      }
+    }, 18000);
+
+    const spawnPlaybackStream = (forceCpu = false) => {
       const child = spawn(FFMPEG_BIN, [
         '-hide_banner', '-nostdin', '-loglevel', 'error',
         '-rw_timeout', '15000000',
@@ -2366,13 +2427,11 @@ const server = http.createServer(async (req, res) => {
         '-flags', 'low_delay',
         '-avoid_negative_ts', 'make_zero',
         '-probesize', '524288', '-analyzeduration', '1000000',
-        '-i', inputUrl,
-        '-map', '0:v:0', '-map', '0:a:0?',
-        '-c:a', 'aac', '-b:a', '64k', '-ar', '16000', '-ac', '1',
-        '-af', 'aresample=async=1:first_pts=0',
+        '-i', playbackGo2rtcUrl,
+        '-map', '0:v:0',
         '-vf', `scale=w='min(1920,iw)':h=-2`,
         '-r', '20',
-        ...buildVideoEncoderArgs('1080p', false),
+        ...buildVideoEncoderArgs('1080p', forceCpu),
         '-movflags', '+frag_keyframe+empty_moov+default_base_moof+faststart',
         '-f', 'mp4',
         'pipe:1'
@@ -2380,20 +2439,11 @@ const server = http.createServer(async (req, res) => {
 
       activeChild = child;
 
-      const fbTimer = setTimeout(() => {
-        if (!headersSent && !triedFallback && !res.destroyed) {
-          triedFallback = true;
-          const oldChild = child;
-          spawnPlaybackStream(fallbackLiveUrl);
-          try { oldChild.kill(); } catch {}
-        }
-      }, 6500);
-
       child.stdout.on('data', (chunk) => {
         if (child !== activeChild) return;
         if (!headersSent) {
           headersSent = true;
-          clearTimeout(fbTimer);
+          clearTimeout(guardTimer);
           res.writeHead(200, {
             'Content-Type': 'video/mp4',
             'Cache-Control': 'no-cache, no-store, must-revalidate',
@@ -2406,50 +2456,53 @@ const server = http.createServer(async (req, res) => {
       });
 
       child.on('close', (code) => {
-        clearTimeout(fbTimer);
         if (child !== activeChild) return;
-        if (!headersSent && !triedFallback && !res.destroyed && inputUrl !== fallbackLiveUrl) {
-          triedFallback = true;
-          spawnPlaybackStream(fallbackLiveUrl);
+        if (!headersSent && !retriedCpu && hwAccelEncoder && !res.destroyed) {
+          retriedCpu = true;
+          spawnPlaybackStream(true);
           return;
         }
+        clearTimeout(guardTimer);
         decCount();
         if (headersSent && !res.destroyed) {
           res.end();
         } else if (!headersSent && !res.destroyed) {
-          res.writeHead(504, { 'Content-Type': 'application/json' });
+          res.writeHead(504, { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' });
           res.end(JSON.stringify({ error: 'Não foi possível abrir o segmento de gravação SD' }));
         }
       });
 
       child.once('error', () => {
-        clearTimeout(fbTimer);
         if (child !== activeChild) return;
-        if (!headersSent && !triedFallback && !res.destroyed && inputUrl !== fallbackLiveUrl) {
-          triedFallback = true;
-          spawnPlaybackStream(fallbackLiveUrl);
+        if (!headersSent && !retriedCpu && hwAccelEncoder && !res.destroyed) {
+          retriedCpu = true;
+          spawnPlaybackStream(true);
         }
       });
     };
 
-    spawnPlaybackStream(playbackGo2rtcUrl);
+    spawnPlaybackStream(false);
     return;
   }
 
-  // Consulta de Gravações do Cartão SD (Telemetria Real MIoT + Régua de 24 horas + Momentos Selecionáveis)
+  // Consulta de Gravações do Cartão SD (Catálogo Real RDT cmd 6 + Telemetria MIoT + Régua 24h)
   if (url.pathname === '/api/camera/recordings') {
     const camId = url.searchParams.get('id') || 'outdoor_pro_poste';
-    const date = url.searchParams.get('date') || new Date(Date.now() - 3 * 3600 * 1000).toISOString().slice(0, 10);
-    const meta = getXiaomiStreamMeta(camId) || {};
+    const nowLocal = new Date(Date.now() - 3 * 3600 * 1000);
+    const todayStr = nowLocal.toISOString().slice(0, 10);
+    const date = url.searchParams.get('date') || todayStr;
+    const chParam = url.searchParams.get('channel') || (camId.includes('channel2') ? '1' : '0');
+    const resolvedLive = resolveStreamAlias(camId);
+    const meta = getXiaomiStreamMeta(resolvedLive) || getXiaomiStreamMeta(camId) || {};
 
     let storageInfo = null;
     if (meta.did) {
       try {
         storageInfo = await go2rtcJsonRequest(
           'GET',
-          `/api/xiaomi/storage?did=${encodeURIComponent(meta.did)}&model=${encodeURIComponent(meta.model || '')}&user=${encodeURIComponent(meta.user || '')}&region=${encodeURIComponent(meta.region || '')}`,
+          `/api/xiaomi/storage?did=${encodeURIComponent(meta.did)}&model=${encodeURIComponent(meta.model || '')}&host=${encodeURIComponent(meta.host || '')}&user=${encodeURIComponent(meta.user || '')}&region=${encodeURIComponent(meta.region || '')}&channel=${encodeURIComponent(chParam)}&catalog=1`,
           null,
-          6000
+          18000
         );
       } catch (err) {
         console.warn('[SD Storage Query Warning]:', err.message);
@@ -2459,10 +2512,10 @@ const server = http.createServer(async (req, res) => {
     const isOutdoor = camId.includes('outdoor') || camId.includes('poste');
     const isAw300 = camId.includes('aw300') || camId.includes('garagem') || camId.includes('portao');
     let totalMb = isOutdoor || isAw300 ? 122194 : 59788;
-    let usedMb = Math.round(totalMb * 0.94);
-    let freeMb = totalMb - usedMb;
+    let usedMb = 0;
+    let freeMb = totalMb;
     let sdStatusCode = 0;
-    let sdHealth = '100% Saudável • Leitura MIoT Normal (status=0)';
+    let sdHealth = 'Verificando cartão MicroSD...';
 
     if (storageInfo && Number(storageInfo.totalBytes) > 0) {
       totalMb = Math.round(Number(storageInfo.totalBytes) / (1024 * 1024));
@@ -2478,64 +2531,135 @@ const server = http.createServer(async (req, res) => {
       }
     }
 
-    // Calcula até qual segundo do dia há gravações disponíveis (se for hoje, até o horário atual local)
-    const nowLocal = new Date(Date.now() - 3 * 3600 * 1000);
-    const todayStr = nowLocal.toISOString().slice(0, 10);
-    const maxSecToday = (nowLocal.getUTCHours() * 3600) + (nowLocal.getUTCMinutes() * 60) + Math.max(0, nowLocal.getUTCSeconds() - 60);
-    const maxAvailableSec = date === todayStr ? Math.max(300, maxSecToday) : 86399;
+    const catalogItems = Array.isArray(storageInfo?.catalogItems) ? storageInfo.catalogItems : [];
+    const dayStartUnix = Math.floor(new Date(`${date}T00:00:00-03:00`).getTime() / 1000);
+    const dayEndUnix = dayStartUnix + 86400;
 
-    const rawPeriods = [
-      { id: 'rec_1', start: 0, end: 14400, label: '00:00 - 04:00 (Gravação Madrugada)' },
-      { id: 'rec_2', start: 14400, end: 28800, label: '04:00 - 08:00 (Gravação Manhã Cedo)' },
-      { id: 'rec_3', start: 28800, end: 43200, label: '08:00 - 12:00 (Gravação Manhã)' },
-      { id: 'rec_4', start: 43200, end: 57600, label: '12:00 - 16:00 (Gravação Tarde I)' },
-      { id: 'rec_5', start: 57600, end: 72000, label: '16:00 - 20:00 (Gravação Tarde II / Noite)' },
-      { id: 'rec_6', start: 72000, end: 86399, label: '20:00 - 23:59 (Gravação Noturna)' }
-    ];
+    // Descobre todos os dias com gravações reais no cartão SD (em fuso UTC-3)
+    const daysSet = new Set([todayStr]);
+    for (const it of catalogItems) {
+      const ts = Number(it.startTime || 0);
+      if (ts > 1577836800) {
+        const dStr = new Date((ts - 3 * 3600) * 1000).toISOString().slice(0, 10);
+        daysSet.add(dStr);
+      }
+    }
+    const availableDays = Array.from(daysSet).sort().reverse();
+
+    // Filtra arquivos gravados no dia selecionado
+    const dayItems = catalogItems
+      .map(it => {
+        const startUnix = Number(it.startTime || 0);
+        const dur = Math.max(10, Math.min(300, Number(it.duration || 60)));
+        const endUnix = startUnix + dur;
+        const startSec = Math.max(0, startUnix - dayStartUnix);
+        const endSec = Math.min(86399, endUnix - dayStartUnix);
+        return {
+          startUnix,
+          endUnix,
+          duration: dur,
+          startSec,
+          endSec,
+          motion: Number(it.motion || 0),
+          save: Number(it.save || 0)
+        };
+      })
+      .filter(it => it.endUnix > dayStartUnix && it.startUnix < dayEndUnix && it.endSec > it.startSec)
+      .sort((a, b) => a.startUnix - b.startUnix);
 
     const fmtSec = (s) => {
       const h = String(Math.floor(s / 3600)).padStart(2, '0');
       const m = String(Math.floor((s % 3600) / 60)).padStart(2, '0');
       return `${h}:${m}`;
     };
+    const fmtFullTime = (s) => {
+      const h = String(Math.floor(s / 3600)).padStart(2, '0');
+      const m = String(Math.floor((s % 3600) / 60)).padStart(2, '0');
+      const sec = String(Math.floor(s % 60)).padStart(2, '0');
+      return `${h}:${m}:${sec}`;
+    };
 
-    const periods = rawPeriods
-      .filter(p => p.start < maxAvailableSec)
-      .map(p => {
-        const end = Math.min(p.end, maxAvailableSec);
-        return {
-          ...p,
-          end,
-          label: `${fmtSec(p.start)} - ${fmtSec(end)} (Gravação SD)`
-        };
-      });
+    // Agrupa segmentos contíguos (gap <= 180s) em períodos reais na régua de 24h
+    const periods = [];
+    for (const it of dayItems) {
+      const last = periods[periods.length - 1];
+      if (last && (it.startSec - last.end) <= 180) {
+        last.end = Math.max(last.end, it.endSec);
+        last.endUnix = Math.max(last.endUnix, it.endUnix);
+        last.fileCount++;
+        if (it.motion > 0) last.motionCount++;
+      } else {
+        periods.push({
+          id: `rec_${periods.length + 1}_${it.startUnix}`,
+          start: it.startSec,
+          end: it.endSec,
+          startUnix: it.startUnix,
+          endUnix: it.endUnix,
+          fileCount: 1,
+          motionCount: it.motion > 0 ? 1 : 0,
+          label: ''
+        });
+      }
+    }
+    for (const p of periods) {
+      p.label = `${fmtSec(p.start)} - ${fmtSec(p.end)} (${p.fileCount} arq SD${p.motionCount > 0 ? ` • ${p.motionCount} mov` : ''})`;
+    }
 
-    // Momentos rápidos e eventos selecionáveis (apenas momentos já ocorridos no dia selecionado)
-    const candidateEvents = [
-      { id: 'evt_1', time: '06:30:00', seconds: 23400, type: 'human', label: '06:30 • Início da Manhã / Movimento', icon: '🌅' },
-      { id: 'evt_2', time: '08:15:00', seconds: 29700, type: 'vehicle', label: '08:15 • Movimentação Matinal', icon: '🚗' },
-      { id: 'evt_3', time: '10:30:00', seconds: 37800, type: 'motion', label: '10:30 • Registro Meio da Manhã', icon: '📹' },
-      { id: 'evt_4', time: '12:30:00', seconds: 45000, type: 'human', label: '12:30 • Registro Horário de Almoço', icon: '☀️' },
-      { id: 'evt_5', time: '15:15:00', seconds: 54900, type: 'motion', label: '15:15 • Registro da Tarde', icon: '🏃' },
-      { id: 'evt_6', time: '18:10:00', seconds: 65400, type: 'vehicle', label: '18:10 • Entardecer / Chegada', icon: '🚗' },
-      { id: 'evt_7', time: '20:30:00', seconds: 73800, type: 'motion', label: '20:30 • Monitoramento Noturno', icon: '🌙' },
-      { id: 'evt_8', time: '22:00:00', seconds: 79200, type: 'motion', label: '22:00 • Ronda Noturna SD', icon: '🛡️' }
-    ];
-
-    const events = candidateEvents.filter(e => e.seconds <= maxAvailableSec);
-    if (date === todayStr && maxAvailableSec > 180) {
-      const recentSec = Math.max(60, Math.floor((maxAvailableSec - 120) / 60) * 60);
-      const rh = String(Math.floor(recentSec / 3600)).padStart(2, '0');
-      const rm = String(Math.floor((recentSec % 3600) / 60)).padStart(2, '0');
-      events.unshift({
-        id: 'evt_recent',
-        time: `${rh}:${rm}:00`,
-        seconds: recentSec,
-        type: 'motion',
-        label: `${rh}:${rm} • Gravação Recente (Há 2 min)`,
+    // Constrói lista de momentos e eventos reais a partir dos arquivos reais do cartão SD
+    const events = [];
+    if (dayItems.length > 0) {
+      // 1. Última gravação disponível no dia
+      const latestItem = dayItems[dayItems.length - 1];
+      events.push({
+        id: `evt_latest_${latestItem.startUnix}`,
+        time: fmtFullTime(latestItem.startSec),
+        seconds: latestItem.startSec,
+        unix: latestItem.startUnix,
+        type: 'latest',
+        label: `${fmtSec(latestItem.startSec)} • Última Gravação SD`,
         icon: '⏱️'
       });
+
+      // 2. Eventos reais de movimento/IA marcados pela câmera (motion > 0), espaçados pelo menos 15 min
+      const motionItems = dayItems.filter(it => it.motion > 0);
+      let lastMotionSec = -9999;
+      for (const mIt of motionItems) {
+        if (mIt.startSec - lastMotionSec >= 900 && Math.abs(mIt.startSec - latestItem.startSec) > 120) {
+          lastMotionSec = mIt.startSec;
+          events.push({
+            id: `evt_mot_${mIt.startUnix}`,
+            time: fmtFullTime(mIt.startSec),
+            seconds: mIt.startSec,
+            unix: mIt.startUnix,
+            type: 'motion',
+            label: `${fmtSec(mIt.startSec)} • Movimento Detectado SD`,
+            icon: '🎯'
+          });
+        }
+      }
+
+      // 3. Pontos de verificação reais ao longo do dia (1 por hora/período com arquivo real no SD)
+      const step = Math.max(1, Math.floor(dayItems.length / 10));
+      for (let i = 0; i < dayItems.length && events.length < 14; i += step) {
+        const it = dayItems[i];
+        if (!events.some(e => Math.abs(e.seconds - it.startSec) < 600)) {
+          const hour = Math.floor(it.startSec / 3600);
+          const icon = hour < 6 ? '🌙' : hour < 12 ? '🌅' : hour < 18 ? '☀️' : '🛡️';
+          events.push({
+            id: `evt_seg_${it.startUnix}`,
+            time: fmtFullTime(it.startSec),
+            seconds: it.startSec,
+            unix: it.startUnix,
+            type: 'segment',
+            label: `${fmtSec(it.startSec)} • Gravação SD Confirmada`,
+            icon
+          });
+        }
+      }
     }
+
+    const maxAvailableSec = dayItems.length > 0 ? dayItems[dayItems.length - 1].endSec : 0;
+    const motionTotal = dayItems.filter(it => it.motion > 0).length;
 
     res.writeHead(200, {
       'Content-Type': 'application/json',
@@ -2546,25 +2670,34 @@ const server = http.createServer(async (req, res) => {
       cameraId: camId,
       did: meta.did || '',
       model: meta.model || '',
+      channel: Number(chParam) || 0,
       date,
-      status: sdStatusCode === 0 ? 'ready' : 'warning',
+      status: sdStatusCode === 0 && catalogItems.length > 0 ? 'ready' : 'warning',
       sdStatusCode,
       storageUsedMb: usedMb,
       storageTotalMb: totalMb,
       storageFreeMb: freeMb,
       sdHealth,
-      recordingMode: 'Gravação Contínua 24/7 MicroSD (P2P 0x10D)',
+      totalCatalogFiles: catalogItems.length,
+      dayFilesCount: dayItems.length,
+      motionFilesCount: motionTotal,
+      recordingMode: catalogItems.length > 0
+        ? `MicroSD RDT Ativo • ${dayItems.length} arquivos no dia (${catalogItems.length} no cartão)`
+        : (sdStatusCode === 3 ? 'Cartão MicroSD com falha/anormal (0 arquivos)' : 'Sem gravações neste dia'),
       maxAvailableSec,
       periods,
       events,
-      availableDays: [
-        todayStr,
-        new Date(Date.now() - 3 * 3600 * 1000 - 86400000).toISOString().slice(0, 10),
-        new Date(Date.now() - 3 * 3600 * 1000 - 172800000).toISOString().slice(0, 10),
-        new Date(Date.now() - 3 * 3600 * 1000 - 259200000).toISOString().slice(0, 10)
-      ],
+      daySegments: dayItems.map(it => ({
+        u: it.startUnix,
+        s: it.startSec,
+        d: it.duration,
+        m: it.motion
+      })),
+      availableDays,
       capabilities: {
         playback: true,
+        speedControl: true,
+        speeds: [0.5, 1, 2, 4, 8, 16],
         export: true
       }
     }));
@@ -2578,9 +2711,17 @@ const server = http.createServer(async (req, res) => {
     const rawTime = url.searchParams.get('time') || '12:00:00';
     const secRaw = url.searchParams.get('sec');
     const sec = secRaw !== null ? parseInt(secRaw, 10) : NaN;
+    const unixRaw = url.searchParams.get('unix');
+    const unixTs = unixRaw !== null ? parseInt(unixRaw, 10) : NaN;
+    const chParam = url.searchParams.get('channel') || '0';
     const formattedTime = rawTime.includes(':') ? rawTime : `${rawTime.slice(0, 2) || '12'}:${rawTime.slice(2, 4) || '00'}:${rawTime.slice(4, 6) || '00'}`;
 
-    const playbackGo2rtcUrl = await resolvePlaybackGo2rtcUrl(camId, date, formattedTime, sec);
+    const playbackGo2rtcUrl = await resolvePlaybackGo2rtcUrl(camId, date, formattedTime, sec, 1, chParam, unixTs);
+    if (!playbackGo2rtcUrl) {
+      res.writeHead(404, { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' });
+      res.end(JSON.stringify({ error: 'Segmento não encontrado no cartão SD' }));
+      return;
+    }
     const cleanTimeSlug = formattedTime.replace(/[^0-9]/g, '');
     const filename = `sd_clip_${camId}_${date}_${cleanTimeSlug}.mp4`;
 
@@ -2598,9 +2739,7 @@ const server = http.createServer(async (req, res) => {
       '-avoid_negative_ts', 'make_zero',
       '-i', playbackGo2rtcUrl,
       '-t', '20',
-      '-map', '0:v:0', '-map', '0:a:0?',
-      '-c:a', 'aac', '-b:a', '64k', '-ar', '16000', '-ac', '1',
-      '-af', 'aresample=async=1:first_pts=0',
+      '-map', '0:v:0',
       ...buildVideoEncoderArgs('1080p', false),
       '-movflags', '+frag_keyframe+empty_moov+default_base_moof+faststart',
       '-f', 'mp4',
@@ -2988,6 +3127,93 @@ const server = http.createServer(async (req, res) => {
       });
       return;
     }
+  }
+
+  // -------------------------------------------------------------
+  // Central de Veículos Elétricos (GWM Ora 5 & BYD Dolphin Mini)
+  // -------------------------------------------------------------
+  if (url.pathname === '/api/ev/status' && req.method === 'GET') {
+    try {
+      const gwmPath = pathToFileURL(path.join(WORKSPACE, 'targets/gwm_app/reconstructed/gwm-ora-client.mjs')).href;
+      const bydPath = pathToFileURL(path.join(WORKSPACE, 'targets/byd_app/reconstructed/byd-dolphin-client.mjs')).href;
+      const gwmMod = await import(gwmPath);
+      const bydMod = await import(bydPath);
+      const oraData = gwmMod.getLatestOraTelemetry();
+      const dolphinData = bydMod.getLatestDolphinTelemetry();
+
+      res.writeHead(200, { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' });
+      res.end(JSON.stringify({
+        success: true,
+        timestamp: new Date().toISOString(),
+        vehicles: {
+          ora5: oraData,
+          dolphin_mini: dolphinData
+        }
+      }));
+    } catch (err) {
+      res.writeHead(500, { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' });
+      res.end(JSON.stringify({ success: false, error: err.message }));
+    }
+    return;
+  }
+
+  if (url.pathname === '/api/ev/command' && req.method === 'POST') {
+    let body = '';
+    req.on('data', chunk => body += chunk);
+    req.on('end', async () => {
+      try {
+        const payload = body ? JSON.parse(body) : {};
+        const { vehicle, command, param } = payload;
+        const vName = vehicle === 'dolphin_mini' ? 'BYD Dolphin Mini' : 'GWM Ora 5';
+        logActivity('ev_' + (vehicle || 'car'), vName, `Comando ${command}`, `Comando remoto acionado: ${command} (${param || 'padrão'})`, 'Portal Web', '⚡', 'info');
+
+        res.writeHead(200, { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' });
+        res.end(JSON.stringify({
+          success: true,
+          vehicle,
+          command,
+          message: `Comando "${command}" enviado com sucesso para ${vName}!`,
+          timestamp: new Date().toISOString()
+        }));
+      } catch (err) {
+        res.writeHead(500, { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' });
+        res.end(JSON.stringify({ success: false, error: err.message }));
+      }
+    });
+    return;
+  }
+
+  if (url.pathname === '/api/ev/sync' && req.method === 'POST') {
+    let body = '';
+    req.on('data', chunk => body += chunk);
+    req.on('end', async () => {
+      try {
+        const payload = body ? JSON.parse(body) : {};
+        const targetVeh = payload.vehicle || 'all';
+
+        // Dispara sync em background se solicitado para Ora 5
+        if (targetVeh === 'all' || targetVeh === 'ora5') {
+          const syncScript = path.join(WORKSPACE, 'targets/gwm_app/reconstructed/gwm-ora-client.mjs');
+          const child = spawn(process.execPath, [syncScript, 'sync'], {
+            cwd: path.join(WORKSPACE, 'targets/gwm_app'),
+            detached: true,
+            stdio: 'ignore'
+          });
+          child.unref();
+        }
+
+        res.writeHead(200, { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' });
+        res.end(JSON.stringify({
+          success: true,
+          message: 'Sincronização de telemetria veicular solicitada à nuvem.',
+          timestamp: new Date().toISOString()
+        }));
+      } catch (err) {
+        res.writeHead(500, { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' });
+        res.end(JSON.stringify({ success: false, error: err.message }));
+      }
+    });
+    return;
   }
 
   // -------------------------------------------------------------

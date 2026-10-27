@@ -1,0 +1,51 @@
+{
+  "timestamp": "2026-10-27T01:39:33.306Z",
+  "probes": {
+    "authGateway": {
+      "statusCode": 200,
+      "headers": {
+        "date": "Tue, 27 Oct 2026 01:39:33 GMT",
+        "content-type": "application/json;charset=UTF-8",
+        "transfer-encoding": "chunked",
+        "connection": "keep-alive",
+        "set-cookie": [
+          "HWWAFSESID=cd567732e79e58bfbc; path=/",
+          "HWWAFSESTIME=1793065173749; path=/",
+          "HWWAFSESID=79ab373ed5f605a328; path=/",
+          "HWWAFSESTIME=1793065173842; path=/"
+        ],
+        "vary": "Accept-Encoding",
+        "strict-transport-security": "max-age=31536000; includeSubDomains",
+        "x-response-default-foo": "Default-Bar",
+        "server": "CW"
+      },
+      "body": {
+        "code": "308001",
+        "description": "Senha ou e-mail incorreto"
+      }
+    },
+    "vehicleGatewayMtls": {
+      "statusCode": 200,
+      "headers": {
+        "date": "Tue, 27 Oct 2026 01:39:34 GMT",
+        "content-type": "application/json",
+        "content-length": "51",
+        "connection": "keep-alive",
+        "accesstoken": "invalid_probe_token",
+        "x-response-default-foo": "Default-Bar",
+        "x-content-type-options": "nosniff",
+        "x-xss-protection": "1; mode=block",
+        "cache-control": "no-cache, no-store, max-age=0, must-revalidate",
+        "pragma": "no-cache",
+        "expires": "0",
+        "x-frame-options": "DENY",
+        "server": "elb"
+      },
+      "body": {
+        "code": "000000",
+        "data": [],
+        "description": "SUCCESS"
+      }
+    }
+  }
+}

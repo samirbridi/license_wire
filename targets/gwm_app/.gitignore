@@ -1,0 +1,8 @@
+# Runtime e configuracoes locais contem credenciais e tokens JWT do My GWM.
+/runtime/
+/evidence/private/
+*.env
+credenciais*
+__pycache__/
+*.py[cod]
+

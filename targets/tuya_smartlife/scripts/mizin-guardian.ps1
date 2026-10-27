@@ -1,8 +1,6 @@
 <#
 .SYNOPSIS
-    Guardião Permanente do Mizin Home Portal (Independente de IDE / Antigravity)
-    Mantém o servidor Node.js (19860), a ponte Xiaomi go2rtc (19843) e o Cloudflare Tunnel
-    ativos continuamente em segundo plano no Windows, mesmo se o Antigravity for fechado.
+    Guardião Permanente Invisível do Mizin Home Portal (Zero Janela CMD)
 #>
 
 $ErrorActionPreference = "SilentlyContinue"
@@ -16,7 +14,6 @@ if (-not (Test-Path $runtimeDir)) {
     New-Item -ItemType Directory -Path $runtimeDir -Force | Out-Null
 }
 
-# Evita múltiplos guardiões duplicados
 if (Test-Path $pidFile) {
     $oldPid = Get-Content $pidFile -ErrorAction SilentlyContinue
     if ($oldPid -and ($oldPid -ne $PID)) {
@@ -28,14 +25,20 @@ if (Test-Path $pidFile) {
 }
 Set-Content -Path $pidFile -Value $PID -Encoding ascii
 
+$startupInfo = New-CimInstance -ClientOnly -ClassName Win32_ProcessStartup -Property @{
+    ShowWindow = [uint16]0
+}
+
 while ($true) {
-    # Verifica se a porta 19860 do Mizin Home Portal está respondendo
     $listening = Get-NetTCPConnection -LocalPort 19860 -State Listen -ErrorAction SilentlyContinue
     if (-not $listening) {
-        $cmdLine = "cmd.exe /c `"cd /d `"$portalDir`" && node `"$serverMjs`"`""
+        $nodeExe = (Get-Command node -ErrorAction SilentlyContinue).Source
+        if (-not $nodeExe) { $nodeExe = "C:\Program Files\nodejs\node.exe" }
+        $cmdLine = "`"$nodeExe`" `"$serverMjs`""
         Invoke-CimMethod -ClassName Win32_Process -MethodName Create -Arguments @{
             CommandLine = $cmdLine
             CurrentDirectory = $portalDir
+            ProcessStartupInformation = $startupInfo
         } | Out-Null
         Start-Sleep -Seconds 5
     }

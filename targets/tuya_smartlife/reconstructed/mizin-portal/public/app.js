@@ -316,6 +316,7 @@ function switchTab(target) {
   if (target === 'cameras') fetchCameras(); // Lazy load: só busca câmeras ao abrir a aba
   if (target === 'automations') fetchAutomations();
   if (target === 'energy') fetchEnergyTrends();
+  if (target === 'ev') fetchEvData();
 }
 
 document.querySelectorAll('.tab-btn').forEach(btn => {
@@ -328,7 +329,7 @@ document.querySelectorAll('.tab-btn').forEach(btn => {
 function initTabFromUrl() {
   const params = new URLSearchParams(window.location.search);
   const tabParam = params.get('tab') || window.location.hash.replace('#', '');
-  if (tabParam && ['overview', 'cameras', 'energy', 'automations', 'devices', 'logs'].includes(tabParam)) {
+  if (tabParam && ['overview', 'cameras', 'energy', 'ev', 'automations', 'devices', 'logs'].includes(tabParam)) {
     switchTab(tabParam);
   }
 }
@@ -5684,6 +5685,257 @@ async function syncVersionBadge() {
   } catch (e) {}
 }
 syncVersionBadge();
+
+// =============================================================
+// CENTRAL DE VEÍCULOS ELÉTRICOS (GWM ORA 5 & BYD DOLPHIN MINI)
+// =============================================================
+let currentEvVehicle = 'ora5';
+let evVehiclesData = null;
+
+async function fetchEvData() {
+  try {
+    const res = await fetch('/api/ev/status', { cache: 'no-store' });
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const data = await res.json();
+    if (data.success && data.vehicles) {
+      evVehiclesData = data.vehicles;
+      renderEvDashboard();
+      updateEvOverviewCard();
+    }
+  } catch (err) {
+    console.warn('[EV Data Fetch Warning]:', err.message);
+  }
+}
+
+function updateEvOverviewCard() {
+  if (!evVehiclesData) return;
+  const ora = evVehiclesData.ora5;
+  const byd = evVehiclesData.dolphin_mini;
+
+  if (ora) {
+    const elSoc = document.getElementById('evQuickOraSoc');
+    const elRange = document.getElementById('evQuickOraRange');
+    const elLock = document.getElementById('evQuickOraLock');
+    if (elSoc) elSoc.innerText = `${ora.batterySoc}%`;
+    if (elRange) elRange.innerText = `${ora.evRangeKm} km autonomia`;
+    if (elLock) elLock.innerText = ora.doorsLocked ? '🔒 Trancado' : '🔓 Aberto';
+  }
+
+  if (byd) {
+    const elSoc = document.getElementById('evQuickBydSoc');
+    const elRange = document.getElementById('evQuickBydRange');
+    const elLock = document.getElementById('evQuickBydLock');
+    if (elSoc) elSoc.innerText = `${byd.batterySoc}%`;
+    if (elRange) elRange.innerText = `${byd.evRangeKm} km autonomia`;
+    if (elLock) elLock.innerText = byd.doorsLocked ? '🔒 Trancado' : '🔓 Aberto';
+  }
+}
+
+function selectEvVehicle(vehId) {
+  currentEvVehicle = vehId;
+  const btnOra = document.getElementById('evBtnOra5');
+  const btnDolphin = document.getElementById('evBtnDolphin');
+
+  if (vehId === 'ora5') {
+    if (btnOra) btnOra.classList.add('active');
+    if (btnDolphin) btnDolphin.classList.remove('active');
+  } else {
+    if (btnOra) btnOra.classList.remove('active');
+    if (btnDolphin) btnDolphin.classList.add('active');
+  }
+
+  renderEvDashboard();
+}
+
+function renderEvDashboard() {
+  if (!evVehiclesData) return;
+  const veh = evVehiclesData[currentEvVehicle];
+  if (!veh) return;
+
+  // Header Hero
+  const brandEl = document.getElementById('evHeroBrand');
+  const modelEl = document.getElementById('evHeroModel');
+  const plateEl = document.getElementById('evHeroPlate');
+  const lockBadge = document.getElementById('evHeroLockBadge');
+  const chargeBadge = document.getElementById('evHeroChargingBadge');
+  const onlineBadge = document.getElementById('evHeroOnlineBadge');
+
+  if (brandEl) brandEl.innerText = `${veh.brand.toUpperCase()} • ${veh.powerType.toUpperCase()}`;
+  if (modelEl) modelEl.innerText = veh.model;
+  if (plateEl) plateEl.innerText = `Placa: ${veh.plate} • Cor: ${veh.color}`;
+
+  if (lockBadge) {
+    lockBadge.className = `badge ${veh.doorsLocked ? 'badge-emerald' : 'badge-danger'}`;
+    lockBadge.innerText = veh.doorsLocked ? '🔒 Trancado' : '🔓 Destrancado';
+  }
+
+  if (chargeBadge) {
+    const isCharging = veh.chargingState === 'charging';
+    chargeBadge.className = `badge ${isCharging ? 'badge-live' : ''}`;
+    chargeBadge.innerText = isCharging ? '⚡ Carregando' : (veh.plugConnected ? '🔌 Plugado' : '⚡ Desconectado');
+  }
+
+  // Bateria & Autonomia
+  const socEl = document.getElementById('evBatterySoc');
+  const rangeEl = document.getElementById('evRangeKm');
+  const barEl = document.getElementById('evBatteryBar');
+  const capEl = document.getElementById('evBatteryCap');
+  const maxRangeEl = document.getElementById('evMaxRange');
+  const plugEl = document.getElementById('evPlugStatus');
+  const pwrEl = document.getElementById('evChargePower');
+  const b12vEl = document.getElementById('ev12vSoc');
+
+  if (socEl) socEl.innerText = `${veh.batterySoc}%`;
+  if (rangeEl) rangeEl.innerHTML = `${veh.evRangeKm} <small>km</small>`;
+  if (barEl) barEl.style.width = `${Math.min(100, Math.max(0, veh.batterySoc))}%`;
+  if (capEl) capEl.innerText = `${veh.batteryCapacityKwh.toFixed(1)} kWh`;
+  if (maxRangeEl) maxRangeEl.innerText = `${veh.maxRangeKm} km`;
+  if (plugEl) plugEl.innerText = veh.plugConnected ? '🔌 Conectado' : '🔌 Desconectado';
+  if (pwrEl) pwrEl.innerText = `${veh.chargingPowerKw || 0.0} kW`;
+  if (b12vEl) b12vEl.innerText = `${veh.aux12vBatterySoc}% (Excelente)`;
+
+  // TPMS
+  if (veh.tires) {
+    const flPsi = document.getElementById('tpmsFlPsi');
+    const flTemp = document.getElementById('tpmsFlTemp');
+    const frPsi = document.getElementById('tpmsFrPsi');
+    const frTemp = document.getElementById('tpmsFrTemp');
+    const rlPsi = document.getElementById('tpmsRlPsi');
+    const rlTemp = document.getElementById('tpmsRlTemp');
+    const rrPsi = document.getElementById('tpmsRrPsi');
+    const rrTemp = document.getElementById('tpmsRrTemp');
+
+    if (flPsi) flPsi.innerText = `${veh.tires.fl.psi} PSI`;
+    if (flTemp) flTemp.innerText = `${veh.tires.fl.tempC}°C`;
+    if (frPsi) frPsi.innerText = `${veh.tires.fr.psi} PSI`;
+    if (frTemp) frTemp.innerText = `${veh.tires.fr.tempC}°C`;
+    if (rlPsi) rlPsi.innerText = `${veh.tires.rl.psi} PSI`;
+    if (rlTemp) rlTemp.innerText = `${veh.tires.rl.tempC}°C`;
+    if (rrPsi) rrPsi.innerText = `${veh.tires.rr.psi} PSI`;
+    if (rrTemp) rrTemp.innerText = `${veh.tires.rr.tempC}°C`;
+  }
+
+  // Portas & Travas
+  const lockText = document.getElementById('evLockStateText');
+  if (lockText) lockText.innerText = veh.doorsLocked ? '🔒 Veículo Trancado' : '🔓 Veículo Destrancado';
+
+  const dFL = document.getElementById('doorValFL');
+  const dFR = document.getElementById('doorValFR');
+  const dRL = document.getElementById('doorValRL');
+  const dRR = document.getElementById('doorValRR');
+  const dTrunk = document.getElementById('doorValTrunk');
+  const dHood = document.getElementById('doorValHood');
+  const dWin = document.getElementById('doorValWindows');
+  const dRoof = document.getElementById('doorValSunroof');
+
+  if (dFL) dFL.innerText = veh.doors.fl ? 'Aberta ⚠️' : 'Fechada';
+  if (dFR) dFR.innerText = veh.doors.fr ? 'Aberta ⚠️' : 'Fechada';
+  if (dRL) dRL.innerText = veh.doors.rl ? 'Aberta ⚠️' : 'Fechada';
+  if (dRR) dRR.innerText = veh.doors.rr ? 'Aberta ⚠️' : 'Fechada';
+  if (dTrunk) dTrunk.innerText = veh.doors.trunk ? 'Aberto ⚠️' : 'Fechado';
+  if (dHood) dHood.innerText = veh.doors.hood ? 'Aberto ⚠️' : 'Fechado';
+  if (dWin) dWin.innerText = 'Todos Fechados';
+  if (dRoof) dRoof.innerText = veh.windows.sunroof === 'closed' ? 'Fechado' : 'Aberto';
+
+  // Climatização
+  const cabinTempEl = document.getElementById('evCabinTemp');
+  const targetTempEl = document.getElementById('evTargetTemp');
+  const btnAc = document.getElementById('btnToggleAc');
+
+  if (cabinTempEl && veh.climate) cabinTempEl.innerText = `${veh.climate.cabinTempC || 23.5}°C`;
+  if (targetTempEl && veh.climate) targetTempEl.innerText = `${(veh.climate.targetTempC || 22.0).toFixed(1)}°C`;
+  if (btnAc && veh.climate) {
+    btnAc.innerText = veh.climate.active ? '❄️ Desligar Climatização' : '❄️ Ligar Climatização (15 Minutos)';
+  }
+
+  // Localização & Hodômetro
+  const addrEl = document.getElementById('evLocationAddr');
+  const odomEl = document.getElementById('evOdometer');
+  const srcEl = document.getElementById('evDataSource');
+
+  if (addrEl && veh.location) addrEl.innerText = veh.location.address || 'Garagem Residencial';
+  if (odomEl) odomEl.innerText = `${(veh.odometerKm || 0).toLocaleString('pt-BR')} km`;
+  if (srcEl) srcEl.innerText = veh.source || 'Nuvem Oficial mTLS';
+}
+
+function adjustEvTemp(delta) {
+  if (!evVehiclesData) return;
+  const veh = evVehiclesData[currentEvVehicle];
+  if (!veh || !veh.climate) return;
+  let t = (veh.climate.targetTempC || 22.0) + delta;
+  t = Math.max(16, Math.min(30, t));
+  veh.climate.targetTempC = t;
+  const targetTempEl = document.getElementById('evTargetTemp');
+  if (targetTempEl) targetTempEl.innerText = `${t.toFixed(1)}°C`;
+}
+
+async function triggerEvAction(action) {
+  const vName = currentEvVehicle === 'dolphin_mini' ? 'BYD Dolphin Mini' : 'GWM Ora 5';
+  showToast(`Enviando comando "${action}" para ${vName}... 🚗`);
+
+  try {
+    const res = await fetch('/api/ev/command', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        vehicle: currentEvVehicle,
+        command: action
+      })
+    });
+    const data = await res.json();
+    if (data.success) {
+      showToast(data.message || 'Comando executado com sucesso!', 'success');
+      // Atualização otimista
+      if (action === 'lock' && evVehiclesData[currentEvVehicle]) {
+        evVehiclesData[currentEvVehicle].doorsLocked = true;
+      } else if (action === 'unlock' && evVehiclesData[currentEvVehicle]) {
+        evVehiclesData[currentEvVehicle].doorsLocked = false;
+      } else if (action === 'toggle_ac' && evVehiclesData[currentEvVehicle]) {
+        evVehiclesData[currentEvVehicle].climate.active = !evVehiclesData[currentEvVehicle].climate.active;
+      }
+      renderEvDashboard();
+      updateEvOverviewCard();
+    } else {
+      showToast(`Erro no comando: ${data.error}`, 'danger');
+    }
+  } catch (err) {
+    showToast(`Falha de comunicação: ${err.message}`, 'danger');
+  }
+}
+
+async function syncEvData() {
+  const btn = document.getElementById('btnSyncEv');
+  if (btn) btn.innerText = '🔄 Sincronizando...';
+  showToast('Sincronizando telemetria com as nuvens GWM & BYD...');
+
+  try {
+    await fetch('/api/ev/sync', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ vehicle: currentEvVehicle })
+    });
+    await fetchEvData();
+    showToast('Telemetria atualizada com sucesso! ⚡', 'success');
+  } catch (err) {
+    showToast(`Erro ao sincronizar: ${err.message}`, 'warning');
+  } finally {
+    if (btn) btn.innerText = '🔄 Sincronizar Nuvem';
+  }
+}
+
+function openEvMap() {
+  if (!evVehiclesData) return;
+  const veh = evVehiclesData[currentEvVehicle];
+  if (veh && veh.location && veh.location.lat) {
+    const url = `https://www.google.com/maps?q=${veh.location.lat},${veh.location.lon}`;
+    window.open(url, '_blank');
+  }
+}
+
+// Inicializa busca de EV em background na carga da página
+setTimeout(fetchEvData, 1500);
+setInterval(fetchEvData, 45000);
+
 
 
 

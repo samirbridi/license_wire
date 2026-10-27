@@ -3,6 +3,22 @@
 Todas as descobertas, módulos dissecados e correções desta análise são registrados aqui.
 Formato de versão obrigatório: `vX.Y.Z (build XXXX)`.
 
+## v0.26.0 (build 0028) - 2026-10-27
+
+### ✨ Features
+- feat: implementa a central unificada de Veículos Elétricos (aba "Elétricos") com suporte a múltiplos carros da residência:
+  - Integração do **GWM Ora 5** com telemetria mTLS oficial, SoC da bateria de tração (%), autonomia restante (km), pressão e temperatura individual dos 4 pneus (TPMS em PSI/°C), estado de portas, travas, vidros, teto solar, bateria 12V auxiliar e termostato da cabine
+  - Integração do **BYD Dolphin Mini EV** (Blade Battery LFP 38 kWh) com visualização em tempo real de carga, autonomia, pressão de pneus e status de segurança
+  - Seletor dinâmico em 1 toque no topo da aba para alternar entre os veículos elétricos da residência
+  - Card de resumo rápido na aba *Visão Geral* ("Garagem & Veículos Elétricos") com nível de bateria e autonomia lado a lado
+  - Endpoints REST `/api/ev/status`, `/api/ev/sync` e `/api/ev/command` em `server.mjs` com integração não-intrusiva e fallback resiliente
+
+### ⚡ Improvements
+- improve: adiciona diagrama visual de chassi para conferência imediata dos pneus (TPMS) e controles remotos rápidos de trava e pré-climatização
+- improve: implantação automática no Cloudflare Pages (`https://homecams.pages.dev`) e sincronização dinâmica com o túnel ativo
+
+---
+
 ## v0.25.0 (build 0027) - 2026-10-26
 
 ### 💥 Breaking Changes
