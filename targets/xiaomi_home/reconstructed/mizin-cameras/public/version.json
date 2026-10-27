@@ -1,6 +1,6 @@
 {
-  "display": "v0.9.0 (build 0015)",
-  "build": 15,
-  "sourceCommit": "go2rtc-miss-patch-v0.9.0",
-  "date": "2026-10-26"
+  "display": "v0.10.0 (build 0016)",
+  "build": 16,
+  "sourceCommit": "dcc463800c5d5f65708975a57596de18f2a74e57",
+  "date": "2026-10-27"
 }

@@ -1,5 +1,24 @@
 # CHANGELOG — xiaomi_home
 
+## v0.10.0 (build 0016) - 2026-10-27
+
+### 💥 Breaking Changes
+
+- Nenhum.
+
+### ✨ Features
+
+- feat: adiciona consultas isoladas de SD e posicoes Xiaomi (commit `dcc463800c5d5f65708975a57596de18f2a74e57`)
+- feat: corrige transporte CS2, talkback bidirecional, playback SD 0x10D e controles Xiaomi local e online (commit `211b5e6b426e1edc6683a560539d42eeebf832d2`)
+
+### 🐛 Fixes
+
+- Nenhum.
+
+### ⚡ Improvements
+
+- Nenhum.
+
 ## v0.9.0 (build 0015) - 2026-10-26
 
 ### 💥 Breaking Changes
