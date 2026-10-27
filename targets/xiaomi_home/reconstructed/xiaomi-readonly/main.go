@@ -1,4 +1,4 @@
-// Camera-owner diagnostic. Only one fixed read request is enabled.
+// Camera-owner diagnostic. Only fixed, allowlisted read requests are enabled.
 // Transport: MIT-licensed AlexxIT/go2rtc; vendor protocol facts are documented
 // separately. This program does not start media, move motors or write an SD card.
 package main
@@ -90,8 +90,11 @@ func ownerSource(root, id string) (*url.URL, string, error) {
 			break
 		}
 	}
-	if u == nil || u.Scheme != "xiaomi" || u.User == nil || u.Query().Get("model") != "xiaomi.camera.cw701" {
-		return nil, "", errors.New("only the registered CW701 is supported")
+	if u == nil || u.Scheme != "xiaomi" || u.User == nil {
+		return nil, "", errors.New("registered Xiaomi source required")
+	}
+	if _, err := storageService(u.Query().Get("model")); err != nil {
+		return nil, "", err
 	}
 	ip := net.ParseIP(u.Hostname())
 	if ip == nil || !ip.IsPrivate() {
@@ -239,11 +242,17 @@ func responseCommand(cmd uint32) uint32 {
 
 func run(root, id, operation string, receipt map[string]any) error {
 	receipt["stage"] = "load-owner-config"
-	payload, err := requestBytes(operation)
+	u, token, err := ownerSource(root, id)
 	if err != nil {
 		return err
 	}
-	u, token, err := ownerSource(root, id)
+	if operation == "storage-status" || operation == "positions" {
+		return readCloudProperties(u, token, operation, receipt)
+	}
+	if u.Query().Get("model") != "xiaomi.camera.cw701" {
+		return errors.New("P2P diagnostic is restricted to CW701")
+	}
+	payload, err := requestBytes(operation)
 	if err != nil {
 		return err
 	}
@@ -318,9 +327,9 @@ func run(root, id, operation string, receipt map[string]any) error {
 func main() {
 	target := flag.String("target", "", "absolute Xiaomi target directory")
 	id := flag.String("camera", "outdoor_pro_poste", "registered camera ID")
-	operation := flag.String("read", "device-info", "device-info only; position framing remains under analysis")
+	operation := flag.String("read", "device-info", "device-info, storage-status or read-only positions properties")
 	flag.Parse()
-	if _, check := requestBytes(*operation); check != nil {
+	if check := allowedOperation(*operation); check != nil {
 		fmt.Println(`{"status":"read_operation_not_allowed"}`)
 		os.Exit(2)
 	}

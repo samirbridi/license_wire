@@ -1,0 +1,20 @@
+{
+  "camera": "outdoor_pro_poste",
+  "innerCommandBE": 273,
+  "innerCommandLE": 285278208,
+  "mediaStarted": false,
+  "observedAt": "2026-10-26T23:13:51Z",
+  "observedCommands": [
+    17825792
+  ],
+  "operation": "device-info",
+  "outerCommand": 4097,
+  "pass": true,
+  "readOnly": true,
+  "requestSent": true,
+  "responseBytes": 75,
+  "sourceCommit": "f32ac75f6ad99db6c8d2c9f845111a7221ac300a",
+  "stage": "expected-response-received",
+  "transport": "cs2+tcp",
+  "temporaryFirewallRuleRemoved": true
+}

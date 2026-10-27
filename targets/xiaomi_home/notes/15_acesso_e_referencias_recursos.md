@@ -24,13 +24,13 @@ O endereço simples da central não leva o convite de pareamento. O convite inic
 
 Hoje o processo de autenticação/transporte/transcodificação está neste Windows, portanto o protótipo depende dele ligado. Não é uma exigência permanente de usar Windows: pode-se portar a central para Linux/NAS/mini-PC; o dimensionamento deve considerar até duas vistas por cliente e a transcodificação hoje acelerada por GPU.
 
-`homecams.pages.dev` é uma sugestão de nome, não um endereço reservado ou publicado. [Pages](https://developers.cloudflare.com/pages/get-started/direct-upload/) fornece o domínio do frontend; [R2](https://developers.cloudflare.com/r2/how-r2-works/) armazena objetos/clipes. Nenhum deles, isoladamente, executa a conexão proprietária das câmeras. Login/sinalização podem usar Workers e a entrega de vídeo pode usar [Realtime/TURN](https://developers.cloudflare.com/realtime/turn/), com custos a validar.
+O projeto Pages `homecams` foi criado na conta do proprietário com subdomínio `homecams.pages.dev`, ainda sem deployment. A confirmação da API fica no recibo privado `evidence/private/cloudflare-homecams-project.json`. [Pages](https://developers.cloudflare.com/pages/get-started/direct-upload/) fornece o domínio do frontend; [R2](https://developers.cloudflare.com/r2/how-r2-works/) armazena objetos/clipes. Nenhum deles, isoladamente, executa a conexão proprietária das câmeras. Login/sinalização podem usar Workers e a entrega de vídeo pode usar [Realtime/TURN](https://developers.cloudflare.com/realtime/turn/), com custos a validar.
 
 Uma VPS poderia executar o conector fora da residência se a conexão CS2 remota for comprovada para a conta/modelos/China. Isso requer teste fora da LAN e verificação de todas as funções pelo transporte remoto. Não significa câmera independente da nuvem Xiaomi. [Containers](https://developers.cloudflare.com/containers/concepts/architecture/) recebe tráfego de usuários por Worker/HTTP; não assumimos que seja um substituto direto para um servidor UDP/P2P. Nenhum serviço pago, exposição pública ou envio de credenciais/imagens à Cloudflare foi realizado nesta etapa.
 
 ## Ordem de validação
 
-1. Resolver a sessão de comandos independente por consulta de informações, sem movimentar câmera.
+1. Consulta independente `device-info` concluída com resposta válida em 2026-10-26T23:13:51Z; recibo público `evidence/builds/20261026-cs2-device-info-qa.json`. Nenhum comando de movimento enviado nesse teste.
 2. Consultar catálogo SD com timestamps reais; depois replay, recorte local e download, sem apagar ou formatar.
 3. Validar comando de movimento com parada, limites, lente correta e controle de zoom específico do modelo.
 4. Ler posições/rondas existentes antes de oferecer gravação/edição de rotas.

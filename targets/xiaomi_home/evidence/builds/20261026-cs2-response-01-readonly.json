@@ -1,0 +1,8 @@
+{
+  "version": "v0.8.1 (build 0014)",
+  "sourceCommit": "f32ac75f6ad99db6c8d2c9f845111a7221ac300a",
+  "component": "read-only-camera-diagnostic",
+  "pass": true,
+  "hardwareTested": false,
+  "sha256": "17ccae7d9d1666c69ef9a4f48dce1e45299fca3d5a6b51d8e3cb0011fbae0657"
+}

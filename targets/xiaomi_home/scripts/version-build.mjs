@@ -20,6 +20,19 @@ export function increment(base, commits) {
   return { major, minor, patch, build, display: `v${major}.${minor}.${patch} (build ${String(build).padStart(4, '0')})`, commits: types };
 }
 
+export function releaseBaseline(versionFile, stateVersion) {
+  const parse = value => {
+    const match = /^v(\d+)\.(\d+)\.(\d+) \(build (\d+)\)$/.exec(value.trim());
+    if (!match) throw new Error('Invalid release baseline');
+    return { value: value.trim(), build: Number(match[4]) };
+  };
+  const file = parse(versionFile);
+  if (!stateVersion) return file.value;
+  const state = parse(stateVersion);
+  if (file.build === state.build && file.value !== state.value) throw new Error('Conflicting versions for the same build');
+  return file.build > state.build ? file.value : state.value;
+}
+
 export function release({ target, mode = 'plan', runId = randomUUID() }) {
   const repo = resolve(target, '../..'), scope = relative(repo, target).replaceAll('\\', '/');
   const app = join(target, 'reconstructed/mizin-cameras');
@@ -38,7 +51,7 @@ export function release({ target, mode = 'plan', runId = randomUUID() }) {
     const files = git(['diff-tree', '--root', '--no-commit-id', '--name-only', '-r', commit.sha]).trim().split('\n').filter(path => path.startsWith(scope + '/'));
     return files.some(path => !generated(path.slice(scope.length + 1)));
   });
-  const base = state?.version ?? readFileSync(join(target, 'VERSION'), 'utf8').trim();
+  const base = releaseBaseline(readFileSync(join(target, 'VERSION'), 'utf8'), state?.version);
   const next = increment(base, commits);
   const date = new Intl.DateTimeFormat('en-CA', { timeZone: 'America/Sao_Paulo', year: 'numeric', month: '2-digit', day: '2-digit' }).format(new Date());
   const result = { runId, sourceCommit, previous: base, version: next.display, build: next.build, date, status: mode === 'plan' ? 'planned' : 'reserved', commits: next.commits };

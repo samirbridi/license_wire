@@ -23,13 +23,15 @@ foreach ($name in $probeVars) { $probeSaved[$name] = [Environment]::GetEnvironme
 $probeReceipt = [ordered]@{version=$probeState.version;sourceCommit=$probeState.sourceCommit;component='read-only-camera-diagnostic';pass=$false;hardwareTested=$false;sha256=$null}
 try {
     $env:GOPATH = Join-Path $probeTarget 'runtime/go-work'
-    $env:GOMODCACHE = Join-Path $probeTarget 'runtime/go-modules'
-    $env:GOCACHE = Join-Path $probeTarget 'runtime/go-build-cache'
+    $env:GOMODCACHE = Join-Path $probeTarget 'runtime/go-readonly-modules'
+    $env:GOCACHE = Join-Path $probeTarget 'runtime/go-readonly-build-cache'
     $env:GOTOOLCHAIN = 'local'
     $env:CGO_ENABLED = '0'
     $env:GOMAXPROCS = '2'
     Push-Location (Join-Path $probeTarget 'reconstructed/xiaomi-readonly')
     try {
+        & $probeCompiler mod verify
+        if ($LASTEXITCODE -ne 0) { throw 'Integridade das dependencias do diagnostico falhou.' }
         & $probeCompiler test ./...
         if ($LASTEXITCODE -ne 0) { throw 'Os testes do diagnostico falharam.' }
         & $probeCompiler build -trimpath -ldflags ('-X main.sourceCommit=' + $probeState.sourceCommit) -o $probeBinary .

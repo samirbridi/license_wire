@@ -1,0 +1,20 @@
+{
+  "runId": "20261026-cs2-response-01",
+  "sourceCommit": "f32ac75f6ad99db6c8d2c9f845111a7221ac300a",
+  "previous": "v0.8.0 (build 0013)",
+  "version": "v0.8.1 (build 0014)",
+  "build": 14,
+  "date": "2026-10-26",
+  "status": "built",
+  "commits": [
+    {
+      "sha": "f32ac75f6ad99db6c8d2c9f845111a7221ac300a",
+      "subject": "fix: interpreta ordem dos bytes observada na resposta CS2",
+      "body": "",
+      "type": "fix",
+      "description": "interpreta ordem dos bytes observada na resposta CS2",
+      "breaking": false
+    }
+  ],
+  "artifact": "runtime/builds/build-0014"
+}
