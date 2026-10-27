@@ -3377,11 +3377,9 @@ let pttAudioStream = null;
 function resolveEffectiveCameraQuality() {
   if (activeCameraQuality !== 'auto') return activeCameraQuality;
   // Modo Automático Inteligente:
-  // Na rede local (0ms de latência) -> 2K Quad HD
-  if (isLocalAccess) return '2k';
-  // No acesso remoto via Cloudflare -> balanceia latência com taxa de bits
-  const ping = window._lastHealthPingMs || 70;
-  if (ping < 85) return '1080p';
+  // Na rede local (0ms de latência LAN) -> 1080p ou 2k
+  if (isLocalAccess) return '1080p';
+  // No acesso remoto via Cloudflare / externa -> 720p para máxima velocidade e zero buffering
   return '720p';
 }
 
@@ -3898,24 +3896,22 @@ async function toggleAudioTalk() {
   const waveMeter = document.getElementById('audioWaveMeter');
 
   if (!isAudioTalking) {
-    // ATIVAR MICROFONE COM FEEDBACK DE SINCRONIZAÇÃO E PORCENTAGEM
+    // ATIVAR MICROFONE INSTANTANEAMENTE (1 TOQUE)
     isAudioTalking = true;
     isPttTalking = true;
 
-    // Etapa 1: Aguarde e handshake inicial (15%)
     if (btn) {
       btn.classList.add('active-talking');
-      btn.style.background = 'linear-gradient(135deg, rgba(234, 179, 8, 0.35) 0%, rgba(202, 138, 4, 0.5) 100%)';
-      btn.style.borderColor = 'rgba(234, 179, 8, 0.8)';
+      btn.style.background = 'linear-gradient(135deg, rgba(239, 68, 68, 0.45) 0%, rgba(220, 38, 38, 0.75) 100%)';
+      btn.style.borderColor = 'rgba(239, 68, 68, 0.95)';
     }
-    if (icon) icon.innerText = '⏳';
-    if (text) text.innerText = 'Aguarde... Sincronizando (15%)';
-    if (statusText) statusText.innerText = '⏳ Aguarde... Conectando ao canal de áudio da câmera (15%)...';
-    if (waveMeter) waveMeter.style.display = 'none';
+    if (icon) icon.innerText = '🔴';
+    if (text) text.innerText = 'Falando (Ao Vivo)';
+    if (statusText) statusText.innerText = '🎙️ MICROFONE ATIVO: Transmitindo voz em tempo real para o alto-falante!';
+    if (waveMeter) waveMeter.style.display = 'flex';
 
     try {
       if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
-        // Etapa 2: Obtenção de Mídia e permissão (45%)
         audioTalkStream = await navigator.mediaDevices.getUserMedia({
           audio: {
             echoCancellation: true,
@@ -3924,15 +3920,11 @@ async function toggleAudioTalk() {
           }
         });
 
-        // Se o usuário desligou o microfone enquanto esperava a permissão
         if (!isAudioTalking) {
           audioTalkStream.getTracks().forEach(t => t.stop());
           audioTalkStream = null;
           return;
         }
-
-        if (text) text.innerText = 'Calibrando microfone (50%)';
-        if (statusText) statusText.innerText = '🎙️ Calibrando cancelamento de eco e bitrate (50%)...';
 
         const mimeType = MediaRecorder.isTypeSupported('audio/webm;codecs=opus')
           ? 'audio/webm;codecs=opus'
@@ -3958,26 +3950,9 @@ async function toggleAudioTalk() {
           }
         };
 
-        // Etapa 3: Vinculação ao canal de alto-falante (75%)
-        if (text) text.innerText = 'Vinculando alto-falante (75%)';
-        if (statusText) statusText.innerText = '📢 Vinculando canal bidirecional ao alto-falante Xiaomi (75%)...';
-
-        // Dispara chunks a cada 800ms para menor latência
-        audioTalkRecorder.start(800);
-
-        // Etapa 4: 100% Sincronizado e Ativo em Tempo Real
-        setTimeout(() => {
-          if (!isAudioTalking) return;
-          if (btn) {
-            btn.style.background = 'linear-gradient(135deg, rgba(239, 68, 68, 0.4) 0%, rgba(220, 38, 38, 0.7) 100%)';
-            btn.style.borderColor = 'rgba(239, 68, 68, 0.9)';
-          }
-          if (icon) icon.innerText = '🔴';
-          if (text) text.innerText = 'Falando (Ao Vivo • 100%)';
-          if (statusText) statusText.innerText = '🎙️ CANAL SINCRONIZADO (100%): Transmitindo voz em tempo real para o alto-falante!';
-          if (waveMeter) waveMeter.style.display = 'flex';
-          showToast('Canal de voz sincronizado (100%)! Fale no microfone 📢', '', '🎙️', 'success');
-        }, 300);
+        // Envia chunks a cada 600ms para resposta ultra-rápida no alto-falante
+        audioTalkRecorder.start(600);
+        showToast('Microfone conectado! Fale no alto-falante da câmera 📢', '', '🎙️', 'success');
 
       } else {
         showToast('Microfone requer conexão segura HTTPS ou localhost 🎤', '', '⚠️', 'warning');
@@ -3990,7 +3965,7 @@ async function toggleAudioTalk() {
       }
     }
   } else {
-    // DESATIVAR MICROFONE
+    // DESATIVAR MICROFONE INSTANTANEAMENTE (1 TOQUE)
     isAudioTalking = false;
     isPttTalking = false;
 
@@ -4145,6 +4120,7 @@ let sdPlaybackTimer = null;
 let currentSdPlaySeconds = 36000;
 
 function jumpToSdEvent(seconds, label) {
+  switchTheaterTab('sd');
   const needle = document.getElementById('timelineNeedle');
   const timeTip = document.getElementById('timelineNeedleTime');
   const pct = Math.max(0, Math.min(100, (seconds / 86400) * 100));
@@ -4156,6 +4132,7 @@ function jumpToSdEvent(seconds, label) {
 }
 
 function seekTimelineClick(event) {
+  switchTheaterTab('sd');
   const ruler = document.getElementById('timelineRulerContainer');
   const needle = document.getElementById('timelineNeedle');
   const timeTip = document.getElementById('timelineNeedleTime');
@@ -4199,6 +4176,7 @@ function onTimelineDateChanged(val) {
 }
 
 function playCurrentSdSegment(targetSeconds, optLabel) {
+  switchTheaterTab('sd');
   let seconds = targetSeconds;
   if (seconds === undefined) {
     const needleTip = document.getElementById('timelineNeedleTime');

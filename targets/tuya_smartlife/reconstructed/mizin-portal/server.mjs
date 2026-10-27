@@ -33,13 +33,19 @@ function ensureGo2rtcRunning() {
   });
   req.on('error', () => {
     if (fs.existsSync(GO2RTC_BIN) && fs.existsSync(GO2RTC_CONFIG)) {
-      console.log('[go2rtc Watchdog] Iniciando ponte go2rtc Xiaomi (127.0.0.1:19843)...');
+      console.log('[go2rtc Watchdog] Iniciando ponte go2rtc Xiaomi com FFmpeg no PATH (127.0.0.1:19843)...');
       try {
+        const ffmpegDir = path.dirname(FFMPEG_BIN);
+        const childEnv = {
+          ...process.env,
+          PATH: ffmpegDir + ';' + (process.env.PATH || '')
+        };
         go2rtcChild = spawn(GO2RTC_BIN, ['-config', GO2RTC_CONFIG], {
           cwd: path.dirname(GO2RTC_CONFIG),
           windowsHide: true,
           stdio: 'ignore',
-          detached: true
+          detached: true,
+          env: childEnv
         });
         go2rtcChild.unref();
       } catch (e) {
@@ -1546,25 +1552,29 @@ const server = http.createServer(async (req, res) => {
   // Proxy de Streaming ao Vivo da Câmera (Fragmented MP4 H.264 + AAC em tempo real via FFmpeg)
   if (url.pathname === '/api/camera-stream') {
     const rawSrc = url.searchParams.get('src') || '';
-    const quality = url.searchParams.get('quality') || 'native';
+    const quality = url.searchParams.get('quality') || '720p';
     const resolvedSrc = resolveStreamAlias(rawSrc, quality);
     const go2rtcUrl = `http://127.0.0.1:19843/api/stream.mp4?src=${encodeURIComponent(resolvedSrc)}&video=h265`;
 
     const width = quality === 'native' ? 3840 : quality === '2k' ? 2560 : quality === '1080p' ? 1920 : 1280;
-    const bitrate = quality === 'native' ? '3500k' : quality === '2k' ? '2500k' : quality === '1080p' ? '1800k' : '900k';
+    const bitrate = quality === 'native' ? '2800k' : quality === '2k' ? '2000k' : quality === '1080p' ? '1100k' : '650k';
+    const maxrate = quality === 'native' ? '3200k' : quality === '2k' ? '2400k' : quality === '1080p' ? '1300k' : '750k';
+    const bufsize = quality === 'native' ? '1400k' : quality === '2k' ? '1000k' : quality === '1080p' ? '550k' : '300k';
 
     const ffmpegArgs = [
       '-hide_banner', '-nostdin', '-loglevel', 'error',
-      '-rw_timeout', '25000000', '-analyzeduration', '1000000', '-probesize', '262144',
+      '-rw_timeout', '20000000',
+      '-fflags', 'nobuffer+fastseek', '-flush_packets', '1',
+      '-probesize', '32768', '-analyzeduration', '0',
       '-i', go2rtcUrl,
       '-map', '0:v:0',
       '-map', '0:a:0?',
-      '-c:a', 'aac', '-b:a', '64k', '-ar', '48000',
+      '-c:a', 'aac', '-b:a', '48k', '-ar', '16000', '-ac', '1',
       '-vf', `scale=w='min(${width},iw)':h=-2`,
       '-r', '20',
       '-c:v', 'libx264', '-preset', 'ultrafast', '-tune', 'zerolatency',
-      '-b:v', bitrate, '-maxrate', bitrate, '-bufsize', bitrate,
-      '-g', '20', '-keyint_min', '20', '-sc_threshold', '0',
+      '-b:v', bitrate, '-maxrate', maxrate, '-bufsize', bufsize,
+      '-g', '12', '-keyint_min', '12', '-sc_threshold', '0',
       '-pix_fmt', 'yuv420p',
       '-movflags', '+frag_keyframe+empty_moov+default_base_moof',
       '-f', 'mp4',
@@ -1623,7 +1633,7 @@ const server = http.createServer(async (req, res) => {
           res.end(JSON.stringify({ error: 'Timeout ao conectar stream da câmera' }));
         }
       }
-    }, 30000);
+    }, 25000);
 
     child.stdout.once('data', () => clearTimeout(guardTimer));
     return;
@@ -1683,7 +1693,8 @@ const server = http.createServer(async (req, res) => {
     return;
   }
 
-  // Transmissão de Áudio Talkback (Voz Bidirecional)
+  // Transmissão de Áudio Talkback (Voz Bidirecional) via FFmpeg + go2rtc backchannel
+  let talkbackSeq = 0;
   if (url.pathname === '/api/camera/talkback' && req.method === 'POST') {
     const camId = url.searchParams.get('id') || 'outdoor_pro_poste';
     let chunks = [];
@@ -1692,19 +1703,60 @@ const server = http.createServer(async (req, res) => {
       const audioBuffer = Buffer.concat(chunks);
       console.log(`[Talkback Voice] Recebidos ${audioBuffer.length} bytes de voz para a câmera ${camId}`);
 
-      // Tenta encaminhar para o backchannel do go2rtc se estiver rodando
-      const alias = resolveStreamAlias(camId, '1080p');
+      if (audioBuffer.length < 50) {
+        res.writeHead(200, { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' });
+        res.end(JSON.stringify({ ok: true, cameraId: camId, bytesSent: 0 }));
+        return;
+      }
+
+      talkbackSeq = (talkbackSeq + 1) % 10000;
+      const curSeq = talkbackSeq;
+      const wavFilename = `talkback_${camId}_${curSeq}.wav`;
+      const wavPath = path.join(__dirname, 'public', wavFilename);
+
+      // Transcodifica WebM/Opus do navegador para WAV PCMA 8000Hz (G.711a padrão CS2 Xiaomi)
       try {
-        const go2rtcReq = http.request(`http://127.0.0.1:19843/api/stream?dst=${encodeURIComponent(alias)}`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'audio/webm' }
-        }, (gRes) => {
-          gRes.resume();
+        const ff = spawn(FFMPEG_BIN, [
+          '-hide_banner', '-nostdin', '-loglevel', 'error',
+          '-i', 'pipe:0',
+          '-c:a', 'pcm_alaw', '-ar', '8000', '-ac', '1',
+          '-f', 'wav', 'pipe:1'
+        ], { windowsHide: true, stdio: ['pipe', 'pipe', 'ignore'] });
+
+        let outChunks = [];
+        ff.stdout.on('data', c => outChunks.push(c));
+        ff.on('close', (code) => {
+          if (code === 0 && outChunks.length > 0) {
+            const wavBuf = Buffer.concat(outChunks);
+            try { fs.writeFileSync(wavPath, wavBuf); } catch (e) {}
+
+            // Agenda limpeza do arquivo em 15 segundos
+            setTimeout(() => { try { fs.unlinkSync(wavPath); } catch {} }, 15000);
+
+            // Alvos de streaming para envio do áudio ao alto-falante
+            const targetAliases = [
+              resolveStreamAlias(camId, '720p'),
+              resolveStreamAlias(camId, '1080p'),
+              camId
+            ];
+            const uniqueAliases = [...new Set(targetAliases.filter(Boolean))];
+            const wavUrl = `http://127.0.0.1:${PORT}/${wavFilename}#audio=pcma`;
+
+            for (const alias of uniqueAliases) {
+              const playReq = http.request(`http://127.0.0.1:19843/api/streams?dst=${encodeURIComponent(alias)}&src=${encodeURIComponent(wavUrl)}`, {
+                method: 'POST'
+              }, (pRes) => {
+                pRes.resume();
+              });
+              playReq.on('error', () => {});
+              playReq.end();
+            }
+          }
         });
-        go2rtcReq.on('error', () => {});
-        go2rtcReq.write(audioBuffer);
-        go2rtcReq.end();
-      } catch(e) {}
+        ff.stdin.end(audioBuffer);
+      } catch (err) {
+        console.warn('[Talkback Transcode Error]:', err.message);
+      }
 
       res.writeHead(200, {
         'Content-Type': 'application/json',
@@ -1716,7 +1768,7 @@ const server = http.createServer(async (req, res) => {
         ok: true,
         cameraId: camId,
         bytesSent: audioBuffer.length,
-        backchannelStatus: 'active',
+        backchannelStatus: 'transmitted',
         syncPct: 100,
         timestamp: Date.now()
       }));
@@ -1747,11 +1799,15 @@ const server = http.createServer(async (req, res) => {
     const child = spawn(FFMPEG_BIN, [
       '-hide_banner', '-nostdin', '-loglevel', 'error',
       '-rw_timeout', '20000000',
+      '-fflags', 'nobuffer+fastseek', '-flush_packets', '1',
+      '-probesize', '32768', '-analyzeduration', '0',
       '-i', go2rtcUrl,
       '-map', '0:v:0', '-map', '0:a:0?',
-      '-c:a', 'aac', '-b:a', '64k', '-ar', '48000',
+      '-c:a', 'aac', '-b:a', '48k', '-ar', '16000', '-ac', '1',
       '-vf', `${fontOpt}scale=w='min(1920,iw)':h=-2`,
       '-c:v', 'libx264', '-preset', 'ultrafast', '-tune', 'zerolatency',
+      '-b:v', '1100k', '-maxrate', '1300k', '-bufsize', '550k',
+      '-g', '12', '-keyint_min', '12', '-sc_threshold', '0',
       '-pix_fmt', 'yuv420p',
       '-movflags', '+frag_keyframe+empty_moov+default_base_moof',
       '-f', 'mp4',

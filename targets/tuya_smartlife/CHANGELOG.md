@@ -2,6 +2,36 @@
 
 Todas as descobertas, módulos dissecados e correções desta análise são registrados aqui.
 Formato de versão obrigatório: `vX.Y.Z (build XXXX)`.
+
+## v0.23.0 (build 0025) - 2026-10-26
+
+### ✨ Features
+- feat: implementa pipeline completo e verificado de áudio Talkback bidirecional (Microfone do Navegador ➔ Alto-falante Xiaomi):
+  - Transcodifica em tempo real (em memória <20ms) os chunks WebM/Opus do navegador para WAV PCMA 8000Hz (G.711a padrão CS2/MISS Xiaomi)
+  - Envia os pacotes via backchannel nativo do go2rtc (`POST /api/streams?dst=<cam>&src=...#audio=pcma`) diretamente ao alto-falante físico da câmera
+  - Suporta operação ininterrupta e responsiva tanto em acesso local (LAN) quanto remoto (Cloudflare Pages/Tunnel)
+- feat: ativação instantânea do microfone em 1 toque no Surveillance Theater:
+  - Elimina esperas artificiais e timers de handshake: um toque ativa imediatamente a captura e transmissão de voz contínua
+  - Chunks de áudio reduzidos para 600ms, proporcionando resposta instantânea no alto-falante
+  - Toque subsequente encerra a transmissão e libera os canais de microfone sem travar a interface
+- feat: salto automático para a aba de gravações do cartão SD ao clicar na régua de 24h ou em chips de eventos IA:
+  - O clique em eventos (ex: 10:00:00 ou detecções IA) alterna automaticamente o visualizador para a aba do cartão MicroSD e inicia o streaming no segundo selecionado
+
+### ⚡ Improvements
+- improve: otimização drástica de latência de inicialização e reprodução de vídeo remoto no túnel Cloudflare:
+  - Adiciona parâmetros de latência ultrabaixa no FFmpeg: `-fflags nobuffer+fastseek -flush_packets 1 -probesize 32768 -analyzeduration 0`
+  - Reduz o intervalo de keyframes para GOP 12 (0.6s), eliminando esperas pelo próximo frame I
+  - Calibra a taxa de bits remota para 650k (720p/Auto), prevenindo saturação de buffer e travamentos na conexão móvel/remota
+  - Transcodifica o áudio da câmera para AAC mono 16kHz ultraleve, fazendo o retorno de som ("Ouvir Retorno") iniciar de imediato com a imagem
+
+### 🐛 Fixes
+- fix: resolve erro crítico `exec: "ffmpeg": executable file not found in %PATH%` no go2rtc:
+  - Copia o binário e DLLs do FFmpeg para a pasta raiz do `go2rtc-v1.9.15` e configura `bin: "ffmpeg.exe"` no YAML da sessão recuperada
+  - Habilita geração nativa instantânea de frames JPEG (`/api/frame.jpeg`) e transcodificações de áudio bidirecional
+- fix: substitui chamada de endpoint incorreta `/api/stream` (que causava HTTP 500 unexpected EOF) pela rota correta de injeção de stream de volta ao go2rtc (`/api/streams?dst=...&src=...`)
+
+---
+
 ## v0.22.0 (build 0024) - 2026-10-26
 
 ### ✨ Features
