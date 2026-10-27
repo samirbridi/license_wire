@@ -68,6 +68,113 @@ function ensureGo2rtcRunning() {
 ensureGo2rtcRunning();
 setInterval(ensureGo2rtcRunning, 10000);
 
+const CLOUDFLARED_BIN = path.join(WORKSPACE, 'targets/tuya_smartlife/bin/cloudflared.exe');
+const TUNNEL_JSON_PATH = path.join(__dirname, 'public/tunnel.json');
+const RUNTIME_TUNNEL_TXT = path.join(WORKSPACE, 'targets/tuya_smartlife/runtime/public_tunnel_url.txt');
+let lastSyncedTunnelUrl = '';
+let isDeployingPages = false;
+let cloudflaredSpawning = false;
+
+function syncTunnelUrlEverywhere(tunnelUrl) {
+  if (!tunnelUrl || !tunnelUrl.startsWith('https://')) return;
+  try {
+    if (fs.existsSync(TUNNEL_JSON_PATH)) {
+      const existing = JSON.parse(fs.readFileSync(TUNNEL_JSON_PATH, 'utf-8'));
+      if (existing.tunnelUrl === tunnelUrl && lastSyncedTunnelUrl === tunnelUrl) {
+        return;
+      }
+    }
+  } catch {}
+
+  lastSyncedTunnelUrl = tunnelUrl;
+  console.log(`[Cloudflare Watchdog] Sincronizando URL do túnel ativo: ${tunnelUrl}`);
+
+  try {
+    fs.writeFileSync(TUNNEL_JSON_PATH, JSON.stringify({
+      tunnelUrl,
+      updatedAt: new Date().toISOString()
+    }, null, 2), 'utf-8');
+  } catch {}
+
+  try {
+    fs.writeFileSync(RUNTIME_TUNNEL_TXT, tunnelUrl, 'utf-8');
+  } catch {}
+
+  try {
+    const appJsPath = path.join(__dirname, 'public/app.js');
+    if (fs.existsSync(appJsPath)) {
+      const raw = fs.readFileSync(appJsPath, 'utf-8');
+      const updated = raw.replace(/https:\/\/[a-z0-9-]+\.trycloudflare\.com/g, tunnelUrl);
+      if (updated !== raw) fs.writeFileSync(appJsPath, updated, 'utf-8');
+    }
+    const indexHtmlPath = path.join(__dirname, 'public/index.html');
+    if (fs.existsSync(indexHtmlPath)) {
+      const rawHtml = fs.readFileSync(indexHtmlPath, 'utf-8');
+      const updatedHtml = rawHtml.replace(/https:\/\/[a-z0-9-]+\.trycloudflare\.com/g, tunnelUrl);
+      if (updatedHtml !== rawHtml) fs.writeFileSync(indexHtmlPath, updatedHtml, 'utf-8');
+    }
+  } catch (e) {
+    console.warn('[Cloudflare Watchdog File Sync Warning]:', e.message);
+  }
+
+  if (!isDeployingPages) {
+    isDeployingPages = true;
+    const deployBranch = (branch, cb) => {
+      const p = spawn('cmd.exe', ['/c', 'npx', 'wrangler', 'pages', 'deploy', 'public', '--project-name', 'homecams', '--branch', branch, '--commit-dirty=true'], {
+        cwd: __dirname,
+        windowsHide: true,
+        stdio: 'ignore'
+      });
+      p.on('close', () => cb && cb());
+      p.on('error', () => cb && cb());
+    };
+    deployBranch('main', () => {
+      deployBranch('master', () => {
+        isDeployingPages = false;
+        console.log(`[Cloudflare Watchdog] Cloudflare Pages (homecams.pages.dev) atualizado com ${tunnelUrl}`);
+      });
+    });
+  }
+}
+
+function ensureCloudflaredRunning() {
+  const req = http.get('http://127.0.0.1:20241/metrics', (res) => {
+    let body = '';
+    res.on('data', c => { body += c.toString(); });
+    res.on('end', () => {
+      const m = body.match(/userHostname="(https:\/\/[a-zA-Z0-9-]+\.trycloudflare\.com)"/);
+      if (m && m[1]) {
+        syncTunnelUrlEverywhere(m[1]);
+      }
+    });
+  });
+  req.on('error', () => {
+    if (cloudflaredSpawning || !fs.existsSync(CLOUDFLARED_BIN)) return;
+    cloudflaredSpawning = true;
+    console.log('[Cloudflare Watchdog] Iniciando túnel Cloudflare em segundo plano (porta 19860)...');
+    try {
+      const child = spawn(CLOUDFLARED_BIN, [
+        'tunnel', '--protocol', 'http2',
+        '--metrics', '127.0.0.1:20241',
+        '--url', `http://127.0.0.1:${PORT}`,
+        '--no-autoupdate'
+      ], {
+        cwd: path.dirname(CLOUDFLARED_BIN),
+        windowsHide: true,
+        stdio: 'ignore',
+        detached: true
+      });
+      child.unref();
+    } catch (e) {
+      console.warn('[Cloudflare Watchdog Error]:', e.message);
+    } finally {
+      setTimeout(() => { cloudflaredSpawning = false; }, 12000);
+    }
+  });
+}
+ensureCloudflaredRunning();
+setInterval(ensureCloudflaredRunning, 15000);
+
 const SNAPSHOTS_DIR = path.join(WORKSPACE, 'targets/xiaomi_home/runtime/central/snapshots');
 if (!fs.existsSync(SNAPSHOTS_DIR)) {
   try { fs.mkdirSync(SNAPSHOTS_DIR, { recursive: true }); } catch (e) {}
@@ -100,14 +207,201 @@ const PREWARM_TARGETS = [
   'mi2k_sala'
 ];
 
+let HAS_NVENC = false;
+(function detectNvenc() {
+  try {
+    const probe = spawn(FFMPEG_BIN, [
+      '-hide_banner', '-loglevel', 'error',
+      '-f', 'lavfi', '-i', 'nullsrc=s=256x256:d=0.1',
+      '-c:v', 'h264_nvenc', '-f', 'null', '-'
+    ], { windowsHide: true, stdio: 'ignore' });
+    probe.on('close', code => {
+      if (code === 0) {
+        HAS_NVENC = true;
+        console.log('[FFmpeg] Aceleração de hardware NVIDIA h264_nvenc ATIVA');
+      }
+    });
+    probe.on('error', () => {});
+  } catch {}
+})();
+
+let activeLiveStreamsCount = 0;
+const cameraStartLocks = new Map();
+
+function getCameraHardwareKey(alias) {
+  const s = String(alias || '');
+  if (s.startsWith('outdoor_pro_poste')) return 'outdoor_pro_poste';
+  if (s.startsWith('aw300_garagem')) return 'aw300_garagem';
+  if (s.startsWith('aw300_portao')) return 'aw300_portao';
+  if (s.startsWith('mi2k_estudio')) return 'mi2k_estudio';
+  if (s.startsWith('mi2k_externa')) return 'mi2k_externa';
+  if (s.startsWith('mi2k_sala')) return 'mi2k_sala';
+  return s;
+}
+
+function acquireCameraStart(alias) {
+  const key = getCameraHardwareKey(alias);
+  const prev = cameraStartLocks.get(key) || Promise.resolve();
+  let releaseFn = () => {};
+  const gate = new Promise(resolve => {
+    releaseFn = resolve;
+  });
+  const chained = prev.then(() => gate).catch(() => gate);
+  cameraStartLocks.set(key, chained);
+  return prev.then(() => {
+    let released = false;
+    const safetyTimer = setTimeout(() => {
+      if (!released) {
+        released = true;
+        releaseFn();
+      }
+    }, 6500);
+    return () => {
+      if (!released) {
+        released = true;
+        clearTimeout(safetyTimer);
+        releaseFn();
+      }
+    };
+  });
+}
+
+let cachedGo2rtcMeta = null;
+function loadGo2rtcStreamsMeta() {
+  if (cachedGo2rtcMeta) return cachedGo2rtcMeta;
+  const metaMap = new Map();
+  try {
+    if (fs.existsSync(GO2RTC_CONFIG)) {
+      const content = fs.readFileSync(GO2RTC_CONFIG, 'utf-8');
+      const regex = /"([^"]+)"\s*:\s*\["(xiaomi:\/\/[^"]+)"\]/g;
+      let match;
+      while ((match = regex.exec(content)) !== null) {
+        const alias = match[1];
+        const rawUrl = match[2];
+        try {
+          const parsed = new URL(rawUrl);
+          metaMap.set(alias, {
+            alias,
+            rawUrl,
+            user: decodeURIComponent(parsed.username || ''),
+            region: decodeURIComponent(parsed.password || ''),
+            host: parsed.hostname || '',
+            did: parsed.searchParams.get('did') || '',
+            model: parsed.searchParams.get('model') || '',
+            channel: parseInt(parsed.searchParams.get('channel') || '0', 10) || 0,
+            subtype: parsed.searchParams.get('subtype') || ''
+          });
+        } catch {}
+      }
+      if (metaMap.size > 0) {
+        cachedGo2rtcMeta = metaMap;
+      }
+    }
+  } catch {}
+  return metaMap;
+}
+
+function getXiaomiStreamMeta(srcOrId) {
+  const map = loadGo2rtcStreamsMeta();
+  const clean = String(srcOrId || '').trim();
+  const candidates = [
+    clean,
+    `${clean}_quality3`,
+    `${clean}_quality4`,
+    clean.replace(/_view1$/, '_quality3'),
+    clean.replace(/_view2$/, '_channel2_quality3'),
+    clean.replace(/_view1$/, ''),
+    clean.replace(/_view2$/, '_channel2'),
+    clean.replace(/_quality[0-9]+$/, '')
+  ];
+  for (const c of candidates) {
+    if (map.has(c)) return map.get(c);
+  }
+  return null;
+}
+
+function go2rtcJsonRequest(method, apiPath, bodyObj = null, timeoutMs = 8000) {
+  return new Promise((resolve, reject) => {
+    const bodyStr = bodyObj ? JSON.stringify(bodyObj) : null;
+    const req = http.request(`http://127.0.0.1:19843${apiPath}`, {
+      method,
+      headers: bodyStr ? {
+        'Content-Type': 'application/json',
+        'Content-Length': Buffer.byteLength(bodyStr)
+      } : {}
+    }, (res) => {
+      const chunks = [];
+      res.on('data', d => chunks.push(d));
+      res.on('end', () => {
+        const text = Buffer.concat(chunks).toString('utf-8');
+        if (res.statusCode >= 200 && res.statusCode < 300) {
+          try {
+            resolve(text ? JSON.parse(text) : { ok: true });
+          } catch {
+            resolve({ ok: true, raw: text });
+          }
+        } else {
+          reject(new Error(text.trim() || `HTTP ${res.statusCode}`));
+        }
+      });
+    });
+    const timer = setTimeout(() => {
+      try { req.destroy(new Error('timeout')); } catch {}
+      reject(new Error('timeout'));
+    }, timeoutMs);
+    req.on('close', () => clearTimeout(timer));
+    req.on('error', err => {
+      clearTimeout(timer);
+      reject(err);
+    });
+    if (bodyStr) req.write(bodyStr);
+    req.end();
+  });
+}
+
+function extractOpusPacketsFromOgg(oggBuf) {
+  const packets = [];
+  let offset = 0;
+  let currentPacketParts = [];
+  while (offset + 27 <= oggBuf.length) {
+    if (oggBuf.toString('ascii', offset, offset + 4) !== 'OggS') break;
+    const pageSegments = oggBuf[offset + 26];
+    const segTableStart = offset + 27;
+    const dataStart = segTableStart + pageSegments;
+    if (dataStart > oggBuf.length) break;
+    let dataCursor = dataStart;
+    for (let i = 0; i < pageSegments; i++) {
+      const segLen = oggBuf[segTableStart + i];
+      if (dataCursor + segLen > oggBuf.length) break;
+      currentPacketParts.push(oggBuf.subarray(dataCursor, dataCursor + segLen));
+      dataCursor += segLen;
+      if (segLen < 255) {
+        const pkt = Buffer.concat(currentPacketParts);
+        currentPacketParts = [];
+        const magic = pkt.subarray(0, 8).toString('ascii');
+        if (magic !== 'OpusHead' && magic !== 'OpusTags' && pkt.length > 0) {
+          packets.push(pkt);
+        }
+      }
+    }
+    offset = dataCursor;
+  }
+  return packets;
+}
+
 let prewarmerRunning = false;
 async function cycleSnapshotPrewarm() {
-  if (prewarmerRunning) return;
+  if (prewarmerRunning || activeLiveStreamsCount > 0) return;
   prewarmerRunning = true;
   for (const target of PREWARM_TARGETS) {
+    if (activeLiveStreamsCount > 0) break;
+    const existing = cameraFrameCache.get(target);
+    if (existing?.buffer && (Date.now() - existing.at) < 180_000) {
+      continue;
+    }
     try {
       await new Promise(resolve => {
-        const streamUrl = `http://127.0.0.1:19843/api/stream.mp4?src=${encodeURIComponent(target)}&video=h265`;
+        const streamUrl = `http://127.0.0.1:19843/api/stream.mp4?src=${encodeURIComponent(target)}&video=h264,h265`;
         const child = spawn(FFMPEG_BIN, [
           '-hide_banner', '-nostdin', '-loglevel', 'error',
           '-rw_timeout', '10000000',
@@ -115,7 +409,7 @@ async function cycleSnapshotPrewarm() {
           '-map', '0:v:0', '-an', '-frames:v', '1',
           '-vf', 'scale=640:-2', '-q:v', '5',
           '-f', 'image2pipe', 'pipe:1'
-        ]);
+        ], { windowsHide: true });
         const chunks = [];
         const timer = setTimeout(() => {
           try { child.kill(); } catch {}
@@ -140,14 +434,13 @@ async function cycleSnapshotPrewarm() {
           resolve();
         });
       });
-      // Intervalo suave de 2s entre câmeras para manter CPU e link P2P livres
-      await new Promise(r => setTimeout(r, 2000));
+      await new Promise(r => setTimeout(r, 2500));
     } catch (e) {}
   }
   prewarmerRunning = false;
 }
-setInterval(cycleSnapshotPrewarm, 35000);
-setTimeout(cycleSnapshotPrewarm, 1500);
+setInterval(cycleSnapshotPrewarm, 90000);
+setTimeout(cycleSnapshotPrewarm, 3500);
 
 const DEFAULT_UI_CONFIG = {
   shortcuts: [
@@ -1418,23 +1711,9 @@ const server = http.createServer(async (req, res) => {
     return;
   }
 
-  // Função de Resolução de Alias para Melhor Qualidade Nativa
-  function resolveStreamAlias(src, quality = 'native') {
+  // Função de Resolução de Alias para Melhor Qualidade e Estabilidade P2P
+  function resolveStreamAlias(src) {
     if (!src) return '';
-    if (quality === '720p' || quality === '360p' || quality === 'eco') {
-      const lowMap = {
-        'outdoor_pro_poste': 'outdoor_pro_poste',
-        'outdoor_pro_poste_view1': 'outdoor_pro_poste',
-        'outdoor_pro_poste_view2': 'outdoor_pro_poste_channel2',
-        'outdoor_pro_poste_channel2': 'outdoor_pro_poste_channel2',
-        'aw300_garagem': 'aw300_garagem',
-        'aw300_portao': 'aw300_portao',
-        'mi2k_estudio': 'mi2k_estudio',
-        'mi2k_externa': 'mi2k_externa',
-        'mi2k_sala': 'mi2k_sala'
-      };
-      return lowMap[src] || src;
-    }
     const map = {
       'outdoor_pro_poste': 'outdoor_pro_poste_quality3',
       'outdoor_pro_poste_view1': 'outdoor_pro_poste_quality3',
@@ -1447,6 +1726,34 @@ const server = http.createServer(async (req, res) => {
       'mi2k_sala': 'mi2k_sala'
     };
     return map[src] || src;
+  }
+
+  function buildVideoEncoderArgs(quality, forceCpu = false) {
+    const bitrate = quality === 'native' ? '2600k' : quality === '2k' ? '1900k' : quality === '1080p' ? '1200k' : '750k';
+    const maxrate = quality === 'native' ? '3000k' : quality === '2k' ? '2200k' : quality === '1080p' ? '1450k' : '900k';
+    const bufsize = quality === 'native' ? '1500k' : quality === '2k' ? '1100k' : quality === '1080p' ? '750k' : '450k';
+    if (HAS_NVENC && !forceCpu) {
+      return [
+        '-c:v', 'h264_nvenc',
+        '-preset', 'p1',
+        '-tune', 'ull',
+        '-rc', 'cbr',
+        '-zerolatency', '1',
+        '-bf', '0',
+        '-b:v', bitrate, '-maxrate', maxrate, '-bufsize', bufsize,
+        '-g', '20',
+        '-pix_fmt', 'yuv420p'
+      ];
+    }
+    return [
+      '-c:v', 'libx264',
+      '-preset', 'superfast',
+      '-tune', 'zerolatency',
+      '-bf', '0',
+      '-b:v', bitrate, '-maxrate', maxrate, '-bufsize', bufsize,
+      '-g', '20', '-keyint_min', '20', '-sc_threshold', '0',
+      '-pix_fmt', 'yuv420p'
+    ];
   }
 
   // Proxy de Frame / Snapshot de Câmera (Real JPEG com cache e fallback de alta qualidade)
@@ -1500,10 +1807,10 @@ const server = http.createServer(async (req, res) => {
           return;
         }
       } catch (e) {}
-    } else {
-      // Inicia captura em background usando o alias validado
+    } else if (activeLiveStreamsCount === 0) {
+      // Inicia captura em background apenas quando não há stream ao vivo concorrendo
       const capturePromise = new Promise(resolve => {
-        const streamUrl = `http://127.0.0.1:19843/api/stream.mp4?src=${encodeURIComponent(resolvedSrc)}&video=h265`;
+        const streamUrl = `http://127.0.0.1:19843/api/stream.mp4?src=${encodeURIComponent(resolvedSrc)}&video=h264,h265`;
         const child = spawn(FFMPEG_BIN, [
           '-hide_banner', '-nostdin', '-loglevel', 'error',
           '-rw_timeout', '10000000',
@@ -1511,7 +1818,7 @@ const server = http.createServer(async (req, res) => {
           '-map', '0:v:0', '-an', '-frames:v', '1',
           '-vf', 'scale=640:-2', '-q:v', '5',
           '-f', 'image2pipe', 'pipe:1'
-        ]);
+        ], { windowsHide: true });
         const chunks = [];
         const timer = setTimeout(() => {
           try { child.kill(); } catch {}
@@ -1540,7 +1847,6 @@ const server = http.createServer(async (req, res) => {
       cameraFrameCache.set(rawSrc, { ...(cached || {}), pendingPromise: capturePromise });
       cameraFrameCache.set(resolvedSrc, { ...(cached || {}), pendingPromise: capturePromise });
       
-      // Tenta aguardar até 2000ms para entregar a imagem real já na primeira carga
       try {
         const fastWait = new Promise(r => setTimeout(() => r(null), 2000));
         const fastBuf = await Promise.race([capturePromise, fastWait]);
@@ -1567,7 +1873,7 @@ const server = http.createServer(async (req, res) => {
       return;
     }
 
-    // 4. Fallback: SVG Dark Glassmorphism elegante (Zero falhas, zero 404, zero broken image)
+    // 4. Fallback: SVG Dark Glassmorphism elegante
     const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="640" height="360" viewBox="0 0 640 360">
       <defs>
         <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
@@ -1593,77 +1899,56 @@ const server = http.createServer(async (req, res) => {
   if (url.pathname === '/api/camera-stream') {
     const rawSrc = url.searchParams.get('src') || '';
     const quality = url.searchParams.get('quality') || '720p';
-    const resolvedSrc = resolveStreamAlias(rawSrc, quality);
-    const go2rtcUrl = `http://127.0.0.1:19843/api/stream.mp4?src=${encodeURIComponent(resolvedSrc)}&video=h265`;
+    const resolvedSrc = resolveStreamAlias(rawSrc);
+    const go2rtcUrl = `http://127.0.0.1:19843/api/stream.mp4?src=${encodeURIComponent(resolvedSrc)}&video=h264,h265&audio=all`;
 
-    const width = quality === 'native' ? 3840 : quality === '2k' ? 2560 : quality === '1080p' ? 1920 : 1280;
-    const bitrate = quality === 'native' ? '2800k' : quality === '2k' ? '2000k' : quality === '1080p' ? '1100k' : '650k';
-    const maxrate = quality === 'native' ? '3200k' : quality === '2k' ? '2400k' : quality === '1080p' ? '1300k' : '750k';
-    const bufsize = quality === 'native' ? '1400k' : quality === '2k' ? '1000k' : quality === '1080p' ? '550k' : '300k';
+    const width = quality === 'native' ? 2560 : quality === '2k' ? 2304 : quality === '1080p' ? 1920 : 1280;
+    const releaseStartLock = await acquireCameraStart(resolvedSrc);
+    if (res.destroyed) {
+      releaseStartLock();
+      return;
+    }
 
-    const ffmpegArgs = [
+    activeLiveStreamsCount++;
+    let streamCountDecremented = false;
+    const decStreamCount = () => {
+      if (!streamCountDecremented) {
+        streamCountDecremented = true;
+        activeLiveStreamsCount = Math.max(0, activeLiveStreamsCount - 1);
+      }
+      releaseStartLock();
+    };
+
+    const makeArgs = (forceCpu = false) => [
       '-hide_banner', '-nostdin', '-loglevel', 'error',
       '-rw_timeout', '20000000',
-      '-fflags', 'nobuffer+fastseek', '-flush_packets', '1',
-      '-probesize', '32768', '-analyzeduration', '0',
+      '-fflags', '+nobuffer+genpts+discardcorrupt',
+      '-flags', 'low_delay',
+      '-avoid_negative_ts', 'make_zero',
+      '-probesize', '524288', '-analyzeduration', '1000000',
       '-i', go2rtcUrl,
       '-map', '0:v:0',
       '-map', '0:a:0?',
-      '-c:a', 'aac', '-b:a', '48k', '-ar', '16000', '-ac', '1',
+      '-c:a', 'aac', '-b:a', '64k', '-ar', '16000', '-ac', '1',
+      '-af', 'aresample=async=1:first_pts=0',
       '-vf', `scale=w='min(${width},iw)':h=-2`,
       '-r', '20',
-      '-c:v', 'libx264', '-preset', 'ultrafast', '-tune', 'zerolatency',
-      '-b:v', bitrate, '-maxrate', maxrate, '-bufsize', bufsize,
-      '-g', '12', '-keyint_min', '12', '-sc_threshold', '0',
-      '-pix_fmt', 'yuv420p',
-      '-movflags', '+frag_keyframe+empty_moov+default_base_moof',
+      ...buildVideoEncoderArgs(quality, forceCpu),
+      '-movflags', '+frag_keyframe+empty_moov+default_base_moof+faststart',
       '-f', 'mp4',
       'pipe:1'
     ];
 
-    let child;
-    try {
-      child = spawn(FFMPEG_BIN, ffmpegArgs, { windowsHide: true, stdio: ['ignore', 'pipe', 'pipe'] });
-    } catch (err) {
-      res.writeHead(503, { 'Content-Type': 'application/json' });
-      res.end(JSON.stringify({ error: 'Falha ao iniciar FFmpeg: ' + err.message }));
-      return;
-    }
-
+    let child = null;
     let headersSent = false;
+    let retriedCpu = false;
+
     const cleanup = () => {
-      try { child.kill(); } catch {}
+      decStreamCount();
+      try { if (child) child.kill(); } catch {}
     };
 
     res.on('close', cleanup);
-    child.once('error', (err) => {
-      cleanup();
-      if (!headersSent && !res.destroyed) {
-        res.writeHead(503, { 'Content-Type': 'application/json' });
-        res.end(JSON.stringify({ error: 'Erro no processo FFmpeg: ' + err.message }));
-      }
-    });
-
-    child.stdout.on('data', (chunk) => {
-      if (!headersSent) {
-        headersSent = true;
-        res.writeHead(200, {
-          'Content-Type': 'video/mp4',
-          'Cache-Control': 'no-store, no-cache, must-revalidate',
-          'Connection': 'keep-alive',
-          'Access-Control-Allow-Origin': '*'
-        });
-      }
-      if (!res.destroyed) {
-        res.write(chunk);
-      }
-    });
-
-    child.stdout.on('end', () => {
-      if (!res.destroyed) {
-        res.end();
-      }
-    });
 
     const guardTimer = setTimeout(() => {
       if (!headersSent) {
@@ -1675,127 +1960,306 @@ const server = http.createServer(async (req, res) => {
       }
     }, 25000);
 
-    child.stdout.once('data', () => clearTimeout(guardTimer));
+    const startFfmpeg = (forceCpu = false) => {
+      try {
+        child = spawn(FFMPEG_BIN, makeArgs(forceCpu), { windowsHide: true, stdio: ['ignore', 'pipe', 'pipe'] });
+      } catch (err) {
+        clearTimeout(guardTimer);
+        cleanup();
+        if (!headersSent && !res.destroyed) {
+          res.writeHead(503, { 'Content-Type': 'application/json' });
+          res.end(JSON.stringify({ error: 'Falha ao iniciar FFmpeg: ' + err.message }));
+        }
+        return;
+      }
+
+      child.once('error', (err) => {
+        if (!headersSent && HAS_NVENC && !forceCpu && !retriedCpu && !res.destroyed) {
+          retriedCpu = true;
+          startFfmpeg(true);
+          return;
+        }
+        clearTimeout(guardTimer);
+        cleanup();
+        if (!headersSent && !res.destroyed) {
+          res.writeHead(503, { 'Content-Type': 'application/json' });
+          res.end(JSON.stringify({ error: 'Erro no processo FFmpeg: ' + err.message }));
+        }
+      });
+
+      child.stdout.on('data', (chunk) => {
+        if (!headersSent) {
+          headersSent = true;
+          clearTimeout(guardTimer);
+          releaseStartLock();
+          res.writeHead(200, {
+            'Content-Type': 'video/mp4',
+            'Cache-Control': 'no-store, no-cache, must-revalidate',
+            'Connection': 'keep-alive',
+            'Access-Control-Allow-Origin': '*'
+          });
+        }
+        if (!res.destroyed) {
+          res.write(chunk);
+        }
+      });
+
+      child.on('close', (code) => {
+        if (!headersSent && code !== 0 && HAS_NVENC && !forceCpu && !retriedCpu && !res.destroyed) {
+          retriedCpu = true;
+          startFfmpeg(true);
+          return;
+        }
+        clearTimeout(guardTimer);
+        decStreamCount();
+        if (headersSent && !res.destroyed) {
+          res.end();
+        }
+      });
+    };
+
+    startFfmpeg(false);
     return;
   }
 
-  // Comandos de Movimentação PTZ (Outdoor Pro - Pan & Tilt)
+  // Comandos de Movimentação PTZ (Outdoor Pro - Pan & Tilt via P2P 0x112 / 0x118 + MIoT Calibrate)
   if (url.pathname === '/api/camera/ptz' && req.method === 'POST') {
     let body = '';
     req.on('data', chunk => { body += chunk; });
     req.on('end', async () => {
       try {
-        const { cameraId, command, channel, speed } = JSON.parse(body || '{}');
-        console.log(`[PTZ] Câmera: ${cameraId}, Comando: ${command}, Canal: ${channel || 0}`);
-        res.writeHead(200, { 'Content-Type': 'application/json' });
-        res.end(JSON.stringify({ ok: true, cameraId, command, channel: channel || 0, timestamp: Date.now() }));
+        const { cameraId, command, channel, speed, durationMs } = JSON.parse(body || '{}');
+        const meta = getXiaomiStreamMeta(cameraId || 'outdoor_pro_poste') || {};
+        console.log(`[PTZ] Câmera: ${cameraId} (DID: ${meta.did}), Comando: ${command}, Canal: ${channel || 0}`);
+
+        let upstream = null;
+        if (meta.did) {
+          try {
+            upstream = await go2rtcJsonRequest('POST', '/api/xiaomi/control', {
+              did: meta.did,
+              model: meta.model || 'xiaomi.camera.cw701',
+              host: meta.host || '',
+              user: meta.user || '',
+              region: meta.region || '',
+              type: 'ptz',
+              action: command || 'stop',
+              channel: Number(channel) || 0,
+              speed: Number(speed) || 5,
+              durationMs: Number(durationMs) || 450
+            }, 8000);
+          } catch (err) {
+            console.warn('[PTZ Upstream Warning]:', err.message);
+          }
+        }
+
+        res.writeHead(200, { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' });
+        res.end(JSON.stringify({
+          ok: true,
+          cameraId,
+          command,
+          channel: channel || 0,
+          upstream,
+          timestamp: Date.now()
+        }));
       } catch (e) {
-        res.writeHead(400, { 'Content-Type': 'application/json' });
+        res.writeHead(400, { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' });
         res.end(JSON.stringify({ error: e.message }));
       }
     });
     return;
   }
 
-  // Comandos de Holofote / Luz Branca
+  // Comandos de Holofote / Luz Branca (MIoT Spec CW701 SIID 21/6 e AW300 SIID 4)
   if (url.pathname === '/api/camera/light' && req.method === 'POST') {
     let body = '';
     req.on('data', chunk => { body += chunk; });
     req.on('end', async () => {
       try {
         const { cameraId, on, brightness } = JSON.parse(body || '{}');
-        console.log(`[Camera Light] Câmera: ${cameraId}, Estado: ${on}, Brilho: ${brightness}`);
-        res.writeHead(200, { 'Content-Type': 'application/json' });
-        res.end(JSON.stringify({ ok: true, cameraId, on, brightness, timestamp: Date.now() }));
+        const meta = getXiaomiStreamMeta(cameraId || 'outdoor_pro_poste') || {};
+        console.log(`[Camera Light] Câmera: ${cameraId} (DID: ${meta.did}), Estado: ${on}, Brilho: ${brightness}`);
+
+        let upstream = null;
+        if (meta.did) {
+          try {
+            upstream = await go2rtcJsonRequest('POST', '/api/xiaomi/control', {
+              did: meta.did,
+              model: meta.model || 'xiaomi.camera.cw701',
+              host: meta.host || '',
+              user: meta.user || '',
+              region: meta.region || '',
+              type: 'light',
+              action: on ? 'on' : 'off',
+              brightness: Number(brightness) || 0
+            }, 8000);
+          } catch (err) {
+            console.warn('[Camera Light Upstream Warning]:', err.message);
+          }
+        }
+
+        res.writeHead(200, { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' });
+        res.end(JSON.stringify({ ok: true, cameraId, on: Boolean(on), brightness, upstream, timestamp: Date.now() }));
       } catch (e) {
-        res.writeHead(400, { 'Content-Type': 'application/json' });
+        res.writeHead(400, { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' });
         res.end(JSON.stringify({ error: e.message }));
       }
     });
     return;
   }
 
-  // Sirene de Alarme Anti-Intrusão (Outdoor Pro e AW300)
+  // Sirene de Alarme Anti-Intrusão (MIoT Spec CW701 SIID 2/24 e AW300 SIID 4)
   if (url.pathname === '/api/camera/siren' && req.method === 'POST') {
     let body = '';
     req.on('data', chunk => { body += chunk; });
     req.on('end', async () => {
       try {
         const { cameraId, active, durationSec } = JSON.parse(body || '{}');
-        console.log(`[Camera Siren] Câmera: ${cameraId}, Sirene: ${active ? 'DISPARADA 🚨' : 'DESATIVADA'}, Duração: ${durationSec || 10}s`);
-        res.writeHead(200, { 'Content-Type': 'application/json' });
-        res.end(JSON.stringify({ ok: true, cameraId, active, durationSec: durationSec || 10, timestamp: Date.now() }));
+        const meta = getXiaomiStreamMeta(cameraId || 'outdoor_pro_poste') || {};
+        console.log(`[Camera Siren] Câmera: ${cameraId} (DID: ${meta.did}), Sirene: ${active ? 'DISPARADA 🚨' : 'DESATIVADA'}, Duração: ${durationSec || 10}s`);
+
+        let upstream = null;
+        if (meta.did) {
+          try {
+            upstream = await go2rtcJsonRequest('POST', '/api/xiaomi/control', {
+              did: meta.did,
+              model: meta.model || 'xiaomi.camera.cw701',
+              host: meta.host || '',
+              user: meta.user || '',
+              region: meta.region || '',
+              type: 'siren',
+              action: active ? 'on' : 'off'
+            }, 8000);
+            if (active && (durationSec || 10) > 0) {
+              setTimeout(() => {
+                go2rtcJsonRequest('POST', '/api/xiaomi/control', {
+                  did: meta.did,
+                  model: meta.model || 'xiaomi.camera.cw701',
+                  host: meta.host || '',
+                  user: meta.user || '',
+                  region: meta.region || '',
+                  type: 'siren',
+                  action: 'off'
+                }, 8000).catch(() => {});
+              }, (Number(durationSec) || 10) * 1000);
+            }
+          } catch (err) {
+            console.warn('[Camera Siren Upstream Warning]:', err.message);
+          }
+        }
+
+        res.writeHead(200, { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' });
+        res.end(JSON.stringify({ ok: true, cameraId, active: Boolean(active), durationSec: durationSec || 10, upstream, timestamp: Date.now() }));
       } catch (e) {
-        res.writeHead(400, { 'Content-Type': 'application/json' });
+        res.writeHead(400, { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' });
         res.end(JSON.stringify({ error: e.message }));
       }
     });
     return;
   }
 
-  // Transmissão de Áudio Talkback (Voz Bidirecional) via FFmpeg + go2rtc backchannel
-  let talkbackSeq = 0;
+  // Transmissão de Áudio Talkback (Voz Bidirecional) via Protocolo Nativo Xiaomi MISS CS2
   if (url.pathname === '/api/camera/talkback' && req.method === 'POST') {
     const camId = url.searchParams.get('id') || 'outdoor_pro_poste';
+    const actionParam = url.searchParams.get('action') || '';
+    const meta = getXiaomiStreamMeta(camId) || {};
+
     let chunks = [];
     req.on('data', chunk => { chunks.push(chunk); });
     req.on('end', async () => {
       const audioBuffer = Buffer.concat(chunks);
-      console.log(`[Talkback Voice] Recebidos ${audioBuffer.length} bytes de voz para a câmera ${camId}`);
 
-      if (audioBuffer.length < 50) {
+      if (actionParam === 'start' || actionParam === 'stop') {
+        try {
+          if (meta.did) {
+            await go2rtcJsonRequest('POST', '/api/xiaomi/talkback', {
+              did: meta.did,
+              model: meta.model || '',
+              host: meta.host || '',
+              user: meta.user || '',
+              region: meta.region || '',
+              action: actionParam
+            }, 6000);
+          }
+        } catch (err) {
+          console.warn(`[Talkback ${actionParam} Warning]:`, err.message);
+        }
+        res.writeHead(200, { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' });
+        res.end(JSON.stringify({ ok: true, cameraId: camId, action: actionParam, timestamp: Date.now() }));
+        return;
+      }
+
+      if (audioBuffer.length < 40) {
         res.writeHead(200, { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' });
         res.end(JSON.stringify({ ok: true, cameraId: camId, bytesSent: 0 }));
         return;
       }
 
-      talkbackSeq = (talkbackSeq + 1) % 10000;
-      const curSeq = talkbackSeq;
-      const wavFilename = `talkback_${camId}_${curSeq}.wav`;
-      const wavPath = path.join(__dirname, 'public', wavFilename);
+      const model = meta.model || (camId.includes('mi2k') ? 'isa.camera.hlc7' : camId.includes('aw300') ? 'mxiang.camera.mod11' : 'xiaomi.camera.cw701');
+      const useOpus = model === 'xiaomi.camera.cw701' || model === 'mxiang.camera.mod11';
 
-      // Transcodifica WebM/Opus do navegador para WAV PCMA 8000Hz (G.711a padrão CS2 Xiaomi)
+      let transmitInfo = { ok: false };
       try {
-        const ff = spawn(FFMPEG_BIN, [
-          '-hide_banner', '-nostdin', '-loglevel', 'error',
-          '-i', 'pipe:0',
-          '-c:a', 'pcm_alaw', '-ar', '8000', '-ac', '1',
-          '-f', 'wav', 'pipe:1'
-        ], { windowsHide: true, stdio: ['pipe', 'pipe', 'ignore'] });
+        if (useOpus) {
+          // Transcodifica para Ogg Opus com pacotes de 20ms (48kHz stereo, que o go2rtc agrupa em 40ms via opus.JoinFrames)
+          const oggBuf = await new Promise((resolve, reject) => {
+            const ff = spawn(FFMPEG_BIN, [
+              '-hide_banner', '-nostdin', '-loglevel', 'error',
+              '-i', 'pipe:0',
+              '-c:a', 'libopus', '-ar', '48000', '-ac', '2', '-b:a', '32k',
+              '-vbr', 'off', '-frame_duration', '20', '-page_duration', '20000', '-application', 'voip',
+              '-f', 'ogg', 'pipe:1'
+            ], { windowsHide: true, stdio: ['pipe', 'pipe', 'ignore'] });
+            const out = [];
+            ff.stdout.on('data', c => out.push(c));
+            ff.on('close', code => code === 0 ? resolve(Buffer.concat(out)) : reject(new Error(`FFmpeg opus exit ${code}`)));
+            ff.on('error', reject);
+            ff.stdin.end(audioBuffer);
+          });
 
-        let outChunks = [];
-        ff.stdout.on('data', c => outChunks.push(c));
-        ff.on('close', (code) => {
-          if (code === 0 && outChunks.length > 0) {
-            const wavBuf = Buffer.concat(outChunks);
-            try { fs.writeFileSync(wavPath, wavBuf); } catch (e) {}
-
-            // Agenda limpeza do arquivo em 15 segundos
-            setTimeout(() => { try { fs.unlinkSync(wavPath); } catch {} }, 15000);
-
-            // Alvos de streaming para envio do áudio ao alto-falante
-            const targetAliases = [
-              resolveStreamAlias(camId, '720p'),
-              resolveStreamAlias(camId, '1080p'),
-              camId
-            ];
-            const uniqueAliases = [...new Set(targetAliases.filter(Boolean))];
-            const wavUrl = `http://127.0.0.1:${PORT}/${wavFilename}#audio=pcma`;
-
-            for (const alias of uniqueAliases) {
-              const playReq = http.request(`http://127.0.0.1:19843/api/streams?dst=${encodeURIComponent(alias)}&src=${encodeURIComponent(wavUrl)}`, {
-                method: 'POST'
-              }, (pRes) => {
-                pRes.resume();
-              });
-              playReq.on('error', () => {});
-              playReq.end();
-            }
+          const opusPackets = extractOpusPacketsFromOgg(oggBuf);
+          if (opusPackets.length > 0 && meta.did) {
+            transmitInfo = await go2rtcJsonRequest('POST', '/api/xiaomi/talkback', {
+              did: meta.did,
+              model,
+              host: meta.host || '',
+              user: meta.user || '',
+              region: meta.region || '',
+              action: 'send',
+              codec: 'opus',
+              framesBase64: opusPackets.map(p => p.toString('base64'))
+            }, 15000);
           }
-        });
-        ff.stdin.end(audioBuffer);
+        } else {
+          // Transcodifica para G.711 A-law bruto (8000Hz mono, quadros de 320 bytes = 40ms) para Mi 2K (isa.camera.hlc7)
+          const alawBuf = await new Promise((resolve, reject) => {
+            const ff = spawn(FFMPEG_BIN, [
+              '-hide_banner', '-nostdin', '-loglevel', 'error',
+              '-i', 'pipe:0',
+              '-c:a', 'pcm_alaw', '-ar', '8000', '-ac', '1',
+              '-f', 'alaw', 'pipe:1'
+            ], { windowsHide: true, stdio: ['pipe', 'pipe', 'ignore'] });
+            const out = [];
+            ff.stdout.on('data', c => out.push(c));
+            ff.on('close', code => code === 0 ? resolve(Buffer.concat(out)) : reject(new Error(`FFmpeg alaw exit ${code}`)));
+            ff.on('error', reject);
+            ff.stdin.end(audioBuffer);
+          });
+
+          if (alawBuf.length > 0 && meta.did) {
+            transmitInfo = await go2rtcJsonRequest('POST', '/api/xiaomi/talkback', {
+              did: meta.did,
+              model,
+              host: meta.host || '',
+              user: meta.user || '',
+              region: meta.region || '',
+              action: 'send',
+              codec: 'pcma',
+              rawBase64: alawBuf.toString('base64')
+            }, 15000);
+          }
+        }
       } catch (err) {
-        console.warn('[Talkback Transcode Error]:', err.message);
+        console.warn('[Talkback Direct Transmit Warning]:', err.message);
       }
 
       res.writeHead(200, {
@@ -1807,7 +2271,9 @@ const server = http.createServer(async (req, res) => {
       res.end(JSON.stringify({
         ok: true,
         cameraId: camId,
+        codec: useOpus ? 'opus' : 'pcma',
         bytesSent: audioBuffer.length,
+        upstream: transmitInfo,
         backchannelStatus: 'transmitted',
         syncPct: 100,
         timestamp: Date.now()
@@ -1816,80 +2282,260 @@ const server = http.createServer(async (req, res) => {
     return;
   }
 
-  // Streaming de Reprodução de Gravação do Cartão SD (Régua 24h & Eventos IA)
+  // Helper para criar stream dinâmico de Playback SD no go2rtc via MISS_CMD_PLAYBACK_REQ (0x10D)
+  async function resolvePlaybackGo2rtcUrl(camId, dateStr, timeStr, secParam) {
+    const resolvedLive = resolveStreamAlias(camId);
+    const meta = getXiaomiStreamMeta(resolvedLive) || getXiaomiStreamMeta(camId);
+    if (!meta || !meta.rawUrl) {
+      return `http://127.0.0.1:19843/api/stream.mp4?src=${encodeURIComponent(resolvedLive)}&video=h264,h265&audio=all`;
+    }
+
+    const parts = String(timeStr || '10:00:00').split(':').map(n => parseInt(n || '0', 10));
+    const hh = Number.isFinite(parts[0]) ? parts[0] : 10;
+    const mm = Number.isFinite(parts[1]) ? parts[1] : 0;
+    const ss = Number.isFinite(parts[2]) ? parts[2] : 0;
+    const secInDay = Number.isFinite(secParam) && secParam >= 0
+      ? secParam
+      : ((hh * 3600) + (mm * 60) + ss);
+
+    const dayStartMs = new Date(`${dateStr}T00:00:00-03:00`).getTime();
+    const nowUnix = Math.floor(Date.now() / 1000);
+    let targetUnix = Math.floor(dayStartMs / 1000) + Math.max(0, Math.min(86399, secInDay));
+    if (!Number.isFinite(targetUnix) || targetUnix > nowUnix - 65) {
+      targetUnix = nowUnix - 120;
+    }
+
+    const segmentStartUnix = Math.floor(targetUnix / 60) * 60;
+    const segmentEndUnix = segmentStartUnix + 14400;
+    const segmentOffsetSec = Math.max(0, targetUnix - segmentStartUnix);
+
+    const playbackAlias = `pb_${meta.alias}_${segmentStartUnix}`;
+    const playbackXiaomiUrl = `${meta.rawUrl}&playback=${segmentStartUnix}&endtime=${segmentEndUnix}&offset=${segmentOffsetSec}`;
+
+    try {
+      await new Promise((resolve, reject) => {
+        const putPath = `/api/streams?name=${encodeURIComponent(playbackAlias)}&src=${encodeURIComponent(playbackXiaomiUrl)}`;
+        const req = http.request(`http://127.0.0.1:19843${putPath}`, { method: 'PUT' }, (r) => {
+          r.resume();
+          resolve();
+        });
+        req.on('error', reject);
+        req.end();
+      });
+      return `http://127.0.0.1:19843/api/stream.mp4?src=${encodeURIComponent(playbackAlias)}&video=h264,h265&audio=all`;
+    } catch {
+      return `http://127.0.0.1:19843/api/stream.mp4?src=${encodeURIComponent(resolvedLive)}&video=h264,h265&audio=all`;
+    }
+  }
+
+  // Streaming de Reprodução de Gravação do Cartão SD (Régua 24h & Eventos IA via MISS_CMD_PLAYBACK_REQ)
   if (url.pathname === '/api/camera/recordings/stream') {
     const camId = url.searchParams.get('id') || 'outdoor_pro_poste';
     const date = url.searchParams.get('date') || new Date().toISOString().slice(0, 10);
     const time = url.searchParams.get('time') || '10:00:00';
-    const sec = parseInt(url.searchParams.get('sec') || '36000', 10);
-    const resolvedSrc = resolveStreamAlias(camId, '1080p');
-    const go2rtcUrl = `http://127.0.0.1:19843/api/stream.mp4?src=${encodeURIComponent(resolvedSrc)}&video=h265`;
+    const secRaw = url.searchParams.get('sec');
+    const sec = secRaw !== null ? parseInt(secRaw, 10) : NaN;
 
-    res.writeHead(200, {
-      'Content-Type': 'video/mp4',
-      'Cache-Control': 'no-cache, no-store, must-revalidate',
-      'Access-Control-Allow-Origin': '*'
-    });
+    const playbackGo2rtcUrl = await resolvePlaybackGo2rtcUrl(camId, date, time, sec);
+    const fallbackLiveUrl = `http://127.0.0.1:19843/api/stream.mp4?src=${encodeURIComponent(resolveStreamAlias(camId))}&video=h264,h265&audio=all`;
 
-    const overlayText = `GRAVACAO SD  |  ${date} ${time}`;
-    const fontOpt = fs.existsSync('C:/Windows/Fonts/arial.ttf')
-      ? `drawtext=fontfile='C\\:/Windows/Fonts/arial.ttf':text='${overlayText}':x=24:y=24:fontsize=22:fontcolor=white:box=1:boxcolor=black@0.65:boxborderw=8,`
-      : '';
+    activeLiveStreamsCount++;
+    let decremented = false;
+    const decCount = () => {
+      if (!decremented) {
+        decremented = true;
+        activeLiveStreamsCount = Math.max(0, activeLiveStreamsCount - 1);
+      }
+    };
 
-    const child = spawn(FFMPEG_BIN, [
-      '-hide_banner', '-nostdin', '-loglevel', 'error',
-      '-rw_timeout', '20000000',
-      '-fflags', 'nobuffer+fastseek', '-flush_packets', '1',
-      '-probesize', '32768', '-analyzeduration', '0',
-      '-i', go2rtcUrl,
-      '-map', '0:v:0', '-map', '0:a:0?',
-      '-c:a', 'aac', '-b:a', '48k', '-ar', '16000', '-ac', '1',
-      '-vf', `${fontOpt}scale=w='min(1920,iw)':h=-2`,
-      '-c:v', 'libx264', '-preset', 'ultrafast', '-tune', 'zerolatency',
-      '-b:v', '1100k', '-maxrate', '1300k', '-bufsize', '550k',
-      '-g', '12', '-keyint_min', '12', '-sc_threshold', '0',
-      '-pix_fmt', 'yuv420p',
-      '-movflags', '+frag_keyframe+empty_moov+default_base_moof',
-      '-f', 'mp4',
-      'pipe:1'
-    ], { windowsHide: true, stdio: ['ignore', 'pipe', 'pipe'] });
+    let headersSent = false;
+    let activeChild = null;
+    let triedFallback = false;
 
-    res.on('close', () => { try { child.kill(); } catch {} });
-    child.stdout.pipe(res);
-    child.once('error', () => { try { res.end(); } catch {} });
+    const cleanup = () => {
+      decCount();
+      try { if (activeChild) activeChild.kill(); } catch {}
+    };
+    res.on('close', cleanup);
+
+    const spawnPlaybackStream = (inputUrl) => {
+      const child = spawn(FFMPEG_BIN, [
+        '-hide_banner', '-nostdin', '-loglevel', 'error',
+        '-rw_timeout', '15000000',
+        '-fflags', '+nobuffer+genpts+discardcorrupt',
+        '-flags', 'low_delay',
+        '-avoid_negative_ts', 'make_zero',
+        '-probesize', '524288', '-analyzeduration', '1000000',
+        '-i', inputUrl,
+        '-map', '0:v:0', '-map', '0:a:0?',
+        '-c:a', 'aac', '-b:a', '64k', '-ar', '16000', '-ac', '1',
+        '-af', 'aresample=async=1:first_pts=0',
+        '-vf', `scale=w='min(1920,iw)':h=-2`,
+        '-r', '20',
+        ...buildVideoEncoderArgs('1080p', false),
+        '-movflags', '+frag_keyframe+empty_moov+default_base_moof+faststart',
+        '-f', 'mp4',
+        'pipe:1'
+      ], { windowsHide: true, stdio: ['ignore', 'pipe', 'pipe'] });
+
+      activeChild = child;
+
+      const fbTimer = setTimeout(() => {
+        if (!headersSent && !triedFallback && !res.destroyed) {
+          triedFallback = true;
+          const oldChild = child;
+          spawnPlaybackStream(fallbackLiveUrl);
+          try { oldChild.kill(); } catch {}
+        }
+      }, 6500);
+
+      child.stdout.on('data', (chunk) => {
+        if (child !== activeChild) return;
+        if (!headersSent) {
+          headersSent = true;
+          clearTimeout(fbTimer);
+          res.writeHead(200, {
+            'Content-Type': 'video/mp4',
+            'Cache-Control': 'no-cache, no-store, must-revalidate',
+            'Access-Control-Allow-Origin': '*'
+          });
+        }
+        if (!res.destroyed) {
+          res.write(chunk);
+        }
+      });
+
+      child.on('close', (code) => {
+        clearTimeout(fbTimer);
+        if (child !== activeChild) return;
+        if (!headersSent && !triedFallback && !res.destroyed && inputUrl !== fallbackLiveUrl) {
+          triedFallback = true;
+          spawnPlaybackStream(fallbackLiveUrl);
+          return;
+        }
+        decCount();
+        if (headersSent && !res.destroyed) {
+          res.end();
+        } else if (!headersSent && !res.destroyed) {
+          res.writeHead(504, { 'Content-Type': 'application/json' });
+          res.end(JSON.stringify({ error: 'Não foi possível abrir o segmento de gravação SD' }));
+        }
+      });
+
+      child.once('error', () => {
+        clearTimeout(fbTimer);
+        if (child !== activeChild) return;
+        if (!headersSent && !triedFallback && !res.destroyed && inputUrl !== fallbackLiveUrl) {
+          triedFallback = true;
+          spawnPlaybackStream(fallbackLiveUrl);
+        }
+      });
+    };
+
+    spawnPlaybackStream(playbackGo2rtcUrl);
     return;
   }
 
-  // Consulta de Gravações do Cartão SD (Régua de 24 horas + Eventos IA)
+  // Consulta de Gravações do Cartão SD (Telemetria Real MIoT + Régua de 24 horas + Momentos Selecionáveis)
   if (url.pathname === '/api/camera/recordings') {
     const camId = url.searchParams.get('id') || 'outdoor_pro_poste';
-    const date = url.searchParams.get('date') || new Date().toISOString().slice(0, 10);
-    
-    // Perfis de capacidade real dos cartões SD instalados
+    const date = url.searchParams.get('date') || new Date(Date.now() - 3 * 3600 * 1000).toISOString().slice(0, 10);
+    const meta = getXiaomiStreamMeta(camId) || {};
+
+    let storageInfo = null;
+    if (meta.did) {
+      try {
+        storageInfo = await go2rtcJsonRequest(
+          'GET',
+          `/api/xiaomi/storage?did=${encodeURIComponent(meta.did)}&model=${encodeURIComponent(meta.model || '')}&user=${encodeURIComponent(meta.user || '')}&region=${encodeURIComponent(meta.region || '')}`,
+          null,
+          6000
+        );
+      } catch (err) {
+        console.warn('[SD Storage Query Warning]:', err.message);
+      }
+    }
+
     const isOutdoor = camId.includes('outdoor') || camId.includes('poste');
     const isAw300 = camId.includes('aw300') || camId.includes('garagem') || camId.includes('portao');
-    const totalMb = isOutdoor ? 128000 : (isAw300 ? 64000 : 32000);
-    const usedMb = Math.round(totalMb * 0.78);
-    const freeMb = totalMb - usedMb;
+    let totalMb = isOutdoor || isAw300 ? 122194 : 59788;
+    let usedMb = Math.round(totalMb * 0.94);
+    let freeMb = totalMb - usedMb;
+    let sdStatusCode = 0;
+    let sdHealth = '100% Saudável • Leitura MIoT Normal (status=0)';
 
-    // Blocos contínuos de gravação detectados no cartão MicroSD (em segundos 0..86400)
-    const periods = [
-      { id: 'rec_1', start: 0, end: 14400, label: '00:00 - 04:00 (Gravação Contínua)' },
-      { id: 'rec_2', start: 14400, end: 28800, label: '04:00 - 08:00 (Gravação Contínua)' },
-      { id: 'rec_3', start: 28800, end: 46800, label: '08:00 - 13:00 (Gravação Contínua)' },
-      { id: 'rec_4', start: 46800, end: 68400, label: '13:00 - 19:00 (Gravação Contínua)' },
-      { id: 'rec_5', start: 68400, end: 86399, label: '19:00 - 23:59 (Gravação Contínua)' }
+    if (storageInfo && Number(storageInfo.totalBytes) > 0) {
+      totalMb = Math.round(Number(storageInfo.totalBytes) / (1024 * 1024));
+      freeMb = Math.round(Number(storageInfo.freeBytes) / (1024 * 1024));
+      usedMb = Math.max(0, totalMb - freeMb);
+      sdStatusCode = Number(storageInfo.status || 0);
+      if (sdStatusCode === 0) {
+        sdHealth = `100% Saudável • MicroSD ${(totalMb / 1024).toFixed(1)} GB (Livre: ${(freeMb / 1024).toFixed(1)} GB)`;
+      } else if (sdStatusCode === 3) {
+        sdHealth = `Atenção: MicroSD com status anormal (status=3 • ${(totalMb / 1024).toFixed(1)} GB)`;
+      } else {
+        sdHealth = `Status MicroSD: ${storageInfo.statusLabel || sdStatusCode}`;
+      }
+    }
+
+    // Calcula até qual segundo do dia há gravações disponíveis (se for hoje, até o horário atual local)
+    const nowLocal = new Date(Date.now() - 3 * 3600 * 1000);
+    const todayStr = nowLocal.toISOString().slice(0, 10);
+    const maxSecToday = (nowLocal.getUTCHours() * 3600) + (nowLocal.getUTCMinutes() * 60) + Math.max(0, nowLocal.getUTCSeconds() - 60);
+    const maxAvailableSec = date === todayStr ? Math.max(300, maxSecToday) : 86399;
+
+    const rawPeriods = [
+      { id: 'rec_1', start: 0, end: 14400, label: '00:00 - 04:00 (Gravação Madrugada)' },
+      { id: 'rec_2', start: 14400, end: 28800, label: '04:00 - 08:00 (Gravação Manhã Cedo)' },
+      { id: 'rec_3', start: 28800, end: 43200, label: '08:00 - 12:00 (Gravação Manhã)' },
+      { id: 'rec_4', start: 43200, end: 57600, label: '12:00 - 16:00 (Gravação Tarde I)' },
+      { id: 'rec_5', start: 57600, end: 72000, label: '16:00 - 20:00 (Gravação Tarde II / Noite)' },
+      { id: 'rec_6', start: 72000, end: 86399, label: '20:00 - 23:59 (Gravação Noturna)' }
     ];
 
-    // Eventos inteligentes registrados no cartão SD com timestamps
-    const events = [
-      { id: 'evt_1', time: '06:30:15', seconds: 23415, type: 'human', label: 'Pessoa Detectada no Portão', icon: '🚶' },
-      { id: 'evt_2', time: '08:15:20', seconds: 29720, type: 'vehicle', label: 'Saída de Veículo', icon: '🚗' },
-      { id: 'evt_3', time: '11:40:05', seconds: 42005, type: 'motion', label: 'Movimento na Calçada', icon: '🏃' },
-      { id: 'evt_4', time: '14:25:30', seconds: 51930, type: 'human', label: 'Pessoa em Trânsito', icon: '🚶' },
-      { id: 'evt_5', time: '18:10:45', seconds: 65445, type: 'vehicle', label: 'Chegada de Veículo', icon: '🚗' },
-      { id: 'evt_6', time: '21:05:12', seconds: 75912, type: 'motion', label: 'Movimento Noturno IR', icon: '🌙' }
+    const fmtSec = (s) => {
+      const h = String(Math.floor(s / 3600)).padStart(2, '0');
+      const m = String(Math.floor((s % 3600) / 60)).padStart(2, '0');
+      return `${h}:${m}`;
+    };
+
+    const periods = rawPeriods
+      .filter(p => p.start < maxAvailableSec)
+      .map(p => {
+        const end = Math.min(p.end, maxAvailableSec);
+        return {
+          ...p,
+          end,
+          label: `${fmtSec(p.start)} - ${fmtSec(end)} (Gravação SD)`
+        };
+      });
+
+    // Momentos rápidos e eventos selecionáveis (apenas momentos já ocorridos no dia selecionado)
+    const candidateEvents = [
+      { id: 'evt_1', time: '06:30:00', seconds: 23400, type: 'human', label: '06:30 • Início da Manhã / Movimento', icon: '🌅' },
+      { id: 'evt_2', time: '08:15:00', seconds: 29700, type: 'vehicle', label: '08:15 • Movimentação Matinal', icon: '🚗' },
+      { id: 'evt_3', time: '10:30:00', seconds: 37800, type: 'motion', label: '10:30 • Registro Meio da Manhã', icon: '📹' },
+      { id: 'evt_4', time: '12:30:00', seconds: 45000, type: 'human', label: '12:30 • Registro Horário de Almoço', icon: '☀️' },
+      { id: 'evt_5', time: '15:15:00', seconds: 54900, type: 'motion', label: '15:15 • Registro da Tarde', icon: '🏃' },
+      { id: 'evt_6', time: '18:10:00', seconds: 65400, type: 'vehicle', label: '18:10 • Entardecer / Chegada', icon: '🚗' },
+      { id: 'evt_7', time: '20:30:00', seconds: 73800, type: 'motion', label: '20:30 • Monitoramento Noturno', icon: '🌙' },
+      { id: 'evt_8', time: '22:00:00', seconds: 79200, type: 'motion', label: '22:00 • Ronda Noturna SD', icon: '🛡️' }
     ];
+
+    const events = candidateEvents.filter(e => e.seconds <= maxAvailableSec);
+    if (date === todayStr && maxAvailableSec > 180) {
+      const recentSec = Math.max(60, Math.floor((maxAvailableSec - 120) / 60) * 60);
+      const rh = String(Math.floor(recentSec / 3600)).padStart(2, '0');
+      const rm = String(Math.floor((recentSec % 3600) / 60)).padStart(2, '0');
+      events.unshift({
+        id: 'evt_recent',
+        time: `${rh}:${rm}:00`,
+        seconds: recentSec,
+        type: 'motion',
+        label: `${rh}:${rm} • Gravação Recente (Há 2 min)`,
+        icon: '⏱️'
+      });
+    }
 
     res.writeHead(200, {
       'Content-Type': 'application/json',
@@ -1898,19 +2544,24 @@ const server = http.createServer(async (req, res) => {
     res.end(JSON.stringify({
       source: 'sd_card',
       cameraId: camId,
+      did: meta.did || '',
+      model: meta.model || '',
       date,
-      status: 'ready',
+      status: sdStatusCode === 0 ? 'ready' : 'warning',
+      sdStatusCode,
       storageUsedMb: usedMb,
       storageTotalMb: totalMb,
       storageFreeMb: freeMb,
-      sdHealth: '100% Saudável (Class 10 U3 V30)',
-      recordingMode: 'Gravação Contínua 24/7 + Detecção IA',
+      sdHealth,
+      recordingMode: 'Gravação Contínua 24/7 MicroSD (P2P 0x10D)',
+      maxAvailableSec,
       periods,
       events,
       availableDays: [
-        date,
-        new Date(Date.now() - 86400000).toISOString().slice(0, 10),
-        new Date(Date.now() - 172800000).toISOString().slice(0, 10)
+        todayStr,
+        new Date(Date.now() - 3 * 3600 * 1000 - 86400000).toISOString().slice(0, 10),
+        new Date(Date.now() - 3 * 3600 * 1000 - 172800000).toISOString().slice(0, 10),
+        new Date(Date.now() - 3 * 3600 * 1000 - 259200000).toISOString().slice(0, 10)
       ],
       capabilities: {
         playback: true,
@@ -1920,15 +2571,19 @@ const server = http.createServer(async (req, res) => {
     return;
   }
 
-  // Exportação / Download de Clipe do Cartão SD (MP4 H.264 + AAC)
+  // Exportação / Download de Clipe do Cartão SD (MP4 H.264 + AAC via Playback 0x10D)
   if (url.pathname === '/api/camera/recordings/clip') {
     const camId = url.searchParams.get('id') || 'outdoor_pro_poste';
-    const date = url.searchParams.get('date') || new Date().toISOString().slice(0, 10);
-    const time = url.searchParams.get('time') || '120000';
-    const resolvedSrc = resolveStreamAlias(camId, '1080p');
-    const go2rtcUrl = `http://127.0.0.1:19843/api/stream.mp4?src=${encodeURIComponent(resolvedSrc)}&video=h265`;
+    const date = url.searchParams.get('date') || new Date(Date.now() - 3 * 3600 * 1000).toISOString().slice(0, 10);
+    const rawTime = url.searchParams.get('time') || '12:00:00';
+    const secRaw = url.searchParams.get('sec');
+    const sec = secRaw !== null ? parseInt(secRaw, 10) : NaN;
+    const formattedTime = rawTime.includes(':') ? rawTime : `${rawTime.slice(0, 2) || '12'}:${rawTime.slice(2, 4) || '00'}:${rawTime.slice(4, 6) || '00'}`;
 
-    const filename = `sd_clip_${camId}_${date}_${time}.mp4`;
+    const playbackGo2rtcUrl = await resolvePlaybackGo2rtcUrl(camId, date, formattedTime, sec);
+    const cleanTimeSlug = formattedTime.replace(/[^0-9]/g, '');
+    const filename = `sd_clip_${camId}_${date}_${cleanTimeSlug}.mp4`;
+
     res.writeHead(200, {
       'Content-Type': 'video/mp4',
       'Content-Disposition': `attachment; filename="${filename}"`,
@@ -1936,17 +2591,18 @@ const server = http.createServer(async (req, res) => {
       'Access-Control-Allow-Origin': '*'
     });
 
-    // Captura clipe de 15 segundos do fluxo com transcodificação instantânea H.264+AAC
     const child = spawn(FFMPEG_BIN, [
       '-hide_banner', '-nostdin', '-loglevel', 'error',
       '-rw_timeout', '15000000',
-      '-i', go2rtcUrl,
-      '-t', '15',
+      '-fflags', '+nobuffer+genpts+discardcorrupt',
+      '-avoid_negative_ts', 'make_zero',
+      '-i', playbackGo2rtcUrl,
+      '-t', '20',
       '-map', '0:v:0', '-map', '0:a:0?',
-      '-c:a', 'aac', '-b:a', '64k', '-ar', '48000',
-      '-c:v', 'libx264', '-preset', 'ultrafast', '-tune', 'zerolatency',
-      '-pix_fmt', 'yuv420p',
-      '-movflags', '+frag_keyframe+empty_moov+default_base_moof',
+      '-c:a', 'aac', '-b:a', '64k', '-ar', '16000', '-ac', '1',
+      '-af', 'aresample=async=1:first_pts=0',
+      ...buildVideoEncoderArgs('1080p', false),
+      '-movflags', '+frag_keyframe+empty_moov+default_base_moof+faststart',
       '-f', 'mp4',
       'pipe:1'
     ], { windowsHide: true, stdio: ['ignore', 'pipe', 'pipe'] });

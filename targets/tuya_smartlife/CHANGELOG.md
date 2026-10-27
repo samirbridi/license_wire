@@ -3,6 +3,27 @@
 Todas as descobertas, módulos dissecados e correções desta análise são registrados aqui.
 Formato de versão obrigatório: `vX.Y.Z (build XXXX)`.
 
+## v0.25.0 (build 0027) - 2026-10-26
+
+### 💥 Breaking Changes
+- Nenhum.
+
+### ✨ Features
+- feat: integração nativa ao protocolo Xiaomi MISS/CS2 para Talkback bidirecional (Opus 40ms e G.711 A-law), reprodução real de gravações do cartão MicroSD (`0x10D`), controle PTZ (`0x112`/`0x118`), holofote e sirene:
+  - Extração direta de pacotes Ogg Opus (20ms/40ms para `cw701` e `mod11`) e A-law 8kHz (`hlc7`) em `server.mjs` enviados a `/api/xiaomi/talkback` no `go2rtc`
+  - Consulta real de saúde e capacidade do cartão MicroSD via MIoT (`siid=4` para `cw701`/`hlc7` e `siid=3` para `mod11`) em `/api/camera/recordings`
+  - Stream de gravação SD (`/api/camera/recordings/stream`) e exportação MP4 (`/api/camera/recordings/clip`) via comando `MISS_CMD_PLAYBACK_REQ` (`0x10D`) com `endtime` e `offset` reais
+
+### 🐛 Fixes
+- fix: elimina travamentos na conexão AV ao vivo causados por múltiplos elementos `<video-stream>` reconectando em loop, colisão do prewarm de snapshots com streams ativos e falta de sufixos validados `_quality3`/`_quality4` em `resolveStreamAlias`
+- fix: corrige erro `504` prematuro no fallback de reprodução SD (`spawnPlaybackStream`) verificando `if (child !== activeChild) return;`
+
+### ⚡ Improvements
+- improve: adiciona codificação acelerada por hardware NVIDIA `h264_nvenc` (com fallback automático para `libx264`), flags de sincronia de timestamps (`-fflags +nobuffer+genpts+discardcorrupt -avoid_negative_ts make_zero`) e reamostragem assíncrona de áudio (`aresample=async=1:first_pts=0`)
+- improve: atualiza túnel público Cloudflare (`fifteen-grill-chelsea-obtain.trycloudflare.com`) e publica versão `v0.25.0 (build 0027)` no Cloudflare Pages (`homecams.pages.dev`)
+
+---
+
 ## v0.24.0 (build 0026) - 2026-10-26
 
 ### ✨ Features

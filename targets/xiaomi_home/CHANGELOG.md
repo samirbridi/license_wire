@@ -1,5 +1,42 @@
 # CHANGELOG — xiaomi_home
 
+## v0.9.0 (build 0015) - 2026-10-26
+
+### 💥 Breaking Changes
+
+- Nenhum.
+
+### ✨ Features
+
+- feat: recompila ponte nativa `go2rtc.exe` (`reconstructed/go2rtc-miss-patch/`) com suporte completo a Talkback CS2 canal 3 (`0x106`/`0x108`), Playback MicroSD (`0x10D`), catálogo RDT canal 1 (`cmd=6`), PTZ (`0x112`/`0x118`) e endpoints HTTP `/api/xiaomi/storage`, `/api/xiaomi/control` e `/api/xiaomi/talkback`
+
+### 🐛 Fixes
+
+- fix: corrige bug crítico em `pkg/xiaomi/miss/cs2/conn.go` (`WritePacket` linha 268 que sobrescrevia o payload de áudio criptografado com `hdr`), amplia buffer TCP de leitura de `1200` para `65536` bytes (`cs2+tcp` em 3K) e substitui erro fatal `"pop buffer is full"` por descarte não-bloqueante do pacote mais antigo
+- fix: corrige `siid=4` para telemetria MIoT do MicroSD em `xiaomi.camera.cw701` e `isa.camera.hlc7` (`siid=3` em `mxiang.camera.mod11`) e normaliza `usedBytes` em KB
+
+### ⚡ Improvements
+
+- improve: adiciona `drainCommands()` em background no cliente MISS e fechamento automático de sessões P2P temporárias ao alternar entre Live e Playback
+
+## v0.8.1 (build 0014) - 2026-10-26
+
+### 💥 Breaking Changes
+
+- Nenhum.
+
+### ✨ Features
+
+- Nenhum.
+
+### 🐛 Fixes
+
+- fix: interpreta ordem dos bytes observada na resposta CS2 (commit `f32ac75f6ad99db6c8d2c9f845111a7221ac300a`)
+
+### ⚡ Improvements
+
+- Nenhum.
+
 ## v0.8.0 (build 0013) - 2026-10-26
 
 ### 💥 Breaking Changes

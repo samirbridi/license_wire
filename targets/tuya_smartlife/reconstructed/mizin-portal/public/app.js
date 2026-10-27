@@ -126,7 +126,7 @@ function toggleFavorite(devId, event) {
 // -------------------------------------------------------------
 const currentHost = window.location.hostname;
 const isDirectHost = currentHost === 'localhost' || currentHost === '127.0.0.1' || currentHost.startsWith('192.168.');
-let BACKEND_API_BASE = isDirectHost || currentHost.includes('trycloudflare.com') ? '' : 'https://elegant-marsh-warm-programmer.trycloudflare.com';
+let BACKEND_API_BASE = isDirectHost || currentHost.includes('trycloudflare.com') ? '' : 'https://food-kind-ethernet-down.trycloudflare.com';
 let isLocalAccess = isDirectHost;
 
 const origFetch = window.fetch;
@@ -138,6 +138,25 @@ window.fetch = function(url, options) {
   }
   return origFetch(url, options);
 };
+
+async function refreshRemoteTunnelUrl() {
+  const host = window.location.hostname;
+  if (host === 'localhost' || host === '127.0.0.1' || host.startsWith('192.168.') || host.startsWith('10.') || host.includes('trycloudflare.com')) {
+    return BACKEND_API_BASE;
+  }
+  try {
+    const res = await origFetch(`/tunnel.json?t=${Date.now()}`, { cache: 'no-store' });
+    if (res.ok) {
+      const info = await res.json();
+      if (info && info.tunnelUrl && info.tunnelUrl.startsWith('https://')) {
+        BACKEND_API_BASE = info.tunnelUrl;
+        const remoteInput = document.getElementById('voiceRemoteUrl');
+        if (remoteInput) remoteInput.value = `${info.tunnelUrl}/api/webhook/voice`;
+      }
+    }
+  } catch (e) {}
+  return BACKEND_API_BASE;
+}
 
 async function detectAccessMode() {
   const host = window.location.hostname;
@@ -156,7 +175,8 @@ async function detectAccessMode() {
   }
 
   isLocalAccess = false;
-  BACKEND_API_BASE = host.includes('trycloudflare.com') ? '' : 'https://elegant-marsh-warm-programmer.trycloudflare.com';
+  BACKEND_API_BASE = host.includes('trycloudflare.com') ? '' : 'https://food-kind-ethernet-down.trycloudflare.com';
+  await refreshRemoteTunnelUrl();
   if (badge) {
     badge.innerText = '🌐 MODO REMOTO (Cloudflare)';
     badge.className = 'badge badge-mode badge-remote';
@@ -228,7 +248,11 @@ async function checkConnection(isManualRetry = false) {
 
   const start = Date.now();
   try {
-    const res = await fetch('/api/health?t=' + Date.now(), { cache: 'no-store' });
+    let res = await fetch('/api/health?t=' + Date.now(), { cache: 'no-store' });
+    if (!res.ok && !isLocalAccess) {
+      await refreshRemoteTunnelUrl();
+      res = await fetch('/api/health?t=' + Date.now(), { cache: 'no-store' });
+    }
     if (!res.ok) throw new Error('HTTP ' + res.status);
     
     const latency = Date.now() - start;
@@ -246,8 +270,11 @@ async function checkConnection(isManualRetry = false) {
     if (indicatorEl) indicatorEl.className = 'status-indicator';
 
   } catch (err) {
+    if (!isLocalAccess) {
+      await refreshRemoteTunnelUrl();
+    }
     failedPings++;
-    if (failedPings >= 2) {
+    if (failedPings >= 3) {
       isConnected = false;
       if (!disconnectedSince) disconnectedSince = Date.now();
       const elapsedSec = Math.round((Date.now() - disconnectedSince) / 1000);
@@ -259,7 +286,7 @@ async function checkConnection(isManualRetry = false) {
       // Dispara aviso visual se estiver em modo externo
       if (alertEl && !isLocalAccess) {
         alertEl.classList.add('active');
-        if (alertTimerEl) alertTimerEl.innerText = `Sem sinal há ${elapsedSec}s... Tentando reconectar`;
+        if (alertTimerEl) alertTimerEl.innerText = `Sem sinal há ${elapsedSec}s... Tentando reconectar automaticamente`;
       }
     }
   }
@@ -3511,66 +3538,60 @@ function getCameraWsUrl(streamAlias) {
   return `${proto}//${window.location.host}/api/ws?src=${encodeURIComponent(streamAlias)}`;
 }
 
-function connectCameraPlayer(streamEl, fallbackVideoEl, feedImg, spinnerEl, streamAlias, isMuted) {
-  const wsUrl = getCameraWsUrl(streamAlias);
-  let resolved = false;
-
-  const onReady = () => {
-    if (resolved) return;
-    resolved = true;
-    if (streamEl) streamEl.style.display = 'block';
-    if (fallbackVideoEl) fallbackVideoEl.style.display = 'none';
-    if (feedImg) feedImg.style.display = 'none';
-    if (spinnerEl) spinnerEl.style.display = 'none';
-  };
-
-  // 1. WebSocket de Ultra Baixa Latência (MSE / WebRTC via go2rtc proxy)
-  if (streamEl && typeof customElements !== 'undefined' && customElements.get('video-stream')) {
-    if (spinnerEl) spinnerEl.style.display = 'block';
-    streamEl.style.display = 'block';
-    if (fallbackVideoEl) {
-      fallbackVideoEl.style.display = 'none';
-      try { fallbackVideoEl.pause(); } catch(e){}
+function stopStreamElement(streamEl) {
+  if (!streamEl) return;
+  try {
+    streamEl.src = '';
+    if (typeof streamEl.ondisconnect === 'function') {
+      streamEl.ondisconnect();
     }
-    streamEl.src = wsUrl;
+    streamEl.style.display = 'none';
+  } catch (e) {}
+}
 
-    const setupInner = () => {
-      const v = streamEl.querySelector('video') || streamEl.video;
-      if (v) {
-        v.muted = isMuted;
-        v.onplaying = onReady;
-        v.onloadeddata = onReady;
-        v.oncanplay = onReady;
-      }
-    };
-    setupInner();
-    setTimeout(setupInner, 200);
-    setTimeout(setupInner, 800);
+function stopHttpVideoElement(videoEl) {
+  if (!videoEl) return;
+  try {
+    videoEl.onplaying = null;
+    videoEl.onloadeddata = null;
+    videoEl.oncanplay = null;
+    videoEl.onerror = null;
+    videoEl.pause();
+    videoEl.removeAttribute('src');
+    videoEl.load();
+    videoEl.style.display = 'none';
+  } catch (e) {}
+}
 
-    // Fallback de segurança para stream HTTP caso o WebSocket não entregue vídeo em 6s
-    setTimeout(() => {
-      if (!resolved && fallbackVideoEl) {
-        console.warn(`[Stream Fallback] Alternando para stream HTTP para ${streamAlias}`);
-        if (streamEl) streamEl.style.display = 'none';
-        connectHttpStream(fallbackVideoEl, feedImg, spinnerEl, streamAlias, isMuted, onReady);
-      }
-    }, 6000);
-  } else if (fallbackVideoEl) {
-    connectHttpStream(fallbackVideoEl, feedImg, spinnerEl, streamAlias, isMuted, onReady);
+function connectCameraPlayer(streamEl, fallbackVideoEl, feedImg, spinnerEl, streamAlias, isMuted, onReadyCallback) {
+  stopStreamElement(streamEl);
+  if (fallbackVideoEl) {
+    connectHttpStream(fallbackVideoEl, feedImg, spinnerEl, streamAlias, isMuted, onReadyCallback);
   }
 }
 
 function connectHttpStream(videoEl, feedImg, spinnerEl, streamAlias, isMuted, onReady) {
   if (!videoEl) return;
-  videoEl.style.display = 'none';
+  stopHttpVideoElement(videoEl);
   if (spinnerEl) spinnerEl.style.display = 'block';
+  if (feedImg) feedImg.style.display = 'block';
+
+  let readyFired = false;
+  const quality = resolveEffectiveCameraQuality();
   videoEl.muted = isMuted;
-  videoEl.src = `${BACKEND_API_BASE}/api/camera-stream?src=${encodeURIComponent(streamAlias)}&quality=${resolveEffectiveCameraQuality()}`;
+  videoEl.playsInline = true;
+  videoEl.autoplay = true;
+  videoEl.src = `${BACKEND_API_BASE}/api/camera-stream?src=${encodeURIComponent(streamAlias)}&quality=${encodeURIComponent(quality)}&t=${Date.now()}`;
   videoEl.load();
   const p = videoEl.play();
-  if (p) p.catch(() => {});
+  if (p) p.catch(() => {
+    videoEl.muted = true;
+    videoEl.play().catch(() => {});
+  });
 
   const readyHandler = () => {
+    if (readyFired) return;
+    readyFired = true;
     videoEl.style.display = 'block';
     if (feedImg) feedImg.style.display = 'none';
     if (spinnerEl) spinnerEl.style.display = 'none';
@@ -3593,6 +3614,11 @@ function setupSingleCameraView(camObj) {
   if (playerWrap1) playerWrap1.style.display = 'flex';
   if (playerWrap2) playerWrap2.style.display = 'none';
 
+  const stream2 = document.getElementById('ptzSecondaryVideoStream');
+  const video2 = document.getElementById('ptzSecondaryVideoElement');
+  stopStreamElement(stream2);
+  stopHttpVideoElement(video2);
+
   const streamAlias = camObj.sourceAlias || camObj.id;
   const feedImg = document.getElementById('ptzMainVideoFeed');
   const streamEl = document.getElementById('ptzMainVideoStream');
@@ -3610,8 +3636,13 @@ function setupSingleCameraView(camObj) {
   connectCameraPlayer(streamEl, videoEl, feedImg, spinnerEl, streamAlias, !isAudioListening);
 }
 
+let dualSecondaryTimer = null;
 function switchCameraViewMode(mode) {
   activeCameraViewMode = mode;
+  if (dualSecondaryTimer) {
+    clearTimeout(dualSecondaryTimer);
+    dualSecondaryTimer = null;
+  }
   const tabDual = document.getElementById('tabDualView');
   const tabV1 = document.getElementById('tabView1');
   const tabV2 = document.getElementById('tabView2');
@@ -3644,11 +3675,27 @@ function switchCameraViewMode(mode) {
     if (wrap2) wrap2.style.display = 'flex';
     if (overlay1) overlay1.innerText = `VISTA 1 • AMPLA (${activeCameraQuality === 'auto' ? ('AUTO ' + effective.toUpperCase()) : '3K'})`;
 
-    if (feed1) feed1.src = `${BACKEND_API_BASE}/api/camera-frame?src=${encodeURIComponent(alias1)}&t=${Date.now()}`;
-    connectCameraPlayer(stream1, video1, feed1, spinner1, alias1, !isAudioListening);
+    stopStreamElement(stream2);
+    stopHttpVideoElement(video2);
+    if (feed2) {
+      feed2.src = `${BACKEND_API_BASE}/api/camera-frame?src=${encodeURIComponent(alias2)}&t=${Date.now()}`;
+      feed2.style.display = 'block';
+    }
 
-    if (feed2) feed2.src = `${BACKEND_API_BASE}/api/camera-frame?src=${encodeURIComponent(alias2)}&t=${Date.now()}`;
-    connectCameraPlayer(stream2, video2, feed2, null, alias2, true);
+    if (feed1) {
+      feed1.src = `${BACKEND_API_BASE}/api/camera-frame?src=${encodeURIComponent(alias1)}&t=${Date.now()}`;
+      feed1.style.display = 'block';
+    }
+    let v2Started = false;
+    const startSecondLens = () => {
+      if (v2Started || activeCameraViewMode !== 'dual' || currentTheaterTab !== 'live') return;
+      v2Started = true;
+      connectCameraPlayer(stream2, video2, feed2, null, alias2, true);
+    };
+    connectCameraPlayer(stream1, video1, feed1, spinner1, alias1, !isAudioListening, () => {
+      dualSecondaryTimer = setTimeout(startSecondLens, 600);
+    });
+    dualSecondaryTimer = setTimeout(startSecondLens, 3500);
 
     showToast('Visualização Dupla Ativada: Ampla + Teleobjetiva 📺');
   } else if (mode === 'view1') {
@@ -3656,16 +3703,24 @@ function switchCameraViewMode(mode) {
     if (wrap1) wrap1.style.display = 'flex';
     if (wrap2) wrap2.style.display = 'none';
     if (overlay1) overlay1.innerText = 'VISTA 1 • AMPLA TOTAL';
-    if (stream2) { try { stream2.src = ''; } catch(e){} }
-    if (video2) { try { video2.pause(); video2.removeAttribute('src'); } catch(e){} }
+    stopStreamElement(stream2);
+    stopHttpVideoElement(video2);
+    if (feed1) {
+      feed1.src = `${BACKEND_API_BASE}/api/camera-frame?src=${encodeURIComponent(alias1)}&t=${Date.now()}`;
+      feed1.style.display = 'block';
+    }
+    connectCameraPlayer(stream1, video1, feed1, spinner1, alias1, !isAudioListening);
     showToast('Exibindo Vista 1: Grande Angular 👁️');
   } else if (mode === 'view2') {
     if (container) container.classList.remove('dual-active');
     if (wrap1) wrap1.style.display = 'none';
     if (wrap2) wrap2.style.display = 'flex';
-    if (stream1) { try { stream1.src = ''; } catch(e){} }
-    if (video1) { try { video1.pause(); video1.removeAttribute('src'); } catch(e){} }
-    if (feed2) feed2.src = `${BACKEND_API_BASE}/api/camera-frame?src=${encodeURIComponent(alias2)}&t=${Date.now()}`;
+    stopStreamElement(stream1);
+    stopHttpVideoElement(video1);
+    if (feed2) {
+      feed2.src = `${BACKEND_API_BASE}/api/camera-frame?src=${encodeURIComponent(alias2)}&t=${Date.now()}`;
+      feed2.style.display = 'block';
+    }
     connectCameraPlayer(stream2, video2, feed2, null, alias2, !isAudioListening);
     showToast('Exibindo Vista 2: Teleobjetiva / Motorizada 🎯');
   }
@@ -3924,6 +3979,7 @@ let isAudioTalking = false;
 let audioTalkStream = null;
 let audioTalkRecorder = null;
 let audioTalkCycleTimeout = null;
+let talkUploadChain = Promise.resolve();
 
 async function toggleAudioTalk() {
   const btn = document.getElementById('btnAudioTalk');
@@ -3931,6 +3987,7 @@ async function toggleAudioTalk() {
   const text = document.getElementById('audioTalkText');
   const statusText = document.getElementById('audioStatusText');
   const waveMeter = document.getElementById('audioWaveMeter');
+  const camId = activePtzCam || 'outdoor_pro_poste';
 
   if (!isAudioTalking) {
     // ATIVAR MICROFONE INSTANTANEAMENTE (1 TOQUE)
@@ -3963,25 +4020,32 @@ async function toggleAudioTalk() {
           return;
         }
 
-        const sendChunk = async (blob) => {
-          if (!blob || blob.size < 50 || !isAudioTalking) return;
-          try {
-            const camId = activePtzCam || 'outdoor_pro_poste';
-            const talkUrl = `${BACKEND_API_BASE}/api/camera/talkback?id=${encodeURIComponent(camId)}`;
-            await fetch(talkUrl, {
-              method: 'POST',
-              headers: {
-                'Content-Type': blob.type || 'audio/webm'
-              },
-              body: blob
-            });
-          } catch(err) {
-            console.warn('[Talkback chunk send error]:', err);
-          }
+        // Abre canal de alto-falante na câmera (0x106 MISS_CMD_SPEAKER_START_REQ)
+        fetch(`${BACKEND_API_BASE}/api/camera/talkback?id=${encodeURIComponent(camId)}&action=start`, {
+          method: 'POST'
+        }).catch(() => {});
+
+        const sendChunk = (blob) => {
+          if (!blob || blob.size < 40 || !isAudioTalking) return;
+          const targetCamId = activePtzCam || camId;
+          talkUploadChain = talkUploadChain.then(async () => {
+            if (!isAudioTalking) return;
+            try {
+              const talkUrl = `${BACKEND_API_BASE}/api/camera/talkback?id=${encodeURIComponent(targetCamId)}`;
+              await fetch(talkUrl, {
+                method: 'POST',
+                headers: {
+                  'Content-Type': blob.type || 'audio/webm'
+                },
+                body: blob
+              });
+            } catch (err) {
+              console.warn('[Talkback chunk send error]:', err);
+            }
+          });
         };
 
-        // Gravação contínua por ciclos curtos (800ms)
-        // Garante que todo chunk enviado tenha cabeçalho EBML completo e válido
+        // Gravação contínua por ciclos curtos (950ms) com cabeçalho WebM/Opus íntegro
         const runRecordCycle = () => {
           if (!isAudioTalking || !audioTalkStream) return;
           const mimeType = MediaRecorder.isTypeSupported('audio/webm;codecs=opus')
@@ -3995,15 +4059,15 @@ async function toggleAudioTalk() {
           };
           recorder.onstop = () => {
             if (isAudioTalking) {
-              audioTalkCycleTimeout = setTimeout(runRecordCycle, 50);
+              audioTalkCycleTimeout = setTimeout(runRecordCycle, 25);
             }
           };
           recorder.start();
           setTimeout(() => {
             if (recorder.state === 'recording') {
-              try { recorder.stop(); } catch(e){}
+              try { recorder.stop(); } catch (e) {}
             }
-          }, 800);
+          }, 950);
         };
 
         runRecordCycle();
@@ -4045,6 +4109,10 @@ async function toggleAudioTalk() {
       }
     } catch (e) {}
 
+    fetch(`${BACKEND_API_BASE}/api/camera/talkback?id=${encodeURIComponent(camId)}&action=stop`, {
+      method: 'POST'
+    }).catch(() => {});
+
     showToast('Microfone desativado.', '', '🔇', 'info');
   }
 }
@@ -4058,7 +4126,8 @@ function stopPttTalk() { if (isAudioTalking) toggleAudioTalk(); }
 // =============================================================
 let currentTheaterTab = 'live';
 
-function switchTheaterTab(tab) {
+function switchTheaterTab(tab, skipAutoLoad = false) {
+  const previousTab = currentTheaterTab;
   currentTheaterTab = tab;
   const btnLive = document.getElementById('tabBtnTheaterLive');
   const btnSd = document.getElementById('tabBtnTheaterSd');
@@ -4077,13 +4146,24 @@ function switchTheaterTab(tab) {
       panelSd.classList.remove('active');
     }
 
-    // Pausa player SD para liberar recursos
+    // Encerra completamente o stream de gravação SD para liberar sessão P2P
+    if (sdPlaybackTimer) {
+      clearInterval(sdPlaybackTimer);
+      sdPlaybackTimer = null;
+    }
     const sdVideo = document.getElementById('sdPlaybackVideoElement');
-    if (sdVideo && !sdVideo.paused) sdVideo.pause();
+    stopHttpVideoElement(sdVideo);
 
-    // Retoma streaming ao vivo
-    const video1 = document.getElementById('ptzMainVideoElement');
-    if (video1 && video1.paused && video1.src) video1.play().catch(() => {});
+    // Se estava na aba SD e voltou para Ao Vivo, reconecta o stream ao vivo
+    if (previousTab === 'sd' && activePtzCam && !skipAutoLoad) {
+      const camObj = (window._cachedCameras || []).find(c => c.id === activePtzCam) || { id: activePtzCam, sourceAlias: activePtzCam };
+      const isOutdoorPro = (activePtzCam === 'outdoor_pro_poste' || (camObj.family && camObj.family.toLowerCase().includes('outdoor pro')));
+      if (isOutdoorPro) {
+        switchCameraViewMode(activeCameraViewMode || 'dual');
+      } else {
+        setupSingleCameraView(camObj);
+      }
+    }
   } else {
     if (btnLive) btnLive.classList.remove('active');
     if (btnSd) btnSd.classList.add('active');
@@ -4096,21 +4176,25 @@ function switchTheaterTab(tab) {
       panelSd.classList.add('active');
     }
 
-    // Pausa vídeo ao vivo para foco total na gravação
-    const video1 = document.getElementById('ptzMainVideoElement');
-    if (video1 && !video1.paused) video1.pause();
-    const video2 = document.getElementById('ptzSecondaryVideoElement');
-    if (video2 && !video2.paused) video2.pause();
+    // Libera conexões HTTP de vídeo ao vivo para dedicar o canal P2P ao Playback SD (0x10D)
+    if (dualSecondaryTimer) {
+      clearTimeout(dualSecondaryTimer);
+      dualSecondaryTimer = null;
+    }
+    stopStreamElement(document.getElementById('ptzMainVideoStream'));
+    stopStreamElement(document.getElementById('ptzSecondaryVideoStream'));
+    stopHttpVideoElement(document.getElementById('ptzMainVideoElement'));
+    stopHttpVideoElement(document.getElementById('ptzSecondaryVideoElement'));
 
-    // Atualiza gravações e linha do tempo da câmera ativa
-    if (activePtzCam) {
-      fetchSdRecordings(activePtzCam, selectedTimelineDate);
+    // Atualiza gravações e inicia reprodução caso solicitado pela troca de aba
+    if (activePtzCam && !skipAutoLoad) {
+      fetchSdRecordings(activePtzCam, selectedTimelineDate, true);
     }
   }
 }
 
 // Régua de 24 Horas e Gravações SD Card
-async function fetchSdRecordings(camId, date) {
+async function fetchSdRecordings(camId, date, autoPlayOnLoad = false) {
   const track = document.getElementById('timelineTrack');
   const storageBadge = document.getElementById('sdStorageBadge');
   const tabSdCapacityBadge = document.getElementById('tabSdCapacityBadge');
@@ -4124,48 +4208,58 @@ async function fetchSdRecordings(camId, date) {
   const liveSdQuickInfo = document.getElementById('liveSdQuickInfo');
 
   try {
-    const res = await fetch(`/api/camera/recordings?id=${encodeURIComponent(camId)}&date=${encodeURIComponent(date)}`);
+    const res = await fetch(`${BACKEND_API_BASE}/api/camera/recordings?id=${encodeURIComponent(camId)}&date=${encodeURIComponent(date)}`);
     const data = await res.json();
     currentSdRecordings = data.periods || [];
 
     const totalGb = (data.storageTotalMb / 1024).toFixed(0);
     const usedGb = (data.storageUsedMb / 1024).toFixed(1);
-    const freeGb = ((data.storageTotalMb - data.storageUsedMb) / 1024).toFixed(1);
-    const health = data.sdHealth || '100% Saudável (Class 10 U3 V30)';
-    const pct = Math.round((data.storageUsedMb / data.storageTotalMb) * 100);
+    const freeGb = Math.max(0, (data.storageTotalMb - data.storageUsedMb) / 1024).toFixed(1);
+    const health = data.sdHealth || '100% Saudável (MIoT Normal)';
+    const pct = Math.min(100, Math.max(0, Math.round((data.storageUsedMb / Math.max(1, data.storageTotalMb)) * 100)));
 
     if (storageBadge) storageBadge.innerText = `MicroSD ${usedGb}GB / ${totalGb}GB (${health})`;
     if (tabSdCapacityBadge) tabSdCapacityBadge.innerText = `MICROSD ${totalGb}GB (${pct}%)`;
-    if (healthTitle) healthTitle.innerText = `${totalGb} GB SanDisk High Endurance`;
-    if (healthSub) healthSub.innerText = `Saúde: ${health}`;
+    if (healthTitle) healthTitle.innerText = `${totalGb} GB MicroSD High Endurance`;
+    if (healthSub) healthSub.innerText = `${health}`;
     if (storageUsageText) storageUsageText.innerText = `${usedGb} GB Usado (${pct}%)`;
     if (storageFreeText) storageFreeText.innerText = `${freeGb} GB Livre de ${totalGb} GB`;
-    if (recordingModeText) recordingModeText.innerText = '24/7 Contínua Circular (Loop)';
-    if (eventsCountBadge) eventsCountBadge.innerText = `${(data.events || []).length} Detecções de IA Hoje`;
-    if (liveSdQuickInfo) liveSdQuickInfo.innerText = `MicroSD ${totalGb}GB (${usedGb}GB ocupado) • ${(data.events || []).length} detecções`;
+    if (recordingModeText) recordingModeText.innerText = data.recordingMode || '24/7 Contínua Circular (Loop)';
+    if (eventsCountBadge) eventsCountBadge.innerText = `${(data.events || []).length} Momentos Disponíveis`;
+    if (liveSdQuickInfo) liveSdQuickInfo.innerText = `MicroSD ${totalGb}GB (${usedGb}GB ocupado) • ${(data.events || []).length} momentos`;
 
-    // Renderiza blocos coloridos ao longo da régua de 86400 segundos do dia
+    // Renderiza blocos coloridos clicáveis ao longo da régua de 86400 segundos do dia
     if (track) {
       track.innerHTML = currentSdRecordings.map((p, idx) => {
         const leftPct = (p.start / 86400) * 100;
         const widthPct = Math.max(0.5, ((p.end - p.start) / 86400) * 100);
         const color = idx % 3 === 0 ? '#10b981' : idx % 3 === 1 ? '#f59e0b' : '#38bdf8';
-        return `<div class="timeline-block" style="left:${leftPct}%; width:${widthPct}%; background:${color};" title="Gravação: ${p.label || (formatSecondsToTime(p.start) + ' - ' + formatSecondsToTime(p.end))}"></div>`;
+        return `<div class="timeline-block" onclick="seekTimelineClick(event)" style="left:${leftPct}%; width:${widthPct}%; background:${color}; cursor:pointer;" title="Clique para reproduzir: ${p.label || (formatSecondsToTime(p.start) + ' - ' + formatSecondsToTime(p.end))}"></div>`;
       }).join('');
     }
 
-    // Renderiza chips de Eventos IA detectados no cartão SD
+    // Renderiza chips de Momentos e Eventos detectados no cartão SD
     if (eventsContainer) {
       const events = data.events || [];
       if (events.length === 0) {
-        eventsContainer.innerHTML = '<span style="font-size:11px; color:var(--text-dim);">Nenhum evento registrado nesta data.</span>';
+        eventsContainer.innerHTML = '<span style="font-size:11px; color:var(--text-dim);">Nenhum momento registrado nesta data.</span>';
       } else {
-        eventsContainer.innerHTML = events.map(evt => `
-          <button type="button" class="btn btn-sm btn-outline-cyan" onclick="jumpToSdEvent(${evt.seconds}, '${evt.label}')" style="font-size:11px; padding:4px 10px; display:inline-flex; align-items:center; gap:5px;" title="Assistir gravação às ${evt.time}">
-            ${evt.icon || '🎯'} <strong>${evt.time}</strong> — ${evt.label} ▶
-          </button>
-        `).join('');
+        eventsContainer.innerHTML = events.map(evt => {
+          const safeLabel = String(evt.label || '').replace(/'/g, '');
+          return `
+            <button type="button" class="btn btn-sm btn-outline-cyan" onclick="jumpToSdEvent(${evt.seconds}, '${safeLabel}')" style="font-size:11px; padding:4px 10px; display:inline-flex; align-items:center; gap:5px;" title="Assistir gravação às ${evt.time}">
+              ${evt.icon || '🎯'} <strong>${evt.time}</strong> — ${evt.label} ▶
+            </button>
+          `;
+        }).join('');
       }
+    }
+
+    if (autoPlayOnLoad && currentTheaterTab === 'sd') {
+      const events = data.events || [];
+      const defaultSec = events.length > 0 ? events[0].seconds : Math.max(60, (data.maxAvailableSec || 36000) - 300);
+      const defaultLabel = events.length > 0 ? events[0].label : 'Gravação MicroSD';
+      playCurrentSdSegment(defaultSec, defaultLabel);
     }
   } catch (e) {
     if (track) track.innerHTML = '';
@@ -4176,19 +4270,20 @@ let sdPlaybackTimer = null;
 let currentSdPlaySeconds = 36000;
 
 function jumpToSdEvent(seconds, label) {
-  switchTheaterTab('sd');
+  switchTheaterTab('sd', true);
   const needle = document.getElementById('timelineNeedle');
   const timeTip = document.getElementById('timelineNeedleTime');
   const pct = Math.max(0, Math.min(100, (seconds / 86400) * 100));
   if (needle) needle.style.left = `${pct}%`;
   const formatted = formatSecondsToTime(seconds);
   if (timeTip) timeTip.innerText = formatted;
-  showToast(`Evento: ${label} (${formatted}) — Reproduzindo 📼`, '', '🎯', 'info');
+  showToast(`Momento: ${label} (${formatted}) — Reproduzindo 📼`, '', '🎯', 'info');
   playCurrentSdSegment(seconds, label);
 }
 
 function seekTimelineClick(event) {
-  switchTheaterTab('sd');
+  if (event) event.stopPropagation();
+  switchTheaterTab('sd', true);
   const ruler = document.getElementById('timelineRulerContainer');
   const needle = document.getElementById('timelineNeedle');
   const timeTip = document.getElementById('timelineNeedleTime');
@@ -4213,7 +4308,7 @@ function stepTimelineDay(delta) {
   selectedTimelineDate = d.toISOString().slice(0, 10);
   const dateInput = document.getElementById('timelineDateInput');
   if (dateInput) dateInput.value = selectedTimelineDate;
-  fetchSdRecordings(activePtzCam, selectedTimelineDate);
+  fetchSdRecordings(activePtzCam, selectedTimelineDate, currentTheaterTab === 'sd');
   showToast(`Carregando gravações de: ${selectedTimelineDate}`, '', '📅', 'info');
 }
 
@@ -4221,18 +4316,20 @@ function stepTimelineToday() {
   selectedTimelineDate = new Date().toISOString().slice(0, 10);
   const dateInput = document.getElementById('timelineDateInput');
   if (dateInput) dateInput.value = selectedTimelineDate;
-  fetchSdRecordings(activePtzCam, selectedTimelineDate);
+  fetchSdRecordings(activePtzCam, selectedTimelineDate, currentTheaterTab === 'sd');
   showToast('Linha do tempo atualizada para HOJE 📅', '', '📅', 'info');
 }
 
 function onTimelineDateChanged(val) {
   if (!val) return;
   selectedTimelineDate = val;
-  fetchSdRecordings(activePtzCam, selectedTimelineDate);
+  fetchSdRecordings(activePtzCam, selectedTimelineDate, currentTheaterTab === 'sd');
 }
 
 function playCurrentSdSegment(targetSeconds, optLabel) {
-  switchTheaterTab('sd');
+  if (currentTheaterTab !== 'sd') {
+    switchTheaterTab('sd', true);
+  }
   let seconds = targetSeconds;
   if (seconds === undefined) {
     const needleTip = document.getElementById('timelineNeedleTime');
@@ -4262,13 +4359,16 @@ function playCurrentSdSegment(targetSeconds, optLabel) {
   if (timeTip) timeTip.innerText = time;
 
   if (sdVideo) {
+    stopHttpVideoElement(sdVideo);
+    sdVideo.style.display = 'block';
     const camId = activePtzCam || 'outdoor_pro_poste';
-    sdVideo.src = `${BACKEND_API_BASE}/api/camera/recordings/stream?id=${encodeURIComponent(camId)}&date=${encodeURIComponent(selectedTimelineDate)}&time=${encodeURIComponent(time)}&sec=${seconds}&t=${Date.now()}`;
+    sdVideo.playsInline = true;
+    sdVideo.autoplay = true;
     sdVideo.muted = !isAudioListening;
+    sdVideo.src = `${BACKEND_API_BASE}/api/camera/recordings/stream?id=${encodeURIComponent(camId)}&date=${encodeURIComponent(selectedTimelineDate)}&time=${encodeURIComponent(time)}&sec=${seconds}&t=${Date.now()}`;
     sdVideo.load();
     const p = sdVideo.play();
     if (p) p.catch(() => {
-      // Fallback para política de reprodução automática sem interação de som
       sdVideo.muted = true;
       sdVideo.play().catch(() => {});
     });
@@ -4278,7 +4378,7 @@ function playCurrentSdSegment(targetSeconds, optLabel) {
     };
     sdVideo.onplaying = onReady;
     sdVideo.oncanplay = onReady;
-    sdVideo.onloadedmetadata = onReady;
+    sdVideo.onloadeddata = onReady;
     sdVideo.onerror = () => {
       if (spinner) spinner.style.display = 'none';
     };
@@ -4306,11 +4406,10 @@ function startSdTimelineTracking() {
 }
 
 function downloadCurrentSdClip() {
-  const needleTip = document.getElementById('timelineNeedleTime');
-  const time = needleTip ? needleTip.innerText.replace(/:/g, '') : '120000';
-  const url = `${BACKEND_API_BASE}/api/camera/recordings/clip?id=${encodeURIComponent(activePtzCam || 'outdoor_pro_poste')}&date=${selectedTimelineDate}&time=${time}`;
+  const formatted = formatSecondsToTime(currentSdPlaySeconds);
+  const url = `${BACKEND_API_BASE}/api/camera/recordings/clip?id=${encodeURIComponent(activePtzCam || 'outdoor_pro_poste')}&date=${encodeURIComponent(selectedTimelineDate)}&time=${encodeURIComponent(formatted)}&sec=${currentSdPlaySeconds}`;
   window.open(url, '_blank');
-  showToast(`Exportação do clipe MP4 do cartão SD iniciada! 💾`);
+  showToast(`Exportação do clipe MP4 (${formatted}) iniciada! 💾`);
 }
 
 function captureSdSnapshot() {
@@ -4344,23 +4443,16 @@ function closePtzModal() {
   const modal = document.getElementById('cameraPtzModal');
   if (modal) modal.classList.remove('active');
 
-  const stream1 = document.getElementById('ptzMainVideoStream');
-  const stream2 = document.getElementById('ptzSecondaryVideoStream');
-  if (stream1) { try { stream1.src = ''; } catch(e){} }
-  if (stream2) { try { stream2.src = ''; } catch(e){} }
+  if (dualSecondaryTimer) {
+    clearTimeout(dualSecondaryTimer);
+    dualSecondaryTimer = null;
+  }
 
-  const video1 = document.getElementById('ptzMainVideoElement');
-  const video2 = document.getElementById('ptzSecondaryVideoElement');
-  const sdVideo = document.getElementById('sdPlaybackVideoElement');
-  if (video1) {
-    try { video1.pause(); video1.removeAttribute('src'); video1.load(); } catch (e) {}
-  }
-  if (video2) {
-    try { video2.pause(); video2.removeAttribute('src'); video2.load(); } catch (e) {}
-  }
-  if (sdVideo) {
-    try { sdVideo.pause(); sdVideo.removeAttribute('src'); sdVideo.load(); } catch (e) {}
-  }
+  stopStreamElement(document.getElementById('ptzMainVideoStream'));
+  stopStreamElement(document.getElementById('ptzSecondaryVideoStream'));
+  stopHttpVideoElement(document.getElementById('ptzMainVideoElement'));
+  stopHttpVideoElement(document.getElementById('ptzSecondaryVideoElement'));
+  stopHttpVideoElement(document.getElementById('sdPlaybackVideoElement'));
 
   if (sdPlaybackTimer) {
     clearInterval(sdPlaybackTimer);
