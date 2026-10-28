@@ -418,8 +418,8 @@ async function cycleSnapshotPrewarm() {
   }
   prewarmerRunning = false;
 }
-setInterval(cycleSnapshotPrewarm, 90000);
-setTimeout(cycleSnapshotPrewarm, 3500);
+// The NAS recorder already keeps native streams open. Avoid parallel warm-up sessions.
+if(!process.env.MIZIN_ARCHIVE_ROOT){setInterval(cycleSnapshotPrewarm,90000);setTimeout(cycleSnapshotPrewarm,3500);}
 
 const DEFAULT_UI_CONFIG = {
   shortcuts: [
