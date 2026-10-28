@@ -183,6 +183,7 @@ async function detectAccessMode() {
     badge.className = 'badge badge-mode badge-remote';
   }
 
+  if(window.MIZIN_PRIVATE_GATEWAY)return false;
   // Diagnóstico Inteligente de Rede Local: descobre se o cliente está na mesma LAN que o servidor
   try {
     const healthUrl = `${BACKEND_API_BASE}/api/health?t=${Date.now()}`;
@@ -2621,7 +2622,7 @@ function openEntranceCameraFromDoorbell() {
 
 async function fetchLogs() {
   try {
-    const res = await fetch('/api/logs?limit=80');
+    const res = await fetch('/api/logs');
     const data = await res.json();
     activityLogs = data.logs || [];
     unreadNotifCount = data.unreadCount || 0;
