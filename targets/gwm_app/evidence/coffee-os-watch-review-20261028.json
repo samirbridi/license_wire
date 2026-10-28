@@ -1,0 +1,370 @@
+{
+  "schema": "gwm-coffee-watch-review/v1",
+  "reviewedOn": "2026-10-28",
+  "timezone": "America/Sao_Paulo",
+  "ownerVehicle": {
+    "model": "GWM ORA 5",
+    "modelYear": "2026/2027",
+    "market": "Brazil",
+    "displayedCoffeeOs": "3.3.00213"
+  },
+  "reviewScope": {
+    "publicResearchOnly": true,
+    "vehicleContacted": false,
+    "vehicleNeededPoweredOn": false,
+    "apkInstalled": false,
+    "firmwareFlashed": false,
+    "accountCredentialsOpened": false,
+    "schedulerModified": false,
+    "newAutomationCreated": false
+  },
+  "existingMonitorContext": {
+    "threadTitle": "Recomendações GWM ORA 5",
+    "monitorNameReportedInHistory": "ORA 5 & Coffee OS Watch",
+    "liveSchedulerConfigurationVerified": false,
+    "historyRead": true,
+    "notificationRule": "Only new, verifiable, useful findings; no repeated alerts for unchanged results"
+  },
+  "findings": [
+    {
+      "id": "F01",
+      "classification": "VERIFIED_PUBLIC_RELEASE_NOT_VERIFIED_ON_ORA5",
+      "name": "Impulsefy",
+      "source": "https://github.com/paulovitin/impulsefy",
+      "release": {
+        "url": "https://api.github.com/repos/paulovitin/impulsefy/releases/403112893",
+        "assets_url": "https://api.github.com/repos/paulovitin/impulsefy/releases/403112893/assets",
+        "upload_url": "https://uploads.github.com/repos/paulovitin/impulsefy/releases/403112893/assets{?name,label}",
+        "html_url": "https://github.com/paulovitin/impulsefy/releases/tag/v0.1.3",
+        "id": 403112893,
+        "author": {
+          "login": "github-actions[bot]",
+          "id": 41898282,
+          "node_id": "MDM6Qm90NDE4OTgyODI=",
+          "avatar_url": "https://avatars.githubusercontent.com/in/15368?v=4",
+          "gravatar_id": "",
+          "url": "https://api.github.com/users/github-actions%5Bbot%5D",
+          "html_url": "https://github.com/apps/github-actions",
+          "followers_url": "https://api.github.com/users/github-actions%5Bbot%5D/followers",
+          "following_url": "https://api.github.com/users/github-actions%5Bbot%5D/following{/other_user}",
+          "gists_url": "https://api.github.com/users/github-actions%5Bbot%5D/gists{/gist_id}",
+          "starred_url": "https://api.github.com/users/github-actions%5Bbot%5D/starred{/owner}{/repo}",
+          "subscriptions_url": "https://api.github.com/users/github-actions%5Bbot%5D/subscriptions",
+          "organizations_url": "https://api.github.com/users/github-actions%5Bbot%5D/orgs",
+          "repos_url": "https://api.github.com/users/github-actions%5Bbot%5D/repos",
+          "events_url": "https://api.github.com/users/github-actions%5Bbot%5D/events{/privacy}",
+          "received_events_url": "https://api.github.com/users/github-actions%5Bbot%5D/received_events",
+          "type": "Bot",
+          "user_view_type": "public",
+          "site_admin": false
+        },
+        "node_id": "RE_kwDOU6v3jM4YBwO9",
+        "tag_name": "v0.1.3",
+        "target_commitish": "e1976930834ec30697552b251c8118b208a2e383",
+        "name": "Impulsefy v0.1.3",
+        "draft": false,
+        "immutable": false,
+        "prerelease": false,
+        "created_at": "2026-10-04T16:39:49Z",
+        "updated_at": "2026-10-04T16:47:33Z",
+        "published_at": "2026-10-04T16:47:33Z",
+        "assets": [
+          {
+            "url": "https://api.github.com/repos/paulovitin/impulsefy/releases/assets/610210055",
+            "id": 610210055,
+            "node_id": "RA_kwDOU6v3jM4kXxEH",
+            "name": "impulsefy.apk",
+            "label": "",
+            "uploader": {
+              "login": "github-actions[bot]",
+              "id": 41898282,
+              "node_id": "MDM6Qm90NDE4OTgyODI=",
+              "avatar_url": "https://avatars.githubusercontent.com/in/15368?v=4",
+              "gravatar_id": "",
+              "url": "https://api.github.com/users/github-actions%5Bbot%5D",
+              "html_url": "https://github.com/apps/github-actions",
+              "followers_url": "https://api.github.com/users/github-actions%5Bbot%5D/followers",
+              "following_url": "https://api.github.com/users/github-actions%5Bbot%5D/following{/other_user}",
+              "gists_url": "https://api.github.com/users/github-actions%5Bbot%5D/gists{/gist_id}",
+              "starred_url": "https://api.github.com/users/github-actions%5Bbot%5D/starred{/owner}{/repo}",
+              "subscriptions_url": "https://api.github.com/users/github-actions%5Bbot%5D/subscriptions",
+              "organizations_url": "https://api.github.com/users/github-actions%5Bbot%5D/orgs",
+              "repos_url": "https://api.github.com/users/github-actions%5Bbot%5D/repos",
+              "events_url": "https://api.github.com/users/github-actions%5Bbot%5D/events{/privacy}",
+              "received_events_url": "https://api.github.com/users/github-actions%5Bbot%5D/received_events",
+              "type": "Bot",
+              "user_view_type": "public",
+              "site_admin": false
+            },
+            "content_type": "application/vnd.android.package-archive",
+            "state": "uploaded",
+            "size": 4424888,
+            "digest": "sha256:0ca87d5e7360c9cadb53509762a2e10985f28dcd26179ce97e6a3581539c6278",
+            "download_count": 5,
+            "created_at": "2026-10-04T16:47:32Z",
+            "updated_at": "2026-10-04T16:47:32Z",
+            "browser_download_url": "https://github.com/paulovitin/impulsefy/releases/download/v0.1.3/impulsefy.apk"
+          },
+          {
+            "url": "https://api.github.com/repos/paulovitin/impulsefy/releases/assets/610210056",
+            "id": 610210056,
+            "node_id": "RA_kwDOU6v3jM4kXxEI",
+            "name": "impulsefy.apk.sha256",
+            "label": "",
+            "uploader": {
+              "login": "github-actions[bot]",
+              "id": 41898282,
+              "node_id": "MDM6Qm90NDE4OTgyODI=",
+              "avatar_url": "https://avatars.githubusercontent.com/in/15368?v=4",
+              "gravatar_id": "",
+              "url": "https://api.github.com/users/github-actions%5Bbot%5D",
+              "html_url": "https://github.com/apps/github-actions",
+              "followers_url": "https://api.github.com/users/github-actions%5Bbot%5D/followers",
+              "following_url": "https://api.github.com/users/github-actions%5Bbot%5D/following{/other_user}",
+              "gists_url": "https://api.github.com/users/github-actions%5Bbot%5D/gists{/gist_id}",
+              "starred_url": "https://api.github.com/users/github-actions%5Bbot%5D/starred{/owner}{/repo}",
+              "subscriptions_url": "https://api.github.com/users/github-actions%5Bbot%5D/subscriptions",
+              "organizations_url": "https://api.github.com/users/github-actions%5Bbot%5D/orgs",
+              "repos_url": "https://api.github.com/users/github-actions%5Bbot%5D/repos",
+              "events_url": "https://api.github.com/users/github-actions%5Bbot%5D/events{/privacy}",
+              "received_events_url": "https://api.github.com/users/github-actions%5Bbot%5D/received_events",
+              "type": "Bot",
+              "user_view_type": "public",
+              "site_admin": false
+            },
+            "content_type": "application/octet-stream",
+            "state": "uploaded",
+            "size": 80,
+            "digest": "sha256:89dcadf365ac114bdc24271f6dd369630fe78de38c2c7527d1a2228d5db17bdc",
+            "download_count": 0,
+            "created_at": "2026-10-04T16:47:32Z",
+            "updated_at": "2026-10-04T16:47:32Z",
+            "browser_download_url": "https://github.com/paulovitin/impulsefy/releases/download/v0.1.3/impulsefy.apk.sha256"
+          }
+        ],
+        "tarball_url": "https://api.github.com/repos/paulovitin/impulsefy/tarball/v0.1.3",
+        "zipball_url": "https://api.github.com/repos/paulovitin/impulsefy/zipball/v0.1.3",
+        "body": "## What's Changed\n* Fix Android smoke checks without ripgrep by @paulovitin in https://github.com/paulovitin/impulsefy/pull/1\n\n## New Contributors\n* @paulovitin made their first contribution in https://github.com/paulovitin/impulsefy/pull/1\n\n**Full Changelog**: https://github.com/paulovitin/impulsefy/commits/v0.1.3",
+        "mentions_count": 1
+      },
+      "applicationId": "com.impulsefy",
+      "minSdk": 23,
+      "targetSdk": 28,
+      "compileSdk": 36,
+      "releaseAbi": "arm64-v8a",
+      "optionalVendorLibrary": "ts.framework",
+      "vendorVolumeClass": "ts.car.audio.AudioExtManager",
+      "installationPrerequisite": "Existing authorized ADB access",
+      "compatibilityWithOwnerVehicle": "NOT_ESTABLISHED",
+      "localBinaryDownloaded": false,
+      "localApkHashVerified": false,
+      "notes": "GitHub release digest is publisher/platform metadata, not a locally computed APK hash. README and task notes still describe 0.1.0; release metadata shows v0.1.3."
+    },
+    {
+      "id": "F02",
+      "classification": "PUBLIC_REFERENCE_FILES_FOR_LEGACY_PLATFORM",
+      "source": "https://github.com/MyburghRoux/haval_h6_Infotainment",
+      "declaredVehicle": "Haval H6 2021, South Africa",
+      "declaredPlatform": "APTIV / Android 9 / Renesas R-Car H3 / gwmv3",
+      "apkFiles": [
+        {
+          "name": "GwmEngineerMode.apk",
+          "path": "recon/apks/GwmEngineerMode.apk",
+          "size": 5112234,
+          "gitBlobSha": "85ef0f9d01aaa4de11b00a34ac9d7ff697c52150",
+          "url": "https://github.com/MyburghRoux/haval_h6_Infotainment/blob/main/recon/apks/GwmEngineerMode.apk",
+          "downloadUrl": "https://raw.githubusercontent.com/MyburghRoux/haval_h6_Infotainment/main/recon/apks/GwmEngineerMode.apk"
+        },
+        {
+          "name": "GwmSetting.apk",
+          "path": "recon/apks/GwmSetting.apk",
+          "size": 18865704,
+          "gitBlobSha": "e981e5136ac87da94a9969c8850f154d9d4faa80",
+          "url": "https://github.com/MyburghRoux/haval_h6_Infotainment/blob/main/recon/apks/GwmSetting.apk",
+          "downloadUrl": "https://raw.githubusercontent.com/MyburghRoux/haval_h6_Infotainment/main/recon/apks/GwmSetting.apk"
+        },
+        {
+          "name": "PackageInstaller.apk",
+          "path": "recon/apks/PackageInstaller.apk",
+          "size": 3925179,
+          "gitBlobSha": "5ef67636e7e15183d48f1a067a426e9761be6412",
+          "url": "https://github.com/MyburghRoux/haval_h6_Infotainment/blob/main/recon/apks/PackageInstaller.apk",
+          "downloadUrl": "https://raw.githubusercontent.com/MyburghRoux/haval_h6_Infotainment/main/recon/apks/PackageInstaller.apk"
+        }
+      ],
+      "legacyPackageNames": [
+        "com.gwmv3.engineermode",
+        "com.gwm.app.appstore",
+        "com.gwm.app.themestore",
+        "com.aptiv.thememanager",
+        "com.tencent.sotainstaller"
+      ],
+      "compatibilityWithCoffeeOs3": "NOT_ESTABLISHED",
+      "localApkDownloaded": false
+    },
+    {
+      "id": "F03",
+      "classification": "COMMUNITY_CLAIM_PENDING_TECHNICAL_VALIDATION",
+      "name": "Dargo 2026 Coffee OS 3 engineering menu and ADB",
+      "author": "Про технику",
+      "publishedDate": "2026-09-08",
+      "source": "https://rutube.ru/shorts/c436b66bd38a1cfcfee99abd2eefb65b/",
+      "channelSource": "https://rutube.ru/channel/50494223/shorts/",
+      "verifiedEvidence": "Public title, publication date and creator description on channel",
+      "videoStepsVisuallyVerified": false,
+      "backendMetadataFetch": "403 / unavailable",
+      "firmwareBuildKnown": false,
+      "headUnitPartNumberKnown": false,
+      "ownerVehicleCompatibility": "NOT_ESTABLISHED"
+    },
+    {
+      "id": "F04",
+      "classification": "LEGACY_COMPATIBILITY_DECLARATION",
+      "name": "90APT",
+      "source": "https://gwm.90apt.com/",
+      "repository": "https://github.com/tntsec/90apt",
+      "declaredTargets": [
+        "Haval H6 generation 3 MY2021-2024",
+        "Haval Dargo generation 1 MY2021-2024",
+        "H6 Classic MY2024-2025",
+        "Tank 300 MY2021-2024, selected units"
+      ],
+      "headUnitDescription": "12.3-inch, ADAYO or APTIV",
+      "latestReviewedCommit": {
+        "sha": "4e2e6f7eb4c7318e2c77818cb51281418c8e56b0",
+        "date": "2026-10-28T02:49:15Z",
+        "message": "Update index.html",
+        "files": [
+          {
+            "path": "index.html",
+            "patch": "@@ -97,7 +97,7 @@ <h1 class=\"sr-only\">90APT车机网 - 哈弗、坦克车机免费升级教程</h1\n \t\t\t\t<br data-page-node-id=\"0tfcc8f5ebmz9CoWRlj70h\">\n \t\t\t\t哈弗车机技术交流QQ群：468902455<br data-page-node-id=\"KEb0mYjB0GcIFjHSyBVzIE\">\n \t\t\t\tAI学习交流QQ群：81168042<br data-page-node-id=\"Kq4LkEDGp9ECkkDXLW8bhh\">\n-\t\t\t\t闲聊扯淡QQ群：717684474\n+\t\t\t\t名爵MG交流QQ群：717684474\n \t\t\t\t<span class=\"hero-slogan\">\n \t\t\t\t\t<span class=\"hero-slogan-line\">⚡所有收费均为骗子，所有教程免费共享！⚡</span>\n \t\t\t\t\t<span class=\"hero-slogan-line\">⚡对赚钱没有兴趣，没有那种世俗的欲望！⚡</span>"
+          }
+        ]
+      },
+      "latestCommitMeaning": "Community-group label only; no new ORA5/Coffee OS 3 installation support demonstrated"
+    },
+    {
+      "id": "F05",
+      "classification": "VERIFIED_OFFICIAL_MANUAL_CONTEXT",
+      "name": "ORA 5 diagnostic service mode",
+      "source": "https://www.gwmmotors.com.br/content/dam/gwm/pages/br/pt/models/ora-5/manual-do-proprietario-ora-5.pdf",
+      "printedPages": [
+        154,
+        224
+      ],
+      "pdfPages": [
+        155,
+        225
+      ],
+      "observation": "Vehicle maintenance mode de-energizes the high-voltage system and prevents driving and charging; not an Android debugging switch"
+    },
+    {
+      "id": "F06",
+      "classification": "VERIFIED_MANUAL_HASH_MATCH",
+      "receipt": "ora5-manual-inspection-20261028.json",
+      "baselineHashFromMonitor": "e2a5641a247ee4e77f1ab0080692559917377193ccc39c2c5dce34c702b4bbcf",
+      "expectedPages": 342,
+      "expectedEdition": "25/05/2026",
+      "manualChanged": false
+    },
+    {
+      "id": "F07",
+      "classification": "OFFICIAL_APP_STORE_NOT_SIDELOADING_PROOF",
+      "source": "https://www.gwmmotors.com.br/pt/servicos/servicos-conectados",
+      "manualPrintedPages": [
+        149,
+        155
+      ],
+      "observation": "Official App Store and per-app permissions are documented; they do not establish APK-by-USB, Aurora Store, privileged permissions, or ADB access"
+    },
+    {
+      "id": "F08",
+      "classification": "CLOUD_INTEGRATION_NOT_HEAD_UNIT_INSTALLER",
+      "source": "https://github.com/moryoav/ha-gwm-ev",
+      "setupRegionsDeclared": [
+        "Europe",
+        "Australia/New Zealand",
+        "Russia",
+        "Mainland China"
+      ],
+      "brazilListed": false,
+      "newFindingVersusMonitor": false
+    }
+  ],
+  "confirmedCompatibleOra5InstallerFound": false,
+  "ora5FirmwareDumpFound": false,
+  "reproducibleMethodForOwnerBuildFound": false,
+  "regionalCoverage": [
+    {
+      "region": "Brazil",
+      "sources": [
+        "GWM manuals",
+        "GWM updates",
+        "GWM connected services",
+        "GWM ORA5 specifications",
+        "Impulsefy author repository"
+      ],
+      "result": "Official store confirmed; public music APK found; no reproducible entry method for owner build"
+    },
+    {
+      "region": "China",
+      "sources": [
+        "ORA official configuration tables",
+        "Autohome owner posts",
+        "90APT author site and GitHub",
+        "Zhihu searches and direct tutorial access",
+        "Bilibili searches",
+        "V2EX searches"
+      ],
+      "result": "Legacy platform tutorials and previously reported domestic features; no matching ORA5 Brazil build artifact"
+    },
+    {
+      "region": "Mexico",
+      "sources": [
+        "GWM Mexico owner support",
+        "GWM Mexico P300 PHEV Coffee OS product page",
+        "Spanish-language APK/ADB searches"
+      ],
+      "result": "No applicable verified central APK/dump/ADB method found; mobile My GWM listings are not head-unit installers"
+    },
+    {
+      "region": "Europe",
+      "sources": [
+        "ha-gwm-ev supported-region documentation",
+        "English and German ORA5/Coffee OS developer/APK searches"
+      ],
+      "result": "Cloud integration context; no verified APK-entry method for owner build"
+    },
+    {
+      "region": "Australia/New Zealand",
+      "sources": [
+        "GWM ANZ ORA5 and H6GT official announcements",
+        "ha-gwm-ev documentation and existing monitor records",
+        "English owner-forum searches"
+      ],
+      "result": "Coffee OS and regional integrations confirmed; no transferable Brazilian firmware method"
+    },
+    {
+      "region": "Russia (additional lead)",
+      "sources": [
+        "Dargo 2026 creator video listing",
+        "4PDA search excerpts"
+      ],
+      "result": "Relevant Coffee OS 3 ADB claim; detailed verification remains incomplete"
+    }
+  ],
+  "accessLimitations": [
+    "Zhihu direct tutorial returned 403",
+    "4PDA direct page returned 403; index snippets are not accepted as complete technical validation",
+    "Rutube video API returned 403; only public title/date/description verified",
+    "Bilibili and V2EX indexed searches did not yield a qualifying reproducible ORA5 method",
+    "Exact Coffee OS 3.3.00213 searches yielded unrelated numeric matches, rejected",
+    "No signed package/part-number/region/VIN compatibility chain for the owner vehicle"
+  ],
+  "nextUsefulEvidence": [
+    "Exact head-unit Android build and hardware/part number",
+    "A model/build-matched, legitimately obtained engineering APK or OTA package",
+    "A reproducible ADB-enabling procedure explicitly matching ORA5 Brazil Coffee OS 3.3.00213",
+    "Static inspection of candidate artifacts before any vehicle execution"
+  ]
+}

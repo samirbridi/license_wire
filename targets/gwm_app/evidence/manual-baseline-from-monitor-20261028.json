@@ -1,0 +1,15 @@
+{
+  "schema": "gwm-manual-baseline/v1",
+  "provenance": "Previous results read from the existing ChatGPT conversation Recomendações GWM ORA 5; not inferred from a different model manual",
+  "edition": "25/05/2026",
+  "url": "https://www.gwmmotors.com.br/content/dam/gwm/pages/br/pt/models/ora-5/manual-do-proprietario-ora-5.pdf",
+  "pages": 342,
+  "bytes": 5321333,
+  "sha256": "e2a5641a247ee4e77f1ab0080692559917377193ccc39c2c5dce34c702b4bbcf",
+  "etag": "\"0x8DED190BBF941D6\"",
+  "lastModified": "Wed, 24 Jun 2026 01:34:29 GMT",
+  "creatorVersion": "6.4.2.26942",
+  "producer": "Antenna House PDF Output Library 6.4.928 (Windows (x64))",
+  "historicalPdfAvailableLocallyForDirectDiff": false,
+  "comparisonMethod": "Compute the downloaded current file SHA-256 and compare with previously recorded baseline; equal hashes imply identical file content under SHA-256"
+}

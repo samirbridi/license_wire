@@ -36,3 +36,7 @@ Foi encontrada uma referência primária relevante em **outro modelo**, no [manu
 ## REA/Ghidra
 
 Nesta etapa houve identificação visual e registro da transcrição. Não houve binário da central, novo firmware/APK, análise REA/Ghidra ou alteração veicular. As fotos permitem orientar uma análise futura para o build correto, sem estabelecer a disponibilidade de um método de desbloqueio.
+
+## Atualização posterior em 2026-10-28
+
+O manual específico do ORA 5 foi obtido e conferido na revisão [`08_watch_review_20261028.md`](08_watch_review_20261028.md). As páginas impressas 154 e 224 confirmam a função de manutenção de alta tensão do botão Diagnóstico e reparo. Portanto, o limite anterior de confirmação apenas no Wey 07 foi resolvido; permanece sem qualquer relação comprovada com depuração Android.

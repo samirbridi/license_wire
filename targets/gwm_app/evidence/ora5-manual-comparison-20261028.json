@@ -1,0 +1,61 @@
+{
+  "schema": "gwm-manual-comparison/v1",
+  "checkedAt": "2026-10-28T03:48:45.528Z",
+  "url": "https://www.gwmmotors.com.br/content/dam/gwm/pages/br/pt/models/ora-5/manual-do-proprietario-ora-5.pdf",
+  "listingLinkAlsoVerified": true,
+  "baselineProvenance": "Previous results read from the existing ChatGPT conversation Recomendações GWM ORA 5; not inferred from a different model manual",
+  "baselineHash": "e2a5641a247ee4e77f1ab0080692559917377193ccc39c2c5dce34c702b4bbcf",
+  "currentHash": "e2a5641a247ee4e77f1ab0080692559917377193ccc39c2c5dce34c702b4bbcf",
+  "checks": {
+    "pdfHeader": true,
+    "sha256": true,
+    "bytes": true,
+    "pages": true,
+    "edition": true,
+    "etag": true,
+    "lastModified": true,
+    "creatorVersion": true,
+    "producer": true
+  },
+  "manualChanged": false,
+  "directHistoricalPdfDiffRun": false,
+  "textualDiffRun": false,
+  "reason": "Current binary SHA-256 equals the prior recorded baseline; no content change is inferred. The historical PDF was not independently available for direct byte comparison.",
+  "currentTextSha256LfNormalized": "bed38d76c557007a1405081cbe1fbf8bd80764e89d3df45e2d74233ef076ed37",
+  "currentMetadata": {
+    "/CreationDate": "D:20260526031112+08'00'",
+    "/Creator": "AH XSL Formatter V6.4 R1 for Windows (x64) : 6.4.2.26942 (2016/12/07 15:30JST)",
+    "/ModDate": "D:20260611162931-03'00'",
+    "/Producer": "Antenna House PDF Output Library 6.4.928 (Windows (x64))",
+    "/Trapped": "/False"
+  },
+  "topicsWithNoFileChange": [
+    "Driving modes and break-in",
+    "Battery and charging",
+    "Maintenance and warranty",
+    "Coffee OS and OTA",
+    "Connected features",
+    "Brazilian-market equipment"
+  ],
+  "qa": {
+    "allPagesTextExtracted": 342,
+    "renderedPdfPages": [
+      2,
+      150,
+      155,
+      156,
+      225
+    ],
+    "visuallyInspectedPdfPages": [
+      2,
+      150,
+      155,
+      225
+    ]
+  },
+  "cache": {
+    "xCache": "HIT",
+    "ageSeconds": 63567,
+    "originIndependentlyRevalidated": false
+  }
+}

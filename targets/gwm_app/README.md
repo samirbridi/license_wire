@@ -18,9 +18,15 @@
 ## 🎯 2. Estado Atual e Próximos Passos (Multi-IDE Sync)
 *Estado original por Antigravity; diagnóstico LAN atualizado por Codex em 2026-10-27/28.*
 
+### Pesquisa pública e manual brasileiro — 2026-10-28
+
+Revisado o histórico de **Recomendações GWM ORA 5** e as fontes públicas: há um APK público de música **Impulsefy v0.1.3**, APKs de sistema de um **H6 2021 Android 9** e uma **declaração comunitária de ADB no Dargo 2026 Coffee OS 3**. Nenhum deles comprova instalação/acesso no ORA 5 brasileiro **3.3.00213**. Sem contato com o veículo nesta pesquisa. Fontes, artefatos, classificação e próximos passos em [`notes/08_watch_review_20261028.md`](notes/08_watch_review_20261028.md).
+
+O manual oficial foi baixado: **342 páginas, edição 25/05/2026, 5.321.333 bytes**, SHA-256 `e2a5641a247ee4e77f1ab0080692559917377193ccc39c2c5dce34c702b4bbcf`, igual à baseline histórica. **Nenhuma alteração real do manual detectada.** Suas páginas impressas **154 e 224** confirmam que Diagnóstico e reparo é manutenção de alta tensão que impede condução/recarga. O agendamento web não foi modificado nem duplicado.
+
 ### Versão confirmada nas fotos da central
 
-Inspeção visual das fotos do proprietário em **Sistema → Sobre** confirma **Coffee OS 3.3.00213**. A transcrição está registrada em [`notes/07_coffee_os_photos.md`](notes/07_coffee_os_photos.md); o arquivamento das fotos e seus hashes não foi concluído porque os arquivos não foram encontrados nas tentativas posteriores de cópia. A tela também mostra **Diagnóstico e reparo → Ligar**; o ícone ⓘ não abriu descrição segundo o proprietário. Não houve ativação. Em outro GWM (Wey 07), essa opção é documentada como modo de manutenção veicular; não presumir que seja depuração da multimídia. O significado de 851 na verificação de atualização e a versão mais recente disponível permanecem não confirmados.
+Inspeção visual das fotos do proprietário em **Sistema → Sobre** confirma **Coffee OS 3.3.00213**. A transcrição está registrada em [`notes/07_coffee_os_photos.md`](notes/07_coffee_os_photos.md); o arquivamento das fotos e seus hashes não foi concluído porque os arquivos não foram encontrados nas tentativas posteriores de cópia. A tela também mostra **Diagnóstico e reparo → Ligar**; o ícone ⓘ não abriu descrição segundo o proprietário. Não houve ativação. A revisão posterior do manual do próprio ORA 5 confirmou o modo de manutenção veicular, sem relação comprovada com depuração da multimídia. O significado de 851 na verificação de atualização e a versão mais recente disponível permanecem não confirmados.
 
 ### Diagnóstico LAN com a central ligada
 
