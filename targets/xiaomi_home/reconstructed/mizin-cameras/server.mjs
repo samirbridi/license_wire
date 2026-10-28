@@ -6,6 +6,7 @@ import { fileURLToPath } from 'node:url';
 import { spawn } from 'node:child_process';
 import { isIP } from 'node:net';
 import { validDay } from './public/recordings-core.js';
+import { createSDBridge } from './sd-bridge.mjs';
 
 const HERE = dirname(fileURLToPath(import.meta.url));
 const TARGET = process.env.MIZIN_CAMERAS_TARGET ? resolve(process.env.MIZIN_CAMERAS_TARGET) : resolve(HERE, '../..');
@@ -62,6 +63,7 @@ export function createCentral(options = {}) {
   const viewsFor = camera => camera.views ?? [{ id: 'main', label: 'Principal', sourceAlias: camera.sourceAlias, originalAlias: camera.originalAlias }];
   if (!/^http:\/\/127\.0\.0\.1:\d+$/.test(upstream)) throw new Error('Bridge must remain on loopback');
   const byId = new Map(cameras.map(c => [c.id, c]));
+  const sd = options.sdAdapter ?? (!options.runtime && existsSync(join(runtime,'sd-enabled.json')) ? createSDBridge({target:TARGET,cameras,upstream}) : null);
   mkdirSync(runtime, { recursive: true });
   const sessionsPath = join(runtime, 'sessions.json');
   const sessions = existsSync(sessionsPath) ? JSON.parse(readFileSync(sessionsPath, 'utf8')) : {};
@@ -130,7 +132,7 @@ export function createCentral(options = {}) {
     child.stderr.resume();
     return child;
   }
-  function source(camera) { return `${upstream}/api/stream.mp4?src=${encodeURIComponent(camera.sourceAlias)}&video=h265&audio=all`; }
+  function source(camera) { return `${upstream}/api/stream.mp4?src=${encodeURIComponent(camera.sourceAlias)}&video=h265${camera.withoutAudio ? "" : "&audio=all"}`; }
   function scheduleSnapshot(task) {
     return new Promise((accept, reject) => {
       snapshotQueue.push({ task, accept, reject });
@@ -245,10 +247,18 @@ export function createCentral(options = {}) {
       if (!byId.has(recordingMatch[1])) return json(res, 404, { error: 'Câmera não encontrada.' });
       const date = url.searchParams.get('date') ?? '';
       if (!validDay(date)) return json(res, 400, { error: 'Escolha uma data válida.' });
+      if (sd) {
+        const camera=byId.get(recordingMatch[1]),view=url.searchParams.get('view')??viewsFor(camera)[0].id;
+        if(!viewsFor(camera).some(v=>v.id===view))return json(res,400,{error:'Visão inválida.'});
+        try{return json(res,200,await sd.list(camera.id,view,date));}
+        catch{return json(res,503,{error:'Não foi possível ler o catálogo do cartão. Tente novamente ou confira o cartão no Xiaomi Home.'});}
+      }
       return json(res, 200, { source: 'sd', status: 'not_integrated', date, displayTimeZone: 'America/Sao_Paulo', sourceTimeZone: null, periods: null, availableDays: null, capabilities: { playback: false, export: false } });
     }
-    const match = /^\/api\/(snapshot|video)\/([a-z0-9_]{1,64})$/.exec(url.pathname);
+    const replay = /^\/api\/(replay|clip)\/([a-z0-9_]{1,64})$/.exec(url.pathname);
+    const match = replay ? [replay[0],'video',replay[2]] : /^\/api\/(snapshot|video)\/([a-z0-9_]{1,64})$/.exec(url.pathname);
     if (req.method !== 'GET' || !match || !byId.has(match[2])) return json(res, 404, { error: 'Recurso não encontrado.' });
+    if(replay&&!sd)return json(res,409,{error:'Reprodução do cartão indisponível.'});
     const camera = byId.get(match[2]);
     const views = viewsFor(camera), selectedView = url.searchParams.get('view') ?? views[0].id;
     const view = views.find(v => v.id === selectedView);
@@ -274,17 +284,23 @@ export function createCentral(options = {}) {
     activeVideos.get(streamKey)?.child.kill();
     const width = quality === 'original' ? 3840 : quality === 'economy' ? 640 : quality === 'detail' ? 1920 : 1280;
     const bitrate = width === 640 ? '700k' : width === 1280 ? '1800k' : width === 1920 ? '3000k' : '6000k';
-    const sourceAlias = view.originalAlias ?? camera.originalAlias ?? view.sourceAlias;
+    let playback=null;
+    if(replay){try{playback=await sd.open(camera.id,view.id,Number(url.searchParams.get('at')),replay[1]==='clip'?Number(url.searchParams.get('end')):undefined);}catch(error){releaseStart();return json(res,400,{error:error.message});}}
+    if(closing||res.destroyed){releaseStart();await playback?.close();return;}
+    if(sessionFor(req)?.key!==session.key){releaseStart();await playback?.close();return json(res,401,{error:'Conecte este dispositivo à central.'});}
+    const sourceAlias = playback?.alias ?? view.originalAlias ?? camera.originalAlias ?? view.sourceAlias;
     const encoding = encoder === 'h264_nvenc' ? ['-c:v', 'h264_nvenc', '-preset', 'p4', '-tune', 'ull'] : ['-c:v', 'libx264', '-preset', 'veryfast', '-tune', 'zerolatency'];
     let child;
-    try { child = spawnMedia(['-hide_banner', '-nostdin', '-loglevel', 'error', '-rw_timeout', '25000000', '-fflags', '+nobuffer+genpts+discardcorrupt', '-avoid_negative_ts', 'make_zero', '-analyzeduration', '1000000', '-probesize', '524288', '-i', source({ sourceAlias }), '-map', '0:v:0', '-map', '0:a:0?', '-c:a', 'aac', '-b:a', '64k', '-ar', '16000', '-ac', '1', '-af', 'aresample=async=1:first_pts=0', '-vf', `scale=w='min(${width},iw)':h=-2`, '-r', '15', ...encoding, '-b:v', bitrate, '-maxrate', bitrate, '-bufsize', bitrate, '-g', '15', '-keyint_min', '15', '-sc_threshold', '0', '-pix_fmt', 'yuv420p', '-movflags', '+frag_keyframe+empty_moov+default_base_moof', '-f', 'mp4', 'pipe:1']); }
-    catch (error) { releaseStart(); throw error; }
+    try { child = spawnMedia(['-hide_banner', '-nostdin', '-loglevel', 'error', '-rw_timeout', '25000000', '-fflags', playback?'+genpts+discardcorrupt':'+nobuffer+genpts+discardcorrupt', '-avoid_negative_ts', 'make_zero', '-analyzeduration', '1000000', '-probesize', '524288', '-i', source({ sourceAlias, withoutAudio:!!playback }), ...(playback?['-t',String(playback.duration)]:[]), '-map', '0:v:0', ...(playback?['-an']:['-map','0:a:0?','-c:a','aac','-b:a','64k','-ar','16000','-ac','1','-af','aresample=async=1:first_pts=0']), '-vf', `scale=w='min(${width},iw)':h=-2`, '-r', '15', ...encoding, '-b:v', bitrate, '-maxrate', bitrate, '-bufsize', bitrate, '-g', '15', '-keyint_min', '15', '-sc_threshold', '0', '-pix_fmt', 'yuv420p', '-movflags', '+frag_keyframe+empty_moov+default_base_moof', '-f', 'mp4', 'pipe:1']); }
+    catch (error) { releaseStart();await playback?.close(); throw error; }
+    if(playback){child.once('close',()=>playback.close());child.once('error',()=>playback.close());res.once('close',()=>playback.close());}
+    if(replay?.[1]==='clip')res.setHeader('Content-Disposition',`attachment; filename="${camera.id}-${Number(url.searchParams.get('at'))}.mp4"`);
     activeVideos.set(streamKey, { child, sessionKey: session.key, cameraId: camera.id, viewId: view.id });
     let sent = false;
     const timer = setTimeout(() => { releaseStart(); child.kill(); if (!res.headersSent) json(res, 504, { error: 'A câmera não respondeu a tempo.' }); else res.destroy(); }, 45_000);
-    child.stdout.once('data', chunk => { releaseStart(); if (res.destroyed) return; sent = true; clearTimeout(timer); headers(res, 'video/mp4'); res.setHeader('Accept-Ranges', 'none'); res.write(chunk); child.stdout.pipe(res); });
+    child.stdout.once('data', chunk => { releaseStart(); if (res.destroyed) return; sent = true; clearTimeout(timer); headers(res, 'video/mp4'); res.setHeader('Accept-Ranges', 'none'); res.write(chunk); child.stdout.pipe(res,{end:false}); });
     child.once('error', () => { releaseStart(); clearTimeout(timer); if (!res.headersSent && !res.destroyed) json(res, 503, { error: 'Não foi possível iniciar o vídeo.' }); });
-    child.once('close', () => { releaseStart(); clearTimeout(timer); if (activeVideos.get(streamKey)?.child === child) activeVideos.delete(streamKey); if (!res.destroyed) { if (!sent && !res.headersSent) json(res, 503, { error: 'Não foi possível conectar à câmera.' }); else res.end(); } });
+    child.once('close', code => { releaseStart(); clearTimeout(timer); if (activeVideos.get(streamKey)?.child === child) activeVideos.delete(streamKey); if (!res.destroyed) { if (!sent && !res.headersSent) json(res, 503, { error: 'Não foi possível conectar à câmera.' }); else if(playback&&code!==0)res.destroy();else res.end(); } });
     res.once('close', () => { releaseStart(); clearTimeout(timer); child.kill(); if (activeVideos.get(streamKey)?.child === child) activeVideos.delete(streamKey); });
   }
 

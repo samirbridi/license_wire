@@ -45,3 +45,4 @@ if ($OpenBrowser) {
     Start-Process -FilePath $xiaomiAccess.url
 }
 Write-Output 'Central disponivel em http://127.0.0.1:19845/ (acesso local autenticado).'
+if(Test-Path -LiteralPath (Join-Path $xiaomiRuntime 'https-gateway.json')){ & (Join-Path $PSScriptRoot 'start-private-tunnel.ps1') }

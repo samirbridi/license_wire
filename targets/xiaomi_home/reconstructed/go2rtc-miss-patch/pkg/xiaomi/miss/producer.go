@@ -14,7 +14,8 @@ import (
 
 type Producer struct {
 	core.Connection
-	client *Client
+	client      *Client
+	initialPkts []*Packet
 }
 
 func Dial(rawURL string) (core.Producer, error) {
@@ -27,7 +28,7 @@ func Dial(rawURL string) (core.Producer, error) {
 	query := u.Query()
 
 	if playback := query.Get("playback"); playback != "" {
-		err = client.StartPlayback(query.Get("channel"), playback, query.Get("endtime"), query.Get("offset"))
+		err = client.StartPlayback(query.Get("channel"), playback, query.Get("endtime"), query.Get("offset"), query.Get("speed"))
 	} else {
 		err = client.StartMedia(query.Get("channel"), query.Get("subtype"), query.Get("audio"))
 	}
@@ -36,7 +37,7 @@ func Dial(rawURL string) (core.Producer, error) {
 		return nil, err
 	}
 
-	medias, err := probe(client, query.Get("audio") != "0")
+	medias, initialPkts, err := probe(client, query.Get("audio") != "0")
 	if err != nil {
 		_ = client.Close()
 		return nil, err
@@ -52,14 +53,20 @@ func Dial(rawURL string) (core.Producer, error) {
 			Medias:     medias,
 			Transport:  client,
 		},
-		client: client,
+		client:      client,
+		initialPkts: initialPkts,
 	}, nil
 }
 
-func probe(client *Client, audio bool) ([]*core.Media, error) {
-	_ = client.SetDeadline(time.Now().Add(15 * time.Second))
+func probe(client *Client, audio bool) ([]*core.Media, []*Packet, error) {
+	probeTimeout := 15 * time.Second
+	if client.playbackMode {
+		probeTimeout = 6500 * time.Millisecond
+	}
+	_ = client.SetDeadline(time.Now().Add(probeTimeout))
 
 	var vcodec, acodec *core.Codec
+	var buffered []*Packet
 	videoPackets := 0
 
 	for {
@@ -70,8 +77,15 @@ func probe(client *Client, audio bool) ([]*core.Media, error) {
 			} else if acodec != nil {
 				err = fmt.Errorf("no video")
 			}
-			return nil, fmt.Errorf("xiaomi: probe: %w", err)
+			return nil, nil, fmt.Errorf("xiaomi: probe: %w", err)
 		}
+
+		// On isa.camera.hlc7, 0x102 emits a few live frames before 0x10E ("filefound") switches to SD playback.
+		if client.playbackMode && client.model == "isa.camera.hlc7" && client.LastPlaybackStatus() == "" {
+			continue
+		}
+
+		buffered = append(buffered, pkt)
 
 		switch pkt.CodecID {
 		case codecH264:
@@ -100,7 +114,11 @@ func probe(client *Client, audio bool) ([]*core.Media, error) {
 			}
 		}
 
-		if vcodec != nil && (acodec != nil || !audio || videoPackets > 60) {
+		maxWaitVideo := 45
+		if client.playbackMode {
+			maxWaitVideo = 10
+		}
+		if vcodec != nil && (acodec != nil || !audio || videoPackets > maxWaitVideo) {
 			break
 		}
 	}
@@ -144,19 +162,32 @@ func probe(client *Client, audio bool) ([]*core.Media, error) {
 		Codecs:    sendCodecs,
 	})
 
-	return medias, nil
+	return medias, buffered, nil
 }
 
 const timestamp40ms = 48000 * 0.040
 
 func (p *Producer) Start() error {
 	var audioTS uint32
+	var videoRTPTS uint32
+	var lastVideoMS uint64
+	var videoSeq uint16
+	var audioSeq uint16
+	initial := p.initialPkts
+	p.initialPkts = nil
 
 	for {
-		_ = p.client.SetDeadline(time.Now().Add(10 * time.Second))
-		pkt, err := p.client.ReadPacket()
-		if err != nil {
-			return err
+		var pkt *Packet
+		var err error
+		if len(initial) > 0 {
+			pkt = initial[0]
+			initial = initial[1:]
+		} else {
+			_ = p.client.SetDeadline(time.Now().Add(10 * time.Second))
+			pkt, err = p.client.ReadPacket()
+			if err != nil {
+				return err
+			}
 		}
 
 		p.Recv += len(pkt.Payload)
@@ -167,10 +198,31 @@ func (p *Producer) Start() error {
 
 		switch pkt.CodecID {
 		case codecH264, codecH265:
+			videoSeq++
+			if !p.client.playbackMode && pkt.Timestamp > 0 {
+				if lastVideoMS > 0 && pkt.Timestamp > lastVideoMS && (pkt.Timestamp-lastVideoMS) < 2000 {
+					videoRTPTS += uint32((pkt.Timestamp - lastVideoMS) * 90)
+				} else {
+					videoRTPTS += 4500 // 50ms (20fps)
+				}
+				lastVideoMS = pkt.Timestamp
+			} else {
+				// In SD playback mode (or when camera sends ts=0), advance smoothly at 20fps (4500 ticks @ 90kHz)
+				if lastVideoMS > 0 && pkt.Timestamp > lastVideoMS && (pkt.Timestamp-lastVideoMS) < 500 {
+					videoRTPTS += uint32((pkt.Timestamp - lastVideoMS) * 90)
+				} else {
+					videoRTPTS += 4500
+				}
+				if pkt.Timestamp > 0 {
+					lastVideoMS = pkt.Timestamp
+				}
+			}
 			pkt2 = &core.Packet{
 				Header: rtp.Header{
-					SequenceNumber: uint16(pkt.Sequence),
-					Timestamp:      TimeToRTP(pkt.Timestamp, 90000),
+					Version:        2,
+					Marker:         true,
+					SequenceNumber: videoSeq,
+					Timestamp:      videoRTPTS,
 				},
 				Payload: annexb.EncodeToAVCC(pkt.Payload),
 			}
@@ -180,24 +232,26 @@ func (p *Producer) Start() error {
 				name = core.CodecH265
 			}
 		case codecPCMA:
+			audioSeq++
 			name = core.CodecPCMA
 			pkt2 = &core.Packet{
 				Header: rtp.Header{
 					Version:        2,
 					Marker:         true,
-					SequenceNumber: uint16(pkt.Sequence),
+					SequenceNumber: audioSeq,
 					Timestamp:      audioTS,
 				},
 				Payload: pkt.Payload,
 			}
 			audioTS += uint32(len(pkt.Payload))
 		case codecOPUS:
+			audioSeq++
 			name = core.CodecOpus
 			pkt2 = &core.Packet{
 				Header: rtp.Header{
 					Version:        2,
 					Marker:         true,
-					SequenceNumber: uint16(pkt.Sequence),
+					SequenceNumber: audioSeq,
 					Timestamp:      audioTS,
 				},
 				Payload: pkt.Payload,

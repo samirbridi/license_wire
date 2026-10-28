@@ -39,7 +39,7 @@ export function release({ target, mode = 'plan', runId = randomUUID() }) {
   const statePath = join(target, 'release-state.json');
   const git = args => execFileSync('git', args, { cwd: repo, encoding: 'utf8', windowsHide: true });
   const generated = path => ['VERSION', 'CHANGELOG.md', 'release-state.json', 'reconstructed/mizin-cameras/public/version.json'].includes(path) || /^evidence\/builds\/[^/]+\.json$/.test(path);
-  const buildInput = path => path.startsWith('reconstructed/mizin-cameras/') || path.startsWith('reconstructed/xiaomi-readonly/') || ['scripts/version-build.mjs', 'scripts/start-central.ps1', 'scripts/start-bridge.ps1', 'scripts/restore-bridge-streams.mjs', 'scripts/build-readonly-probe.ps1'].includes(path);
+  const buildInput = path => path.startsWith('reconstructed/mizin-cameras/') || path.startsWith('reconstructed/xiaomi-readonly/') || path.startsWith('reconstructed/go2rtc-miss-patch/') || ['scripts/version-build.mjs', 'scripts/start-central.ps1', 'scripts/start-bridge.ps1', 'scripts/start-private-tunnel.ps1', 'scripts/restore-bridge-streams.mjs', 'scripts/build-readonly-probe.ps1', 'scripts/build-camera-bridge.ps1'].includes(path);
   const state = existsSync(statePath) ? JSON.parse(readFileSync(statePath, 'utf8')) : null;
   if (mode === 'build' && state?.runId === runId) return state;
   const sourceCommit = git(['rev-parse', 'HEAD']).trim();
@@ -88,6 +88,7 @@ export function release({ target, mode = 'plan', runId = randomUUID() }) {
     mkdirSync(dirname(artifact), { recursive: true });
     mkdirSync(artifact, { recursive: false });
     for (const path of ['server.mjs', 'package.json', 'public']) cpSync(join(app, path), join(artifact, path), { recursive: true, errorOnExist: true, force: false });
+    for (const path of ['sd-bridge.mjs','cloudflare','deploy']) if(existsSync(join(app,path)))cpSync(join(app,path),join(artifact,path),{recursive:true,errorOnExist:true,force:false});
     result.status = 'built'; result.artifact = relative(target, artifact).replaceAll('\\', '/');
   } catch (error) { result.status = 'failed'; result.error = error.message; throw error; }
   finally {

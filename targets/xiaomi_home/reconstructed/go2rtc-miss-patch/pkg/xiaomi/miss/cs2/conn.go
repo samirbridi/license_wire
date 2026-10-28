@@ -25,7 +25,7 @@ func Dial(host, transport string) (*Conn, error) {
 		isTCP: isTCP,
 		channels: [4]*dataChannel{
 			newDataChannel(64, 64),
-			newDataChannel(256, 256),
+			newDataChannel(1024, 1024),
 			newDataChannel(1024, 1024),
 			newDataChannel(64, 64),
 		},
@@ -282,6 +282,9 @@ func (c *Conn) WritePacket(hdr, payload []byte) error {
 }
 
 func (c *Conn) WriteRDT(payload []byte) error {
+	c.cmdMu.Lock()
+	defer c.cmdMu.Unlock()
+
 	const offset = 12
 	n := uint32(len(payload))
 	req := make([]byte, n+offset)
@@ -296,8 +299,35 @@ func (c *Conn) WriteRDT(payload []byte) error {
 	binary.BigEndian.PutUint32(req[8:], n)
 	copy(req[offset:], payload)
 
-	_, err := c.Conn.Write(req)
-	return err
+	if c.isTCP {
+		_, err := c.Conn.Write(req)
+		return err
+	}
+
+	var repeat atomic.Int32
+	repeat.Store(4)
+
+	timeout := time.NewTicker(400 * time.Millisecond)
+	defer timeout.Stop()
+
+	c.cmdAck = func() {
+		repeat.Store(0)
+		timeout.Reset(1)
+	}
+
+	for {
+		if _, err := c.Conn.Write(req); err != nil {
+			return err
+		}
+		<-timeout.C
+		r := repeat.Add(-1)
+		if r < 0 {
+			return nil
+		}
+		if r == 0 {
+			return nil
+		}
+	}
 }
 
 func (c *Conn) ReadRDT(timeout time.Duration) ([]byte, error) {
@@ -476,25 +506,29 @@ type dataChannel struct {
 func (c *dataChannel) Push(b []byte) error {
 	c.waitData = append(c.waitData, b...)
 
-	for len(c.waitData) > 4 {
+	for {
 		// Every new data starts with size. There can be several data inside one packet.
 		if c.waitSize == 0 {
+			if len(c.waitData) < 4 {
+				break
+			}
 			c.waitSize = int(binary.BigEndian.Uint32(c.waitData))
 			c.waitData = c.waitData[4:]
 		}
-		if c.waitSize > len(c.waitData) {
+		if c.waitSize <= 0 || c.waitSize > len(c.waitData) {
 			break
 		}
 
+		msg := bytes.Clone(c.waitData[:c.waitSize])
 		select {
-		case c.popBuf <- c.waitData[:c.waitSize]:
+		case c.popBuf <- msg:
 		default:
 			select {
 			case <-c.popBuf:
 			default:
 			}
 			select {
-			case c.popBuf <- c.waitData[:c.waitSize]:
+			case c.popBuf <- msg:
 			default:
 			}
 		}

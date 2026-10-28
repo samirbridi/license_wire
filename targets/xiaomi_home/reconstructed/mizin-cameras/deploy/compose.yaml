@@ -1,0 +1,36 @@
+services:
+  bridge:
+    image: debian:bookworm-slim
+    command: ["/bridge/go2rtc-linux-amd64", "-config", "/data/bridge.yaml"]
+    network_mode: host
+    user: "1000:1000"
+    restart: unless-stopped
+    read_only: true
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    volumes:
+      - ./bridge:/bridge:ro
+      - ./data/bridge:/data
+  central:
+    build:
+      context: ./app
+      dockerfile: deploy/Dockerfile
+    network_mode: host
+    restart: unless-stopped
+    read_only: true
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    depends_on: [bridge]
+    volumes:
+      - ./data/central:/data
+    tmpfs: [/tmp]
+  tunnel:
+    image: cloudflare/cloudflared:2026.10.3
+    command: ["tunnel", "--no-autoupdate", "--protocol", "quic", "run", "--token-file", "/run/secrets/tunnel.token"]
+    network_mode: host
+    restart: unless-stopped
+    read_only: true
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    volumes:
+      - ./data/tunnel.token:/run/secrets/tunnel.token:ro

@@ -40,6 +40,13 @@ func Init() {
 			return nil, err
 		}
 
+		did := u.Query().Get("did")
+		isPlayback := u.Query().Get("playback") != ""
+		if did != "" {
+			closeTempClient(did)
+			miss.CloseClientsForDID(did, !isPlayback)
+		}
+
 		if u.User != nil {
 			rawURL, err = getCameraURL(u)
 			if err != nil {
@@ -369,6 +376,14 @@ func GetBaseURL(region string) string {
 	return "https://api.io.mi.com/app"
 }
 
+func defaultRegion(requested string) string {
+	r := strings.TrimSpace(requested)
+	if r != "" {
+		return r
+	}
+	return "us"
+}
+
 func defaultUserID(requested string) string {
 	if requested != "" {
 		return requested
@@ -393,6 +408,21 @@ var (
 	tempClients    = map[string]*miss.Client{}
 	tempTimers     = map[string]*time.Timer{}
 )
+
+func closeTempClient(did string) {
+	tempClientsMu.Lock()
+	client := tempClients[did]
+	timer := tempTimers[did]
+	delete(tempClients, did)
+	delete(tempTimers, did)
+	tempClientsMu.Unlock()
+	if timer != nil {
+		timer.Stop()
+	}
+	if client != nil {
+		_ = client.Close()
+	}
+}
 
 func getOrDialClient(userID, region, host, did, model string) (*miss.Client, error) {
 	if c := miss.GetActiveClient(did); c != nil {
@@ -465,8 +495,9 @@ func apiXiaomiStorage(w http.ResponseWriter, r *http.Request) {
 	q := r.URL.Query()
 	did := strings.TrimSpace(q.Get("did"))
 	model := strings.TrimSpace(q.Get("model"))
+	host := strings.TrimSpace(q.Get("host"))
 	userID := defaultUserID(strings.TrimSpace(q.Get("user")))
-	region := strings.TrimSpace(q.Get("region"))
+	region := defaultRegion(q.Get("region"))
 	refresh := q.Get("refresh") == "1"
 	wantCatalog := q.Get("catalog") == "1"
 	chNum, _ := strconv.Atoi(q.Get("channel"))
@@ -486,9 +517,14 @@ func apiXiaomiStorage(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
+	siid := 3
+	if model == "xiaomi.camera.cw701" || model == "isa.camera.hlc7" {
+		siid = 4
+	}
+
 	propsReq := fmt.Sprintf(
-		`{"datasource":1,"params":[{"did":"%s","siid":3,"piid":1},{"did":"%s","siid":3,"piid":2},{"did":"%s","siid":3,"piid":3}]}`,
-		did, did, did,
+		`{"params":[{"did":"%s","siid":%d,"piid":1},{"did":"%s","siid":%d,"piid":2},{"did":"%s","siid":%d,"piid":3},{"did":"%s","siid":%d,"piid":4}]}`,
+		did, siid, did, siid, did, siid, did, siid,
 	)
 	resBytes, err := cloudRequest(userID, region, "/miotspec/prop/get", propsReq)
 	if err != nil {
@@ -510,7 +546,7 @@ func apiXiaomiStorage(w http.ResponseWriter, r *http.Request) {
 		if item.Code != 0 {
 			continue
 		}
-		if item.Siid == 3 {
+		if item.Siid == siid {
 			switch item.Piid {
 			case 1:
 				statusVal = toInt64Val(item.Value)
@@ -527,11 +563,12 @@ func apiXiaomiStorage(w http.ResponseWriter, r *http.Request) {
 	// Normalize KB vs Bytes (CW701 and HLC7 report KB; MOD11 reports Bytes)
 	totalBytes := totalRaw
 	freeBytes := freeRaw
+	usedBytes := usedRaw
 	if totalRaw > 0 && totalRaw < 1_000_000_000 {
 		totalBytes = totalRaw * 1024
 		freeBytes = freeRaw * 1024
+		usedBytes = usedRaw * 1024
 	}
-	usedBytes := usedRaw
 	if usedBytes <= 0 && totalBytes >= freeBytes {
 		usedBytes = totalBytes - freeBytes
 	}
@@ -552,14 +589,40 @@ func apiXiaomiStorage(w http.ResponseWriter, r *http.Request) {
 		statusLabel = fmt.Sprintf("status_%d", statusVal)
 	}
 
+	if chNum < 0 {
+		chNum = 0
+	}
+	normCh := miss.NormalizeChannel(model, uint32(chNum))
+
 	activeClient := miss.GetActiveClient(did)
-	var catalogTimestamps []uint32
-	if wantCatalog && activeClient != nil {
-		if chNum < 0 {
-			chNum = 0
+	var catalogItems []miss.SDCatalogItem
+	var catalogErrStr string
+
+	if wantCatalog {
+		if activeClient == nil && host != "" && model != "" {
+			if dialed, dErr := getOrDialClient(userID, region, host, did, model); dErr == nil {
+				activeClient = dialed
+			} else {
+				catalogErrStr = dErr.Error()
+			}
 		}
-		ts, _ := activeClient.QuerySDCatalog(uint32(chNum))
-		catalogTimestamps = ts
+		if activeClient != nil {
+			items, cErr := activeClient.QuerySDCatalog(uint32(chNum))
+			if cErr != nil {
+				catalogErrStr = cErr.Error()
+			}
+			catalogItems = items
+		}
+		if len(catalogItems) == 0 {
+			catalogItems = miss.GetCachedSDCatalog(did, normCh)
+		}
+	} else {
+		catalogItems = miss.GetCachedSDCatalog(did, normCh)
+	}
+
+	catalogTimestamps := make([]uint32, 0, len(catalogItems))
+	for _, it := range catalogItems {
+		catalogTimestamps = append(catalogTimestamps, it.StartTime)
 	}
 
 	out := map[string]any{
@@ -572,6 +635,8 @@ func apiXiaomiStorage(w http.ResponseWriter, r *http.Request) {
 		"usedBytes":         usedBytes,
 		"hasActiveSession":  activeClient != nil,
 		"catalogTimestamps": catalogTimestamps,
+		"catalogItems":      catalogItems,
+		"catalogError":      catalogErrStr,
 		"updatedAt":         time.Now().UTC().Format(time.RFC3339),
 	}
 
@@ -610,7 +675,7 @@ func apiXiaomiControl(w http.ResponseWriter, r *http.Request) {
 	}
 
 	userID := defaultUserID(req.User)
-	region := req.Region
+	region := defaultRegion(req.Region)
 
 	switch strings.ToLower(req.Type) {
 	case "ptz":
@@ -763,6 +828,22 @@ func apiXiaomiControl(w http.ResponseWriter, r *http.Request) {
 		}
 		api.ResponseJSON(w, map[string]any{"ok": true, "on": on, "raw": json.RawMessage(res)})
 
+	case "playback_speed":
+		client := miss.GetActivePlaybackClient(req.Did)
+		if client == nil {
+			var err error
+			client, err = getOrDialClient(userID, region, req.Host, req.Did, req.Model)
+			if err != nil {
+				http.Error(w, err.Error(), http.StatusBadGateway)
+				return
+			}
+		}
+		if err := client.SetPlaybackSpeed(req.Speed); err != nil {
+			http.Error(w, err.Error(), http.StatusBadGateway)
+			return
+		}
+		api.ResponseJSON(w, map[string]any{"ok": true, "speed": req.Speed, "status": client.LastPlaybackStatus()})
+
 	default:
 		http.Error(w, "unknown control type", http.StatusBadRequest)
 	}
@@ -791,7 +872,7 @@ func apiXiaomiTalkback(w http.ResponseWriter, r *http.Request) {
 	}
 
 	userID := defaultUserID(req.User)
-	client, err := getOrDialClient(userID, req.Region, req.Host, req.Did, req.Model)
+	client, err := getOrDialClient(userID, defaultRegion(req.Region), req.Host, req.Did, req.Model)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadGateway)
 		return
