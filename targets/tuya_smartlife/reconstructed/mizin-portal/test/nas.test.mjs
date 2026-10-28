@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import {mkdtemp,mkdir,writeFile,rm} from 'node:fs/promises';
 import {tmpdir} from 'node:os';
 import {join,resolve,sep} from 'node:path';
+import {execFileSync} from 'node:child_process';
 import {createPortalGate,privateAuthFetch} from '../portal-gate.mjs';
 import {createArchive} from '../camera-archive.mjs';
 import {createCentral} from '../../../../xiaomi_home/reconstructed/mizin-cameras/server.mjs';
@@ -38,4 +39,16 @@ test('portal validates a real remote session through the authentication bridge',
   const gate=createPortalGate({origin,gatewayToken:token,auth:remote});assert.equal(await gate.protect(req,response()),true);
   req.headers.cookie='invalid';assert.equal(await gate.protect(req,response()),false);
  }finally{await central.close();const absolute=resolve(root);if(!absolute.startsWith(resolve(tmpdir())+sep)||!absolute.split(sep).at(-1).startsWith('mizin-auth-test-'))throw new Error('Unsafe test cleanup');await rm(absolute,{recursive:true,force:true});}
+});
+test('continuous archive keeps one input and preserves every video packet across segments',{skip:!process.env.TEST_FFMPEG},async()=>{
+ const root=await mkdtemp(join(tmpdir(),'mizin-segment-test-'));
+ try{
+  const ffmpeg=process.env.TEST_FFMPEG,ffprobe=ffmpeg.replace(/ffmpeg(?:\.exe)?$/,'ffprobe'+(process.platform==='win32'?'.exe':'')),input=join(root,'source.mkv'),output=join(root,'archive');
+  execFileSync(ffmpeg,['-hide_banner','-nostdin','-loglevel','error','-f','lavfi','-i','testsrc2=size=320x180:rate=10','-f','lavfi','-i','sine=frequency=440:sample_rate=8000','-t','7','-c:v','libx264','-preset','ultrafast','-g','20','-c:a','pcm_s16le',input],{windowsHide:true});
+  let inputs=0;const archive=createArchive({root:output,aliases:['owned'],ffmpeg,ffprobe,sourceFor:()=>{inputs++;return input;}});
+  const result=await archive.continuous('owned',{segmentSeconds:2});assert.equal(inputs,1);assert.ok(result.segments>=3);
+  const records=await archive.list();assert.equal(records.length,result.segments);let packets=0;
+  for(const record of records){assert.equal(record.transcoded,false);const {file}=await archive.file(record.id);const probe=JSON.parse(execFileSync(ffprobe,['-v','error','-count_packets','-select_streams','v:0','-show_entries','stream=nb_read_packets','-of','json',file],{encoding:'utf8',windowsHide:true}));packets+=Number(probe.streams[0].nb_read_packets);assert.ok(record.streams.some(s=>s.type==='audio'));}
+  assert.equal(packets,70);
+ }finally{const absolute=resolve(root);if(!absolute.startsWith(resolve(tmpdir())+sep)||!absolute.split(sep).at(-1).startsWith('mizin-segment-test-'))throw new Error('Unsafe test cleanup');await rm(absolute,{recursive:true,force:true});}
 });

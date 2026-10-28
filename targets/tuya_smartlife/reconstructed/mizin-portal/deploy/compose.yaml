@@ -2,11 +2,12 @@ services:
   prepare:
     image: debian:bookworm-slim
     user: "0:0"
-    command: ["sh", "-c", "chown -R 1000:1000 /data && chmod -R u=rwX,go= /data && chown 1000:1000 /archive && chmod 700 /archive"]
+    command: ["sh", "-c", "chown -R 1000:1000 /data && chmod -R u=rwX,go= /data && chown 1000:1000 /bridge/go2rtc-linux-amd64 && chmod 500 /bridge/go2rtc-linux-amd64 && chown 1000:1000 /archive && chmod 700 /archive"]
     network_mode: none
     restart: "no"
     volumes:
       - ./data:/data
+      - ./bridge:/bridge
       - /volume4/HDD 1TB - V2/Mizin-Cameras:/archive
   bridge:
     image: mizin-home:local
@@ -64,7 +65,7 @@ services:
     command: ["node", "targets/tuya_smartlife/reconstructed/mizin-portal/camera-archive-runner.mjs"]
     network_mode: host
     read_only: true
-    restart: "no"
+    restart: unless-stopped
     cap_drop: [ALL]
     security_opt: [no-new-privileges:true]
     environment:

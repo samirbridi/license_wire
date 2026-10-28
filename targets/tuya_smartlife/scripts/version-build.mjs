@@ -90,6 +90,9 @@ export function release({ target, mode = 'plan', runId = randomUUID() }) {
     mkdirSync(artifact, { recursive: false });
     for (const path of ['server.mjs', 'package.json', 'public']) cpSync(join(app, path), join(artifact, path), { recursive: true, errorOnExist: true, force: false });
     for (const path of ['camera-inventory.mjs','camera-talkback.mjs','camera-archive.mjs','camera-archive-runner.mjs','portal-gate.mjs','cloudflare','deploy']) if(existsSync(join(app,path)))cpSync(join(app,path),join(artifact,path),{recursive:true,errorOnExist:true,force:false});
+    const htmlPath=join(artifact,'public/index.html');
+    writeFileSync(htmlPath,readFileSync(htmlPath,'utf8').replace(/v\d+\.\d+\.\d+ \(build \d+\)/g,next.display).replace(/v=\d+\.\d+\.\d+-build\d+/g,`v=${next.major}.${next.minor}.${next.patch}-build${String(next.build).padStart(4,'0')}`));
+    const packagePath=join(artifact,'package.json'),pkg=JSON.parse(readFileSync(packagePath,'utf8'));pkg.version=`${next.major}.${next.minor}.${next.patch}`;pkg.build=next.build;writeFileSync(packagePath,JSON.stringify(pkg,null,2));
     result.status = 'built'; result.artifact = relative(target, artifact).replaceAll('\\', '/');
   } catch (error) { result.status = 'failed'; result.error = error.message; throw error; }
   finally {

@@ -21,6 +21,7 @@ test('scoped builds are automatic, idempotent and traceable', () => {
     assert.equal(release({ target }).version, 'v0.2.0 (build 0002)'); assert.equal(existsSync(join(target, 'release-state.json')), false);
     const build = release({ target, mode: 'build', runId: 'unit-build-0002' });
     assert.equal(build.status, 'built'); assert.equal(build.sourceCommit, source);
+    assert.equal(JSON.parse(readFileSync(join(target,build.artifact,'package.json'),'utf8')).version,'0.2.0');
     assert.equal(release({ target, mode: 'build', runId: 'unit-build-0002' }).build, 2);
     assert.equal(JSON.parse(readFileSync(join(app, 'public/version.json'), 'utf8')).display, readFileSync(join(target, 'VERSION'), 'utf8').trim());
     const changelog = readFileSync(join(target, 'CHANGELOG.md'), 'utf8');

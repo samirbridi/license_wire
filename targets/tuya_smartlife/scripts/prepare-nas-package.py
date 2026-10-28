@@ -16,7 +16,9 @@ if not receipt['pass'] or hashlib.sha256(binary.read_bytes()).hexdigest()!=expec
 root=target/f"evidence/private/nas-portal-build-{release['build']:04d}"
 root.mkdir();app=root/'app';destination=app/'workspace';portal=destination/'targets/tuya_smartlife/reconstructed/mizin-portal'
 shutil.copytree(target/release['artifact'],portal,ignore=shutil.ignore_patterns('diagnostics'))
-shutil.copyfile(portal/'deploy/Dockerfile',app/'Dockerfile');shutil.copyfile(portal/'deploy/compose.yaml',root/'compose.yaml')
+shutil.copyfile(portal/'deploy/Dockerfile',app/'Dockerfile')
+compose=(portal/'deploy/compose.yaml').read_text(encoding='utf-8').replace('mizin-home:local',f"mizin-home:build{release['build']:04d}")
+(root/'compose.yaml').write_text(compose,encoding='utf-8')
 shutil.copyfile(target/'VERSION',destination/'targets/tuya_smartlife/VERSION')
 scripts=destination/'targets/tuya_smartlife/scripts';scripts.mkdir(parents=True)
 for p in (target/'scripts').glob('*.py'):shutil.copyfile(p,scripts/p.name)
@@ -44,12 +46,12 @@ for name in ['devices_registry.json','tuya_token.json','tuya_cloud_devices.json'
  source=target/'runtime'/name
  if source.exists():shutil.copyfile(source,tuya_data/name)
 shutil.copyfile(xiaomi/'evidence/private/cloudflare-tunnel.token',data/'tunnel.token')
-(root/'LEIA-ME.txt').write_text('PACOTE PRIVADO: sessoes Xiaomi, chaves locais Tuya e credencial de tunel. Nao publicar.\nPlataforma completa preservada; automacoes de dispositivos suspensas durante o piloto.\nGravacoes: /volume4/HDD 1TB - V2/Mizin-Cameras. Nenhuma gravacao e apagada automaticamente.\nTeste inicial: 10 segundos por visao, com audio e video; se todos passarem, inicia segmentos de 5 minutos ate 100 GiB ou 2 GiB livres.\nPodem ocorrer intervalos ao reconectar fluxos entre segmentos; estabilidade 24h ainda precisa de medicao.\nO tunel remoto esta desativado por perfil ate a troca controlada do conector Windows.\nConvite remoto: data/xiaomi/runtime/central/owner-remote-access.json, renovado a cada 8 minutos.\n',encoding='utf-8')
+(root/'LEIA-ME.txt').write_text('PACOTE PRIVADO: sessoes Xiaomi, chaves locais Tuya e credencial de tunel. Nao publicar.\nPlataforma completa preservada; automacoes de dispositivos suspensas durante o piloto.\nGravacoes: /volume4/HDD 1TB - V2/Mizin-Cameras. Nenhuma gravacao e apagada automaticamente.\nTeste inicial: 10 segundos por visao, com audio e video; cada visao validada inicia segmentos de 5 minutos ate 100 GiB ou 2 GiB livres.\nMantem uma conexao por visao entre os segmentos. Falhas de rede geram nova tentativa independente; estabilidade 24h ainda precisa de medicao.\nO tunel remoto esta desativado por perfil ate a troca controlada do conector Windows.\nConvite remoto: data/xiaomi/runtime/central/owner-remote-access.json, renovado a cada 8 minutos.\n',encoding='utf-8')
 archive=root.with_suffix('.zip')
 with zipfile.ZipFile(archive,'x',zipfile.ZIP_DEFLATED,compresslevel=5) as z:
  for p in root.rglob('*'):
   if p.is_file():
-   info=zipfile.ZipInfo(str(Path(root.name)/p.relative_to(root)).replace('\\','/'));info.external_attr=(0o100700 if p.name=='go2rtc-linux-amd64' else 0o100600)<<16
+   info=zipfile.ZipInfo(str(Path(root.name)/p.relative_to(root)).replace('\\','/'));info.create_system=3;info.external_attr=(0o100700 if p.name=='go2rtc-linux-amd64' else 0o100600)<<16
    z.writestr(info,p.read_bytes(),compress_type=zipfile.ZIP_DEFLATED)
 manifest={'version':release['version'],'sourceCommit':release['sourceCommit'],'bridgeVersion':bridge_release['version'],'bridgeSha256':expected,'private':True,'archiveSha256':hashlib.sha256(archive.read_bytes()).hexdigest(),'archiveBytes':archive.stat().st_size,'cameras':6,'views':len(aliases),'nasTested':False,'fullPortalIncluded':True,'archivePath':'/volume4/HDD 1TB - V2/Mizin-Cameras'}
 (root/'package-receipt.json').write_text(json.dumps(manifest,indent=2),encoding='utf-8')

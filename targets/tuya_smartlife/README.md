@@ -85,3 +85,10 @@ As gravações usam cópia de codecs para Matroska com áudio. O destino autoriz
 O versionamento do portal passou a ser calculado a partir dos commits pelo `scripts/version-build.mjs`, com build incremental, changelog rastreável e testes de migração da versão legada. Consulte `VERSION` para o número gerado.
 
 Próximos passos: confirmar o teste no DS425+, examinar arquivos e áudio, efetuar a troca controlada do túnel e testar o portal completo sem processos Windows. O backup ao R2 e eventual VPS ficam para a etapa seguinte. Não há publicação nem migração comprovadas por esses testes locais.
+
+
+### Validação física no DS425+ e continuidade
+
+O primeiro teste real no NAS produziu arquivos com áudio em seis visões: três HLC7 em 2304×1296/HEVC+FLAC 8 kHz, as duas CW701 em 2880×1620/HEVC+Opus 48 kHz e a AW300 Garagem em 2304×1296/HEVC+Opus 48 kHz. A AW300 Portão teve timeout UDP no NAS e abriu na ponte Windows. O relatório privado `evidence/private/nas-initial-test-status.json` registra os resultados sem substituir falhas por sucessos.
+
+O gravador foi ajustado para validar e tentar novamente cada câmera de forma independente. A gravação contínua mantém uma conexão por visão e divide os arquivos sem encerrar o fluxo a cada cinco minutos. Um teste com FFmpeg real confirmou os 70 pacotes originais de vídeo preservados através de todos os segmentos, com áudio. A quota considera também arquivos incompletos. A validação da versão nova no NAS e a troca do túnel ainda precisam ser concluídas.
