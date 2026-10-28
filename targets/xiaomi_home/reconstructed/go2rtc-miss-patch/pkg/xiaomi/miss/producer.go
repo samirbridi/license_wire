@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/url"
+	"strconv"
 	"time"
 
 	"github.com/AlexxIT/go2rtc/pkg/core"
@@ -19,13 +20,24 @@ type Producer struct {
 	initialPkts []*Packet
 }
 
-func confirmedPlayback(status string, expectedID int64) (bool,error) {
- if status=="" {return false,nil}
- var state struct { ID int64 `json:"id"`; Status string `json:"status"` }
- if err:=json.Unmarshal([]byte(status),&state);err!=nil{return false,fmt.Errorf("invalid SD playback acknowledgement")}
- if expectedID<=0||state.ID!=expectedID{return false,fmt.Errorf("SD acknowledgement belongs to another recording")}
- if state.Status!="filefound"{return false,fmt.Errorf("recording file not confirmed")}
- return true,nil
+func confirmedPlayback(status string, expectedID int64) (bool, error) {
+	if status == "" {
+		return false, nil
+	}
+	var state struct {
+		ID     int64  `json:"id"`
+		Status string `json:"status"`
+	}
+	if err := json.Unmarshal([]byte(status), &state); err != nil {
+		return false, fmt.Errorf("invalid SD playback acknowledgement")
+	}
+	if expectedID <= 0 || state.ID != expectedID {
+		return false, fmt.Errorf("SD acknowledgement belongs to another recording")
+	}
+	if state.Status != "filefound" {
+		return false, fmt.Errorf("recording file not confirmed")
+	}
+	return true, nil
 }
 
 func Dial(rawURL string) (core.Producer, error) {
@@ -47,7 +59,16 @@ func Dial(rawURL string) (core.Producer, error) {
 		return nil, err
 	}
 
-	medias, initialPkts, err := probe(client, query.Get("audio") != "0")
+	minWidth, parseErr := strconv.Atoi(query.Get("minwidth"))
+	if query.Get("minwidth") == "" {
+		minWidth = 0
+		parseErr = nil
+	}
+	if parseErr != nil || minWidth < 0 || minWidth > 8192 {
+		_ = client.Close()
+		return nil, fmt.Errorf("invalid minimum video width")
+	}
+	medias, initialPkts, err := probe(client, query.Get("audio") != "0", minWidth)
 	if err != nil {
 		_ = client.Close()
 		return nil, err
@@ -68,7 +89,27 @@ func Dial(rawURL string) (core.Producer, error) {
 	}, nil
 }
 
-func probe(client *Client, audio bool) ([]*core.Media, []*Packet, error) {
+func qualifiedVideo(codec *core.Codec, minWidth int) bool {
+	if codec == nil {
+		return false
+	}
+	if minWidth == 0 {
+		return true
+	}
+	if codec.Name == core.CodecH265 {
+		_, sps, _ := h265.GetParameterSet(codec.FmtpLine)
+		info := h265.DecodeSPS(sps)
+		return info != nil && int(info.Width()) >= minWidth
+	}
+	if codec.Name == core.CodecH264 {
+		sps, _ := h264.GetParameterSet(codec.FmtpLine)
+		info := h264.DecodeSPS(sps)
+		return info != nil && int(info.Width()) >= minWidth
+	}
+	return false
+}
+
+func probe(client *Client, audio bool, minWidth int) ([]*core.Media, []*Packet, error) {
 	probeTimeout := 15 * time.Second
 	if client.playbackMode {
 		probeTimeout = 6500 * time.Millisecond
@@ -92,11 +133,31 @@ func probe(client *Client, audio bool) ([]*core.Media, []*Packet, error) {
 
 		// On isa.camera.hlc7, 0x102 emits a few live frames before 0x10E ("filefound") switches to SD playback.
 		if client.playbackMode && client.model == "isa.camera.hlc7" {
-			confirmed,statusErr:=confirmedPlayback(client.LastPlaybackStatus(),client.lastPlaybackSession.Load())
-			if statusErr!=nil{return nil,nil,statusErr}
-			if !confirmed {continue}
+			confirmed, statusErr := confirmedPlayback(client.LastPlaybackStatus(), client.lastPlaybackSession.Load())
+			if statusErr != nil {
+				return nil, nil, statusErr
+			}
+			if !confirmed {
+				continue
+			}
 		}
 
+		// Some cameras send stale low-resolution frames before applying 0x102.
+		// A recording may explicitly require the requested resolution before opening.
+		if minWidth > 0 && vcodec == nil {
+			buf := annexb.EncodeToAVCC(pkt.Payload)
+			var candidate *core.Codec
+			if pkt.CodecID == codecH265 && h265.NALUType(buf) == h265.NALUTypeVPS {
+				candidate = h265.AVCCToCodec(buf)
+			}
+			if pkt.CodecID == codecH264 && h264.NALUType(buf) == h264.NALUTypeSPS {
+				candidate = h264.AVCCToCodec(buf)
+			}
+			if !qualifiedVideo(candidate, minWidth) {
+				continue
+			}
+			vcodec = candidate
+		}
 		buffered = append(buffered, pkt)
 
 		switch pkt.CodecID {

@@ -39,3 +39,8 @@ O build exige fontes limpas nos dois componentes reconstruídos e nos scripts ef
 ## Comandos e coleta
 
 O comando de inicialização e os critérios de validação estão em [registro da sessão](evidence/sessao_2026-10-25.md). O APK oficial de desenvolvimento foi preservado em binaries com SHA256; proveniência em [coleta do APK](evidence/official-apk-provenance.json). A investigação estática não instala ou executa o aplicativo.
+
+
+## Integração com o portal e NAS — 2026-10-28
+
+O portal completo está em `targets/tuya_smartlife/reconstructed/mizin-portal`; o protótipo desta pasta não deve substituí-lo na publicação. No teste de gravação ao vivo, HLC7 enviou quadros 640×360 antes de passar a 2304×1296. A ponte agora aceita `minwidth` explícito e aguarda o SPS da resolução solicitada antes de liberar o fluxo, sem recomprimir. Não altera a prévia que não solicita esse limite. A confirmação no NAS e a estabilidade contínua ainda estão em validação.
