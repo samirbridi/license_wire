@@ -1,0 +1,17 @@
+{
+  "previous": "v0.6.1 (build 0008)",
+  "version": "v0.7.0 (build 0009)",
+  "date": "2026-10-28",
+  "timezone": "America/Sao_Paulo",
+  "baseline": "9fe4bed7fa9fe21e6347258773a3c895850eb040",
+  "sourceHead": "293a66deb0974f21b51b4584bd44569fd8d2c020",
+  "increment": "feat",
+  "commits": [
+    {
+      "hash": "293a66deb0974f21b51b4584bd44569fd8d2c020",
+      "subject": "feat: cataloga APKs GWM e valida manual oficial do ORA 5",
+      "type": "feat",
+      "breaking": false
+    }
+  ]
+}

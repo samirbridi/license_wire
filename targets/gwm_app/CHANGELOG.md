@@ -1,5 +1,23 @@
 # 📜 CHANGELOG - gwm_app
 
+## v0.7.0 (build 0009) - 2026-10-28
+
+### 💥 Breaking Changes
+
+- Nenhum.
+
+### ✨ Features
+
+- feat: cataloga APKs GWM e valida manual oficial do ORA 5 (commit `293a66deb0974f21b51b4584bd44569fd8d2c020`)
+
+### 🐛 Fixes
+
+- Nenhum.
+
+### ⚡ Improvements
+
+- Nenhum.
+
 ## v0.6.1 (build 0008) - 2026-10-28
 
 ### 💥 Breaking Changes
