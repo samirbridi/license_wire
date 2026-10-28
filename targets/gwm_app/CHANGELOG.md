@@ -1,5 +1,23 @@
 # 📜 CHANGELOG - gwm_app
 
+## v0.8.0 (build 0010) - 2026-10-28
+
+### 💥 Breaking Changes
+
+- Nenhum.
+
+### ✨ Features
+
+- feat: documenta habilitacao diagnostica de menus GWM e limites no ORA 5 (commit `6514b210a1ce011df01016a5e52f65a409da588f`)
+
+### 🐛 Fixes
+
+- Nenhum.
+
+### ⚡ Improvements
+
+- Nenhum.
+
 ## v0.7.0 (build 0009) - 2026-10-28
 
 ### 💥 Breaking Changes
