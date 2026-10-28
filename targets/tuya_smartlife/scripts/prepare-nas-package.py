@@ -24,6 +24,8 @@ scripts=destination/'targets/tuya_smartlife/scripts';scripts.mkdir(parents=True)
 for p in (target/'scripts').glob('*.py'):shutil.copyfile(p,scripts/p.name)
 shutil.copytree(xiaomi/bridge_release['artifact'],destination/'targets/xiaomi_home/reconstructed/mizin-cameras',ignore=shutil.ignore_patterns('bridge','diagnostics'))
 bridge=root/'bridge';bridge.mkdir();shutil.copyfile(binary,bridge/binary.name)
+embedded_bridge=destination/'targets/xiaomi_home/reconstructed/mizin-cameras/bridge';embedded_bridge.mkdir(parents=True,exist_ok=True);shutil.copyfile(binary,embedded_bridge/binary.name)
+(embedded_bridge/'sha256.json').write_text(json.dumps({'file':binary.name,'sha256':expected}),encoding='utf-8')
 if '--code-only' in sys.argv:
  # Existing NAS sessions and device data are copied on the NAS, never replaced by Windows snapshots.
  compose=compose.replace('./data:', '/volume4/HDD 1TB - V2/Mizin-Home/data:').replace('./data/', '/volume4/HDD 1TB - V2/Mizin-Home/data/')
