@@ -12,7 +12,7 @@ Na Outdoor, a imagem de 20:01:20 corresponde ao instante 12:01:20 UTC / 09:01:20
 
 Calendário por mês/dia, dias com arquivos, escala de 24/6/1 horas, seleção de horário, replay e download. A disponibilidade desconhecida continua distinta de um catálogo vazio. A exportação atual cobre até 60 s dentro de um único arquivo, sem áudio. Não há montagem de múltiplos arquivos nem reprodução contínua automática. Todos os endpoints exigem sessão; aliases e endereços físicos ficam no servidor.
 
-As alterações existentes da ponte nos quatro arquivos de transporte foram revisadas e preservadas para integrar o catálogo e o replay já testados. O novo ajuste impede `autoswitchtolive` também no HLC7. O teste do comando verifica as três famílias; a troca do executável exige nova conferência real. PTZ, zoom, rondas, gravações com áudio e fala ainda não estão liberados como recursos validados desta interface.
+As alterações existentes da ponte nos quatro arquivos de transporte foram revisadas e preservadas para integrar o catálogo e o replay já testados. O ensaio do build 0017 com `autoswitchtolive=0` no HLC7 retornou catálogo mas não entregou o vídeo no prazo. O ajuste seguinte mantém o modo de preparação necessário nesse modelo e exige confirmação positiva `filefound` antes de aceitar quadros. Respostas ausentes, negativas ou desconhecidas são bloqueadas. O comando das outras famílias mantém `autoswitchtolive=0`. A troca do executável exige nova conferência real. PTZ, zoom, rondas, gravações com áudio e fala ainda não estão liberados como recursos validados desta interface.
 
 ## Cloudflare
 
@@ -24,7 +24,7 @@ Workers VPC está em beta, gratuito durante o beta, sujeito às cotas normais do
 
 Consultas autenticadas na conta Oracle confirmaram região principal São Paulo, nenhuma VM ativa e cotas A1 de 2 OCPUs/12 GB. O relatório oficial de capacidade retornou `OUT_OF_HOST_CAPACITY` para essa configuração. Não houve criação de VM ou contratação paga. Não presumir disponibilidade ou SLA do Always Free.
 
-O usuário informou Synology DS425+ e o endereço local do DSM. O modelo usa Intel Celeron J4125; especificações oficiais: https://www.synology.com/en-br/products/DS425%2B . A porta 5000 redirecionou para 5001, onde o navegador bloqueou o certificado com `NET::ERR_CERT_AUTHORITY_INVALID`. A resolução do aviso e login foram entregues ao proprietário. Não houve desativação da validação TLS ou alteração do NAS.
+O usuário informou Synology DS425+ e o endereço local do DSM. O modelo usa Intel Celeron J4125; especificações oficiais: https://www.synology.com/en-br/products/DS425%2B . A porta 5000 redirecionou para 5001, onde o navegador bloqueou o certificado com `NET::ERR_CERT_AUTHORITY_INVALID`. Após a intervenção do proprietário, o DSM ficou autenticado. O Container Manager oficial 24.0.2-1706 foi instalado no Volume 1, com a rede interna padrão. Não houve desativação da validação TLS. Ainda não houve envio das credenciais Xiaomi ao NAS nem criação dos contêineres da central.
 
 O pacote Linux usa Node/FFmpeg, binário próprio da ponte e cloudflared em contêineres com reinício automático. Configurações privadas são montadas fora das imagens. Execução no NAS, consumo de CPU/RAM, reconexão e teste com Windows desligado continuam pendentes. A existência de Docker/arquitetura compatível não comprova funcionamento no DS425+. Um VPS remoto exige validar P2P pela internet ou manter um conector na rede das câmeras. O usuário ainda não definiu orçamento mensal.
 
@@ -38,3 +38,5 @@ powershell.exe -File targets/xiaomi_home/scripts/publish-cloudflare.ps1 -Wrangle
 ```
 
 O build calcula versão/changelog pelos commits, verifica módulos Go, aplica os patches em cópia isolada e gera Windows/Linux amd64. Nunca alterar o cache Go compartilhado para compilar a ponte.
+
+Prévias em segundo plano são suspensas para uma câmera em replay SD, e outro dispositivo recebe resposta de ocupado antes de disputar esse transporte. Falhas transitórias de catálogo recebem uma única nova tentativa, sem fabricar disponibilidade.

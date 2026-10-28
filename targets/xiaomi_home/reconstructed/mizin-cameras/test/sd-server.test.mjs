@@ -6,16 +6,16 @@ import {join,resolve,sep} from 'node:path';
 import {EventEmitter} from 'node:events';
 import {PassThrough} from 'node:stream';
 import {createCentral} from '../server.mjs';
-async function fixture(sdAdapter){
- const runtime=mkdtempSync(join(tmpdir(),'mizin-sd-test-'));let args;
+async function fixture(sdAdapter,keepOpen=false){
+ const runtime=mkdtempSync(join(tmpdir(),'mizin-sd-test-'));let args,spawns=0;
  const app=createCentral({runtime,port:0,cameras:[{id:'camera',sourceAlias:'live',views:[{id:'main',sourceAlias:'live'}]}],sdAdapter,spawnProcess(_exe,input){
-  args=input;const child=new EventEmitter();child.stdout=new PassThrough();child.stderr=new PassThrough();child.kill=()=>{};
-  setImmediate(()=>{child.stdout.write('test-only-media');child.stdout.end();setImmediate(()=>child.emit('close',0));});return child;
+  args=input;spawns++;const child=new EventEmitter();child.stdout=new PassThrough();child.stderr=new PassThrough();child.kill=()=>{child.stdout.end();child.emit('close',0);};
+  setImmediate(()=>{child.stdout.write('test-only-media');if(!keepOpen){child.stdout.end();setImmediate(()=>child.emit('close',0));}});return child;
  }});
  const origin='http://127.0.0.1:'+await app.start();
  const login=await fetch(origin+'/api/session',{method:'POST',headers:{Origin:origin,'Content-Type':'application/json'},body:JSON.stringify({code:app.bootstrap})});
  const headers={Cookie:login.headers.get('set-cookie').split(';')[0],Origin:origin};
- return {app,origin,headers,get args(){return args;},async close(){await app.close();if(!resolve(runtime).startsWith(resolve(tmpdir())+sep)||!runtime.includes('mizin-sd-test-'))throw new Error('Unsafe cleanup');rmSync(runtime,{recursive:true,force:true});}};
+ return {app,origin,headers,get args(){return args;},get spawns(){return spawns;},async close(){await app.close();if(!resolve(runtime).startsWith(resolve(tmpdir())+sep)||!runtime.includes('mizin-sd-test-'))throw new Error('Unsafe cleanup');rmSync(runtime,{recursive:true,force:true});}};
 }
 test('SD export excludes unvalidated audio and preserves input timestamps',async()=>{
  let closes=0;
@@ -37,4 +37,12 @@ test('logout during SD preparation revokes the request and removes its temporary
   await fetch(f.origin+'/api/logout',{method:'POST',headers:{...f.headers,'X-CSRF-Token':session.csrf}});release();
   assert.equal((await request).status,401);assert.equal(closes,1);assert.equal(f.args,undefined);
  }finally{release();await f.close();}
+});
+test('background snapshots cannot reconnect a camera during its SD replay',async()=>{
+ const f=await fixture({async open(){return{alias:'sd',duration:5,async close(){}};}},true);
+ try{
+  const replay=await fetch(f.origin+'/api/replay/camera?at=100',{headers:f.headers});
+  const snapshot=await fetch(f.origin+'/api/snapshot/camera',{headers:f.headers});
+  assert.equal(snapshot.status,503);assert.equal(f.spawns,1);await replay.body.cancel();
+ }finally{await f.close();}
 });

@@ -46,10 +46,14 @@ export function createSDBridge({target,cameras,upstream,fetcher=fetch,sources}) 
     const job=(async()=>{
       const endpoint=new URL(upstream+'/api/xiaomi/storage');
       for(const [k,v] of Object.entries({did:device.did,model:device.model,host:device.url.hostname,user:device.url.username,region:'cn',catalog:'1',channel:device.channel}))endpoint.searchParams.set(k,String(v));
-      const response=await fetcher(endpoint,{signal:AbortSignal.timeout(35000)});
-      if(!response.ok)throw new Error('Não foi possível consultar o cartão.');
-      const raw=await response.json(),periods=normalizeCatalog(raw);
-      const value={at:Date.now(),periods,cardStatus:Number.isInteger(raw.status)?raw.status:null};cache.set(key,value);return value;
+      for(let attempt=0;attempt<2;attempt++){
+        try{
+          const response=await fetcher(endpoint,{signal:AbortSignal.timeout(22000)});
+          if(!response.ok){await response.body?.cancel();throw new Error('Não foi possível consultar o cartão.');}
+          const raw=await response.json(),periods=normalizeCatalog(raw);
+          const value={at:Date.now(),periods,cardStatus:Number.isInteger(raw.status)?raw.status:null};cache.set(key,value);return value;
+        }catch(error){if(attempt===1)throw error;await new Promise(resolve=>setTimeout(resolve,300));}
+      }
     })();
     pending.set(key,job);try{return await job;}finally{pending.delete(key);}
   }

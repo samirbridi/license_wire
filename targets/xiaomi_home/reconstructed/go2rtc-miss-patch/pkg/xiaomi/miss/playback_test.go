@@ -10,7 +10,7 @@ import (
 type playbackCapture struct{ Conn; packets [][]byte }
 func (c *playbackCapture) WriteCommand(_ uint32, data []byte) error {c.packets=append(c.packets,append([]byte(nil),data...));return nil}
 
-func TestPlaybackDoesNotFallBackToLive(t *testing.T){
+func TestPlaybackUsesModelSpecificProtocol(t *testing.T){
  for _,model:=range []string{"xiaomi.camera.cw701","mxiang.camera.mod11","isa.camera.hlc7"}{
   t.Run(model,func(t *testing.T){
    capture:=&playbackCapture{};key:=make([]byte,32)
@@ -21,9 +21,20 @@ func TestPlaybackDoesNotFallBackToLive(t *testing.T){
     plain,err:=crypto.Decode(packet,key);if err!=nil{t.Fatal(err)}
     if len(plain)<4||binary.BigEndian.Uint32(plain[:4])!=cmdPlaybackReq{continue}
     var request map[string]any;if err=json.Unmarshal(plain[4:],&request);err!=nil{t.Fatal(err)}
-    if request["autoswitchtolive"]!=float64(0){t.Fatal("SD replay may switch to live video")};found=true
+    expected:=float64(0);if model=="isa.camera.hlc7"{expected=1}
+    if request["autoswitchtolive"]!=expected{t.Fatal("incorrect model-specific playback mode")};found=true
    }
    if !found{t.Fatal("playback command missing")}
   })
  }
+}
+
+func TestPlaybackRejectsMissingOrNegativeFileAcknowledgement(t *testing.T){
+ for _,status:=range []string{`{}`,`{"filefound":false}`,`{"filefound":0}`,`{"filefound":[false]}`,`bad-json`}{
+  if found,err:=confirmedPlayback(status);found||err==nil{t.Fatalf("invalid file acknowledgement accepted: %s",status)}
+ }
+ for _,status:=range []string{`{"filefound":true}`,`{"filefound":1}`,`{"filefound":[true]}`}{
+  if found,err:=confirmedPlayback(status);!found||err!=nil{t.Fatalf("valid acknowledgement refused: %s",status)}
+ }
+ if found,err:=confirmedPlayback("");found||err!=nil{t.Fatal("an absent acknowledgement must wait")}
 }

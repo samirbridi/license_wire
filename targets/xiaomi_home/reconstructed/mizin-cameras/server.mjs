@@ -152,6 +152,7 @@ export function createCentral(options = {}) {
     const pending = scheduleSnapshot(async () => {
       const releaseStart = await acquireCameraStart(camera.physicalId ?? camera.id);
       if (closing) { releaseStart(); throw new Error('Central stopped'); }
+      if([...activeVideos.values()].some(v=>v.cameraId===(camera.physicalId??camera.id)&&v.playback)){releaseStart();throw new Error('Camera is playing SD');}
       return new Promise((accept, reject) => {
       let child;
       try { child = spawnMedia(['-hide_banner', '-nostdin', '-loglevel', 'error', '-rw_timeout', '25000000', '-analyzeduration', '1000000', '-probesize', '262144', '-i', source(camera), '-map', '0:v:0', '-an', '-frames:v', '1', '-vf', 'scale=640:-2', '-q:v', '5', '-f', 'image2pipe', 'pipe:1']); }
@@ -276,6 +277,9 @@ export function createCentral(options = {}) {
     const releaseStart = await acquireCameraStart(camera.id);
     if (closing || res.destroyed) { releaseStart(); return; }
     if (sessionFor(req)?.key !== session.key) { releaseStart(); return json(res, 401, { error: 'Conecte este dispositivo à central.' }); }
+    const sameCamera=[...activeVideos.entries()].filter(([,entry])=>entry.cameraId===camera.id);
+    if(sameCamera.some(([,entry])=>(replay||entry.playback)&&entry.sessionKey!==session.key)){releaseStart();return json(res,429,{error:'Esta câmera está em uso em outro dispositivo. Tente novamente ao encerrar a reprodução.'});}
+    for(const [key,entry] of sameCamera){if(replay||entry.playback){entry.child.kill();activeVideos.delete(key);await entry.closeSource?.();}}
     const clients = new Set([...activeVideos.values()].map(entry => entry.sessionKey));
     if (clients.size >= 2 && !clients.has(session.key)) { releaseStart(); return json(res, 429, { error: 'A central já está transmitindo para dois dispositivos.' }); }
     for (const [key, entry] of activeVideos) if (entry.sessionKey === session.key && entry.cameraId !== camera.id) { entry.child.kill(); activeVideos.delete(key); }
@@ -295,7 +299,7 @@ export function createCentral(options = {}) {
     catch (error) { releaseStart();await playback?.close(); throw error; }
     if(playback){child.once('close',()=>playback.close());child.once('error',()=>playback.close());res.once('close',()=>playback.close());}
     if(replay?.[1]==='clip')res.setHeader('Content-Disposition',`attachment; filename="${camera.id}-${Number(url.searchParams.get('at'))}.mp4"`);
-    activeVideos.set(streamKey, { child, sessionKey: session.key, cameraId: camera.id, viewId: view.id });
+    activeVideos.set(streamKey, { child, sessionKey: session.key, cameraId: camera.id, viewId: view.id,playback:!!playback,closeSource:playback?.close });
     let sent = false;
     const timer = setTimeout(() => { releaseStart(); child.kill(); if (!res.headersSent) json(res, 504, { error: 'A câmera não respondeu a tempo.' }); else res.destroy(); }, 45_000);
     child.stdout.once('data', chunk => { releaseStart(); if (res.destroyed) return; sent = true; clearTimeout(timer); headers(res, 'video/mp4'); res.setHeader('Accept-Ranges', 'none'); res.write(chunk); child.stdout.pipe(res,{end:false}); });

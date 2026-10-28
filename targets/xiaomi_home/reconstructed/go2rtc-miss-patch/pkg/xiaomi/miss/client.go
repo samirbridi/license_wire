@@ -525,9 +525,11 @@ func (c *Client) StartPlayback(channel, startSecStr, endSecStr, offsetSecStr, sp
 			fileStartSec, fileStartSec, resolvedOffset, speed, pbCh,
 		)
 	} else if c.model == "isa.camera.hlc7" {
+		// This firmware needs live mode armed before it accepts SD playback.
+		// The producer must wait for a positive filefound acknowledgement.
 		data = fmt.Appendf(
 			data,
-			`{"sessionid":%d,"starttime":%d,"endtime":0,"autoswitchtolive":0,"offset":%d,"speed":%d,"avchannelmerge":1}`,
+			`{"sessionid":%d,"starttime":%d,"endtime":0,"autoswitchtolive":1,"offset":%d,"speed":%d,"avchannelmerge":1}`,
 			fileStartSec, fileStartSec, resolvedOffset, speed,
 		)
 	} else {
