@@ -3,7 +3,7 @@ import {join,resolve,sep,basename} from 'node:path';
 import {randomUUID,createHash} from 'node:crypto';
 import {spawn} from 'node:child_process';
 
-export function createArchive({root,ffmpeg='ffmpeg',ffprobe='ffprobe',aliases,spawnProcess=spawn,sourceFor=alias=>'http://127.0.0.1:19843/api/stream.mp4?src='+encodeURIComponent(alias)+'&video=h265&audio=all'}){
+export function createArchive({root,ffmpeg='ffmpeg',ffprobe='ffprobe',aliases,spawnProcess=spawn,statFile=stat,sourceFor=alias=>'http://127.0.0.1:19843/api/stream.mp4?src='+encodeURIComponent(alias)+'&video=h265&audio=all'}){
  const directory=root?resolve(root):null,known=new Set(aliases);
  async function command(args,seconds){
   return new Promise((accept,reject)=>{
@@ -30,7 +30,7 @@ export function createArchive({root,ffmpeg='ffmpeg',ffprobe='ffprobe',aliases,sp
  }
  return{
   enabled:!!directory,list,
-  async usage(){enabled();let total=0;for(const name of await readdir(directory)){if(/\.mkv$/.test(name)){const info=await stat(join(directory,name));total+=info.size;}}return total;},
+  async usage(){enabled();let total=0;for(const name of await readdir(directory)){if(/\.mkv$/.test(name)){try{const info=await statFile(join(directory,name));total+=info.size;}catch(error){if(error.code!=='ENOENT')throw error;}}}return total;},
   async record(alias,seconds=10){
    enabled();if(!known.has(alias)||!Number.isInteger(seconds)||seconds<5||seconds>300)throw new Error('Câmera ou duração inválida.');
    await mkdir(directory,{recursive:true,mode:0o700});

@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {mkdtemp,mkdir,writeFile,rm} from 'node:fs/promises';
+import {mkdtemp,mkdir,writeFile,rm,stat} from 'node:fs/promises';
 import {tmpdir} from 'node:os';
 import {join,resolve,sep} from 'node:path';
 import {execFileSync} from 'node:child_process';
@@ -51,4 +51,13 @@ test('continuous archive keeps one input and preserves every video packet across
   for(const record of records){assert.equal(record.transcoded,false);const {file}=await archive.file(record.id);const probe=JSON.parse(execFileSync(ffprobe,['-v','error','-count_packets','-select_streams','v:0','-show_entries','stream=nb_read_packets','-of','json',file],{encoding:'utf8',windowsHide:true}));packets+=Number(probe.streams[0].nb_read_packets);assert.ok(record.streams.some(s=>s.type==='audio'));}
   assert.equal(packets,70);
  }finally{const absolute=resolve(root);if(!absolute.startsWith(resolve(tmpdir())+sep)||!absolute.split(sep).at(-1).startsWith('mizin-segment-test-'))throw new Error('Unsafe test cleanup');await rm(absolute,{recursive:true,force:true});}
+});
+test('quota tolerates a segment renamed during measurement but never ignores permission failures',async()=>{
+ const root=await mkdtemp(join(tmpdir(),'mizin-quota-test-'));
+ try{
+  await writeFile(join(root,'finished.mkv'),Buffer.alloc(70));await writeFile(join(root,'renamed.partial.mkv'),Buffer.alloc(30));
+  const archive=createArchive({root,aliases:[],statFile:file=>file.endsWith('renamed.partial.mkv')?Promise.reject(Object.assign(new Error('renamed'),{code:'ENOENT'})):stat(file)});
+  assert.equal(await archive.usage(),70);
+  const denied=createArchive({root,aliases:[],statFile:()=>Promise.reject(Object.assign(new Error('denied'),{code:'EACCES'}))});await assert.rejects(()=>denied.usage(),{code:'EACCES'});
+ }finally{const absolute=resolve(root);if(!absolute.startsWith(resolve(tmpdir())+sep)||!absolute.split(sep).at(-1).startsWith('mizin-quota-test-'))throw new Error('Unsafe test cleanup');await rm(absolute,{recursive:true,force:true});}
 });
