@@ -1,5 +1,23 @@
 # CHANGELOG — tuya_smartlife
 
+## v0.32.0 (build 0040) - 2026-10-28
+
+### 💥 Breaking Changes
+
+- Nenhum.
+
+### ✨ Features
+
+- feat: adiciona contas seguras e retencao de gravacoes no NAS com backup R2 (commit `9c38fe44ac1f71bc88d8efe51213f108c029b957`)
+
+### 🐛 Fixes
+
+- Nenhum.
+
+### ⚡ Improvements
+
+- improve: registra publicacao do portal no NAS e verificacoes de gravacao (commit `fdb8f5b6700bb4e776c8a081ac20c89e294d35ec`)
+
 ## v0.31.3 (build 0039) - 2026-10-28
 
 ### 💥 Breaking Changes

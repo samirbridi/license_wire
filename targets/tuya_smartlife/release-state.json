@@ -1,20 +1,28 @@
 {
-  "runId": "portal-archive-quota-race-20261028",
-  "sourceCommit": "8ac738ab1b4ce9a143f74aeac2673da0eb7a7d7a",
-  "previous": "v0.31.2 (build 0038)",
-  "version": "v0.31.3 (build 0039)",
-  "build": 39,
+  "runId": "portal-identity-volume4-20261028",
+  "sourceCommit": "9c38fe44ac1f71bc88d8efe51213f108c029b957",
+  "previous": "v0.31.3 (build 0039)",
+  "version": "v0.32.0 (build 0040)",
+  "build": 40,
   "date": "2026-10-28",
   "status": "built",
   "commits": [
     {
-      "sha": "8ac738ab1b4ce9a143f74aeac2673da0eb7a7d7a",
-      "subject": "fix: tolera fechamento atomico de segmentos na verificacao de espaco",
+      "sha": "9c38fe44ac1f71bc88d8efe51213f108c029b957",
+      "subject": "feat: adiciona contas seguras e retencao de gravacoes no NAS com backup R2",
       "body": "",
-      "type": "fix",
-      "description": "tolera fechamento atomico de segmentos na verificacao de espaco",
+      "type": "feat",
+      "description": "adiciona contas seguras e retencao de gravacoes no NAS com backup R2",
+      "breaking": false
+    },
+    {
+      "sha": "fdb8f5b6700bb4e776c8a081ac20c89e294d35ec",
+      "subject": "improve: registra publicacao do portal no NAS e verificacoes de gravacao",
+      "body": "",
+      "type": "improve",
+      "description": "registra publicacao do portal no NAS e verificacoes de gravacao",
       "breaking": false
     }
   ],
-  "artifact": "runtime/builds/build-0039"
+  "artifact": "runtime/builds/build-0040"
 }
