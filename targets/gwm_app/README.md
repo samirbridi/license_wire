@@ -16,7 +16,13 @@
 ---
 
 ## 🎯 2. Estado Atual e Próximos Passos (Multi-IDE Sync)
-*Atualizado por: Antigravity*
+*Estado original por Antigravity; diagnóstico LAN atualizado por Codex em 2026-10-27/28.*
+
+### Diagnóstico LAN com a central ligada
+
+O proprietário confirmou **ORA 5 2026/2027, Coffee OS 3**, estacionado em P e ligado. O IP `192.168.1.119` passou a responder; MAC observado `30:4A:C4:79:46:D5`. A porta **7000** respondeu como **AirTunes/450.14.1**, com RTSP OPTIONS 200. Das 18 portas selecionadas, nenhuma outra ofereceu conexão na coleta registrada. A consulta de metadados `/info` retornou 455 no estado atual. Não foi obtido acesso ao sistema, firmware completo ou telemetria, e nenhuma função foi alterada. `450.14.1` não é a versão do Coffee OS.
+
+Consultar [`notes/06_local_wifi_powered_on.md`](notes/06_local_wifi_powered_on.md) e [`evidence/lan-probe-2026-10-28T02-56-20.657Z.json`](evidence/lan-probe-2026-10-28T02-56-20.657Z.json). Próximos passos: localizar a versão completa na central e identificar uma interface documentada ou um artefato legítimo para REA/Ghidra. Script reproduzível: `node targets/gwm_app/scripts/probe-local-network.mjs`.
 
 ### ✅ Concluído nesta etapa:
 - [x] Inicialização isolada do alvo `targets/gwm_app` segundo a diretriz `AGENTS.md`.
@@ -27,7 +33,7 @@
 - [x] Reconstrução do SDK/CLI zero-dependências em [`reconstructed/gwm-ora-client.mjs`](reconstructed/gwm-ora-client.mjs).
 
 ### 🚀 Próximos Passos:
-0. **Diagnóstico LAN em 2026-10-27 (Codex)**: o IP informado `192.168.1.119` não respondeu a ping nem às tentativas TCP 80/443; sem entrada ARP. A identidade do veículo e qualquer serviço local permanecem não confirmados. Consultar [`notes/05_local_wifi.md`](notes/05_local_wifi.md) e [`evidence/lan-192.168.1.119-20261027.json`](evidence/lan-192.168.1.119-20261027.json). Confirmar o IP atual, central ligada e configuração da LAN antes de prosseguir. Nenhuma função do carro foi alterada.
+0. **Histórico: central desligada em 2026-10-27 (Codex)**: o IP informado `192.168.1.119` não respondeu a ping nem às tentativas TCP 80/443; sem entrada ARP. Essa observação foi superada pela coleta com a central ligada descrita acima. Evidência anterior preservada em [`notes/05_local_wifi.md`](notes/05_local_wifi.md) e [`evidence/lan-192.168.1.119-20261027.json`](evidence/lan-192.168.1.119-20261027.json).
 1. **Validar com a conta real do proprietário**: Testar `reconstructed/gwm-ora-client.mjs` com o e-mail e senha do app **My GWM** para capturar o primeiro snapshot real do **GWM Ora 5** e mapear eventuais códigos exclusivos do modelo.
 2. **Integrar ao Portal Unificado Mizin Home**: Adicionar o card/painel dedicado do **GWM Ora 5** (Bateria, Autonomia, Pneus, Portas/Vidros, Clima, Localização e Comandos Remotos) na plataforma Mizin Home.
 3. **Etapa Futura (Multimídia)**: Investigar a unidade principal (Head Unit / Android Automotive da multimídia do GWM Ora 5) para leitura local/CAN e execução embarcada.

@@ -1,0 +1,19 @@
+{
+  "timestamp": "2026-10-28T03:01:02.039Z",
+  "target": "192.168.1.119:5353",
+  "transport": "unicast DNS queries only; no multicast",
+  "queries": [
+    {
+      "name": "_airplay._tcp.local",
+      "error": "ETIMEOUT"
+    },
+    {
+      "name": "_raop._tcp.local",
+      "error": "ETIMEOUT"
+    },
+    {
+      "name": "_services._dns-sd._udp.local",
+      "error": "ETIMEOUT"
+    }
+  ]
+}

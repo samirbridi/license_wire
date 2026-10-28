@@ -1,0 +1,9 @@
+{
+  "timestamp": "2026-10-28T02:58:27.827Z",
+  "host": "192.168.1.119",
+  "port": 7000,
+  "request": "OPTIONS * RTSP/1.0\r\nCSeq: 1\r\nUser-Agent: LocalReadOnlyProbe/1.0\r\n\r\n",
+  "reason": "response-complete",
+  "responseBase64": "UlRTUC8xLjAgMjAwIE9LDQpQdWJsaWM6IEFOTk9VTkNFLCBTRVRVUCwgUkVDT1JELCBQQVVTRSwgRkxVU0gsIFRFQVJET1dOLCBPUFRJT05TLCBQT1NULCBHRVQsIFBVVCwgR0VUX1BBUkFNRVRFUg0KU2VydmVyOiBBaXJUdW5lcy80NTAuMTQuMQ0KQ1NlcTogMQ0KDQo=",
+  "responseText": "RTSP/1.0 200 OK\r\nPublic: ANNOUNCE, SETUP, RECORD, PAUSE, FLUSH, TEARDOWN, OPTIONS, POST, GET, PUT, GET_PARAMETER\r\nServer: AirTunes/450.14.1\r\nCSeq: 1\r\n\r\n"
+}

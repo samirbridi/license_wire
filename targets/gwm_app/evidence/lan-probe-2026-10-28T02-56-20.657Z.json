@@ -1,0 +1,178 @@
+{
+  "schema": "gwm-lan-probe/v1",
+  "timestamp": "2026-10-28T02:56:20.657Z",
+  "host": "192.168.1.119",
+  "vehicle": {
+    "model": "GWM ORA 5",
+    "modelYear": "2026/2027",
+    "headUnitReportedByOwner": "Coffee OS 3",
+    "parkedInPAndPoweredOnReportedByOwner": true
+  },
+  "interfaces": [
+    {
+      "name": "Ethernet",
+      "address": "192.168.1.30",
+      "netmask": "255.255.255.0"
+    },
+    {
+      "name": "vEthernet (Default Switch)",
+      "address": "172.25.176.1",
+      "netmask": "255.255.240.0"
+    },
+    {
+      "name": "vEthernet (Wi-Fi)",
+      "address": "172.30.16.1",
+      "netmask": "255.255.240.0"
+    },
+    {
+      "name": "vEthernet (Ethernet)",
+      "address": "172.23.16.1",
+      "netmask": "255.255.240.0"
+    },
+    {
+      "name": "vEthernet (WSL)",
+      "address": "172.29.240.1",
+      "netmask": "255.255.240.0"
+    }
+  ],
+  "scope": {
+    "hosts": [
+      "192.168.1.119"
+    ],
+    "ports": [
+      22,
+      80,
+      443,
+      554,
+      3000,
+      5000,
+      5001,
+      5555,
+      7000,
+      8000,
+      8008,
+      8009,
+      8080,
+      8081,
+      8443,
+      8888,
+      9000,
+      9090
+    ],
+    "timeoutMs": 1500,
+    "concurrency": 4,
+    "tcpApplicationPayloadSent": false,
+    "authenticationAttempted": false,
+    "multicastDiscovery": false,
+    "vehicleCommandsSent": false,
+    "vehicleConfigurationWritten": false
+  },
+  "icmp": [
+    {
+      "status": "Success",
+      "roundtripMs": 107,
+      "ttl": 64
+    },
+    {
+      "status": "Success",
+      "roundtripMs": 51,
+      "ttl": 64
+    }
+  ],
+  "tcp": [
+    {
+      "port": 22,
+      "status": "timeout",
+      "elapsedMs": 1503
+    },
+    {
+      "port": 80,
+      "status": "timeout",
+      "elapsedMs": 1502
+    },
+    {
+      "port": 443,
+      "status": "timeout",
+      "elapsedMs": 1502
+    },
+    {
+      "port": 554,
+      "status": "timeout",
+      "elapsedMs": 1502
+    },
+    {
+      "port": 3000,
+      "status": "timeout",
+      "elapsedMs": 1506
+    },
+    {
+      "port": 5000,
+      "status": "timeout",
+      "elapsedMs": 1506
+    },
+    {
+      "port": 5001,
+      "status": "timeout",
+      "elapsedMs": 1505
+    },
+    {
+      "port": 5555,
+      "status": "timeout",
+      "elapsedMs": 1505
+    },
+    {
+      "port": 7000,
+      "status": "open",
+      "elapsedMs": 88
+    },
+    {
+      "port": 8000,
+      "status": "timeout",
+      "elapsedMs": 1500
+    },
+    {
+      "port": 8008,
+      "status": "timeout",
+      "elapsedMs": 1500
+    },
+    {
+      "port": 8009,
+      "status": "timeout",
+      "elapsedMs": 1500
+    },
+    {
+      "port": 8080,
+      "status": "timeout",
+      "elapsedMs": 1500
+    },
+    {
+      "port": 8081,
+      "status": "timeout",
+      "elapsedMs": 1500
+    },
+    {
+      "port": 8443,
+      "status": "timeout",
+      "elapsedMs": 1500
+    },
+    {
+      "port": 8888,
+      "status": "timeout",
+      "elapsedMs": 1500
+    },
+    {
+      "port": 9000,
+      "status": "timeout",
+      "elapsedMs": 1500
+    },
+    {
+      "port": 9090,
+      "status": "timeout",
+      "elapsedMs": 1500
+    }
+  ],
+  "arpRawBase64": "DQpJbnRlcmZhY2U6IDE5Mi4xNjguMS4zMCAtLS0gMHg4DQogIEVuZGVyZYdvIElQICAgICAgICAgICBFbmRlcmWHbyBmoXNpY28gICAgICAgVGlwbw0KICAxOTIuMTY4LjEuMTE5ICAgICAgICAgMzAtNGEtYzQtNzktNDYtZDUgICAgIGRpboNtaWNvICANCg==",
+  "arpRawEncoding": "Windows OEM codepage",
+  "mac": "30:4A:C4:79:46:D5",
+  "completedAt": "2026-10-28T02:56:29.496Z"
+}
