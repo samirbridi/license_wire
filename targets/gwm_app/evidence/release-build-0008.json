@@ -1,0 +1,17 @@
+{
+  "previous": "v0.6.0 (build 0007)",
+  "version": "v0.6.1 (build 0008)",
+  "date": "2026-10-28",
+  "timezone": "America/Sao_Paulo",
+  "baseline": "aba4927ff73e1e826f6ec49f19f3b4753ca3ea72",
+  "sourceHead": "57db2f72db724829134d5601b1a70d994a4e8cb4",
+  "increment": "fix",
+  "commits": [
+    {
+      "hash": "57db2f72db724829134d5601b1a70d994a4e8cb4",
+      "subject": "improve: documenta Coffee OS 3.3.00213 e limites do menu de diagnostico",
+      "type": "improve",
+      "breaking": false
+    }
+  ]
+}

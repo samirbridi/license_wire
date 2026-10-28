@@ -1,5 +1,23 @@
 # 📜 CHANGELOG - gwm_app
 
+## v0.6.1 (build 0008) - 2026-10-28
+
+### 💥 Breaking Changes
+
+- Nenhum.
+
+### ✨ Features
+
+- Nenhum.
+
+### 🐛 Fixes
+
+- Nenhum.
+
+### ⚡ Improvements
+
+- improve: documenta Coffee OS 3.3.00213 e limites do menu de diagnostico (commit `57db2f72db724829134d5601b1a70d994a4e8cb4`)
+
 ## v0.6.0 (build 0007) - 2026-10-28
 
 ### 💥 Breaking Changes
