@@ -4,6 +4,9 @@ RUN apt-get update && apt-get install -y --no-install-recommends ffmpeg python3 
 WORKDIR /workspace
 COPY --chown=1000:1000 workspace/ /workspace/
 RUN cd /workspace/targets/tuya_smartlife/reconstructed/mizin-portal && npm ci --omit=dev --ignore-scripts && npm cache clean --force
+RUN node -e "const fs=require('fs');for(const p of ['/workspace','/workspace/targets','/workspace/targets/tuya_smartlife/reconstructed/mizin-portal']){const s=fs.statSync(p);console.log('CODE_DIRECTORY',p,s.uid,s.gid,(s.mode&511).toString(8));}" \
+ && chown -R 1000:1000 /workspace && chmod -R u=rwX,go= /workspace
 ENV MIZIN_WORKSPACE=/workspace MIZIN_MANAGED=1 MIZIN_PYTHON=/opt/tuya/bin/python MIZIN_CAMERAS_FFMPEG=ffmpeg MIZIN_FFPROBE=ffprobe
 USER 1000:1000
+RUN node -e "const fs=require('fs');for(const p of ['server.mjs','deploy/auth-boot.mjs','camera-archive-runner.mjs','r2-sync-runner.mjs'])fs.accessSync('/workspace/targets/tuya_smartlife/reconstructed/mizin-portal/'+p,fs.constants.R_OK);import('file:///workspace/targets/tuya_smartlife/reconstructed/mizin-portal/portal-identity.mjs').then(()=>console.log('RUNTIME_USER_CODE_ACCESS_OK'));"
 CMD ["node","targets/tuya_smartlife/reconstructed/mizin-portal/server.mjs"]

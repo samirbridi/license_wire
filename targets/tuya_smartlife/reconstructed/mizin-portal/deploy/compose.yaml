@@ -2,7 +2,7 @@ services:
   prepare:
     image: debian:bookworm-slim
     user: "0:0"
-    command: ["sh", "-c", "mkdir -p /data/xiaomi/runtime/central/identity/cloud-secrets /data/xiaomi/runtime/central/identity/cloud-state && chown -R 1000:1000 /data && chmod -R u=rwX,go= /data && chown 1000:1000 /bridge/go2rtc-linux-amd64 && chmod 500 /bridge/go2rtc-linux-amd64 && chown 1000:1000 /archive && chmod 700 /archive"]
+    command: ["sh", "-c", "mkdir -p /data/xiaomi/runtime/central/identity/cloud-secrets /data/xiaomi/runtime/central/identity/cloud-state && chown -R 1000:1000 /data /bridge && chmod -R u=rwX,go= /data /bridge && chmod 500 /bridge/go2rtc-linux-amd64 && chown 1000:1000 /archive && chmod 700 /archive"]
     network_mode: none
     restart: "no"
     volumes:
