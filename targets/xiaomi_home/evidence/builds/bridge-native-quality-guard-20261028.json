@@ -1,0 +1,20 @@
+{
+  "runId": "bridge-native-quality-guard-20261028",
+  "sourceCommit": "e2180602af3cadbb33d570dd75ac7ae1d2365772",
+  "previous": "v0.11.3 (build 0020)",
+  "version": "v0.11.4 (build 0021)",
+  "build": 21,
+  "date": "2026-10-28",
+  "status": "built",
+  "commits": [
+    {
+      "sha": "e2180602af3cadbb33d570dd75ac7ae1d2365772",
+      "subject": "fix: rejeita metadados de resolucao incompletos sem interromper a ponte",
+      "body": "",
+      "type": "fix",
+      "description": "rejeita metadados de resolucao incompletos sem interromper a ponte",
+      "breaking": false
+    }
+  ],
+  "artifact": "runtime/builds/build-0021"
+}

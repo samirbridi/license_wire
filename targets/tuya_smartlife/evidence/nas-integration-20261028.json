@@ -1,0 +1,184 @@
+{
+  "date": "2026-10-28",
+  "version": "v0.31.3 (build 0039)",
+  "sourceCommit": "8ac738ab1b4ce9a143f74aeac2673da0eb7a7d7a",
+  "testsPassed": 19,
+  "linuxSmokePassed": true,
+  "initialNas": {
+    "hardware": "Synology DS425+",
+    "archiveVolume": 4,
+    "validatedViews": [
+      {
+        "alias": "mi2k_externa_quality4",
+        "video": {
+          "type": "video",
+          "codec": "hevc",
+          "width": 2304,
+          "height": 1296
+        },
+        "audio": {
+          "type": "audio",
+          "codec": "flac",
+          "sampleRate": "8000",
+          "channels": 1
+        }
+      },
+      {
+        "alias": "outdoor_pro_poste_quality3",
+        "video": {
+          "type": "video",
+          "codec": "hevc",
+          "width": 2880,
+          "height": 1620
+        },
+        "audio": {
+          "type": "audio",
+          "codec": "opus",
+          "sampleRate": "48000",
+          "channels": 2
+        }
+      },
+      {
+        "alias": "outdoor_pro_poste_channel2_quality3",
+        "video": {
+          "type": "video",
+          "codec": "hevc",
+          "width": 2880,
+          "height": 1620
+        },
+        "audio": {
+          "type": "audio",
+          "codec": "opus",
+          "sampleRate": "48000",
+          "channels": 2
+        }
+      },
+      {
+        "alias": "mi2k_estudio_quality4",
+        "video": {
+          "type": "video",
+          "codec": "hevc",
+          "width": 2304,
+          "height": 1296
+        },
+        "audio": {
+          "type": "audio",
+          "codec": "flac",
+          "sampleRate": "8000",
+          "channels": 1
+        }
+      },
+      {
+        "alias": "mi2k_sala_quality4",
+        "video": {
+          "type": "video",
+          "codec": "hevc",
+          "width": 2304,
+          "height": 1296
+        },
+        "audio": {
+          "type": "audio",
+          "codec": "flac",
+          "sampleRate": "8000",
+          "channels": 1
+        }
+      },
+      {
+        "alias": "aw300_garagem_quality3",
+        "video": {
+          "type": "video",
+          "codec": "hevc",
+          "width": 2304,
+          "height": 1296
+        },
+        "audio": {
+          "type": "audio",
+          "codec": "opus",
+          "sampleRate": "48000",
+          "channels": 2
+        }
+      }
+    ],
+    "failedViews": [
+      "aw300_portao_quality3"
+    ]
+  },
+  "continuousNasValidation": {
+    "mode": "continuous",
+    "startedAt": "2026-10-28T16:11:32.494Z",
+    "filesAtSample": 154,
+    "activeWriters": [
+      {
+        "alias": "aw300_garagem_quality3",
+        "bytes": 14155776,
+        "modifiedSecondsAgo": 2
+      },
+      {
+        "alias": "mi2k_estudio_quality4",
+        "bytes": 8388608,
+        "modifiedSecondsAgo": 1
+      },
+      {
+        "alias": "mi2k_sala_quality4",
+        "bytes": 6553600,
+        "modifiedSecondsAgo": 6
+      },
+      {
+        "alias": "mi2k_externa_quality4",
+        "bytes": 15466496,
+        "modifiedSecondsAgo": 1
+      },
+      {
+        "alias": "aw300_portao_quality3",
+        "bytes": 16252928,
+        "modifiedSecondsAgo": 0
+      },
+      {
+        "alias": "outdoor_pro_poste_channel2_quality3",
+        "bytes": 18874368,
+        "modifiedSecondsAgo": 1
+      }
+    ],
+    "outdoorPrimary": "valid_recordings_but_no_active_writer_at_sample_despite_recording_status",
+    "targetSegmentSeconds": 300,
+    "keyframeDependentDuration": true,
+    "limitBytes": 107374182400,
+    "overwrite": false,
+    "stability24h": "not_validated"
+  },
+  "remotePublication": "published_full_portal_authenticated_nas",
+  "audibleTalkback": "physical_confirmation_pending",
+  "nasImage": "a6dfa60b209d",
+  "windowsCameraListeners": 0,
+  "windowsStartupDisabled": true,
+  "fullPortalDevices": 24,
+  "cameraPreviews": 6,
+  "nativeDownload": {
+    "video": {
+      "codec": "hevc",
+      "width": 2880,
+      "height": 1620
+    },
+    "audio": {
+      "codec": "opus",
+      "sampleRate": 48000,
+      "channels": 2
+    },
+    "duration": 10.023,
+    "bytes": 1215925,
+    "sha256": "d650e704c86075ed911a93950217d11f11053ee81bf13fb559ab3cb896076e75",
+    "browserPlayback": {
+      "width": 1280,
+      "height": 720,
+      "readyState": 4,
+      "time": 10.021833
+    }
+  },
+  "remaining": [
+    "physical_audible_talkback",
+    "outdoor_dual_view_and_primary_continuity",
+    "all_model_sd_playback_export",
+    "retention_policy",
+    "r2_backup"
+  ]
+}

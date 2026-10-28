@@ -1,0 +1,28 @@
+{
+  "runId": "bridge-native-quality-20261028",
+  "sourceCommit": "f2690dcca518b79fab0174f7b4a62a6ad21cfc7c",
+  "previous": "v0.11.2 (build 0019)",
+  "version": "v0.11.3 (build 0020)",
+  "build": 20,
+  "date": "2026-10-28",
+  "status": "built",
+  "commits": [
+    {
+      "sha": "f2690dcca518b79fab0174f7b4a62a6ad21cfc7c",
+      "subject": "fix: aguarda a resolucao solicitada antes de abrir gravacoes Xiaomi",
+      "body": "",
+      "type": "fix",
+      "description": "aguarda a resolucao solicitada antes de abrir gravacoes Xiaomi",
+      "breaking": false
+    },
+    {
+      "sha": "ad500737dfaeae4e805cdbf650e36678a3db3d2e",
+      "subject": "improve: registra publicacao e QA SD do build 0019",
+      "body": "",
+      "type": "improve",
+      "description": "registra publicacao e QA SD do build 0019",
+      "breaking": false
+    }
+  ],
+  "artifact": "runtime/builds/build-0020"
+}

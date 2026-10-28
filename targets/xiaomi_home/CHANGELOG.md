@@ -1,5 +1,41 @@
 # CHANGELOG — xiaomi_home
 
+## v0.11.4 (build 0021) - 2026-10-28
+
+### 💥 Breaking Changes
+
+- Nenhum.
+
+### ✨ Features
+
+- Nenhum.
+
+### 🐛 Fixes
+
+- fix: rejeita metadados de resolucao incompletos sem interromper a ponte (commit `e2180602af3cadbb33d570dd75ac7ae1d2365772`)
+
+### ⚡ Improvements
+
+- Nenhum.
+
+## v0.11.3 (build 0020) - 2026-10-28
+
+### 💥 Breaking Changes
+
+- Nenhum.
+
+### ✨ Features
+
+- Nenhum.
+
+### 🐛 Fixes
+
+- fix: aguarda a resolucao solicitada antes de abrir gravacoes Xiaomi (commit `f2690dcca518b79fab0174f7b4a62a6ad21cfc7c`)
+
+### ⚡ Improvements
+
+- improve: registra publicacao e QA SD do build 0019 (commit `ad500737dfaeae4e805cdbf650e36678a3db3d2e`)
+
 ## v0.11.2 (build 0019) - 2026-10-28
 
 ### 💥 Breaking Changes

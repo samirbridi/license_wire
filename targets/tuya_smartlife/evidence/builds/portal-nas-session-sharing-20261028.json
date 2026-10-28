@@ -1,0 +1,20 @@
+{
+  "runId": "portal-nas-session-sharing-20261028",
+  "sourceCommit": "d954d43ea81f39ec74b8e8328c6af55e8e504f44",
+  "previous": "v0.31.1 (build 0037)",
+  "version": "v0.31.2 (build 0038)",
+  "build": 38,
+  "date": "2026-10-28",
+  "status": "built",
+  "commits": [
+    {
+      "sha": "d954d43ea81f39ec74b8e8328c6af55e8e504f44",
+      "subject": "fix: evita sessoes de aquecimento paralelas ao gravador do NAS",
+      "body": "",
+      "type": "fix",
+      "description": "evita sessoes de aquecimento paralelas ao gravador do NAS",
+      "breaking": false
+    }
+  ],
+  "artifact": "runtime/builds/build-0038"
+}

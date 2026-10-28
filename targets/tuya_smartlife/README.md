@@ -80,15 +80,29 @@ A regressão da fala veio da leitura do inventário por expressão regular incom
 
 O pacote privado do DS425+ utiliza a ponte Xiaomi Linux verificada por SHA-256, mantém os serviços em loopback e reaproveita a autenticação remota. A UI acessa a mesma origem HTTPS. O modo piloto suspende automações e comandos Tuya durante a validação, evitando execução duplicada no Windows e NAS.
 
-As gravações usam cópia de codecs para Matroska com áudio. O destino autorizado e conferido no DSM é `/volume4/HDD 1TB - V2/Mizin-Cameras`. O teste inicial valida dez segundos de cada uma das sete visões. Somente após todos passarem o gravador tenta segmentos sucessivos de cinco minutos. O limite inicial é 100 GiB; pausa antes de esgotar o espaço e não apaga arquivos. Pode haver intervalos nas reconexões entre segmentos; monitoramento de continuidade 24h permanece pendente. A prévia do arquivo no navegador usa H.264/AAC e o download conserva o arquivo original.
+As gravações usam cópia de vídeo para Matroska com áudio. O destino autorizado e conferido no DSM é `/volume4/HDD 1TB - V2/Mizin-Cameras`. Cada visão passa por um teste independente de dez segundos; as aprovadas iniciam gravação contínua e as demais tentam novamente. Uma conexão permanece aberta entre segmentos, com alvo de cinco minutos; o corte depende dos quadros-chave da câmera e pode gerar arquivos mais longos. O limite inicial é 100 GiB, com reserva de 2 GiB livres e sem apagar arquivos. A prévia no navegador usa H.264/AAC; o download preserva o arquivo armazenado. Continuidade por 24h e política definitiva de retenção permanecem pendentes.
 
 O versionamento do portal passou a ser calculado a partir dos commits pelo `scripts/version-build.mjs`, com build incremental, changelog rastreável e testes de migração da versão legada. Consulte `VERSION` para o número gerado.
 
-Próximos passos: confirmar o teste no DS425+, examinar arquivos e áudio, efetuar a troca controlada do túnel e testar o portal completo sem processos Windows. O backup ao R2 e eventual VPS ficam para a etapa seguinte. Não há publicação nem migração comprovadas por esses testes locais.
+Próximos passos: confirmar fisicamente a fala, estabilizar a gravação e a reprodução simultânea das duas visões da Outdoor e medir continuidade por 24h. O backup ao R2 e eventual VPS ficam para a etapa seguinte.
 
 
 ### Validação física no DS425+ e continuidade
 
 O primeiro teste real no NAS produziu arquivos com áudio em seis visões: três HLC7 em 2304×1296/HEVC+FLAC 8 kHz, as duas CW701 em 2880×1620/HEVC+Opus 48 kHz e a AW300 Garagem em 2304×1296/HEVC+Opus 48 kHz. A AW300 Portão teve timeout UDP no NAS e abriu na ponte Windows. O relatório privado `evidence/private/nas-initial-test-status.json` registra os resultados sem substituir falhas por sucessos.
 
-O gravador foi ajustado para validar e tentar novamente cada câmera de forma independente. A gravação contínua mantém uma conexão por visão e divide os arquivos sem encerrar o fluxo a cada cinco minutos. Um teste com FFmpeg real confirmou os 70 pacotes originais de vídeo preservados através de todos os segmentos, com áudio. A quota considera também arquivos incompletos. A validação da versão nova no NAS e a troca do túnel ainda precisam ser concluídas.
+O gravador foi ajustado para validar e tentar novamente cada câmera de forma independente. Um teste com FFmpeg real confirmou os 70 pacotes originais de vídeo preservados através dos segmentos, com áudio. A quota considera arquivos incompletos e tolera ENOENT quando um segmento é renomeado durante a medição; erros de permissão continuam sendo reportados.
+
+### Publicação do portal completo — build 0039
+
+O portal completo está publicado em `https://homecams.pages.dev`, com login e backend no DS425+. A passagem privada Cloudflare `homecams-portal` aponta para `127.0.0.1:19860`, com Worker `homecams-portal-gateway`. O túnel roda no NAS e não requer portas abertas no roteador. Comandos e automações existentes foram reativados após autorização explícita do usuário.
+
+O projeto `mizin-home` mantém os dados e a ponte em `/volume1/docker/nas-portal-build-0036`; o contexto da imagem atual é `../nas-portal-build-0039/app`. O arquivo anterior foi preservado como `compose-build0038-backup.yaml`. Uma referência antiga do Container Manager ao gravador foi corrigida reiniciando o pacote oficial; a criação final terminou com código zero e imagem `a6dfa60b209d`.
+
+O login público, os estados dos 24 aparelhos cadastrados, seis prévias de câmeras e reprodução de vídeo a 1280×720 foram verificados no navegador. Uma gravação real da Outdoor foi reproduzida e baixada pelo portal: HEVC 2880×1620, Opus 48 kHz estéreo, 10,023 s, 1.215.925 bytes. SHA-256: `d650e704c86075ed911a93950217d11f11053ee81bf13fb559ab3cb896076e75`.
+
+A API apresentava 154 arquivos e modo contínuo na amostra. A inspeção dos arquivos abertos confirmou seis escritores com atualizações de 0 a 6 segundos: as três Mi 2K, as duas AW300 e a visão secundária da Outdoor. A visão principal da Outdoor produziu arquivos válidos, mas não havia escritor ativo na amostra, apesar do status `recording`: esse estado não comprova continuidade e precisa de investigação. A dupla visão ao vivo também não está completamente validada. A leitura de capacidade do SD da Outdoor respondeu; busca, reprodução e exportação de SD em todos os modelos exigem validação adicional.
+
+As pontes do Windows e seus túneis foram encerrados, e não havia ouvintes nas portas 19843/19845/19846/19853/19860/19861 na verificação. A inicialização `Iniciar-Mizin-Permanente.vbs` foi renomeada reversivelmente com sufixo `.disabled-nas-migration-20261028`. Não reativar o guardian Windows nem publicar a interface do protótipo Xiaomi sobre este portal. O NAS e a internet precisam permanecer ligados.
+
+O convite inicial fica no File Station, em `docker/nas-portal-build-0036/data/xiaomi/runtime/central/owner-remote-access.json`; é privado, de uso único e renovado a cada oito minutos. O navegador de entrega já foi conectado, sem expor o código no chat. Não publicar pacotes ZIP privados, sessões, chaves ou vídeos de teste. Evidências sanitizadas: `evidence/nas-integration-20261028.json`; dados detalhados ficam em `evidence/private/`.

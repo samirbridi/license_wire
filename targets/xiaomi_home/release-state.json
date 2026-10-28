@@ -1,20 +1,20 @@
 {
-  "runId": "20261028-sd-ack-03",
-  "sourceCommit": "7b76a97b1c84cf8785a9422495ba7a2d4aa52502",
-  "previous": "v0.11.1 (build 0018)",
-  "version": "v0.11.2 (build 0019)",
-  "build": 19,
+  "runId": "bridge-native-quality-guard-20261028",
+  "sourceCommit": "e2180602af3cadbb33d570dd75ac7ae1d2365772",
+  "previous": "v0.11.3 (build 0020)",
+  "version": "v0.11.4 (build 0021)",
+  "build": 21,
   "date": "2026-10-28",
   "status": "built",
   "commits": [
     {
-      "sha": "7b76a97b1c84cf8785a9422495ba7a2d4aa52502",
-      "subject": "fix: valida confirmacao SD HLC7 pelo identificador observado",
+      "sha": "e2180602af3cadbb33d570dd75ac7ae1d2365772",
+      "subject": "fix: rejeita metadados de resolucao incompletos sem interromper a ponte",
       "body": "",
       "type": "fix",
-      "description": "valida confirmacao SD HLC7 pelo identificador observado",
+      "description": "rejeita metadados de resolucao incompletos sem interromper a ponte",
       "breaking": false
     }
   ],
-  "artifact": "runtime/builds/build-0019"
+  "artifact": "runtime/builds/build-0021"
 }

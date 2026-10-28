@@ -1,0 +1,7 @@
+{
+  "version": "v0.11.3 (build 0020)",
+  "sourceCommit": "f2690dcca518b79fab0174f7b4a62a6ad21cfc7c",
+  "upstream": "github.com/AlexxIT/go2rtc@v1.9.15",
+  "pass": false,
+  "files": []
+}

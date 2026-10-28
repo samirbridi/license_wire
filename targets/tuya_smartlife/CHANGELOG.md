@@ -1,4 +1,76 @@
-# 📜 CHANGELOG - tuya_smartlife
+# CHANGELOG — tuya_smartlife
+
+## v0.31.3 (build 0039) - 2026-10-28
+
+### 💥 Breaking Changes
+
+- Nenhum.
+
+### ✨ Features
+
+- Nenhum.
+
+### 🐛 Fixes
+
+- fix: tolera fechamento atomico de segmentos na verificacao de espaco (commit `8ac738ab1b4ce9a143f74aeac2673da0eb7a7d7a`)
+
+### ⚡ Improvements
+
+- Nenhum.
+
+## v0.31.2 (build 0038) - 2026-10-28
+
+### 💥 Breaking Changes
+
+- Nenhum.
+
+### ✨ Features
+
+- Nenhum.
+
+### 🐛 Fixes
+
+- fix: evita sessoes de aquecimento paralelas ao gravador do NAS (commit `d954d43ea81f39ec74b8e8328c6af55e8e504f44`)
+
+### ⚡ Improvements
+
+- Nenhum.
+
+## v0.31.1 (build 0037) - 2026-10-28
+
+### 💥 Breaking Changes
+
+- Nenhum.
+
+### ✨ Features
+
+- Nenhum.
+
+### 🐛 Fixes
+
+- fix: mantem gravacao persistente e recupera cada camera independentemente (commit `9c800dc88c053f60ba9f87a25b3e471058b3c2d9`)
+
+### ⚡ Improvements
+
+- Nenhum.
+
+## v0.31.0 (build 0036) - 2026-10-28
+
+### 💥 Breaking Changes
+
+- Nenhum.
+
+### ✨ Features
+
+- feat: integra portal completo com fala confirmada e arquivo de cameras no NAS (commit `6ebdcd2e1690df36cf101ac041cd6f178e28e3aa`)
+
+### 🐛 Fixes
+
+- Nenhum.
+
+### ⚡ Improvements
+
+- Nenhum.
 
 Todas as descobertas, módulos dissecados e correções desta análise são registrados aqui.
 Formato de versão obrigatório: `vX.Y.Z (build XXXX)`.

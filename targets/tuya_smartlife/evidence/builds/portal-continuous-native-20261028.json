@@ -1,0 +1,20 @@
+{
+  "runId": "portal-continuous-native-20261028",
+  "sourceCommit": "9c800dc88c053f60ba9f87a25b3e471058b3c2d9",
+  "previous": "v0.31.0 (build 0036)",
+  "version": "v0.31.1 (build 0037)",
+  "build": 37,
+  "date": "2026-10-28",
+  "status": "built",
+  "commits": [
+    {
+      "sha": "9c800dc88c053f60ba9f87a25b3e471058b3c2d9",
+      "subject": "fix: mantem gravacao persistente e recupera cada camera independentemente",
+      "body": "",
+      "type": "fix",
+      "description": "mantem gravacao persistente e recupera cada camera independentemente",
+      "breaking": false
+    }
+  ],
+  "artifact": "runtime/builds/build-0037"
+}

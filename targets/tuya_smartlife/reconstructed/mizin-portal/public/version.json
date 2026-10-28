@@ -1,6 +1,6 @@
 {
-  "version": "v0.30.2 (build 0035)",
-  "build": "0035",
-  "name": "Mizin Home Portal",
-  "updatedAt": "2026-10-28T00:42:00-03:00"
+  "display": "v0.31.3 (build 0039)",
+  "build": 39,
+  "sourceCommit": "8ac738ab1b4ce9a143f74aeac2673da0eb7a7d7a",
+  "date": "2026-10-28"
 }

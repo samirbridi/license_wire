@@ -1,0 +1,20 @@
+{
+  "runId": "portal-nas-native-20261028",
+  "sourceCommit": "6ebdcd2e1690df36cf101ac041cd6f178e28e3aa",
+  "previous": "v0.30.2 (build 0035)",
+  "version": "v0.31.0 (build 0036)",
+  "build": 36,
+  "date": "2026-10-28",
+  "status": "built",
+  "commits": [
+    {
+      "sha": "6ebdcd2e1690df36cf101ac041cd6f178e28e3aa",
+      "subject": "feat: integra portal completo com fala confirmada e arquivo de cameras no NAS",
+      "body": "",
+      "type": "feat",
+      "description": "integra portal completo com fala confirmada e arquivo de cameras no NAS",
+      "breaking": false
+    }
+  ],
+  "artifact": "runtime/builds/build-0036"
+}
