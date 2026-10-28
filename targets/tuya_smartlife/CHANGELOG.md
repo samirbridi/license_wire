@@ -3,6 +3,14 @@
 Todas as descobertas, módulos dissecados e correções desta análise são registrados aqui.
 Formato de versão obrigatório: `vX.Y.Z (build XXXX)`.
 
+## v0.28.1 (build 0031) - 2026-10-27
+
+### 🐛 Fixes
+- fix: correção de `ReferenceError: hwAccelEncoder is not defined` nas rotas de streaming e fallback de gravação do cartão MicroSD (`/api/camera/playback/stream`), substituindo a variável inexistente por `HAS_NVENC`
+- fix: reinício e estabilização contínua do daemon da central Mizin Home no Node.js
+
+---
+
 ## v0.28.0 (build 0030) - 2026-10-27
 
 ### 💥 Breaking Changes

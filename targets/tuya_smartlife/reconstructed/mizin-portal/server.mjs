@@ -2638,7 +2638,7 @@ const server = http.createServer(async (req, res) => {
 
       child.on('close', (code) => {
         if (child !== activeChild) return;
-        if (!headersSent && !retriedCpu && hwAccelEncoder && !res.destroyed) {
+        if (!headersSent && !retriedCpu && HAS_NVENC && !res.destroyed) {
           retriedCpu = true;
           spawnPlaybackStream(true);
           return;
@@ -2655,7 +2655,7 @@ const server = http.createServer(async (req, res) => {
 
       child.once('error', () => {
         if (child !== activeChild) return;
-        if (!headersSent && !retriedCpu && hwAccelEncoder && !res.destroyed) {
+        if (!headersSent && !retriedCpu && HAS_NVENC && !res.destroyed) {
           retriedCpu = true;
           spawnPlaybackStream(true);
         }
