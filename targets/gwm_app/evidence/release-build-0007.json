@@ -1,0 +1,17 @@
+{
+  "previous": "v0.5.0 (build 0006)",
+  "version": "v0.6.0 (build 0007)",
+  "date": "2026-10-28",
+  "timezone": "America/Sao_Paulo",
+  "baseline": "a88d95b950264cd421834dfa2c7f9dc6b73f73e4",
+  "sourceHead": "334a336b6d2641acf94a0fd7a9a96ea21cf085ab",
+  "increment": "feat",
+  "commits": [
+    {
+      "hash": "334a336b6d2641acf94a0fd7a9a96ea21cf085ab",
+      "subject": "feat: adiciona coleta LAN limitada e identifica servico AirTunes da central GWM",
+      "type": "feat",
+      "breaking": false
+    }
+  ]
+}

@@ -1,5 +1,23 @@
 # 📜 CHANGELOG - gwm_app
 
+## v0.6.0 (build 0007) - 2026-10-28
+
+### 💥 Breaking Changes
+
+- Nenhum.
+
+### ✨ Features
+
+- feat: adiciona coleta LAN limitada e identifica servico AirTunes da central GWM (commit `334a336b6d2641acf94a0fd7a9a96ea21cf085ab`)
+
+### 🐛 Fixes
+
+- Nenhum.
+
+### ⚡ Improvements
+
+- Nenhum.
+
 ## v0.5.0 (build 0006) - 2026-10-27
 
 ### 💥 Breaking Changes
