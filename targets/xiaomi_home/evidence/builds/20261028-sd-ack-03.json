@@ -1,0 +1,20 @@
+{
+  "runId": "20261028-sd-ack-03",
+  "sourceCommit": "7b76a97b1c84cf8785a9422495ba7a2d4aa52502",
+  "previous": "v0.11.1 (build 0018)",
+  "version": "v0.11.2 (build 0019)",
+  "build": 19,
+  "date": "2026-10-28",
+  "status": "built",
+  "commits": [
+    {
+      "sha": "7b76a97b1c84cf8785a9422495ba7a2d4aa52502",
+      "subject": "fix: valida confirmacao SD HLC7 pelo identificador observado",
+      "body": "",
+      "type": "fix",
+      "description": "valida confirmacao SD HLC7 pelo identificador observado",
+      "breaking": false
+    }
+  ],
+  "artifact": "runtime/builds/build-0019"
+}

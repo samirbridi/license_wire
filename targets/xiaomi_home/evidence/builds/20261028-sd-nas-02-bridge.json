@@ -1,0 +1,20 @@
+{
+    "version":  "v0.11.1 (build 0018)",
+    "sourceCommit":  "680857a5b1abb9f96749e75d887ddd8f2eabb0b6",
+    "upstream":  "github.com/AlexxIT/go2rtc@v1.9.15",
+    "pass":  true,
+    "files":  [
+                  {
+                      "arch":  "amd64",
+                      "platform":  "windows",
+                      "file":  "go2rtc-windows-amd64.exe",
+                      "sha256":  "55137815efcb50343b74b305eb264ddf60280cc659ad23e81d836cb974b13289"
+                  },
+                  {
+                      "arch":  "amd64",
+                      "platform":  "linux",
+                      "file":  "go2rtc-linux-amd64",
+                      "sha256":  "12b86b979287200380c1cdcdcd8df0d6153ccfbe176954f24dd92b2f8efe696d"
+                  }
+              ]
+}

@@ -1,28 +1,20 @@
 {
-  "runId": "20261027-storage-read-01",
-  "sourceCommit": "dcc463800c5d5f65708975a57596de18f2a74e57",
-  "previous": "v0.9.0 (build 0015)",
-  "version": "v0.10.0 (build 0016)",
-  "build": 16,
-  "date": "2026-10-27",
+  "runId": "20261028-sd-ack-03",
+  "sourceCommit": "7b76a97b1c84cf8785a9422495ba7a2d4aa52502",
+  "previous": "v0.11.1 (build 0018)",
+  "version": "v0.11.2 (build 0019)",
+  "build": 19,
+  "date": "2026-10-28",
   "status": "built",
   "commits": [
     {
-      "sha": "dcc463800c5d5f65708975a57596de18f2a74e57",
-      "subject": "feat: adiciona consultas isoladas de SD e posicoes Xiaomi",
+      "sha": "7b76a97b1c84cf8785a9422495ba7a2d4aa52502",
+      "subject": "fix: valida confirmacao SD HLC7 pelo identificador observado",
       "body": "",
-      "type": "feat",
-      "description": "adiciona consultas isoladas de SD e posicoes Xiaomi",
-      "breaking": false
-    },
-    {
-      "sha": "211b5e6b426e1edc6683a560539d42eeebf832d2",
-      "subject": "feat: corrige transporte CS2, talkback bidirecional, playback SD 0x10D e controles Xiaomi local e online",
-      "body": "",
-      "type": "feat",
-      "description": "corrige transporte CS2, talkback bidirecional, playback SD 0x10D e controles Xiaomi local e online",
+      "type": "fix",
+      "description": "valida confirmacao SD HLC7 pelo identificador observado",
       "breaking": false
     }
   ],
-  "artifact": "runtime/builds/build-0016"
+  "artifact": "runtime/builds/build-0019"
 }

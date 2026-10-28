@@ -1,0 +1,28 @@
+{
+  "runId": "20261027-sd-remote-linux-01",
+  "sourceCommit": "70754f196d940839017b07ee186a837af8ee9984",
+  "previous": "v0.10.0 (build 0016)",
+  "version": "v0.11.0 (build 0017)",
+  "build": 17,
+  "date": "2026-10-27",
+  "status": "built",
+  "commits": [
+    {
+      "sha": "70754f196d940839017b07ee186a837af8ee9984",
+      "subject": "feat: integra replay SD e gateway privado com preparacao Linux",
+      "body": "",
+      "type": "feat",
+      "description": "integra replay SD e gateway privado com preparacao Linux",
+      "breaking": false
+    },
+    {
+      "sha": "f30211ec8b9c4a6bad2a01eae0099dac9e1a03ad",
+      "subject": "improve: registra consultas reais de seis cartoes e posicoes da Outdoor",
+      "body": "",
+      "type": "improve",
+      "description": "registra consultas reais de seis cartoes e posicoes da Outdoor",
+      "breaking": false
+    }
+  ],
+  "artifact": "runtime/builds/build-0017"
+}

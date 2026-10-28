@@ -1,0 +1,53 @@
+{
+  "observedAt": "2026-10-28T03:10:51.366Z",
+  "origin": "https://homecams.pages.dev",
+  "unauthenticated": {
+    "/api/cameras": 401,
+    "/api/recordings/outdoor_pro_poste": 401,
+    "/api/video/outdoor_pro_poste": 401
+  },
+  "pairingStatus": 200,
+  "secureCookie": true,
+  "cameraCount": 6,
+  "storage": {
+    "status": 200,
+    "periodCount": 1488
+  },
+  "clip": {
+    "status": 200,
+    "contentType": "video/mp4",
+    "cacheControl": "no-store",
+    "bytes": 3177525
+  },
+  "version": {
+    "display": "v0.11.2 (build 0019)",
+    "build": 19,
+    "sourceCommit": "7b76a97b1c84cf8785a9422495ba7a2d4aa52502",
+    "date": "2026-10-28"
+  },
+  "pass": true,
+  "remoteClipDecoded": true,
+  "remoteClipDurationSeconds": 5.0,
+  "remoteClipResolution": [
+    2880,
+    1620
+  ],
+  "remoteClipOverlayAtSecond4": "2026-10-27 20:02:41 Asia/Shanghai",
+  "recordingStartUTC": "2026-10-27T12:02:37Z",
+  "displayTimeZone": "America/Sao_Paulo",
+  "windowsUnitTests": 36,
+  "linuxAppTests": 28,
+  "linuxAppImage": "homecams-central:build0018",
+  "linuxBridgeExecuted": true,
+  "physicalNasTested": false,
+  "physicalAndroidTested": false,
+  "windowsStillRequired": true,
+  "sourceFilesChangedSinceLinuxImage": "version manifest and Go playback acknowledgement only",
+  "publicBrowserPlayback": {
+    "view": "view2",
+    "currentTimeSeconds": 38.4661,
+    "readyState": 3,
+    "error": null,
+    "physicalAndroid": false
+  }
+}

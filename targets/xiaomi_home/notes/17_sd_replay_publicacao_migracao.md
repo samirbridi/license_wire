@@ -40,3 +40,13 @@ powershell.exe -File targets/xiaomi_home/scripts/publish-cloudflare.ps1 -Wrangle
 O build calcula versão/changelog pelos commits, verifica módulos Go, aplica os patches em cópia isolada e gera Windows/Linux amd64. Nunca alterar o cache Go compartilhado para compilar a ponte.
 
 Prévias em segundo plano são suspensas para uma câmera em replay SD, e outro dispositivo recebe resposta de ocupado antes de disputar esse transporte. Falhas transitórias de catálogo recebem uma única nova tentativa, sem fabricar disponibilidade.
+
+## Resultado do build 0019
+
+Publicado em https://homecams.pages.dev como v0.11.2 (build 0019), fonte 7b76a97b1c84cf8785a9422495ba7a2d4aa52502. O teste público confirmou 401 sem sessão, pareamento 200 com cookie Secure/HttpOnly, seis câmeras e catálogo da segunda lente com 1.488 arquivos no dia selecionado. O MP4 remoto tem cinco segundos a 2880×1620; quadro em 4 s mostra 20:02:41 China, coerente com início em 12:02:37 UTC. Recibo sanitizado: evidence/builds/20261028-build0019-public-qa.json.
+
+O HLC7 respondeu realmente `{"id":<timestampDoArquivo>,"status":"filefound"}`. O build 0019 exige esse estado com o identificador esperado e rejeita confirmação de outro arquivo. O ensaio físico seguinte exportou cinco segundos HEVC 2304×1296, com sobreposição 21:00:01 de São Paulo para o arquivo de 00:00:00 UTC. O payload com autoswitchtolive=0 não produziu vídeo nesse firmware; essa tentativa não foi classificada como suporte.
+
+Os 28 testes da aplicação passaram também em contêiner Linux. O binário Linux amd64 foi executado nesse ambiente. O pacote privado do NAS foi montado e seu Compose foi validado; isso não comprova operação nas câmeras a partir do NAS. O pacote contém a sessão Xiaomi e o segredo do túnel, não contém clipes nem sessões de navegador do Windows. Envio ao NAS e ativação aguardam confirmação do proprietário. O endereço público ainda usa a central Windows.
+
+A interface pública também foi autenticada no navegador e reproduziu a segunda vista da Outdoor: currentTime 38,4661 s, readyState 3, sem erro. A captura de prova ficou no diretório privado. Foi restaurado o viewport temporário de teste ao finalizar. A confirmação para transferir as credenciais ao NAS permaneceu pendente.

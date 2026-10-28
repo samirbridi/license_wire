@@ -1,5 +1,59 @@
 # CHANGELOG — xiaomi_home
 
+## v0.11.2 (build 0019) - 2026-10-28
+
+### 💥 Breaking Changes
+
+- Nenhum.
+
+### ✨ Features
+
+- Nenhum.
+
+### 🐛 Fixes
+
+- fix: valida confirmacao SD HLC7 pelo identificador observado (commit `7b76a97b1c84cf8785a9422495ba7a2d4aa52502`)
+
+### ⚡ Improvements
+
+- Nenhum.
+
+## v0.11.1 (build 0018) - 2026-10-28
+
+### 💥 Breaking Changes
+
+- Nenhum.
+
+### ✨ Features
+
+- Nenhum.
+
+### 🐛 Fixes
+
+- fix: isola replay SD e prepara instalacao privada no NAS (commit `680857a5b1abb9f96749e75d887ddd8f2eabb0b6`)
+
+### ⚡ Improvements
+
+- Nenhum.
+
+## v0.11.0 (build 0017) - 2026-10-27
+
+### 💥 Breaking Changes
+
+- Nenhum.
+
+### ✨ Features
+
+- feat: integra replay SD e gateway privado com preparacao Linux (commit `70754f196d940839017b07ee186a837af8ee9984`)
+
+### 🐛 Fixes
+
+- Nenhum.
+
+### ⚡ Improvements
+
+- improve: registra consultas reais de seis cartoes e posicoes da Outdoor (commit `f30211ec8b9c4a6bad2a01eae0099dac9e1a03ad`)
+
 ## v0.10.0 (build 0016) - 2026-10-27
 
 ### 💥 Breaking Changes

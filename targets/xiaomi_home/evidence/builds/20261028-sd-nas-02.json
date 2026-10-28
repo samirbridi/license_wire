@@ -1,0 +1,20 @@
+{
+  "runId": "20261028-sd-nas-02",
+  "sourceCommit": "680857a5b1abb9f96749e75d887ddd8f2eabb0b6",
+  "previous": "v0.11.0 (build 0017)",
+  "version": "v0.11.1 (build 0018)",
+  "build": 18,
+  "date": "2026-10-28",
+  "status": "built",
+  "commits": [
+    {
+      "sha": "680857a5b1abb9f96749e75d887ddd8f2eabb0b6",
+      "subject": "fix: isola replay SD e prepara instalacao privada no NAS",
+      "body": "",
+      "type": "fix",
+      "description": "isola replay SD e prepara instalacao privada no NAS",
+      "breaking": false
+    }
+  ],
+  "artifact": "runtime/builds/build-0018"
+}
