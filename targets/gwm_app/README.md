@@ -18,6 +18,10 @@
 ## 🎯 2. Estado Atual e Próximos Passos (Multi-IDE Sync)
 *Estado original por Antigravity; diagnóstico LAN atualizado por Codex em 2026-10-27/28.*
 
+### Menu de engenharia: retorno do proprietário e pesquisa de comentários — 2026-10-28
+
+O proprietário tentou a dica do vídeo do Dargo e confirmou que **nenhum painel nem pedido de senha apareceu** no ORA 5 **3.3.00213**. A leitura dos comentários e de um projeto público de HUT trouxe uma pista de habilitação diagnóstica, ainda sem compatibilidade comprovada com esta central. Pesquisa e limitações em [`notes/09_engineering_menu_followup_20261028.md`](notes/09_engineering_menu_followup_20261028.md); recibo estruturado em [`evidence/coffee-os-engineering-menu-20261028.json`](evidence/coffee-os-engineering-menu-20261028.json). Sem contato com o carro ou execução de ferramentas CAN/OBD.
+
 ### Pesquisa pública e manual brasileiro — 2026-10-28
 
 Revisado o histórico de **Recomendações GWM ORA 5** e as fontes públicas: há um APK público de música **Impulsefy v0.1.3**, APKs de sistema de um **H6 2021 Android 9** e uma **declaração comunitária de ADB no Dargo 2026 Coffee OS 3**. Nenhum deles comprova instalação/acesso no ORA 5 brasileiro **3.3.00213**. Sem contato com o veículo nesta pesquisa. Fontes, artefatos, classificação e próximos passos em [`notes/08_watch_review_20261028.md`](notes/08_watch_review_20261028.md).

@@ -1,0 +1,126 @@
+{
+  "checked_at_utc": "2026-10-28T04:16:30Z",
+  "target": "ORA 5 Brasil 2026/2027",
+  "owner_firmware": "Coffee OS 3.3.00213",
+  "owner_test": {
+    "source": "Resposta do proprietário nesta conversa",
+    "result": "Nenhum painel ou pedido de senha apareceu",
+    "scope": "Tentativa da dica do vídeo; não identifica a causa da falha"
+  },
+  "rutube": {
+    "url": "https://rutube.ru/shorts/c436b66bd38a1cfcfee99abd2eefb65b/",
+    "title": "Haval Dargo 2026 - инженерное меню, активация ADB.",
+    "author": "Про технику",
+    "published_as_displayed": "2026-09-08 18:46:35",
+    "accessed_via": "Browser UI sem login; dois comentários principais e respostas expandidas",
+    "comments_read": 12,
+    "threads": {
+      "top_level": 2,
+      "replies": [
+        7,
+        3
+      ]
+    },
+    "findings": {
+      "access_error": "USB drive not mounted",
+      "author_names_scanner_brand": "Launch",
+      "author_states_prior_diagnostic_enablement": true,
+      "commenter_reports_success_after_scanner": true,
+      "other_commenter_reports_elm_and_car_scanner_failure": true,
+      "explicitly_identified_ora5_success": false,
+      "exact_scanner_model_or_software_version_provided": false
+    },
+    "confidence": "Relatos comunitários lidos diretamente, sem reprodução independente",
+    "limitation": "Procedimento em vídeo não transcrito nem validado por nós. Datas de comentários eram relativas."
+  },
+  "github": {
+    "repository": "https://github.com/bndrv/gwm-eng-menu",
+    "created_at": "2026-06-15T16:02:59Z",
+    "head": "26312d60737e68c68d2c44c34feee41efca782fc",
+    "head_commit_date": "2026-06-17T10:12:41Z",
+    "code_commit": "3eaa489c465a4a4a00bfbc913b2e3ac3bd60f8bb",
+    "readme_git_blob": "ebb445dbe9c2b530f25fbd6ae99d8e7712d83998",
+    "script_git_blob": "925a5119f8fd6cbf548120fee51e62e49bf5d059",
+    "script_bytes_from_repository_tree": 7478,
+    "declared_test_vehicle": "Haval H9 Gen2 2024",
+    "declared_head_unit": "Desay SV HUT",
+    "operation": "UDS SecurityAccess e escrita de configuração F1C2 na HUT via CAN",
+    "source_code_review": {
+      "file": "hut_eng_menu.py",
+      "activation_functions": [
+        "eng_menu_on",
+        "eng_menu_off"
+      ],
+      "status_function": "eng_menu_status",
+      "status_is_passive_can_capture": false,
+      "status_note": "Entra em sessão diagnóstica estendida e pode tentar SecurityAccess; não tratar --status como captura passiva",
+      "executed": false,
+      "downloaded_or_imported_as_executable": false
+    },
+    "reversibility": "Autor oferece ativação/desativação e relata persistência após reinício; não validado no ORA 5",
+    "ora5_or_coffee_os_3_3_00213_test_declared": false,
+    "issues_returned_by_public_api": 0,
+    "logs_archive": {
+      "filename": "hut_factory_logs.tar.gz",
+      "bytes": 69783,
+      "downloaded": false,
+      "independently_validated": false
+    },
+    "upstream_readme": "https://github.com/DymOK93/GWM-CAN-Tools",
+    "upstream_scope": "README declara suporte de emulação HUT somente Harman GWMv2",
+    "conclusion": "Fonte pública e mecanismo inspecionados estaticamente; compatibilidade e operação física são declarações dos autores"
+  },
+  "other_sources": [
+    {
+      "url": "https://www.reddit.com/r/HavalTipsAndTricks/comments/1uvezoi/developer_mode_on_h6_2026_coffeeos/",
+      "classification": "Relato comunitário",
+      "observed": "Pedido de modo desenvolvedor no H6 2026 CoffeeOS; respostas visíveis sem solução demonstrada"
+    },
+    {
+      "url": "https://www.reddit.com/r/HavalTipsAndTricks/comments/1qvie0r/installed_apps_enabled_smart_entryexit_with_key/",
+      "classification": "Relatos comunitários conflitantes",
+      "observed": "Título H6 2026 não identifica firmware; discussão aponta diferenças regionais de centrais e oferece ajuda privada sem procedimento público reproduzível"
+    },
+    {
+      "url": "https://www.reddit.com/user/Pone_M/comments/1augo84/reserach_on_infotainment_system_of_haval_h6_gt_au/",
+      "classification": "Pesquisa comunitária legada",
+      "observed": "H6 GT australiano Android 9/QNX; pergunta visível sobre ORA 5 Coffee 3.3 sem confirmação de sucesso"
+    },
+    {
+      "url": "https://www.bilibili.com/video/BV1qTXMYREnv/",
+      "classification": "Descrição indexada do criador, não reprodução do vídeo",
+      "observed": "Tutorial de 17/03/2025 de ADAYO/APTIV ligado a 90APT e H6 de terceira geração/Dargo/Tank 300; sem prova para ORA 5 atual",
+      "limitation": "Abertura direta retornou HTTP 412"
+    },
+    {
+      "url": "https://4pda.to/forum/index.php?showtopic=1110681&st=4600",
+      "classification": "Somente índice de busca",
+      "observed": "Menção a Coffee OS 3/Android 11/Dargo26",
+      "limitation": "HTTP 403 no leitor; navegador mostrou verificação antirrobô. Discussão completa não acessada; compatibilidade não concluída."
+    },
+    {
+      "url": "https://www.gwm-mx.com/es/news-list/2026/gwm-ces-2026-ia-movilidad-inteligente",
+      "classification": "Fonte oficial",
+      "observed": "Notícia de 14/01/2026 descreve Coffee OS 3 em outros modelos; sem método de acesso técnico"
+    }
+  ],
+  "conclusion": {
+    "prior_enablement_on_owner_vehicle": "Hipótese orientada por evidência de outras centrais; não confirmada",
+    "same_menu_on_owner_vehicle": "Não confirmado",
+    "safe_reproducible_entry_for_owner_build_found": false,
+    "launch_product_recommendation": "Nenhum modelo recomendado; cobertura e função exatas desconhecidas",
+    "next_evidence_needed": [
+      "Identificação HUT/hardware/part number do ORA 5",
+      "Documentação ou relatório de suporte do software de diagnóstico para essa HUT e build",
+      "Distinção explícita entre serviço da multimídia e manutenção de alta tensão"
+    ]
+  },
+  "actions": {
+    "car_network_contact": false,
+    "can_or_obd_commands": false,
+    "vehicle_configuration_changes": false,
+    "third_party_code_execution": false,
+    "comments_or_messages_posted": false,
+    "web_monitor_changed": false
+  }
+}
