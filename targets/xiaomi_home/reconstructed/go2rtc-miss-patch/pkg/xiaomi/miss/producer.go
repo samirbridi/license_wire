@@ -89,7 +89,12 @@ func Dial(rawURL string) (core.Producer, error) {
 	}, nil
 }
 
-func qualifiedVideo(codec *core.Codec, minWidth int) bool {
+func qualifiedVideo(codec *core.Codec, minWidth int) (qualified bool) {
+	defer func() {
+		if recover() != nil {
+			qualified = false
+		}
+	}()
 	if codec == nil {
 		return false
 	}
@@ -98,11 +103,17 @@ func qualifiedVideo(codec *core.Codec, minWidth int) bool {
 	}
 	if codec.Name == core.CodecH265 {
 		_, sps, _ := h265.GetParameterSet(codec.FmtpLine)
+		if len(sps) < 4 {
+			return false
+		}
 		info := h265.DecodeSPS(sps)
 		return info != nil && int(info.Width()) >= minWidth
 	}
 	if codec.Name == core.CodecH264 {
 		sps, _ := h264.GetParameterSet(codec.FmtpLine)
+		if len(sps) < 4 {
+			return false
+		}
 		info := h264.DecodeSPS(sps)
 		return info != nil && int(info.Width()) >= minWidth
 	}
@@ -145,6 +156,9 @@ func probe(client *Client, audio bool, minWidth int) ([]*core.Media, []*Packet, 
 		// Some cameras send stale low-resolution frames before applying 0x102.
 		// A recording may explicitly require the requested resolution before opening.
 		if minWidth > 0 && vcodec == nil {
+			if pkt.CodecID != codecH264 && pkt.CodecID != codecH265 {
+				continue
+			}
 			buf := annexb.EncodeToAVCC(pkt.Payload)
 			var candidate *core.Codec
 			if pkt.CodecID == codecH265 && h265.NALUType(buf) == h265.NALUTypeVPS {
