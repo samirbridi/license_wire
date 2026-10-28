@@ -11,6 +11,7 @@ import path from 'node:path';
 import { spawn } from 'node:child_process';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import { createHash, createHmac, createCipheriv, createDecipheriv, randomUUID, randomInt } from 'node:crypto';
+import {createDashboardEvents} from './dashboard-live.mjs';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -1680,6 +1681,10 @@ const server = http.createServer(async (req, res) => {
   const url = new URL(req.url, `http://${req.headers.host}`);
   if(portalGate){try{if(!await portalGate.protect(req,res))return;}catch{res.writeHead(503,{'Content-Type':'application/json'});res.end(JSON.stringify({error:'Central de autenticação indisponível.'}));return;}}
 
+  if(url.pathname==='/api/portal/shell'&&req.method==='GET'){
+    res.writeHead(200,{'Content-Type':'text/html; charset=utf-8','Cache-Control':'no-store'});res.end(fs.readFileSync(path.join(path.dirname(fileURLToPath(import.meta.url)),'portal-shell.html')));return;
+  }
+
   if(PILOT&&!['GET','HEAD','OPTIONS'].includes(req.method)&&url.pathname!=='/api/camera/talkback'){res.writeHead(409,{'Content-Type':'application/json'});res.end(JSON.stringify({error:'Instalação de teste: comandos de dispositivos suspensos.'}));return;}
 
   // CORS Completo para Acesso Local e Remoto (Cloudflare Pages / Túnel)
@@ -1767,7 +1772,7 @@ const server = http.createServer(async (req, res) => {
       }
 
       res.writeHead(200, { 'Content-Type': 'application/json' });
-      res.end(JSON.stringify(data));
+      res.end(JSON.stringify(data,(key,value)=>/^(local_?key|access_?token|refresh_?token|client_?secret|password)$/i.test(key)?undefined:value));
     } else {
       res.writeHead(404, { 'Content-Type': 'application/json' });
       res.end(JSON.stringify({ error: 'Registry not found' }));
@@ -2809,8 +2814,8 @@ const server = http.createServer(async (req, res) => {
       '-avoid_negative_ts', 'make_zero',
       '-i', playbackGo2rtcUrl,
       '-t', '20',
-      '-map', '0:v:0',
-      ...buildVideoEncoderArgs('1080p', false),
+      '-map', '0:v:0', '-map', '0:a:0?',
+      ...buildVideoEncoderArgs('1080p', false), '-c:a', 'aac', '-b:a', '96k',
       '-movflags', '+frag_keyframe+empty_moov+default_base_moof+faststart',
       '-f', 'mp4',
       'pipe:1'
@@ -3701,8 +3706,9 @@ server.listen(PORT, process.env.HOST||'0.0.0.0', () => {
 });
 
 // Proxy WebSocket de Ultra Baixa Latência (MSE / WebRTC) para go2rtc (127.0.0.1:19843)
+const dashboardEvents=portalGate?createDashboardEvents({port:PORT,gate:portalGate}):null;
 server.on('upgrade', async (req, clientSocket, head) => {
-  if(portalGate){try{if(!await portalGate.session(req)){clientSocket.destroy();return;}}catch{clientSocket.destroy();return;}}
+  if(portalGate){try{const session=await portalGate.session(req);if(!session?.user||session.user.mustChangePassword){clientSocket.destroy();return;}}catch{clientSocket.destroy();return;}}
   const host = req.headers.host || '127.0.0.1';
   let pathname = '';
   try {
@@ -3711,7 +3717,9 @@ server.on('upgrade', async (req, clientSocket, head) => {
     pathname = (req.url || '').split('?')[0];
   }
 
-  if (pathname.startsWith('/api/ws')) {
+  if(pathname==='/api/dashboard/events'&&dashboardEvents){await dashboardEvents.upgrade(req,clientSocket,head);return;}
+  if (pathname==='/api/ws') {
+    const alias=new URL(req.url,`http://${host}`).searchParams.get('src');if(!loadGo2rtcStreamsMeta().has(alias)){clientSocket.destroy();return;}
     console.log(`[WS Proxy] Conexão WebSocket estabelecida para go2rtc: ${req.url}`);
     const upstream = net.connect(19843, '127.0.0.1', () => {
       let reqHeaders = `${req.method} ${req.url} HTTP/1.1\r\n`;
@@ -3733,6 +3741,7 @@ server.on('upgrade', async (req, clientSocket, head) => {
       }
       clientSocket.pipe(upstream);
       upstream.pipe(clientSocket);
+      if(portalGate){const validity=setInterval(async()=>{try{const current=await portalGate.session(req);if(!current?.user||current.user.mustChangePassword)clientSocket.destroy();}catch{clientSocket.destroy();}},30000);clientSocket.once('close',()=>clearInterval(validity));}
     });
 
     upstream.on('error', (err) => {

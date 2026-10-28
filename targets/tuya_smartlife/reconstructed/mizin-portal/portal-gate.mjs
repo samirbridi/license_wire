@@ -4,8 +4,8 @@ const same=(a,b)=>typeof a==='string'&&typeof b==='string'&&Buffer.byteLength(a)
 export function privateAuthFetch(url,{method='GET',headers={},body}={}){
  const address=new URL(url);if(address.protocol!=='http:'||address.hostname!=='127.0.0.1')throw new Error('Autenticação deve permanecer local.');
  return new Promise((accept,reject)=>{
-  const request=http.request(address,{method,headers},reply=>{const chunks=[];let size=0;reply.on('data',chunk=>{size+=chunk.length;if(size>16384)reply.destroy(new Error('Resposta de autenticação muito grande.'));else chunks.push(chunk);});reply.on('error',reject);reply.on('end',()=>accept(new Response(Buffer.concat(chunks),{status:reply.statusCode,headers:reply.headers})));});
-  request.setTimeout(5000,()=>request.destroy(new Error('Autenticação indisponível.')));request.on('error',reject);request.end(body);
+  const request=http.request(address,{method,headers},reply=>{const chunks=[];let size=0;reply.on('data',chunk=>{size+=chunk.length;if(size>262144)reply.destroy(new Error('Resposta de autenticação muito grande.'));else chunks.push(chunk);});reply.on('error',reject);reply.on('end',()=>accept(new Response(Buffer.concat(chunks),{status:reply.statusCode,headers:reply.headers})));});
+      request.setTimeout(5000,()=>request.destroy(new Error('Autenticação indisponível.')));request.on('error',reject);request.end(body);
  });
 }
 export function createPortalGate({origin,gatewayToken,auth='http://127.0.0.1:19846',fetcher=privateAuthFetch}){
@@ -17,13 +17,21 @@ export function createPortalGate({origin,gatewayToken,auth='http://127.0.0.1:198
   const fail=(code,error)=>{res.writeHead(code,{'Content-Type':'application/json','Cache-Control':'no-store'});res.end(JSON.stringify({error}));return false;};
   if(!trusted(req))return fail(403,'Passagem privada não autorizada.');
   const pathname=new URL(req.url,origin).pathname;
-  if(['/api/session','/api/logout'].includes(pathname)){
-   let body; if(req.method==='POST'){const parts=[];let size=0;for await(const c of req){size+=c.length;if(size>4096)return fail(413,'Requisição muito grande.');parts.push(c);}body=Buffer.concat(parts);}
-   const reply=await fetcher(auth+pathname,{method:req.method,headers:headers(req),body,signal:AbortSignal.timeout(5000)});
+  if(['/api/session','/api/logout'].includes(pathname)||pathname.startsWith('/api/auth/')){
+   let body; if(req.method==='POST'){const parts=[];let size=0;for await(const c of req){size+=c.length;if(size>32768)return fail(413,'Requisição muito grande.');parts.push(c);}body=Buffer.concat(parts);}
+   const reply=await fetcher(auth+pathname+new URL(req.url,origin).search,{method:req.method,headers:headers(req),body,signal:AbortSignal.timeout(5000)});
    res.writeHead(reply.status,Object.fromEntries(reply.headers));res.end(Buffer.from(await reply.arrayBuffer()));return false;
   }
   let data;try{data=await session(req);}catch{return fail(503,'Autenticação temporariamente indisponível.');}
-  if(!data)return fail(401,'Vincule este navegador à central.');
+  if(!data)return fail(401,'Entre com sua conta cadastrada.');
+  if(data.user?.mustChangePassword)return fail(403,'Defina uma nova senha no painel da sua conta.');
+  const role=data.user?.role;
+  if(!['admin','member'].includes(role))return fail(401,'Entre com sua conta cadastrada.');
+  if(role!=='admin'){
+   const read=/^\/api\/(?:health|devices|cameras|camera-frame|camera-stream|energy(?:\/history|\/trends|\/tariff)?|ev\/status|gate\/status|scenes|schedules|automations|logs|config\/(?:ui|shortcuts)|portal\/shell|camera\/(?:archive(?:\/file)?|recordings(?:\/stream|\/clip)?))$/.test(pathname)&&['GET','HEAD'].includes(req.method);
+   const use=req.method==='POST'&&(/^\/api\/(?:control|gate\/pulse|doorbell\/trigger|logs\/mark-read|ev\/command|camera\/(?:ptz|zoom|light|siren|talkback|recordings\/speed)|device\/[a-zA-Z0-9_-]+\/toggle|(?:scenes|automations)\/[a-zA-Z0-9_-]+\/execute|energy\/history\/month)$/.test(pathname));
+   if(!read&&!use)return fail(403,'Somente o administrador pode alterar configurações.');
+  }
   const mutation=!['GET','HEAD'].includes(req.method)||/\/api\/(?:control|camera\/(?:ptz|zoom|patrol|preset))/.test(pathname);
   if(mutation&&(!same(req.headers['x-csrf-token'],data.csrf)||req.headers.origin!==origin))return fail(403,'Comando não autorizado.');
   return true;

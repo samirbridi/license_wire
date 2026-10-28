@@ -256,7 +256,7 @@ async function checkConnection(isManualRetry = false) {
     }
     if (!res.ok) throw new Error('HTTP ' + res.status);
     
-    const latency = Date.now() - start;
+    const latency = window.MIZIN_NETWORK_LATENCY ?? Date.now() - start;
     const pingEl = document.getElementById('pingMs');
     if (pingEl) pingEl.innerText = `~${latency}ms`;
 

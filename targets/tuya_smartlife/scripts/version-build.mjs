@@ -1,5 +1,5 @@
 import { execFileSync } from 'node:child_process';
-import { readFileSync, writeFileSync, renameSync, existsSync, mkdirSync, rmdirSync, cpSync } from 'node:fs';
+import { readFileSync, writeFileSync, renameSync, existsSync, mkdirSync, rmdirSync, cpSync, readdirSync } from 'node:fs';
 import { randomUUID } from 'node:crypto';
 import { dirname, join, resolve, relative } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -89,10 +89,11 @@ export function release({ target, mode = 'plan', runId = randomUUID() }) {
     mkdirSync(dirname(artifact), { recursive: true });
     mkdirSync(artifact, { recursive: false });
     for (const path of ['server.mjs', 'package.json', 'public']) cpSync(join(app, path), join(artifact, path), { recursive: true, errorOnExist: true, force: false });
-    for (const path of ['camera-inventory.mjs','camera-talkback.mjs','camera-archive.mjs','camera-archive-runner.mjs','portal-gate.mjs','cloudflare','deploy']) if(existsSync(join(app,path)))cpSync(join(app,path),join(artifact,path),{recursive:true,errorOnExist:true,force:false});
-    const htmlPath=join(artifact,'public/index.html');
-    writeFileSync(htmlPath,readFileSync(htmlPath,'utf8').replace(/v\d+\.\d+\.\d+ \(build \d+\)/g,next.display).replace(/v=\d+\.\d+\.\d+-build\d+/g,`v=${next.major}.${next.minor}.${next.patch}-build${String(next.build).padStart(4,'0')}`));
+    writeFileSync(join(artifact,'public/tunnel.json'),JSON.stringify({mode:'private-gateway'}));
+    for (const path of [...readdirSync(app).filter(p=>p.endsWith('.mjs')&&p!=='server.mjs'),'package-lock.json','portal-shell.html','cloudflare','deploy']) if(existsSync(join(app,path)))cpSync(join(app,path),join(artifact,path),{recursive:true,errorOnExist:true,force:false});
+    for(const htmlPath of [join(artifact,'public/index.html'),join(artifact,'portal-shell.html')].filter(existsSync))writeFileSync(htmlPath,readFileSync(htmlPath,'utf8').replace(/v\d+\.\d+\.\d+ \(build \d+\)/g,next.display).replace(/v=\d+\.\d+\.\d+-build\d+/g,`v=${next.major}.${next.minor}.${next.patch}-build${String(next.build).padStart(4,'0')}`));
     const packagePath=join(artifact,'package.json'),pkg=JSON.parse(readFileSync(packagePath,'utf8'));pkg.version=`${next.major}.${next.minor}.${next.patch}`;pkg.build=next.build;writeFileSync(packagePath,JSON.stringify(pkg,null,2));
+    const lockPath=join(artifact,'package-lock.json');if(existsSync(lockPath)){const lock=JSON.parse(readFileSync(lockPath,'utf8'));lock.version=pkg.version;if(lock.packages?.[''])lock.packages[''].version=pkg.version;writeFileSync(lockPath,JSON.stringify(lock,null,2));}
     result.status = 'built'; result.artifact = relative(target, artifact).replaceAll('\\', '/');
   } catch (error) { result.status = 'failed'; result.error = error.message; throw error; }
   finally {

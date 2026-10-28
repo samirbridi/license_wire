@@ -2,7 +2,7 @@ services:
   prepare:
     image: debian:bookworm-slim
     user: "0:0"
-    command: ["sh", "-c", "chown -R 1000:1000 /data && chmod -R u=rwX,go= /data && chown 1000:1000 /bridge/go2rtc-linux-amd64 && chmod 500 /bridge/go2rtc-linux-amd64 && chown 1000:1000 /archive && chmod 700 /archive"]
+    command: ["sh", "-c", "mkdir -p /data/xiaomi/runtime/central/identity/cloud-secrets /data/xiaomi/runtime/central/identity/cloud-state && chown -R 1000:1000 /data && chmod -R u=rwX,go= /data && chown 1000:1000 /bridge/go2rtc-linux-amd64 && chmod 500 /bridge/go2rtc-linux-amd64 && chown 1000:1000 /archive && chmod 700 /archive"]
     network_mode: none
     restart: "no"
     volumes:
@@ -34,7 +34,7 @@ services:
     environment:
       PORT: "19860"
       HOST: "127.0.0.1"
-      MIZIN_PILOT: "1"
+      MIZIN_PILOT: "0"
       MIZIN_GATEWAY_CONFIG: /workspace/targets/xiaomi_home/runtime/central/https-gateway.json
       MIZIN_ARCHIVE_ROOT: /archive
     depends_on:
@@ -72,16 +72,38 @@ services:
       MIZIN_ARCHIVE_ROOT: /archive
       MIZIN_ARCHIVE_ALIASES: /data/archive-aliases.json
       MIZIN_ARCHIVE_CONTINUOUS: "1"
-      MIZIN_ARCHIVE_LIMIT_GB: "100"
+      MIZIN_ARCHIVE_LIMIT_GB: "750"
+      MIZIN_ARCHIVE_ROTATE: "1"
+      MIZIN_ARCHIVE_RESERVE_GB: "50"
     depends_on:
       bridge: {condition: service_started}
     volumes:
       - ./data/archive-aliases.json:/data/archive-aliases.json:ro
       - /volume4/HDD 1TB - V2/Mizin-Cameras:/archive
     tmpfs: [/tmp]
+  cloud-backup:
+    image: mizin-home:local
+    command: ["node", "targets/tuya_smartlife/reconstructed/mizin-portal/r2-sync-runner.mjs"]
+    network_mode: host
+    read_only: true
+    restart: unless-stopped
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    environment:
+      MIZIN_ARCHIVE_ROOT: /archive
+      MIZIN_ARCHIVE_ALIASES: /data/archive-aliases.json
+      MIZIN_R2_SECRETS_ROOT: /cloud-secrets
+      MIZIN_R2_STATE_ROOT: /cloud-state
+    depends_on:
+      prepare: {condition: service_completed_successfully}
+    volumes:
+      - ./data/archive-aliases.json:/data/archive-aliases.json:ro
+      - ./data/xiaomi/runtime/central/identity/cloud-secrets:/cloud-secrets:ro
+      - ./data/xiaomi/runtime/central/identity/cloud-state:/cloud-state
+      - /volume4/HDD 1TB - V2/Mizin-Cameras:/archive:ro
+    tmpfs: [/tmp]
   tunnel:
     image: cloudflare/cloudflared:2026.10.3
-    profiles: [remote]
     command: ["tunnel", "--no-autoupdate", "--protocol", "quic", "run", "--token-file", "/run/secrets/tunnel.token"]
     network_mode: host
     user: "1000:1000"

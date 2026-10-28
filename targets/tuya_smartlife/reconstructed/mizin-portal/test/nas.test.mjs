@@ -15,7 +15,7 @@ test('NAS portal rejects spoofed gateways before consulting authentication',asyn
 });
 test('NAS portal never authorizes an expired session or an unprotected command',async()=>{
  const denied=createPortalGate({origin,gatewayToken,fetcher:async()=>Response.json({},{status:401})});const res=response();assert.equal(await denied.protect(request(),res),false);assert.equal(res.status,401);
- const gate=createPortalGate({origin,gatewayToken,fetcher:async()=>Response.json({csrf:'owner-csrf'})});const req=request();assert.equal(await gate.protect(req,response()),true);req.method='POST';req.headers.origin=origin;assert.equal(await gate.protect(req,response()),false);req.headers['x-csrf-token']='owner-csrf';assert.equal(await gate.protect(req,response()),true);req.headers.origin='https://other.example';assert.equal(await gate.protect(req,response()),false);
+ const gate=createPortalGate({origin,gatewayToken,fetcher:async()=>Response.json({csrf:'owner-csrf',user:{role:'admin'}})});const req=request();assert.equal(await gate.protect(req,response()),true);req.method='POST';req.headers.origin=origin;assert.equal(await gate.protect(req,response()),false);req.headers['x-csrf-token']='owner-csrf';assert.equal(await gate.protect(req,response()),true);req.headers.origin='https://other.example';assert.equal(await gate.protect(req,response()),false);
 });
 test('archive quota includes old and incomplete files; invalid IDs cannot escape the NAS directory',async()=>{
  const root=await mkdtemp(join(tmpdir(),'mizin-archive-test-'));
@@ -25,7 +25,7 @@ test('archive quota includes old and incomplete files; invalid IDs cannot escape
   await assert.rejects(()=>archive.file('../../private'));await assert.rejects(()=>archive.record('unknown',10));await assert.rejects(()=>archive.record('owned',301));assert.deepEqual(await archive.list(),[]);
  }finally{const absolute=resolve(root);if(!absolute.startsWith(resolve(tmpdir())+sep)||!absolute.split(sep).at(-1).startsWith('mizin-archive-test-'))throw new Error('Unsafe test cleanup');await rm(absolute,{recursive:true,force:true});}
 });
-test('portal validates a real remote session through the authentication bridge',async()=>{
+test('legacy invitation sessions cannot become administrator accounts in the new portal',async()=>{
  const root=await mkdtemp(join(tmpdir(),'mizin-auth-test-'));const token='a'.repeat(40);
  const central=createCentral({runtime:root,cameras:[],port:0,remote:{origin,gatewayToken:token,port:0}});
  try{
@@ -36,7 +36,7 @@ test('portal validates a real remote session through the authentication bridge',
   const headers={host:'homecams.pages.dev',Origin:origin,'Content-Type':'application/json','x-forwarded-proto':'https','x-mizin-gateway':token};
   const connected=await privateAuthFetch(remote+'/api/session',{method:'POST',headers,body:JSON.stringify({code:new URLSearchParams(new URL(invitation.url).hash.slice(1)).get('pair')})});assert.equal(connected.status,200);assert.match(connected.headers.get('set-cookie'),/HttpOnly.*Secure/);
   const req=request();req.headers={...headers,cookie:connected.headers.get('set-cookie').split(';')[0]};
-  const gate=createPortalGate({origin,gatewayToken:token,auth:remote});assert.equal(await gate.protect(req,response()),true);
+  const gate=createPortalGate({origin,gatewayToken:token,auth:remote});assert.equal(await gate.protect(req,response()),false);
   req.headers.cookie='invalid';assert.equal(await gate.protect(req,response()),false);
  }finally{await central.close();const absolute=resolve(root);if(!absolute.startsWith(resolve(tmpdir())+sep)||!absolute.split(sep).at(-1).startsWith('mizin-auth-test-'))throw new Error('Unsafe test cleanup');await rm(absolute,{recursive:true,force:true});}
 });

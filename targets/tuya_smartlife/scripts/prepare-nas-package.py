@@ -24,6 +24,17 @@ scripts=destination/'targets/tuya_smartlife/scripts';scripts.mkdir(parents=True)
 for p in (target/'scripts').glob('*.py'):shutil.copyfile(p,scripts/p.name)
 shutil.copytree(xiaomi/bridge_release['artifact'],destination/'targets/xiaomi_home/reconstructed/mizin-cameras',ignore=shutil.ignore_patterns('bridge','diagnostics'))
 bridge=root/'bridge';bridge.mkdir();shutil.copyfile(binary,bridge/binary.name)
+if '--code-only' in sys.argv:
+ # Existing NAS sessions and device data are copied on the NAS, never replaced by Windows snapshots.
+ compose=compose.replace('./data:', '/volume4/HDD 1TB - V2/Mizin-Home/data:').replace('./data/', '/volume4/HDD 1TB - V2/Mizin-Home/data/')
+ (root/'compose.yaml').write_text(compose,encoding='utf-8')
+ (root/'LEIA-ME.txt').write_text('ATUALIZACAO SEM CREDENCIAIS. Copiar os dados atuais do NAS para /volume4/HDD 1TB - V2/Mizin-Home/data antes de iniciar. Nao usar o snapshot Windows.\nAplicacao, dados e gravacoes no Volume 4. Container Manager deve ser instalado no Volume 4 separadamente.\nLogin: primeiro cadastro pelo link privado data/xiaomi/runtime/central/identity/owner-setup.json.\nRetencao NAS: 750 GiB, limpeza de 92% ate 85%, reserva 50 GiB; apenas arquivos reconhecidos e concluidos com mais de 15 minutos.\nR2: desativado ate configurar credenciais exclusivas do bucket homecams-recordings. Limite 120 GiB e 600 mil operacoes mensais conservadoras.\n',encoding='utf-8')
+ archive=root.with_suffix('.zip')
+ with zipfile.ZipFile(archive,'x',zipfile.ZIP_DEFLATED,compresslevel=5) as z:
+  for p in root.rglob('*'):
+   if p.is_file():
+    info=zipfile.ZipInfo(str(Path(root.name)/p.relative_to(root)).replace('\\','/'));info.create_system=3;info.external_attr=(0o100700 if p.name=='go2rtc-linux-amd64' else 0o100600)<<16;z.writestr(info,p.read_bytes(),compress_type=zipfile.ZIP_DEFLATED)
+ print(json.dumps({'version':release['version'],'archive':str(archive),'sha256':hashlib.sha256(archive.read_bytes()).hexdigest(),'bytes':archive.stat().st_size,'containsCredentials':False,'requiresNasDataCopy':True}));raise SystemExit(0)
 metadata=json.loads((xiaomi/'runtime/qr-login/process.json').read_text(encoding='utf-8-sig'))
 original=yaml.safe_load(Path(metadata['config']).read_text(encoding='utf-8-sig'))
 entries=json.loads((xiaomi/'runtime/central/bridge-streams.json').read_text(encoding='utf-8-sig'))

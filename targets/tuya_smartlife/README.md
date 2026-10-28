@@ -74,6 +74,14 @@
 
 ## Estado Atual e Próximos Passos — integração NAS (2026-10-28)
 
+Atualização em preparação: autenticação própria com usuário/e-mail e senha, TOTP, passkeys e recuperação pelo administrador. Convidados podem visualizar e usar os controles cotidianos; alterações de configuração e usuários ficam restritas ao administrador. O painel completo anterior foi preservado em `portal-shell.html`, entregue somente depois da autenticação; a página pública passou a ser o login. O primeiro administrador deve criar pessoalmente sua senha pelo link privado `identity/owner-setup.json` no NAS.
+
+A retenção autorizada organiza arquivos originais por câmera/ano/mês/dia no fuso de São Paulo. A quota proposta é 750 GiB, limpeza aos 92% até 85%, reserva física de 50 GiB, protegendo arquivos em gravação, desconhecidos e concluídos há menos de 15 minutos. A migração preserva o snapshot atual do NAS, sem reintroduzir dados antigos do Windows. A instalação efetiva no Volume 4 e a publicação serão registradas após validação real.
+
+O bucket privado `homecams-recordings` foi criado no R2 Standard. O sincronizador está implementado, mas permanece desativado até existirem credenciais S3 exclusivas desse bucket: limite de 120 GiB, 600 mil operações conservadoras por mês, envio a 1 MiB/s, verificação de SHA-256/ETag/tamanho e pausa após três falhas. A estimativa conservadora adicional é R$47,57/mês a R$7/US$, sem presumir franquias gratuitas disponíveis; não é um teto de faturamento imposto pela Cloudflare. O transporte para a nuvem ainda precisa de teste com credenciais reais. A importação do acervo histórico dos cartões SD continua pendente; gravar o fluxo ao vivo não equivale a copiar arquivos antigos do SD.
+
+Um WebSocket autenticado distribui leituras do painel a cada cinco segundos e encerra acessos revogados. Isso reduz as requisições periódicas ao Worker, sem assumir que o R2 pago inclua um plano Workers pago. Referências: [R2](https://developers.cloudflare.com/r2/pricing/), [limites Workers](https://developers.cloudflare.com/workers/platform/limits/). Os registros de build e QA distinguem testes locais de validação no NAS, de continuidade por 24h e da confirmação física da fala.
+
 O portal completo de Antigravity permanece como aplicação principal em `reconstructed/mizin-portal`. O pacote do NAS inclui seus dispositivos, energia, cenas e câmeras; não deve ser substituído pela interface do protótipo Xiaomi.
 
 A regressão da fala veio da leitura do inventário por expressão regular incompatível com o YAML atual. A resolução agora usa JSON estruturado, aguarda confirmação real da ponte e informa falhas em vez de simular transmissão. O envio no protocolo não comprova som audível no alto-falante.
