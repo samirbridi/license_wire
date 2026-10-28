@@ -1,7 +1,7 @@
 # 🎯 ALVO: gwm_app (My GWM Brasil — GWM Ora 5)
 
 > **Descrição**: Análise de Engenharia Reversa do ecossistema My GWM Brasil (`com.gwm.brazil` v1.4.2) e API Cloud de Telemetria/Comandos para o **GWM Ora 5** com foco na integração à plataforma **Mizin Home**.  
-> **Versão da Análise**: `v0.3.0 (build 3)`  
+> **Versão da Análise**: `v0.5.0 (build 0006)`
 > **Criado em**: 2026-10-26
 
 ---

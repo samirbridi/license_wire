@@ -1,0 +1,23 @@
+{
+  "previous": "v0.4.0 (build 5)",
+  "version": "v0.5.0 (build 0006)",
+  "date": "2026-10-27",
+  "timezone": "America/Sao_Paulo",
+  "baseline": "ab1320600d8c53e10b11cfabf65c2ebc483ba690",
+  "sourceHead": "e38f2f086fe07864c30547ddcd4fc74f9f5d49f1",
+  "increment": "feat",
+  "commits": [
+    {
+      "hash": "a97b6e9ea09c0149218315bc5e23e11391c283ca",
+      "subject": "feat: integra ficha tecnica gwm ora 5 alerta de campainha e processo invisivel",
+      "type": "feat",
+      "breaking": false
+    },
+    {
+      "hash": "e38f2f086fe07864c30547ddcd4fc74f9f5d49f1",
+      "subject": "improve: registra diagnostico LAN do GWM e automatiza versoes por commits",
+      "type": "improve",
+      "breaking": false
+    }
+  ]
+}

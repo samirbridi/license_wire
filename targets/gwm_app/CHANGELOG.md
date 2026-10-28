@@ -1,5 +1,23 @@
 # 📜 CHANGELOG - gwm_app
 
+## v0.5.0 (build 0006) - 2026-10-27
+
+### 💥 Breaking Changes
+
+- Nenhum.
+
+### ✨ Features
+
+- feat: integra ficha tecnica gwm ora 5 alerta de campainha e processo invisivel (commit `a97b6e9ea09c0149218315bc5e23e11391c283ca`)
+
+### 🐛 Fixes
+
+- Nenhum.
+
+### ⚡ Improvements
+
+- improve: registra diagnostico LAN do GWM e automatiza versoes por commits (commit `e38f2f086fe07864c30547ddcd4fc74f9f5d49f1`)
+
 ## v0.4.0 (build 5) - 2026-10-27
 
 ### ✨ Features
