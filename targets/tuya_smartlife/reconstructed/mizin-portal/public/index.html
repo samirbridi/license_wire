@@ -7,7 +7,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css?v=0.22.0-build0024">
+  <link rel="stylesheet" href="style.css?v=0.30.0-build0033">
   <link rel="manifest" href="manifest.json">
   <link rel="icon" type="image/svg+xml" href="icon.svg">
   <link rel="apple-touch-icon" href="icon.svg">
@@ -54,7 +54,7 @@
         <div>
           <div style="display:flex; align-items:center; gap:8px;">
             <div class="brand-title">MIZIN HOME</div>
-            <span class="badge badge-version" id="headerVersionBadge" style="background: rgba(56, 189, 248, 0.15); border: 1px solid rgba(56, 189, 248, 0.35); color: #38bdf8; font-family: 'JetBrains Mono', monospace; font-size: 10px; padding: 2px 7px; border-radius: 4px; font-weight: 600;">v0.25.0 (build 0027)</span>
+            <span class="badge badge-version" id="headerVersionBadge" style="background: rgba(56, 189, 248, 0.15); border: 1px solid rgba(56, 189, 248, 0.35); color: #38bdf8; font-family: 'JetBrains Mono', monospace; font-size: 10px; padding: 2px 7px; border-radius: 4px; font-weight: 600;">v0.30.0 (build 0033)</span>
           </div>
           <div class="brand-sub">CENTRAL DE CONTROLE RESIDENCIAL</div>
         </div>
@@ -337,12 +337,6 @@
             <h2>Iluminação & Controles Rápidos (Guia Rápido)</h2>
             <span class="section-desc">Controle local direto via TCP porta 6668 com latência instantânea</span>
           </div>
-          <div class="toolbar-btns">
-            <button class="btn btn-ha-action" onclick="openManageQuickGridModal()">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px;margin-right:6px;"><path d="M12 5v14M5 12h14"/></svg>
-              Personalizar / Adicionar ao Guia
-            </button>
-          </div>
         </div>
 
         <div class="quick-search-and-filters">
@@ -365,6 +359,12 @@
             <button class="room-btn" data-room="Mizin">Mizin</button>
             <button class="room-btn" data-room="Crisbridi">Crisbridi</button>
           </div>
+
+          <!-- Botão Personalizar na Mesma Linha dos Filtros/Guias -->
+          <button class="btn btn-ha-action btn-personalizar-inline" onclick="openManageQuickGridModal()" title="Personalizar dispositivos do Guia Rápido">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px;margin-right:6px;"><path d="M12 5v14M5 12h14"/></svg>
+            Personalizar / Adicionar ao Guia
+          </button>
         </div>
 
         <!-- Seção Dinâmica de Resultados Extras (Dispositivos fora do Guia encontrados na busca) -->
@@ -2407,6 +2407,6 @@
   <!-- Floating Toast Notifications Container -->
   <div id="toastContainer" class="toast-container"></div>
 
-  <script src="app.js?v=0.25.0-build0027"></script>
+  <script src="app.js?v=0.30.0-build0033"></script>
 </body>
 </html>

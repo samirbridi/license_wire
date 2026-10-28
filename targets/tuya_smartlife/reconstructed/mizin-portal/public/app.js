@@ -1699,7 +1699,49 @@ function renderQuickGrid() {
     const isGate = dev.category === 'ckmkzq' || dev.category === 'portao' || (dev.name && (dev.name.toLowerCase().includes('portão') || dev.name.toLowerCase().includes('portao')));
     if (isGate) {
       const isOpen = liveDps['3'] === true || liveDps['6'] === 'open';
-      const isPulsing = liveDps['1'] === true;
+
+      // Máquina de estados dinâmica: Fechado -> Abrindo -> Aberto -> Fechando -> Fechado
+      let gateStatusTitle = isOpen ? 'Portão Aberto 🚨' : 'Portão Fechado & Trancado 🔒';
+      let gateStatusSub = isOpen ? 'Sensor Magnético: Aberto / Liberado' : 'Sensor Magnético: Fechado & Seguro';
+      let gateBadgeText = isOpen ? 'ABERTO' : 'FECHADO';
+      let gateBadgeClass = isOpen ? 'badge badge-live' : 'badge badge-emerald';
+      let gateBtnText = isOpen ? 'Fechar Portão 🚪🔻' : 'Abrir Portão 🚪🔺';
+      let gateBtnPulse = false;
+
+      if (window.gateTransitState === 'opening') {
+        if (isOpen) {
+          window.gateTransitState = null;
+          gateStatusTitle = 'Portão Aberto 🚨';
+          gateStatusSub = 'Sensor Magnético: Aberto / Liberado';
+          gateBadgeText = 'ABERTO';
+          gateBadgeClass = 'badge badge-live';
+          gateBtnText = 'Fechar Portão 🚪🔻';
+        } else {
+          gateStatusTitle = 'Abrindo Portão... ⏳';
+          gateStatusSub = 'Motor acionado • Aguardando curso de abertura';
+          gateBadgeText = 'ABRINDO';
+          gateBadgeClass = 'badge badge-mode';
+          gateBtnText = 'Abrindo... ⏳';
+          gateBtnPulse = true;
+        }
+      } else if (window.gateTransitState === 'closing') {
+        if (!isOpen) {
+          window.gateTransitState = null;
+          gateStatusTitle = 'Portão Fechado & Trancado 🔒';
+          gateStatusSub = 'Sensor Magnético: Fechado & Seguro';
+          gateBadgeText = 'FECHADO';
+          gateBadgeClass = 'badge badge-emerald';
+          gateBtnText = 'Abrir Portão 🚪🔺';
+        } else {
+          gateStatusTitle = 'Fechando Portão... ⏳';
+          gateStatusSub = 'Motor acionado • Aguardando fechamento total';
+          gateBadgeText = 'FECHANDO';
+          gateBadgeClass = 'badge badge-warning';
+          gateBtnText = 'Fechando... ⏳';
+          gateBtnPulse = true;
+        }
+      }
+
       return `
         <div class="device-card gate-special-card" id="card-${dev.id}">
           <div class="device-card-header">
@@ -1715,8 +1757,8 @@ function renderQuickGrid() {
               <div class="dev-room">${dev.room ? '📍 ' + dev.room : 'Garagem & Acesso'}</div>
             </div>
             <div>
-              <span class="badge ${isOpen ? 'badge-live' : 'badge-emerald'}" id="gateCardBadge-${dev.id}">
-                ${isOpen ? 'ABERTO' : 'FECHADO'}
+              <span class="${gateBadgeClass}" id="gateCardBadge-${dev.id}">
+                ${gateBadgeText}
               </span>
             </div>
           </div>
@@ -1725,13 +1767,13 @@ function renderQuickGrid() {
             <div class="gate-sensor-status-ha">
               <div class="gate-sensor-badge-line">
                 <span class="status-dot ${isOpen ? 'offline' : 'online'}"></span>
-                <span class="gate-sensor-title">${isOpen ? 'Portão Aberto 🚨' : 'Portão Fechado & Trancado 🔒'}</span>
+                <span class="gate-sensor-title" id="gateSensorTitle-${dev.id}">${gateStatusTitle}</span>
               </div>
-              <span class="gate-sensor-sub">Sensor Magnético: ${isOpen ? 'Aberto / Liberado' : 'Fechado & Seguro'}</span>
+              <span class="gate-sensor-sub" id="gateSensorSub-${dev.id}">${gateStatusSub}</span>
             </div>
-            <button class="gate-action-btn-main ${isPulsing ? 'is-pulsing' : ''}" id="btnGateCardPulse-${dev.id}" onclick="triggerGatePulse('${dev.id}', event)">
+            <button class="gate-action-btn-main ${gateBtnPulse ? 'is-pulsing' : ''}" id="btnGateCardPulse-${dev.id}" onclick="triggerGatePulse('${dev.id}', event)">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:16px;height:16px;margin-right:6px;"><path d="M3 21h18M3 10h18M5 6l7-3 7 3M4 10v11M20 10v11"/></svg>
-              <span id="btnGateCardText-${dev.id}">${isPulsing ? 'Acionando Motor...' : (isOpen ? 'Fechar Portão 🚪🔻' : 'Abrir Portão 🚪🔺')}</span>
+              <span id="btnGateCardText-${dev.id}">${gateBtnText}</span>
             </button>
           </div>
 
@@ -2232,18 +2274,89 @@ async function toggleDevice(devId, dps, value) {
   }
 }
 
+// =============================================================
+// MÁQUINA DE ESTADOS DINÂMICA DO PORTÃO RESIDENCIAL
+// =============================================================
+window.gateTransitState = window.gateTransitState || null; // 'opening' | 'closing' | null
+let gatePollingInterval = null;
+let gatePollCycles = 0;
+
+function startGatePollingWatcher(devId) {
+  if (gatePollingInterval) clearInterval(gatePollingInterval);
+  gatePollCycles = 0;
+
+  gatePollingInterval = setInterval(async () => {
+    gatePollCycles++;
+    try {
+      const res = await fetch('/api/devices');
+      if (res.ok) {
+        devices = await res.json();
+        const gateDev = devices.find(d => d.id === devId || d.category === 'ckmkzq' || (d.name && d.name.toLowerCase().includes('portão')));
+        const confirmedOpen = gateDev && gateDev.live_dps ? (gateDev.live_dps['3'] === true || gateDev.live_dps['6'] === 'open') : false;
+
+        if (window.gateTransitState === 'opening' && confirmedOpen) {
+          clearInterval(gatePollingInterval);
+          window.gateTransitState = null;
+          renderQuickGrid();
+          renderCustomShortcuts();
+          showToast('Portão Aberto', 'O portão completou a abertura total!', '🚨', 'warning');
+          return;
+        }
+
+        if (window.gateTransitState === 'closing' && !confirmedOpen) {
+          clearInterval(gatePollingInterval);
+          window.gateTransitState = null;
+          renderQuickGrid();
+          renderCustomShortcuts();
+          showToast('Portão Fechado', 'Portão fechado e trancado com segurança!', '🔒', 'success');
+          return;
+        }
+
+        renderQuickGrid();
+        renderCustomShortcuts();
+      }
+    } catch (e) {}
+
+    // Timeout de segurança após ~25 segundos (tempo máximo do percurso do motor)
+    if (gatePollCycles >= 18) {
+      clearInterval(gatePollingInterval);
+      window.gateTransitState = null;
+      renderQuickGrid();
+      renderCustomShortcuts();
+    }
+  }, 1400);
+}
+
 // Pulso do Portão (Card Específico do Guia Rápido)
 async function triggerGatePulse(devId, event) {
   if (event) event.stopPropagation();
+
+  // Detecta estado atual do sensor magnético
+  const gateDev = devices.find(d => d.id === devId || d.category === 'ckmkzq' || (d.name && d.name.toLowerCase().includes('portão')));
+  const isCurrentlyOpen = gateDev && gateDev.live_dps ? (gateDev.live_dps['3'] === true || gateDev.live_dps['6'] === 'open') : false;
+
+  // Define transição esperada
+  const nextTransit = isCurrentlyOpen ? 'closing' : 'opening';
+  window.gateTransitState = nextTransit;
+
+  // Atualização instantânea da interface
   const btn = document.getElementById(`btnGateCardPulse-${devId}`);
   const btnText = document.getElementById(`btnGateCardText-${devId}`);
-  
-  if (btn) {
-    btn.classList.add('is-pulsing');
-    if (btnText) btnText.innerText = 'Acionando Motor...';
+  const titleEl = document.getElementById(`gateSensorTitle-${devId}`);
+  const subEl = document.getElementById(`gateSensorSub-${devId}`);
+  const badgeEl = document.getElementById(`gateCardBadge-${devId}`);
+
+  if (btn) btn.classList.add('is-pulsing');
+  if (btnText) btnText.innerText = nextTransit === 'opening' ? 'Abrindo... ⏳' : 'Fechando... ⏳';
+  if (titleEl) titleEl.innerText = nextTransit === 'opening' ? 'Abrindo Portão... ⏳' : 'Fechando Portão... ⏳';
+  if (subEl) subEl.innerText = nextTransit === 'opening' ? 'Motor acionado • Aguardando curso de abertura' : 'Motor acionado • Aguardando fechamento total';
+  if (badgeEl) {
+    badgeEl.innerText = nextTransit === 'opening' ? 'ABRINDO' : 'FECHANDO';
+    badgeEl.className = nextTransit === 'opening' ? 'badge badge-mode' : 'badge badge-warning';
   }
 
-  showToast('Portão da Garagem', 'Comando de abertura/fechamento enviado ao motor!', '🚪', 'info');
+  renderCustomShortcuts();
+  showToast('Portão da Garagem', nextTransit === 'opening' ? 'Comando enviado! Abrindo portão...' : 'Comando enviado! Fechando portão...', '🚪', 'info');
 
   try {
     const res = await fetch('/api/gate/pulse', {
@@ -2253,28 +2366,31 @@ async function triggerGatePulse(devId, event) {
     });
     const data = await res.json();
     if (data.success) {
-      showToast('Portão da Garagem', 'Pulso de comando executado com sucesso!', '✅', 'success');
+      showToast('Portão da Garagem', 'Pulso de comando executado!', '✅', 'success');
     }
-    setTimeout(() => {
-      if (btn) btn.classList.remove('is-pulsing');
-      fetchDevices();
-      fetchLogs();
-    }, 1200);
   } catch (err) {
     showToast('Erro no Portão', err.message, '🚨', 'danger');
-    if (btn) btn.classList.remove('is-pulsing');
   }
+
+  startGatePollingWatcher(devId);
 }
 
 // Pulso do Portão (Card de Topo na Visão Geral e Câmeras)
 async function pulseGate() {
+  const gateDev = devices.find(d => d.category === 'ckmkzq' || (d.name && d.name.toLowerCase().includes('portão')));
+  const isCurrentlyOpen = gateDev && gateDev.live_dps ? (gateDev.live_dps['3'] === true || gateDev.live_dps['6'] === 'open') : false;
+  const nextTransit = isCurrentlyOpen ? 'closing' : 'opening';
+  window.gateTransitState = nextTransit;
+
   const btn = document.getElementById('btnPulseGate');
   if (btn) {
     btn.disabled = true;
-    btn.innerText = 'Acionando...';
+    btn.innerText = nextTransit === 'opening' ? 'Abrindo... ⏳' : 'Fechando... ⏳';
   }
 
-  showToast('Portão da Garagem', 'Comando de abertura/fechamento enviado ao motor!', '🚪', 'info');
+  renderQuickGrid();
+  renderCustomShortcuts();
+  showToast('Portão da Garagem', nextTransit === 'opening' ? 'Acionando abertura do portão...' : 'Acionando fechamento do portão...', '🚪', 'info');
 
   try {
     const res = await fetch('/api/gate/pulse', {
@@ -2284,23 +2400,20 @@ async function pulseGate() {
     });
     const data = await res.json();
     if (data.success) {
-      showToast('Portão da Garagem', 'Pulso executado! Contato seco restabelecido.', '✅', 'success');
+      showToast('Portão da Garagem', 'Pulso executado!', '✅', 'success');
     }
-    setTimeout(() => {
-      if (btn) {
-        btn.disabled = false;
-        btn.innerText = 'Acionar Portão';
-      }
-      fetchDevices();
-      fetchLogs();
-    }, 1200);
   } catch (err) {
     showToast('Erro no Portão', err.message, '🚨', 'danger');
-    if (btn) {
+  }
+
+  if (btn) {
+    setTimeout(() => {
       btn.disabled = false;
       btn.innerText = 'Acionar Portão';
-    }
+    }, 1500);
   }
+
+  startGatePollingWatcher(gateDev ? gateDev.id : 'eb49c5d1977172327aqb1q');
 }
 
 // =============================================================
@@ -2841,6 +2954,12 @@ function getShortcutStatus(sc) {
     let isOpen = false;
     if (gateDev && gateDev.live_dps) {
       isOpen = gateDev.live_dps['3'] === true || gateDev.live_dps['6'] === 'open';
+    }
+    if (window.gateTransitState === 'opening') {
+      return { text: 'Abrindo... ⏳', color: '#38bdf8', bg: 'rgba(56,189,248,0.15)', rawState: 'opening' };
+    }
+    if (window.gateTransitState === 'closing') {
+      return { text: 'Fechando... ⏳', color: '#fbbf24', bg: 'rgba(245,158,11,0.15)', rawState: 'closing' };
     }
     return isOpen 
       ? { text: 'Aberto 🚨', color: '#fb7185', bg: 'rgba(244,63,94,0.12)', rawState: 'open' }
@@ -4732,30 +4851,10 @@ async function fetchCameras() {
       const streamUrl = `${BACKEND_API_BASE}/api/camera-frame?src=${encodeURIComponent(alias)}`;
       const fallbackSvg = "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='640' height='360' viewBox='0 0 640 360'><rect width='640' height='360' fill='%23090d16'/><circle cx='320' cy='150' r='40' fill='none' stroke='%2338bdf8' stroke-width='3' stroke-dasharray='6 6'/><polygon points='310,135 335,150 310,165' fill='%2338bdf8'/><text x='320' y='225' font-family='sans-serif' font-size='15' font-weight='600' fill='%23f8fafc' text-anchor='middle'>CÂMERA EM STANDBY</text></svg>";
 
-      // Renderiza atalhos sobrepostos no preview
+      // Atalhos sobrepostos no preview (Apenas atalhos personalizados pelo usuário, sem botões padrão que já existem no rodapé)
       let floatingActions = '';
-      if (isGateCam) {
-        floatingActions += `
-          <button class="cam-btn-floating" onclick="pulseGate(); event.stopPropagation();" title="Acionar portão direto no vídeo">
-            🚪 Acionar Portão
-          </button>
-        `;
-      }
-      if (isPtz) {
-        floatingActions += `
-          <button class="cam-btn-floating" onclick="openPtzModal('${cam.id}'); event.stopPropagation();" title="Abrir Dupla Visão e PTZ">
-            📺 Dupla Visão & PTZ
-          </button>
-        `;
-      } else {
-        floatingActions += `
-          <button class="cam-btn-floating" onclick="openPtzModal('${cam.id}'); event.stopPropagation();" title="Abrir Monitoramento e Áudio">
-            👁️ Monitorar & Áudio
-          </button>
-        `;
-      }
 
-      // Adiciona atalhos que o usuário marcou explicitamente como "Exibir nas Câmeras"
+      // Adiciona apenas atalhos extras que o usuário marcou explicitamente como "Exibir nas Câmeras"
       const userShortcuts = getCustomShortcuts().filter(s => s.showCameras && s.type !== 'gate');
       userShortcuts.forEach(sc => {
         floatingActions += `

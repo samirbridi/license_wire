@@ -1316,8 +1316,11 @@ function saveSchedules(schedules) {
   }
 }
 
+let gatePulseActiveUntil = 0;
+
 async function executeGatePulse(devId = 'eb49c5d1977172327aqb1q', origin = 'Portal Web') {
   console.log(`[🚪 PULSO PORTÃO] Acionando pulso de contato seco no portão via ${origin}...`);
+  gatePulseActiveUntil = Date.now() + 1200;
   const registry = fs.existsSync(REGISTRY_PATH) ? JSON.parse(fs.readFileSync(REGISTRY_PATH, 'utf-8')) : [];
   const targetDev = registry.find(d => d.id === devId || d.local_ip === devId);
   const devName = targetDev?.name || 'Portão da Garagem';
@@ -1765,10 +1768,14 @@ const server = http.createServer(async (req, res) => {
       for (const dev of data) {
         const liveDps = liveDeviceStatus.get(dev.id) || liveDeviceStatus.get(dev.local_ip);
         if (liveDps) {
-          dev.live_dps = liveDps;
-          if (liveDps['1'] !== undefined) dev.is_on = Boolean(liveDps['1']);
-          else if (liveDps['16'] !== undefined) dev.is_on = Boolean(liveDps['16']);
-          else if (liveDps['switch_1'] !== undefined) dev.is_on = Boolean(liveDps['switch_1']);
+          dev.live_dps = { ...liveDps };
+          const isGate = dev.category === 'ckmkzq' || dev.id === 'eb49c5d1977172327aqb1q' || (dev.name && dev.name.toLowerCase().includes('portão'));
+          if (isGate && Date.now() > gatePulseActiveUntil) {
+            dev.live_dps['1'] = false;
+          }
+          if (dev.live_dps['1'] !== undefined) dev.is_on = Boolean(dev.live_dps['1']);
+          else if (dev.live_dps['16'] !== undefined) dev.is_on = Boolean(dev.live_dps['16']);
+          else if (dev.live_dps['switch_1'] !== undefined) dev.is_on = Boolean(dev.live_dps['switch_1']);
         }
       }
 

@@ -47,15 +47,19 @@
   background: rgba(56, 189, 248, 0.4);
 }
 
-/* Esconde barras de rolagem nativas brancas/cinzas em elementos touch */
+/* Esconde barras de rolagem nativas brancas/cinzas em elementos touch e desktops */
 .nav-tabs,
 .ha-actions-buttons,
+.ha-actions-row,
 .ha-glance-bar,
+.room-filters,
+.quick-search-and-filters,
 .theater-tabs-bar,
 .ptz-view-mode-tabs,
 .ptz-quality-pills,
 .sd-timeline-scroll-wrap,
 .sd-stat-cards-grid,
+.sd-stat-card,
 .theater-sd-panel,
 .devices-table-wrap,
 .energy-report-tables-grid,
@@ -67,12 +71,16 @@
 
 .nav-tabs::-webkit-scrollbar,
 .ha-actions-buttons::-webkit-scrollbar,
+.ha-actions-row::-webkit-scrollbar,
 .ha-glance-bar::-webkit-scrollbar,
+.room-filters::-webkit-scrollbar,
+.quick-search-and-filters::-webkit-scrollbar,
 .theater-tabs-bar::-webkit-scrollbar,
 .ptz-view-mode-tabs::-webkit-scrollbar,
 .ptz-quality-pills::-webkit-scrollbar,
 .sd-timeline-scroll-wrap::-webkit-scrollbar,
 .sd-stat-cards-grid::-webkit-scrollbar,
+.sd-stat-card::-webkit-scrollbar,
 .theater-sd-panel::-webkit-scrollbar,
 .devices-table-wrap::-webkit-scrollbar,
 .energy-report-tables-grid::-webkit-scrollbar,
@@ -1587,6 +1595,38 @@ button.btn-close:active {
   gap: 16px;
   align-items: center;
   flex-wrap: wrap;
+}
+
+.btn-personalizar-inline {
+  margin-left: auto;
+  white-space: nowrap;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 8px 14px;
+  border-radius: 8px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(56, 189, 248, 0.08);
+  border: 1px solid rgba(56, 189, 248, 0.25);
+  color: var(--accent-cyan);
+  transition: all 0.2s ease;
+  cursor: pointer;
+}
+
+.btn-personalizar-inline:hover {
+  background: rgba(56, 189, 248, 0.18);
+  border-color: var(--accent-cyan);
+  transform: translateY(-1px);
+}
+
+@media (max-width: 768px) {
+  .btn-personalizar-inline {
+    width: 100%;
+    margin-left: 0;
+    justify-content: center;
+    margin-top: 4px;
+  }
 }
 
 .quick-search-wrapper {
@@ -3546,7 +3586,10 @@ button.btn-close:active {
   display: flex;
   flex-direction: column;
   gap: 18px;
-  overflow-y: auto;
+  overflow-x: hidden !important;
+  overflow-y: auto !important;
+  scrollbar-width: none !important;
+  -ms-overflow-style: none !important;
   padding: 6px 12px 20px 6px;
   flex: 1;
   min-height: 0;
@@ -3556,6 +3599,7 @@ button.btn-close:active {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
   gap: 14px;
+  overflow: hidden !important;
 }
 
 .sd-stat-card {
@@ -3565,6 +3609,7 @@ button.btn-close:active {
   padding: 12px 16px;
   display: flex;
   align-items: center;
+  overflow: hidden !important;
   gap: 12px;
   transition: border-color 0.2s ease;
 }

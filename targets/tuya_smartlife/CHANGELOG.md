@@ -3,6 +3,27 @@
 Todas as descobertas, módulos dissecados e correções desta análise são registrados aqui.
 Formato de versão obrigatório: `vX.Y.Z (build XXXX)`.
 
+## v0.30.0 (build 0033) - 2026-10-27
+
+### ✨ Features
+- feat: implementação da máquina de estados dinâmica do portão residencial:
+  - Estado Fechado: status `Portão Fechado & Trancado 🔒`, badge `FECHADO`, botão **`Abrir Portão 🚪🔺`**
+  - Ao clicar para abrir: status atualiza imediatamente para **`Abrindo Portão... ⏳`**, botão muda para **`Abrindo... ⏳`** com pulso ativo
+  - Estado Aberto: quando o sensor magnético confirma a abertura, o status muda para `Portão Aberto 🚨`, badge `ABERTO` e o botão inverte para **`Fechar Portão 🚪🔻`**
+  - Ao clicar para fechar: status atualiza imediatamente para **`Fechando Portão... ⏳`**, botão muda para **`Fechando... ⏳`**
+  - Ao fechar: sensor magnético detecta contato e reverte o card para `Portão Fechado & Trancado 🔒` e botão para **`Abrir Portão 🚪🔺`**
+  - Polling reativo a cada 1,4s durante a transição com timeout de segurança
+  - Normalização do DPS 1 no backend `server.mjs` para evitar travamento em "Acionando Motor..."
+- feat: remoção do botão flutuante sobreposto na imagem da câmera (`[👁 Monitorar & Áudio]` / `[📺 Dupla Visão & PTZ]`), liberando a visualização limpa do streaming de vídeo já que os botões de ação existem no rodapé de cada card
+- feat: reposicionamento do botão `+ Personalizar / Adicionar ao Guia` para a mesma linha das guias e filtros de cômodos (`Todos no Guia`, `Favoritos`, `Sala`, etc.) no Guia Rápido
+
+### ⚡ Improvements
+- improve: supressão universal de barras de rolagem nativas cinzas do Windows em `.nav-tabs`, `.ha-actions-buttons`, `.room-filters`, `.theater-sd-panel` e `.sd-stat-card`, mantendo rolagem touch/arrasto 100% ativa sem corte visual
+- improve: eliminação de janelas de console do `cmd.exe` visíveis no desktop, assegurando operação discreta em background
+- improve: deploy contínuo em produção no Cloudflare Pages (`https://homecams.pages.dev`) e sincronização de cache buster `v0.30.0-build0033`
+
+---
+
 ## v0.29.0 (build 0032) - 2026-10-27
 
 ### ✨ Features
