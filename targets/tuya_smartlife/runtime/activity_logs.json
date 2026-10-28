@@ -1,5 +1,47 @@
 [
   {
+    "id": "log_1793143668889_25en",
+    "timestamp": 1793143668889,
+    "timeFormatted": "20:27:48",
+    "dateFormatted": "27/10/2026",
+    "devId": "eb49c5d1977172327aqb1q",
+    "devName": "Portão da Garagem",
+    "action": "Portão Fechado com Sucesso",
+    "details": "Sensor magnético confirmou fechamento total (permaneceu aberto por 189s). Garagem segura.",
+    "origin": "Sensor Magnético",
+    "icon": "✅",
+    "level": "success",
+    "read": true
+  },
+  {
+    "id": "log_1793143543691_tr4t",
+    "timestamp": 1793143543691,
+    "timeFormatted": "20:25:43",
+    "dateFormatted": "27/10/2026",
+    "devId": "eb49c5d1977172327aqb1q",
+    "devName": "Portão da Garagem",
+    "action": "Alerta: Portão Aberto > 1 Minuto",
+    "details": "Atenção! O portão da garagem permaneceu aberto por mais de 60 segundos. Verifique as câmeras ou feche agora.",
+    "origin": "Alerta de Segurança",
+    "icon": "🚨",
+    "level": "danger",
+    "read": true
+  },
+  {
+    "id": "log_1793143479853_n8zx",
+    "timestamp": 1793143479853,
+    "timeFormatted": "20:24:39",
+    "dateFormatted": "27/10/2026",
+    "devId": "eb49c5d1977172327aqb1q",
+    "devName": "Portão da Garagem",
+    "action": "Portão Aberto",
+    "details": "Sensor magnético detectou abertura do portão da garagem",
+    "origin": "Sensor Magnético",
+    "icon": "🚪",
+    "level": "warning",
+    "read": true
+  },
+  {
     "id": "log_1793139498176_1l2p",
     "timestamp": 1793139498176,
     "timeFormatted": "19:18:18",
@@ -11,7 +53,7 @@
     "origin": "Sensor Entrada",
     "icon": "🔔",
     "level": "warning",
-    "read": false
+    "read": true
   },
   {
     "id": "log_1793137431706_hnfd",
@@ -25,7 +67,7 @@
     "origin": "Sensor Magnético",
     "icon": "✅",
     "level": "success",
-    "read": false
+    "read": true
   },
   {
     "id": "log_1793137391933_ivn1",
@@ -39,7 +81,7 @@
     "origin": "Alerta de Segurança",
     "icon": "🚨",
     "level": "danger",
-    "read": false
+    "read": true
   },
   {
     "id": "log_1793137327283_7xcs",
@@ -53,7 +95,7 @@
     "origin": "Sensor Magnético",
     "icon": "🚪",
     "level": "warning",
-    "read": false
+    "read": true
   },
   {
     "id": "log_1793136245973_5p9s",
@@ -67,7 +109,7 @@
     "origin": "Sensor Entrada",
     "icon": "🔔",
     "level": "warning",
-    "read": false
+    "read": true
   },
   {
     "id": "log_1793134635165_i4rb",

@@ -367,6 +367,12 @@ function getDeviceIcon(category) {
   if (category === 'jtmspro' || category === 'fechadura') {
     return `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>`;
   }
+  if (category === 'wg2' || category === 'gateway' || category === 'hub') {
+    return `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 11a9 9 0 0 1 16 0"/><path d="M7 14a5 5 0 0 1 10 0"/><circle cx="12" cy="18" r="2"/></svg>`;
+  }
+  if (category === 'ykq' || category === 'remote') {
+    return `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="6" y="2" width="12" height="20" rx="4"/><circle cx="12" cy="8" r="2"/><line x1="9" y1="14" x2="9.01" y2="14"/><line x1="15" y1="14" x2="15.01" y2="14"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>`;
+  }
   if (category.includes('infrared')) {
     return `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>`;
   }
@@ -4174,9 +4180,8 @@ async function toggleAudioTalk() {
         audioTalkStream = await navigator.mediaDevices.getUserMedia({
           audio: {
             channelCount: 1,
-            sampleRate: 48000,
-            echoCancellation: true,
-            noiseSuppression: true,
+            echoCancellation: false, // Desativa cancelador agressivo que abafa a voz normal
+            noiseSuppression: false, // Desativa portão de ruído que silencia fala suave
             autoGainControl: true
           }
         });
@@ -4212,7 +4217,7 @@ async function toggleAudioTalk() {
           });
         };
 
-        // Transmissão contínua em tempo real: Web Audio API com buffer PCM 16kHz
+        // Transmissão contínua em tempo real: Web Audio API com buffer PCM 16kHz e Ganho de Voz
         const AudioCtx = window.AudioContext || window.webkitAudioContext;
         if (AudioCtx) {
           const actx = new AudioCtx({ sampleRate: 16000 });
@@ -4221,18 +4226,29 @@ async function toggleAudioTalk() {
           // 4096 amostras = 256ms a 16000Hz (latência baixíssima e voz limpa sem estalos)
           const scriptNode = actx.createScriptProcessor(4096, 1, 1);
           audioTalkScriptNode = scriptNode;
+
+          // Ganho silencioso para acionar o pipeline de áudio do navegador sem retorno nos alto-falantes locais
+          const silentGain = actx.createGain();
+          silentGain.gain.value = 0;
+
           scriptNode.onaudioprocess = (audioEv) => {
             if (!isAudioTalking) return;
             const channel = audioEv.inputBuffer.getChannelData(0);
             const pcm16 = new Int16Array(channel.length);
+            // Ganho de voz adaptativo com compressão analógica suave (tanh) para voz encorpada e sem distorção
+            const VOICE_GAIN = 4.0;
             for (let i = 0; i < channel.length; i++) {
-              const s = Math.max(-1, Math.min(1, channel[i]));
+              const raw = channel[i] * VOICE_GAIN;
+              // Saturação suave tipo valvulado (previne corte abrupto da onda)
+              const s = Math.tanh(raw);
               pcm16[i] = s < 0 ? s * 0x8000 : s * 0x7FFF;
             }
-            sendChunk(new Blob([pcm16.buffer], { type: 'audio/pcm' }));
+            sendChunk(new Blob([pcm16.buffer], { type: `audio/pcm;rate=${actx.sampleRate || 16000}` }));
           };
+
           micSource.connect(scriptNode);
-          scriptNode.connect(actx.destination);
+          scriptNode.connect(silentGain);
+          silentGain.connect(actx.destination);
         } else {
           // Fallback MediaRecorder contínuo
           const mimeType = MediaRecorder.isTypeSupported('audio/webm;codecs=opus')

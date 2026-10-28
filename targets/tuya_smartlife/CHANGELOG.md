@@ -3,6 +3,41 @@
 Todas as descobertas, módulos dissecados e correções desta análise são registrados aqui.
 Formato de versão obrigatório: `vX.Y.Z (build XXXX)`.
 
+## v0.28.0 (build 0030) - 2026-10-27
+
+### 💥 Breaking Changes
+- Nenhum.
+
+### ✨ Features
+- feat: separação definitiva dos cards na *Visão Geral*:
+  - Card 5A: **GARAGEM • GWM ORA 5** (SoC, 293 km de autonomia, Trava de Portas, Placa TRL-4I59, Cor Preto)
+  - Card 5B: **GARAGEM • DOLPHIN MINI** (SoC, 218 km de autonomia, Trava de Portas, Bateria Blade LFP 38 kWh, Wallbox Pronta)
+  - Elimina acúmulo de badges e sobreposição de textos, mantendo acesso em 1 clique para a aba detalhada *Elétricos*
+- feat: integração e sincronização do **Hub Zigbee 3.0 Gateway** (`ebacd6b0d9c50c9db8sfkk` no IP `192.168.1.175`, Cat: `wg2`) e do **Controle Remoto Zigbee** (Cat: `ykq`):
+  - Inclusão automática no `devices_registry.json` e exibição na tabela de inventário de dispositivos
+  - Ícones SVG dedicados para Hub Gateway (antena/ondas) e Controle Remoto
+  - Suporte a fixação no *Guia Rápido* e monitoramento de conectividade
+
+### 🐛 Fixes
+- fix: correção de áudio Talkback no microfone do laptop e cabos:
+  - Identificada e corrigida causa raiz onde o navegador enviava áudio em 48000Hz nativo enquanto o servidor decodificava em 16000Hz (abaixando o tom da voz humana em 3x e caindo no filtro passa-altas de 100Hz)
+  - Adicionado envio dinâmico do sample rate real no cabeçalho HTTP (`audio/pcm;rate=${sampleRate}`)
+  - Ajustado filtro FFmpeg para `highpass=f=60,lowpass=f=7500` (Opus) e `volume=3.2`, preservando harmônicos fundamentais da voz masculina e feminina
+  - Adicionada saturação analógica suave via `Math.tanh()` no frontend com ganho digital 4.0x para voz forte sem estalo digital
+- fix: correção de caminho relativo do workspace no script `start-portal.ps1`, garantindo inicialização invisível e execução silenciosa sem falha
+- fix: badges com `white-space: nowrap !important` prevenindo quebras indesejadas de linha como `⚡ 2 Veículos` / `Online`
+
+### ⚡ Improvements
+- improve: reformulação visual completa para dispositivos móveis (Samsung Internet, Chrome Android, telas <= 768px):
+  - Player de vídeo das câmeras com proporção fixa 16/9 (`min-height: 220px`), eliminando a barra esmagada tipo fita
+  - Linha do tempo de gravações SD com rolagem por toque horizontal (`min-width: 650px; height: 85px`) e separadores legíveis sem colisão de fontes
+  - Grid de abas do modo teatro ajustado em 2 colunas com badges compactas
+  - Tabelas de inventário e relatórios de energia com rolagem horizontal suave e cabeçalhos em linha única
+  - Cards de automações empilhados verticalmente com barra de ação inferior
+- improve: deploy contínuo em produção no Cloudflare Pages (`https://homecams.pages.dev`) e sincronização dinâmica do túnel ativo
+
+---
+
 ## v0.27.0 (build 0029) - 2026-10-27
 
 ### 💥 Breaking Changes

@@ -468,5 +468,94 @@
       "factory_reset": false,
       "sub_admin": "AQAC"
     }
+  },
+  {
+    "id": "ebddcf746536e0f01az4dv",
+    "name": "Dispositivo Tuya (192.168.1.70)",
+    "local_ip": "192.168.1.70",
+    "local_key": "",
+    "version": "3.4",
+    "category": "dj",
+    "product_name": "Dispositivo Tuya Wi-Fi",
+    "product_id": "rt90jaznls6wlq5j",
+    "model": "",
+    "online": true,
+    "sub": false,
+    "status": {}
+  },
+  {
+    "id": "ebacd6b0d9c50c9db8sfkk",
+    "name": "Hub Zigbee Gateway",
+    "local_ip": "192.168.1.175",
+    "local_key": "",
+    "version": "3.4",
+    "category": "wg2",
+    "product_name": "Hub Zigbee 3.0 Wireless Gateway",
+    "product_id": "keym557nqw3p8p7m",
+    "model": "TYGWZ-01",
+    "online": true,
+    "sub": false,
+    "status": {}
+  },
+  {
+    "id": "eb5911cf8227d3e955ihbv",
+    "name": "Dispositivo Tuya (192.168.1.80)",
+    "local_ip": "192.168.1.80",
+    "local_key": "",
+    "version": "3.3",
+    "category": "dj",
+    "product_name": "Dispositivo Tuya Wi-Fi",
+    "product_id": "keyfa7hya4gfa7g9",
+    "model": "",
+    "online": true,
+    "sub": false,
+    "status": {}
+  },
+  {
+    "id": "0070600140f5201aad58",
+    "name": "Dispositivo Tuya (192.168.1.102)",
+    "local_ip": "192.168.1.102",
+    "local_key": "",
+    "version": "3.3",
+    "category": "dj",
+    "product_name": "Dispositivo Tuya Wi-Fi",
+    "product_id": "keyf9fsmuufeywsr",
+    "model": "",
+    "online": true,
+    "sub": false,
+    "status": {}
+  },
+  {
+    "id": "eb1d9c1e1b02ea717178cd",
+    "name": "Dispositivo Tuya (192.168.1.242)",
+    "local_ip": "192.168.1.242",
+    "local_key": "",
+    "version": "3.5",
+    "category": "dj",
+    "product_name": "Dispositivo Tuya Wi-Fi",
+    "product_id": "key5ckdnys3pqgec",
+    "model": "",
+    "online": true,
+    "sub": false,
+    "status": {}
+  },
+  {
+    "id": "eb_zigbee_remote_01",
+    "parent_id": "ebacd6b0d9c50c9db8sfkk",
+    "name": "Controle Remoto Zigbee",
+    "local_ip": "Sub-dispositivo (Hub Zigbee)",
+    "local_key": "",
+    "version": "3.4",
+    "category": "ykq",
+    "product_name": "Controle Remoto Sem Fio Zigbee",
+    "product_id": "zigbee_remote_key",
+    "model": "TS0215A / Zigbee Remote",
+    "online": true,
+    "sub": true,
+    "status": {
+      "switch_1": false,
+      "battery_percentage": 100,
+      "button_state": "idle"
+    }
   }
 ]

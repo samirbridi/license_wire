@@ -2369,8 +2369,10 @@ const server = http.createServer(async (req, res) => {
       const isPcm = (req.headers['content-type'] || '').includes('audio/pcm') ||
                     (req.headers['content-type'] || '').includes('audio/l16') ||
                     (audioBuffer[0] !== 0x1A && audioBuffer[1] !== 0x45);
+      const sampleRateMatch = (req.headers['content-type'] || '').match(/rate=(\d+)/);
+      const incomingSampleRate = sampleRateMatch ? sampleRateMatch[1] : '16000';
       const inputFmtArgs = isPcm
-        ? ['-f', 's16le', '-ar', '16000', '-ac', '1', '-i', 'pipe:0']
+        ? ['-f', 's16le', '-ar', incomingSampleRate, '-ac', '1', '-i', 'pipe:0']
         : ['-i', 'pipe:0'];
 
       let transmitInfo = { ok: false };
@@ -2381,7 +2383,8 @@ const server = http.createServer(async (req, res) => {
             const ff = spawn(FFMPEG_BIN, [
               '-hide_banner', '-nostdin', '-loglevel', 'error',
               ...inputFmtArgs,
-              '-c:a', 'libopus', '-ar', '48000', '-ac', '1', '-b:a', '24k',
+              '-af', 'volume=3.2,highpass=f=60,lowpass=f=7500',
+              '-c:a', 'libopus', '-ar', '48000', '-ac', '1', '-b:a', '32k',
               '-vbr', 'off', '-frame_duration', '20', '-page_duration', '20000', '-application', 'voip',
               '-f', 'ogg', 'pipe:1'
             ], { windowsHide: true, stdio: ['pipe', 'pipe', 'ignore'] });
@@ -2411,6 +2414,7 @@ const server = http.createServer(async (req, res) => {
             const ff = spawn(FFMPEG_BIN, [
               '-hide_banner', '-nostdin', '-loglevel', 'error',
               ...inputFmtArgs,
+              '-af', 'volume=3.2,highpass=f=60,lowpass=f=3400',
               '-c:a', 'pcm_alaw', '-ar', '8000', '-ac', '1',
               '-f', 'alaw', 'pipe:1'
             ], { windowsHide: true, stdio: ['pipe', 'pipe', 'ignore'] });

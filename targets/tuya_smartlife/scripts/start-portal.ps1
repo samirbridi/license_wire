@@ -9,8 +9,9 @@ param (
 )
 
 $scriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path
-$workspace = Split-Path -Parent (Split-Path -Parent $scriptDir)
-$serverScript = Join-Path $workspace "targets\tuya_smartlife\reconstructed\mizin-portal\server.mjs"
+$workspace = (Resolve-Path (Join-Path $scriptDir "..\..\..")).Path
+$portalDir = Join-Path $workspace "targets\tuya_smartlife\reconstructed\mizin-portal"
+$serverScript = Join-Path $portalDir "server.mjs"
 
 # Encerra instância anterior se porta 19860 em uso
 $existingProc = Get-NetTCPConnection -LocalPort 19860 -ErrorAction SilentlyContinue
@@ -24,14 +25,14 @@ Write-Host "==========================================================" -Foregro
 Write-Host "🏠 INICIANDO CENTRAL UNIFICADA MIZIN HOME" -ForegroundColor Cyan
 Write-Host "==========================================================" -ForegroundColor Cyan
 
-$psi = New-Object System.Diagnostics.ProcessStartInfo
-$psi.FileName = "node"
-$psi.Arguments = $serverScript
-$psi.WorkingDirectory = $workspace
-$psi.WindowStyle = [System.Diagnostics.ProcessWindowStyle]::Hidden
-$psi.CreateNoWindow = $true
-$psi.UseShellExecute = $false
-$proc = [System.Diagnostics.Process]::Start($psi)
+$nodeExe = (Get-Command node -ErrorAction SilentlyContinue).Source
+if (-not $nodeExe) { $nodeExe = "C:\Program Files\nodejs\node.exe" }
+
+$runtimeDir = Join-Path $workspace "targets\tuya_smartlife\runtime"
+$stdoutLog = Join-Path $runtimeDir "server_stdout.log"
+$stderrLog = Join-Path $runtimeDir "server_stderr.log"
+
+$proc = Start-Process -FilePath $nodeExe -ArgumentList "server.mjs" -WorkingDirectory $portalDir -WindowStyle Hidden -RedirectStandardOutput $stdoutLog -RedirectStandardError $stderrLog -PassThru
 
 Write-Host "[+] Central iniciada com PID: $($proc.Id)" -ForegroundColor Green
 Write-Host "[+] Acesse localmente em: http://localhost:19860" -ForegroundColor White

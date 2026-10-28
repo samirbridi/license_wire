@@ -262,36 +262,52 @@
           </div>
         </div>
 
-        <!-- Card 5: Garagem & Veículos Elétricos -->
-        <div class="metric-card glow-cyan is-clickable" onclick="switchTab('ev')" title="Clique para abrir a central dos Veículos Elétricos">
+        <!-- Card 5A: Garagem • GWM Ora 5 -->
+        <div class="metric-card glow-cyan is-clickable" onclick="switchTab('ev'); selectEvVehicle('ora5');" title="Abrir Central GWM Ora 5">
           <div class="metric-header">
-            <span class="metric-title">VEÍCULOS ELÉTRICOS (GARAGEM)</span>
+            <span class="metric-title">GARAGEM • GWM ORA 5</span>
             <div class="metric-header-badges">
-              <span class="badge badge-live" id="evOverviewStatusBadge">⚡ 2 Veículos Online</span>
+              <span class="badge badge-live">🟢 Online</span>
             </div>
           </div>
-          <div style="display:flex; justify-content:space-between; gap:10px; margin-top:8px;">
-            <div style="flex:1; background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.07); border-radius:8px; padding:8px 10px;">
-              <div style="font-size:11px; color:var(--text-muted); display:flex; justify-content:space-between;">
-                <span>🚗 GWM Ora 5</span>
-                <span id="evQuickOraLock">🔒 Trancado</span>
-              </div>
-              <div style="font-size:18px; font-weight:700; color:var(--accent-cyan); margin-top:2px;" id="evQuickOraSoc">84%</div>
-              <div style="font-size:11px; color:var(--text-muted);" id="evQuickOraRange">293 km autonomia</div>
-            </div>
-            <div style="flex:1; background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.07); border-radius:8px; padding:8px 10px;">
-              <div style="font-size:11px; color:var(--text-muted); display:flex; justify-content:space-between;">
-                <span>⚡ Dolphin Mini</span>
-                <span id="evQuickBydLock">🔒 Trancado</span>
-              </div>
-              <div style="font-size:18px; font-weight:700; color:#10b981; margin-top:2px;" id="evQuickBydSoc">78%</div>
-              <div style="font-size:11px; color:var(--text-muted);" id="evQuickBydRange">218 km autonomia</div>
-            </div>
+          <div class="metric-value-row">
+            <div class="metric-value" id="evQuickOraSoc" style="color:var(--accent-cyan);">84%</div>
+            <div class="metric-unit">SoC</div>
+            <span class="metric-sub" id="evQuickOraLock" style="margin-left:auto; font-size:12px; font-weight:600;">🔒 Trancado</span>
           </div>
           <div class="metric-footer-stacked">
             <div class="metric-footer-line">
-              <span class="footer-lbl">Status:</span>
-              <span class="footer-val" style="color:var(--accent-cyan);">Prontos para rodar • Pneus calibrados</span>
+              <span class="footer-lbl">Autonomia:</span>
+              <span class="footer-val" id="evQuickOraRange" style="color:var(--accent-cyan); font-weight:600;">293 km restantes</span>
+            </div>
+            <div class="metric-footer-line">
+              <span class="footer-lbl">Veículo:</span>
+              <span class="footer-val">Placa TRL-4I59 • Cor Preto</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Card 5B: Garagem • BYD Dolphin Mini -->
+        <div class="metric-card glow-emerald is-clickable" onclick="switchTab('ev'); selectEvVehicle('dolphin_mini');" title="Abrir Central BYD Dolphin Mini">
+          <div class="metric-header">
+            <span class="metric-title">GARAGEM • DOLPHIN MINI</span>
+            <div class="metric-header-badges">
+              <span class="badge badge-live">🟢 Online</span>
+            </div>
+          </div>
+          <div class="metric-value-row">
+            <div class="metric-value" id="evQuickBydSoc" style="color:#10b981;">78%</div>
+            <div class="metric-unit">SoC</div>
+            <span class="metric-sub" id="evQuickBydLock" style="margin-left:auto; font-size:12px; font-weight:600;">🔒 Trancado</span>
+          </div>
+          <div class="metric-footer-stacked">
+            <div class="metric-footer-line">
+              <span class="footer-lbl">Autonomia:</span>
+              <span class="footer-val" id="evQuickBydRange" style="color:#10b981; font-weight:600;">218 km restantes</span>
+            </div>
+            <div class="metric-footer-line">
+              <span class="footer-lbl">Veículo:</span>
+              <span class="footer-val">Blade LFP 38 kWh • Wallbox Pronta</span>
             </div>
           </div>
         </div>
