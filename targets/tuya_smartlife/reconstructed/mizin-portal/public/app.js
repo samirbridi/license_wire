@@ -3743,9 +3743,14 @@ function connectHttpStream(videoEl, feedImg, spinnerEl, streamAlias, isMuted, on
   if (!videoEl) return;
   stopHttpVideoElement(videoEl);
   if (spinnerEl) spinnerEl.style.display = 'block';
-  if (feedImg) feedImg.style.display = 'block';
 
   let readyFired = false;
+  if (feedImg) {
+    feedImg.style.display = 'none';
+    feedImg.onload = () => { if (!readyFired) feedImg.style.display = 'block'; };
+    feedImg.onerror = () => { feedImg.style.display = 'none'; };
+  }
+
   const quality = resolveEffectiveCameraQuality();
   videoEl.muted = isMuted;
   videoEl.playsInline = true;
@@ -3771,7 +3776,6 @@ function connectHttpStream(videoEl, feedImg, spinnerEl, streamAlias, isMuted, on
   videoEl.oncanplay = readyHandler;
   videoEl.onerror = () => {
     if (spinnerEl) spinnerEl.style.display = 'none';
-    if (feedImg) feedImg.style.display = 'block';
   };
 }
 
@@ -4180,8 +4184,8 @@ async function toggleAudioTalk() {
         audioTalkStream = await navigator.mediaDevices.getUserMedia({
           audio: {
             channelCount: 1,
-            echoCancellation: false, // Desativa cancelador agressivo que abafa a voz normal
-            noiseSuppression: false, // Desativa portão de ruído que silencia fala suave
+            echoCancellation: true, // Remove retorno e microfonia
+            noiseSuppression: true, // Filtra ruído ambiente, ventilador e chiado da sala
             autoGainControl: true
           }
         });
@@ -4217,7 +4221,7 @@ async function toggleAudioTalk() {
           });
         };
 
-        // Transmissão contínua em tempo real: Web Audio API com buffer PCM 16kHz e Ganho de Voz
+        // Transmissão contínua em tempo real: Web Audio API com buffer PCM
         const AudioCtx = window.AudioContext || window.webkitAudioContext;
         if (AudioCtx) {
           const actx = new AudioCtx({ sampleRate: 16000 });
@@ -4235,12 +4239,11 @@ async function toggleAudioTalk() {
             if (!isAudioTalking) return;
             const channel = audioEv.inputBuffer.getChannelData(0);
             const pcm16 = new Int16Array(channel.length);
-            // Ganho de voz adaptativo com compressão analógica suave (tanh) para voz encorpada e sem distorção
-            const VOICE_GAIN = 4.0;
+            // Captura limpa e transparente; a normalização e corte de ruído (afftdn + speechnorm) ocorrem no backend via hardware
             for (let i = 0; i < channel.length; i++) {
-              const raw = channel[i] * VOICE_GAIN;
-              // Saturação suave tipo valvulado (previne corte abrupto da onda)
-              const s = Math.tanh(raw);
+              let s = channel[i];
+              if (s > 1.0) s = 1.0;
+              else if (s < -1.0) s = -1.0;
               pcm16[i] = s < 0 ? s * 0x8000 : s * 0x7FFF;
             }
             sendChunk(new Blob([pcm16.buffer], { type: `audio/pcm;rate=${actx.sampleRate || 16000}` }));

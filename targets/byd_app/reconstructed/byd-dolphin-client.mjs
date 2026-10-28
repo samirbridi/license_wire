@@ -15,9 +15,9 @@ const ENV_FILE = path.join(RUNTIME_DIR, 'credenciais_byd.env');
 const TELEMETRY_FILE = path.join(RUNTIME_DIR, 'dolphin_telemetry_latest.json');
 
 export const DOLPHIN_SPECS = {
-  model: 'BYD Dolphin Mini EV',
-  batteryCapacityKwh: 38.0,
-  batteryType: 'Blade Battery (LFP)',
+  model: 'BYD Dolphin Mini GS (Bateria Maior)',
+  batteryCapacityKwh: 38.88,
+  batteryType: 'Blade Battery LFP (GS Maior Autonomia)',
   maxRangeKm: 280,
   nominalTirePressurePsi: 36.0,
 };
@@ -45,11 +45,11 @@ export function getDefaultDolphinTelemetry() {
   return {
     id: 'dolphin_mini',
     brand: 'BYD',
-    model: 'Dolphin Mini EV (Blade)',
-    plate: 'BRA-5X88',
-    color: 'Verde Sprout',
+    model: 'Dolphin Mini GS',
+    plate: 'TQR-1A36',
+    color: 'Preto',
     powerType: 'BEV 100% Elétrico',
-    batteryCapacityKwh: 38.0,
+    batteryCapacityKwh: 38.88,
     batterySoc: 78,
     evRangeKm: 218,
     maxRangeKm: 280,

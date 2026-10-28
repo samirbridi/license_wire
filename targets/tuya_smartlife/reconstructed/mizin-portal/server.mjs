@@ -2379,11 +2379,12 @@ const server = http.createServer(async (req, res) => {
       try {
         if (useOpus) {
           // Transcodifica para Ogg Opus com pacotes de 20ms (48kHz stereo, que o go2rtc agrupa em 40ms via opus.JoinFrames)
+          // Filtro profissional de voz: remove zumbido/ventilador (highpass 200Hz), corta chiado (lowpass 3600Hz), cancela ruído estático (afftdn) e normaliza a voz para volume broadcast (speechnorm)
           const oggBuf = await new Promise((resolve, reject) => {
             const ff = spawn(FFMPEG_BIN, [
               '-hide_banner', '-nostdin', '-loglevel', 'error',
               ...inputFmtArgs,
-              '-af', 'volume=3.2,highpass=f=60,lowpass=f=7500',
+              '-af', 'highpass=f=200,lowpass=f=3600,afftdn=nf=-25,speechnorm=e=5:r=0.0001:l=1',
               '-c:a', 'libopus', '-ar', '48000', '-ac', '1', '-b:a', '32k',
               '-vbr', 'off', '-frame_duration', '20', '-page_duration', '20000', '-application', 'voip',
               '-f', 'ogg', 'pipe:1'
@@ -2414,7 +2415,7 @@ const server = http.createServer(async (req, res) => {
             const ff = spawn(FFMPEG_BIN, [
               '-hide_banner', '-nostdin', '-loglevel', 'error',
               ...inputFmtArgs,
-              '-af', 'volume=3.2,highpass=f=60,lowpass=f=3400',
+              '-af', 'highpass=f=200,lowpass=f=3400,afftdn=nf=-25,speechnorm=e=5:r=0.0001:l=1',
               '-c:a', 'pcm_alaw', '-ar', '8000', '-ac', '1',
               '-f', 'alaw', 'pipe:1'
             ], { windowsHide: true, stdio: ['pipe', 'pipe', 'ignore'] });

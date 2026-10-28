@@ -3,6 +3,28 @@
 Todas as descobertas, módulos dissecados e correções desta análise são registrados aqui.
 Formato de versão obrigatório: `vX.Y.Z (build XXXX)`.
 
+## v0.29.0 (build 0032) - 2026-10-27
+
+### ✨ Features
+- feat: atualização da ficha técnica real do **BYD Dolphin Mini GS**:
+  - Modelo oficial GS com bateria estendida Blade LFP de 38,88 kWh e maior autonomia
+  - Placa oficial `TQR-1A36` e cor `Preto`
+  - Atualização do Card 5B na *Visão Geral* e na central da aba *Elétricos*
+- feat: reformulação da visualização de câmeras e intercomunicador:
+  - Player em destaque com proporção 16/9 e enquadramento limpo sem caixas restritivas
+  - Controles de áudio primários (🔊 Ouvir Retorno e 🎙️ Falar Microfone) destacados diretamente abaixo do vídeo com botões largos de fácil acionamento por toque
+  - Seletor de modo de visão para a câmera de 2 visões (Outdoor Pro CW701: 📺 Dupla Visão, 👁️ Vista 1 Ampla, 🎯 Vista 2 Tele/PTZ) acessível e visível sem necessidade de rolagem
+  - Eliminação do placeholder de imagem quebrada durante a inicialização do vídeo ao vivo
+
+### ⚡ Improvements
+- improve: cancelamento de ruído e nivelamento broadcast no áudio Talkback:
+  - Ativado cancelador nativo do navegador (`noiseSuppression: true`, `echoCancellation: true`)
+  - Adicionado filtro de áudio profissional no FFmpeg com eliminação de ruído espectral por FFT (`afftdn=nf=-25`), corte de subgraves e zumbido elétrico (`highpass=f=200`), eliminação de chiado agudo (`lowpass=f=3600`) e nivelamento de voz em volume broadcast (`speechnorm=e=5:r=0.0001:l=1`) com codec Opus em modo `-application voip`
+- improve: eliminação universal das barras de rolagem nativas brancas/cinzas em navegadores móveis (Samsung Internet, Chrome Android), mantendo rolagem por toque 100% fluida
+- improve: deploy contínuo em produção no Cloudflare Pages (`https://homecams.pages.dev`)
+
+---
+
 ## v0.28.1 (build 0031) - 2026-10-27
 
 ### 🐛 Fixes
