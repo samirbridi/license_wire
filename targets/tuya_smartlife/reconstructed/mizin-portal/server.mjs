@@ -1,5 +1,9 @@
 import http from 'node:http';
 import dgram from 'node:dgram';
+import {createArchive} from './camera-archive.mjs';
+import {createPortalGate} from './portal-gate.mjs';
+import {cameraMetadata} from './camera-inventory.mjs';
+import {createTalkback,encodeSpeech} from './camera-talkback.mjs';
 import net from 'node:net';
 import os from 'node:os';
 import fs from 'node:fs';
@@ -10,7 +14,9 @@ import { createHash, createHmac, createCipheriv, createDecipheriv, randomUUID, r
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-const WORKSPACE = path.resolve(__dirname, '../../../..');
+const WORKSPACE = process.env.MIZIN_WORKSPACE ? path.resolve(process.env.MIZIN_WORKSPACE) : path.resolve(__dirname, '../../../..');
+const MANAGED = process.env.MIZIN_MANAGED === '1';
+const PILOT = process.env.MIZIN_PILOT === '1';
 
 const PORT = process.env.PORT || 19860;
 const REGISTRY_PATH = path.join(WORKSPACE, 'targets/tuya_smartlife/runtime/devices_registry.json');
@@ -33,10 +39,11 @@ function getCurrentVersion() {
   } catch {}
   return 'v0.24.0 (build 0026)';
 }
-const PYTHON_PATH = 'python';
-const FFMPEG_BIN = 'D:\\REA - ENGENHARIA REVERSA\\targets\\mizin_playout\\binaries\\qa\\ffmpeg\\ffmpeg-n8.1-latest-win64-gpl-shared-8.1\\bin\\ffmpeg.exe';
-const GO2RTC_BIN = path.join(WORKSPACE, 'targets/xiaomi_home/runtime/go2rtc-v1.9.15/go2rtc.exe');
-const GO2RTC_CONFIG = path.join(WORKSPACE, 'targets/xiaomi_home/runtime/qr-login/session-recovered-1793020804715919000.yaml');
+const PYTHON_PATH = process.env.MIZIN_PYTHON || (process.platform === 'win32' ? 'python' : 'python3');
+const toolPaths = path.join(WORKSPACE,'targets/xiaomi_home/runtime/central/tool-paths.json');
+const FFMPEG_BIN = process.env.MIZIN_CAMERAS_FFMPEG || (process.platform==='win32' && fs.existsSync(toolPaths) ? JSON.parse(fs.readFileSync(toolPaths,'utf8')).ffmpeg : 'ffmpeg');
+const GO2RTC_BIN = process.env.MIZIN_GO2RTC_BIN || path.join(WORKSPACE, 'targets/xiaomi_home/runtime/go2rtc-v1.9.15/go2rtc.exe');
+const GO2RTC_CONFIG = process.env.MIZIN_GO2RTC_CONFIG || path.join(WORKSPACE, 'targets/xiaomi_home/runtime/qr-login/session-recovered-1793020804715919000.yaml');
 
 let go2rtcChild = null;
 function ensureGo2rtcRunning() {
@@ -50,7 +57,7 @@ function ensureGo2rtcRunning() {
         const ffmpegDir = path.dirname(FFMPEG_BIN);
         const childEnv = {
           ...process.env,
-          PATH: ffmpegDir + ';' + (process.env.PATH || '')
+          PATH: ffmpegDir + path.delimiter + (process.env.PATH || '')
         };
         go2rtcChild = spawn(GO2RTC_BIN, ['-c', GO2RTC_CONFIG], {
           cwd: path.dirname(GO2RTC_CONFIG),
@@ -66,8 +73,7 @@ function ensureGo2rtcRunning() {
     }
   });
 }
-ensureGo2rtcRunning();
-setInterval(ensureGo2rtcRunning, 10000);
+if(!MANAGED){ensureGo2rtcRunning();setInterval(ensureGo2rtcRunning,10000);}
 
 const CLOUDFLARED_BIN = path.join(WORKSPACE, 'targets/tuya_smartlife/bin/cloudflared.exe');
 const TUNNEL_JSON_PATH = path.join(__dirname, 'public/tunnel.json');
@@ -173,8 +179,7 @@ function ensureCloudflaredRunning() {
     }
   });
 }
-ensureCloudflaredRunning();
-setInterval(ensureCloudflaredRunning, 15000);
+if(!MANAGED){ensureCloudflaredRunning();setInterval(ensureCloudflaredRunning,15000);}
 
 const SNAPSHOTS_DIR = path.join(WORKSPACE, 'targets/xiaomi_home/runtime/central/snapshots');
 if (!fs.existsSync(SNAPSHOTS_DIR)) {
@@ -269,37 +274,10 @@ function acquireCameraStart(alias) {
 
 let cachedGo2rtcMeta = null;
 function loadGo2rtcStreamsMeta() {
-  if (cachedGo2rtcMeta) return cachedGo2rtcMeta;
-  const metaMap = new Map();
-  try {
-    if (fs.existsSync(GO2RTC_CONFIG)) {
-      const content = fs.readFileSync(GO2RTC_CONFIG, 'utf-8');
-      const regex = /"([^"]+)"\s*:\s*\["(xiaomi:\/\/[^"]+)"\]/g;
-      let match;
-      while ((match = regex.exec(content)) !== null) {
-        const alias = match[1];
-        const rawUrl = match[2];
-        try {
-          const parsed = new URL(rawUrl);
-          metaMap.set(alias, {
-            alias,
-            rawUrl,
-            user: decodeURIComponent(parsed.username || ''),
-            region: decodeURIComponent(parsed.password || ''),
-            host: parsed.hostname || '',
-            did: parsed.searchParams.get('did') || '',
-            model: parsed.searchParams.get('model') || '',
-            channel: parseInt(parsed.searchParams.get('channel') || '0', 10) || 0,
-            subtype: parsed.searchParams.get('subtype') || ''
-          });
-        } catch {}
-      }
-      if (metaMap.size > 0) {
-        cachedGo2rtcMeta = metaMap;
-      }
-    }
-  } catch {}
-  return metaMap;
+  if(cachedGo2rtcMeta)return cachedGo2rtcMeta;
+  const inventory=path.join(WORKSPACE,'targets/xiaomi_home/runtime/central/bridge-streams.json');
+  try{cachedGo2rtcMeta=cameraMetadata(JSON.parse(fs.readFileSync(inventory,'utf8').replace(/^\uFEFF/,'')));return cachedGo2rtcMeta;}
+  catch{return new Map();}
 }
 
 function getXiaomiStreamMeta(srcOrId) {
@@ -1167,7 +1145,7 @@ function startDoorbellProcessListener() {
     console.warn('[Doorbell Listener Spawn Warning]:', err.message);
   }
 }
-startDoorbellProcessListener();
+if(!PILOT)startDoorbellProcessListener();
 
 function startTuyaUdpListener() {
   [6666, 6667].forEach((port) => {
@@ -1190,7 +1168,7 @@ function startTuyaUdpListener() {
     }
   });
 }
-startTuyaUdpListener();
+if(!PILOT)startTuyaUdpListener();
 
 async function checkConnectivityWatchdog() {
   const now = Date.now();
@@ -1252,8 +1230,7 @@ async function pollActiveDevices() {
 }
 
 // Inicia polling a cada 5 segundos
-setInterval(pollActiveDevices, 5000);
-setTimeout(pollActiveDevices, 500);
+if(!PILOT){setInterval(pollActiveDevices,5000);setTimeout(pollActiveDevices,500);}
 
 // -------------------------------------------------------------
 // Gerenciamento de Agendamentos e Temporizadores (Timers)
@@ -1476,6 +1453,7 @@ async function executeAutomation(autoId, origin = 'Central Web') {
 
 // Verificador contínuo de timers e agendamentos a cada 5 segundos
 async function checkSchedules() {
+  if(PILOT)return;
   const schedules = loadSchedules();
   if (!schedules || schedules.length === 0) return;
   const now = Date.now();
@@ -1692,8 +1670,17 @@ async function getEnergyMetrics() {
   }
 }
 
+const transmitSpeech=createTalkback({resolveCamera:getXiaomiStreamMeta,send:body=>go2rtcJsonRequest('POST','/api/xiaomi/talkback',body,15000),encode:(data,type,opus)=>encodeSpeech(FFMPEG_BIN,data,type,opus)});
+
+const gateConfig=process.env.MIZIN_GATEWAY_CONFIG?JSON.parse(fs.readFileSync(process.env.MIZIN_GATEWAY_CONFIG,'utf8')):null;
+const portalGate=gateConfig?createPortalGate(gateConfig):null;
+const archive=createArchive({root:process.env.MIZIN_ARCHIVE_ROOT,aliases:[...loadGo2rtcStreamsMeta().keys()],ffmpeg:FFMPEG_BIN,ffprobe:process.env.MIZIN_FFPROBE||'ffprobe'});
+
 const server = http.createServer(async (req, res) => {
   const url = new URL(req.url, `http://${req.headers.host}`);
+  if(portalGate){try{if(!await portalGate.protect(req,res))return;}catch{res.writeHead(503,{'Content-Type':'application/json'});res.end(JSON.stringify({error:'Central de autenticação indisponível.'}));return;}}
+
+  if(PILOT&&!['GET','HEAD','OPTIONS'].includes(req.method)&&url.pathname!=='/api/camera/talkback'){res.writeHead(409,{'Content-Type':'application/json'});res.end(JSON.stringify({error:'Instalação de teste: comandos de dispositivos suspensos.'}));return;}
 
   // CORS Completo para Acesso Local e Remoto (Cloudflare Pages / Túnel)
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -1740,10 +1727,10 @@ const server = http.createServer(async (req, res) => {
     res.end(JSON.stringify({
       status: 'ok',
       time: Date.now(),
-      serverLanIp: localIp,
+      serverLanIp: portalGate ? null : localIp,
       serverPort: PORT,
       clientIp: clientIp,
-      isDirectLocal: Boolean(isDirectLocal),
+      isDirectLocal: !portalGate && Boolean(isDirectLocal),
       localDirectUrl: `http://${localIp}:${PORT}`,
       version: getCurrentVersion()
     }));
@@ -1855,6 +1842,26 @@ const server = http.createServer(async (req, res) => {
     return;
   }
 
+  if(url.pathname==='/api/camera/archive'&&req.method==='GET'){
+    res.writeHead(200,{'Content-Type':'application/json','Cache-Control':'no-store'});
+    let status=null;try{status=JSON.parse(fs.readFileSync(path.join(process.env.MIZIN_ARCHIVE_ROOT||'','status.json'),'utf8'));}catch{}
+    res.end(JSON.stringify({enabled:archive.enabled,status,recordings:await archive.list()}));return;
+  }
+  if(url.pathname==='/api/camera/archive/file'&&req.method==='GET'){
+    try{
+      const {file,record}=await archive.file(url.searchParams.get('id')||'');
+      if(url.searchParams.get('download')==='1'){
+        res.writeHead(200,{'Content-Type':'video/x-matroska','Content-Disposition':`attachment; filename="${record.alias}-${record.startedAt.replace(/[:.]/g,'-')}.mkv"`});
+        fs.createReadStream(file).pipe(res);return;
+      }
+      const child=spawn(FFMPEG_BIN,['-hide_banner','-nostdin','-loglevel','error','-i',file,'-map','0:v:0','-map','0:a:0','-vf','scale=1280:-2','-c:v','libx264','-preset','ultrafast','-crf','25','-pix_fmt','yuv420p','-c:a','aac','-b:a','64k','-movflags','frag_keyframe+empty_moov+default_base_moof','-f','mp4','pipe:1'],{windowsHide:true,stdio:['ignore','pipe','pipe']});
+      child.stderr.resume();let begun=false;
+      child.stdout.on('data',chunk=>{if(!begun){begun=true;res.writeHead(200,{'Content-Type':'video/mp4','Cache-Control':'no-store'});}res.write(chunk);});
+      child.on('error',()=>{if(!res.headersSent)res.writeHead(503);res.end();});child.on('close',()=>{if(!res.headersSent)res.writeHead(503);res.end();});
+      res.on('close',()=>child.kill());return;
+    }catch{res.writeHead(404,{'Content-Type':'application/json'});res.end(JSON.stringify({error:'Gravação indisponível.'}));return;}
+  }
+
   // Câmeras Xiaomi
   if (url.pathname === '/api/cameras') {
     let cameras = [];
@@ -1898,8 +1905,8 @@ const server = http.createServer(async (req, res) => {
       'aw300_garagem': 'aw300_garagem_quality3',
       'aw300_portao': 'aw300_portao_quality3',
       'mi2k_estudio': 'mi2k_estudio_quality4',
-      'mi2k_externa': 'mi2k_externa',
-      'mi2k_sala': 'mi2k_sala'
+      'mi2k_externa': loadGo2rtcStreamsMeta().has('mi2k_externa_quality4')?'mi2k_externa_quality4':'mi2k_externa',
+      'mi2k_sala': loadGo2rtcStreamsMeta().has('mi2k_sala_quality4')?'mi2k_sala_quality4':'mi2k_sala'
     };
     return map[src] || src;
   }
@@ -2333,140 +2340,14 @@ const server = http.createServer(async (req, res) => {
     return;
   }
 
-  // Transmissão de Áudio Talkback (Voz Bidirecional) via Protocolo Nativo Xiaomi MISS CS2
-  if (url.pathname === '/api/camera/talkback' && req.method === 'POST') {
-    const camId = url.searchParams.get('id') || 'outdoor_pro_poste';
-    const actionParam = url.searchParams.get('action') || '';
-    const meta = getXiaomiStreamMeta(camId) || {};
-
-    let chunks = [];
-    req.on('data', chunk => { chunks.push(chunk); });
-    req.on('end', async () => {
-      const audioBuffer = Buffer.concat(chunks);
-
-      if (actionParam === 'start' || actionParam === 'stop') {
-        try {
-          if (meta.did) {
-            await go2rtcJsonRequest('POST', '/api/xiaomi/talkback', {
-              did: meta.did,
-              model: meta.model || '',
-              host: meta.host || '',
-              user: meta.user || '',
-              region: meta.region || '',
-              action: actionParam
-            }, 6000);
-          }
-        } catch (err) {
-          console.warn(`[Talkback ${actionParam} Warning]:`, err.message);
-        }
-        res.writeHead(200, { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' });
-        res.end(JSON.stringify({ ok: true, cameraId: camId, action: actionParam, timestamp: Date.now() }));
-        return;
-      }
-
-      if (audioBuffer.length < 40) {
-        res.writeHead(200, { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' });
-        res.end(JSON.stringify({ ok: true, cameraId: camId, bytesSent: 0 }));
-        return;
-      }
-
-      const model = meta.model || (camId.includes('mi2k') ? 'isa.camera.hlc7' : camId.includes('aw300') ? 'mxiang.camera.mod11' : 'xiaomi.camera.cw701');
-      const useOpus = model === 'xiaomi.camera.cw701' || model === 'mxiang.camera.mod11';
-
-      const isPcm = (req.headers['content-type'] || '').includes('audio/pcm') ||
-                    (req.headers['content-type'] || '').includes('audio/l16') ||
-                    (audioBuffer[0] !== 0x1A && audioBuffer[1] !== 0x45);
-      const sampleRateMatch = (req.headers['content-type'] || '').match(/rate=(\d+)/);
-      const incomingSampleRate = sampleRateMatch ? sampleRateMatch[1] : '16000';
-      const inputFmtArgs = isPcm
-        ? ['-f', 's16le', '-ar', incomingSampleRate, '-ac', '1', '-i', 'pipe:0']
-        : ['-i', 'pipe:0'];
-
-      let transmitInfo = { ok: false };
-      try {
-        if (useOpus) {
-          // Transcodifica para Ogg Opus com pacotes de 20ms (48kHz stereo, que o go2rtc agrupa em 40ms via opus.JoinFrames)
-          // Filtro profissional de voz: remove zumbido/ventilador (highpass 200Hz), corta chiado (lowpass 3600Hz), cancela ruído estático (afftdn) e normaliza a voz para volume broadcast (speechnorm)
-          const oggBuf = await new Promise((resolve, reject) => {
-            const ff = spawn(FFMPEG_BIN, [
-              '-hide_banner', '-nostdin', '-loglevel', 'error',
-              ...inputFmtArgs,
-              '-af', 'highpass=f=200,lowpass=f=3600,afftdn=nf=-25,speechnorm=e=5:r=0.0001:l=1',
-              '-c:a', 'libopus', '-ar', '48000', '-ac', '1', '-b:a', '32k',
-              '-vbr', 'off', '-frame_duration', '20', '-page_duration', '20000', '-application', 'voip',
-              '-f', 'ogg', 'pipe:1'
-            ], { windowsHide: true, stdio: ['pipe', 'pipe', 'ignore'] });
-            const out = [];
-            ff.stdout.on('data', c => out.push(c));
-            ff.on('close', code => code === 0 ? resolve(Buffer.concat(out)) : reject(new Error(`FFmpeg opus exit ${code}`)));
-            ff.on('error', reject);
-            ff.stdin.end(audioBuffer);
-          });
-
-          const opusPackets = extractOpusPacketsFromOgg(oggBuf);
-          if (opusPackets.length > 0 && meta.did) {
-            go2rtcJsonRequest('POST', '/api/xiaomi/talkback', {
-              did: meta.did,
-              model,
-              host: meta.host || '',
-              user: meta.user || '',
-              region: meta.region || '',
-              action: 'send',
-              codec: 'opus',
-              framesBase64: opusPackets.map(p => p.toString('base64'))
-            }, 15000).catch(err => console.warn('[Talkback go2rtc Error]:', err.message));
-          }
-        } else {
-          // Transcodifica para G.711 A-law bruto (8000Hz mono, quadros de 320 bytes = 40ms) para Mi 2K (isa.camera.hlc7)
-          const alawBuf = await new Promise((resolve, reject) => {
-            const ff = spawn(FFMPEG_BIN, [
-              '-hide_banner', '-nostdin', '-loglevel', 'error',
-              ...inputFmtArgs,
-              '-af', 'highpass=f=200,lowpass=f=3400,afftdn=nf=-25,speechnorm=e=5:r=0.0001:l=1',
-              '-c:a', 'pcm_alaw', '-ar', '8000', '-ac', '1',
-              '-f', 'alaw', 'pipe:1'
-            ], { windowsHide: true, stdio: ['pipe', 'pipe', 'ignore'] });
-            const out = [];
-            ff.stdout.on('data', c => out.push(c));
-            ff.on('close', code => code === 0 ? resolve(Buffer.concat(out)) : reject(new Error(`FFmpeg alaw exit ${code}`)));
-            ff.on('error', reject);
-            ff.stdin.end(audioBuffer);
-          });
-
-          if (alawBuf.length > 0 && meta.did) {
-            go2rtcJsonRequest('POST', '/api/xiaomi/talkback', {
-              did: meta.did,
-              model,
-              host: meta.host || '',
-              user: meta.user || '',
-              region: meta.region || '',
-              action: 'send',
-              codec: 'pcma',
-              rawBase64: alawBuf.toString('base64')
-            }, 15000).catch(err => console.warn('[Talkback go2rtc Error]:', err.message));
-          }
-        }
-      } catch (err) {
-        console.warn('[Talkback Direct Transmit Warning]:', err.message);
-      }
-
-      res.writeHead(200, {
-        'Content-Type': 'application/json',
-        'Access-Control-Allow-Origin': '*',
-        'Access-Control-Allow-Methods': 'POST, OPTIONS',
-        'Access-Control-Allow-Headers': '*'
-      });
-      res.end(JSON.stringify({
-        ok: true,
-        cameraId: camId,
-        codec: useOpus ? 'opus' : 'pcma',
-        bytesSent: audioBuffer.length,
-        queued: true,
-        backchannelStatus: 'transmitted',
-        syncPct: 100,
-        timestamp: Date.now()
-      }));
-    });
+  // Speech returns success only after the bridge confirms actual packets.
+  if(url.pathname==='/api/camera/talkback'&&req.method==='POST'){
+    const chunks=[];let size=0;
+    for await(const chunk of req){size+=chunk.length;if(size>1024*1024){res.writeHead(413);res.end(JSON.stringify({error:'Bloco de áudio muito grande.'}));return;}chunks.push(chunk);}
+    try{
+      const result=await transmitSpeech({cameraId:url.searchParams.get('id'),action:url.searchParams.get('action')||'',audio:Buffer.concat(chunks),contentType:req.headers['content-type']||''});
+      res.writeHead(200,{'Content-Type':'application/json','Cache-Control':'no-store'});res.end(JSON.stringify(result));
+    }catch(error){res.writeHead(502,{'Content-Type':'application/json','Cache-Control':'no-store'});res.end(JSON.stringify({ok:false,error:error.message}));}
     return;
   }
 
@@ -3811,7 +3692,7 @@ const server = http.createServer(async (req, res) => {
   });
 });
 
-server.listen(PORT, '0.0.0.0', () => {
+server.listen(PORT, process.env.HOST||'0.0.0.0', () => {
   console.log(`==========================================================`);
   console.log(`🏠 MIZIN HOME PORTAL INICIADO`);
   console.log(`URL Local: http://localhost:${PORT}`);
@@ -3820,7 +3701,8 @@ server.listen(PORT, '0.0.0.0', () => {
 });
 
 // Proxy WebSocket de Ultra Baixa Latência (MSE / WebRTC) para go2rtc (127.0.0.1:19843)
-server.on('upgrade', (req, clientSocket, head) => {
+server.on('upgrade', async (req, clientSocket, head) => {
+  if(portalGate){try{if(!await portalGate.session(req)){clientSocket.destroy();return;}}catch{clientSocket.destroy();return;}}
   const host = req.headers.host || '127.0.0.1';
   let pathname = '';
   try {

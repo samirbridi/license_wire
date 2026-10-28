@@ -1,0 +1,94 @@
+services:
+  prepare:
+    image: debian:bookworm-slim
+    user: "0:0"
+    command: ["sh", "-c", "chown -R 1000:1000 /data && chmod -R u=rwX,go= /data && chown 1000:1000 /archive && chmod 700 /archive"]
+    network_mode: none
+    restart: "no"
+    volumes:
+      - ./data:/data
+      - /volume4/HDD 1TB - V2/Mizin-Cameras:/archive
+  bridge:
+    image: mizin-home:local
+    command: ["/bridge/go2rtc-linux-amd64", "-config", "/data/bridge.yaml"]
+    network_mode: host
+    user: "1000:1000"
+    read_only: true
+    restart: unless-stopped
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    depends_on:
+      prepare: {condition: service_completed_successfully}
+    volumes:
+      - ./bridge:/bridge:ro
+      - ./data/bridge:/data
+  portal:
+    image: mizin-home:local
+    build: {context: ./app, dockerfile: Dockerfile}
+    network_mode: host
+    read_only: true
+    restart: unless-stopped
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    environment:
+      PORT: "19860"
+      HOST: "127.0.0.1"
+      MIZIN_PILOT: "1"
+      MIZIN_GATEWAY_CONFIG: /workspace/targets/xiaomi_home/runtime/central/https-gateway.json
+      MIZIN_ARCHIVE_ROOT: /archive
+    depends_on:
+      bridge: {condition: service_started}
+      auth: {condition: service_started}
+    volumes:
+      - ./data/tuya:/workspace/targets/tuya_smartlife/runtime
+      - ./data/xiaomi/runtime:/workspace/targets/xiaomi_home/runtime:ro
+      - /volume4/HDD 1TB - V2/Mizin-Cameras:/archive:ro
+    tmpfs: [/tmp]
+  auth:
+    image: mizin-home:local
+    command: ["node", "targets/tuya_smartlife/reconstructed/mizin-portal/deploy/auth-boot.mjs"]
+    network_mode: host
+    read_only: true
+    restart: unless-stopped
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    environment:
+      MIZIN_CAMERAS_TARGET: /workspace/targets/xiaomi_home
+    depends_on:
+      prepare: {condition: service_completed_successfully}
+    volumes:
+      - ./data/xiaomi/runtime:/workspace/targets/xiaomi_home/runtime
+    tmpfs: [/tmp]
+  recorder:
+    image: mizin-home:local
+    command: ["node", "targets/tuya_smartlife/reconstructed/mizin-portal/camera-archive-runner.mjs"]
+    network_mode: host
+    read_only: true
+    restart: "no"
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    environment:
+      MIZIN_ARCHIVE_ROOT: /archive
+      MIZIN_ARCHIVE_ALIASES: /data/archive-aliases.json
+      MIZIN_ARCHIVE_CONTINUOUS: "1"
+      MIZIN_ARCHIVE_LIMIT_GB: "100"
+    depends_on:
+      bridge: {condition: service_started}
+    volumes:
+      - ./data/archive-aliases.json:/data/archive-aliases.json:ro
+      - /volume4/HDD 1TB - V2/Mizin-Cameras:/archive
+    tmpfs: [/tmp]
+  tunnel:
+    image: cloudflare/cloudflared:2026.10.3
+    profiles: [remote]
+    command: ["tunnel", "--no-autoupdate", "--protocol", "quic", "run", "--token-file", "/run/secrets/tunnel.token"]
+    network_mode: host
+    user: "1000:1000"
+    read_only: true
+    restart: unless-stopped
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    depends_on:
+      prepare: {condition: service_completed_successfully}
+    volumes:
+      - ./data/tunnel.token:/run/secrets/tunnel.token:ro

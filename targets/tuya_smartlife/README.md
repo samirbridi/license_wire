@@ -70,3 +70,18 @@
 - `notes/03_protocols_apis.md`: Especificação dos protocolos Tuya LAN e Cloud API.
 - `scripts/scan_network.py`: Scanner de rede local UDP 6666/6667.
 - `scripts/check_ports.py`: Verificador de porta TCP 6668.
+
+
+## Estado Atual e Próximos Passos — integração NAS (2026-10-28)
+
+O portal completo de Antigravity permanece como aplicação principal em `reconstructed/mizin-portal`. O pacote do NAS inclui seus dispositivos, energia, cenas e câmeras; não deve ser substituído pela interface do protótipo Xiaomi.
+
+A regressão da fala veio da leitura do inventário por expressão regular incompatível com o YAML atual. A resolução agora usa JSON estruturado, aguarda confirmação real da ponte e informa falhas em vez de simular transmissão. O envio no protocolo não comprova som audível no alto-falante.
+
+O pacote privado do DS425+ utiliza a ponte Xiaomi Linux verificada por SHA-256, mantém os serviços em loopback e reaproveita a autenticação remota. A UI acessa a mesma origem HTTPS. O modo piloto suspende automações e comandos Tuya durante a validação, evitando execução duplicada no Windows e NAS.
+
+As gravações usam cópia de codecs para Matroska com áudio. O destino autorizado e conferido no DSM é `/volume4/HDD 1TB - V2/Mizin-Cameras`. O teste inicial valida dez segundos de cada uma das sete visões. Somente após todos passarem o gravador tenta segmentos sucessivos de cinco minutos. O limite inicial é 100 GiB; pausa antes de esgotar o espaço e não apaga arquivos. Pode haver intervalos nas reconexões entre segmentos; monitoramento de continuidade 24h permanece pendente. A prévia do arquivo no navegador usa H.264/AAC e o download conserva o arquivo original.
+
+O versionamento do portal passou a ser calculado a partir dos commits pelo `scripts/version-build.mjs`, com build incremental, changelog rastreável e testes de migração da versão legada. Consulte `VERSION` para o número gerado.
+
+Próximos passos: confirmar o teste no DS425+, examinar arquivos e áudio, efetuar a troca controlada do túnel e testar o portal completo sem processos Windows. O backup ao R2 e eventual VPS ficam para a etapa seguinte. Não há publicação nem migração comprovadas por esses testes locais.

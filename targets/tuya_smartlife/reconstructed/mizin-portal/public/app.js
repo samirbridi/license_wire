@@ -126,7 +126,7 @@ function toggleFavorite(devId, event) {
 // -------------------------------------------------------------
 const currentHost = window.location.hostname;
 const isDirectHost = currentHost === 'localhost' || currentHost === '127.0.0.1' || currentHost.startsWith('192.168.');
-let BACKEND_API_BASE = isDirectHost || currentHost.includes('trycloudflare.com') ? '' : 'https://food-kind-ethernet-down.trycloudflare.com';
+let BACKEND_API_BASE = window.MIZIN_PRIVATE_GATEWAY || isDirectHost || currentHost.includes('trycloudflare.com') ? '' : 'https://food-kind-ethernet-down.trycloudflare.com';
 let isLocalAccess = isDirectHost;
 
 const origFetch = window.fetch;
@@ -141,6 +141,7 @@ window.fetch = function(url, options) {
 
 async function refreshRemoteTunnelUrl() {
   const host = window.location.hostname;
+  if(window.MIZIN_PRIVATE_GATEWAY)return '';
   if (host === 'localhost' || host === '127.0.0.1' || host.startsWith('192.168.') || host.startsWith('10.') || host.includes('trycloudflare.com')) {
     return BACKEND_API_BASE;
   }
@@ -175,7 +176,7 @@ async function detectAccessMode() {
   }
 
   isLocalAccess = false;
-  BACKEND_API_BASE = host.includes('trycloudflare.com') ? '' : 'https://food-kind-ethernet-down.trycloudflare.com';
+  BACKEND_API_BASE = window.MIZIN_PRIVATE_GATEWAY || host.includes('trycloudflare.com') ? '' : 'https://food-kind-ethernet-down.trycloudflare.com';
   await refreshRemoteTunnelUrl();
   if (badge) {
     badge.innerText = '🌐 MODO REMOTO (Cloudflare)';
@@ -4336,7 +4337,9 @@ let audioTalkRecorder = null;
 let audioTalkCtx = null;
 let audioTalkScriptNode = null;
 let audioTalkCycleTimeout = null;
+let audioTalkTarget = null;
 let talkUploadChain = Promise.resolve();
+let audioTalkGeneration = 0;
 
 async function toggleAudioTalk() {
   const btn = document.getElementById('btnAudioTalk');
@@ -4344,12 +4347,15 @@ async function toggleAudioTalk() {
   const text = document.getElementById('audioTalkText');
   const statusText = document.getElementById('audioStatusText');
   const waveMeter = document.getElementById('audioWaveMeter');
-  const camId = activePtzCam || 'outdoor_pro_poste';
+  const camId = audioTalkTarget || activePtzCam;
+  if(!camId)return;
 
   if (!isAudioTalking) {
+    const generation=++audioTalkGeneration;
     // ATIVAR MICROFONE INSTANTANEAMENTE (1 TOQUE)
     isAudioTalking = true;
     isPttTalking = true;
+    audioTalkTarget=camId;
 
     if (btn) {
       btn.classList.add('active-talking');
@@ -4357,13 +4363,13 @@ async function toggleAudioTalk() {
       btn.style.borderColor = 'rgba(239, 68, 68, 0.95)';
     }
     if (icon) icon.innerText = '🔴';
-    if (text) text.innerText = 'Falando (Ao Vivo)';
-    if (statusText) statusText.innerText = '🎙️ MICROFONE ATIVO: Transmitindo voz em tempo real para o alto-falante!';
+    if (text) text.innerText = 'Conectando microfone…';
+    if (statusText) statusText.innerText = 'Aguardando conexão com a câmera…';
     if (waveMeter) waveMeter.style.display = 'flex';
 
     try {
       if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
-        audioTalkStream = await navigator.mediaDevices.getUserMedia({
+        const microphone = await navigator.mediaDevices.getUserMedia({
           audio: {
             channelCount: 1,
             echoCancellation: true, // Remove retorno e microfonia
@@ -4372,32 +4378,38 @@ async function toggleAudioTalk() {
           }
         });
 
-        if (!isAudioTalking) {
-          audioTalkStream.getTracks().forEach(t => t.stop());
-          audioTalkStream = null;
+        if (!isAudioTalking || generation!==audioTalkGeneration) {
+          microphone.getTracks().forEach(t => t.stop());
           return;
         }
+        audioTalkStream=microphone;
 
         // Abre canal de alto-falante na câmera (0x106 MISS_CMD_SPEAKER_START_REQ)
-        fetch(`${BACKEND_API_BASE}/api/camera/talkback?id=${encodeURIComponent(camId)}&action=start`, {
-          method: 'POST'
-        }).catch(() => {});
+        talkUploadChain=talkUploadChain.catch(()=>{}).then(()=>generation===audioTalkGeneration?fetch(`${BACKEND_API_BASE}/api/camera/talkback?id=${encodeURIComponent(camId)}&action=start`,{method:'POST'}):null);
+        const opened=await talkUploadChain;if(!opened)return;
+        const opening=await opened.json();
+        if(!opened.ok||!opening.ok)throw new Error(opening.error||'A câmera não confirmou a fala.');
+        if(generation!==audioTalkGeneration)return;
+        if(!isAudioTalking||activePtzCam!==camId){if(isAudioTalking)toggleAudioTalk();return;}
+        if(text)text.innerText='Falar ativo';
+        if(statusText)statusText.innerText='Canal de fala aberto. Verifique o som no alto-falante da câmera.';
 
         let activeTalkUploads = 0;
         const sendChunk = (blob) => {
-          if (!blob || blob.size < 40 || !isAudioTalking) return;
-          if (activeTalkUploads >= 2) return; // descarta pacote se houver acúmulo na rede para evitar atraso (latência zero)
+          if (!blob || blob.size < 40 || !isAudioTalking || generation!==audioTalkGeneration) return;
+          if (activeTalkUploads >= 2) return; // Limita a fila de envio para evitar acumular fala atrasada.
           activeTalkUploads++;
-          const targetCamId = activePtzCam || camId;
+          const targetCamId = camId;
           const talkUrl = `${BACKEND_API_BASE}/api/camera/talkback?id=${encodeURIComponent(targetCamId)}`;
-          fetch(talkUrl, {
+          talkUploadChain=talkUploadChain.catch(()=>{}).then(()=>{if(!isAudioTalking||audioTalkTarget!==targetCamId||generation!==audioTalkGeneration)return;return fetch(talkUrl, {
             method: 'POST',
             headers: {
               'Content-Type': blob.type || 'audio/webm'
             },
             body: blob
-          }).catch(err => {
-            console.warn('[Talkback chunk send error]:', err);
+          }).then(async response=>{const result=await response.json();if(!response.ok||!result.ok)throw new Error(result.error||'Falha ao enviar áudio à câmera.');});}).catch(err => {
+            if(isAudioTalking&&audioTalkTarget===targetCamId&&generation===audioTalkGeneration){toggleAudioTalk();showToast(err.message,'','⚠️','warning');}
+            console.warn('[Talkback chunk send error]:', err.message);
           }).finally(() => {
             activeTalkUploads = Math.max(0, activeTalkUploads - 1);
           });
@@ -4421,7 +4433,7 @@ async function toggleAudioTalk() {
             if (!isAudioTalking) return;
             const channel = audioEv.inputBuffer.getChannelData(0);
             const pcm16 = new Int16Array(channel.length);
-            // Captura limpa e transparente; a normalização e corte de ruído (afftdn + speechnorm) ocorrem no backend via hardware
+            // Preserva as amostras captadas; os filtros do microfone são aplicados pelo navegador.
             for (let i = 0; i < channel.length; i++) {
               let s = channel[i];
               if (s > 1.0) s = 1.0;
@@ -4447,19 +4459,20 @@ async function toggleAudioTalk() {
           recorder.start(250);
         }
 
-        showToast('Microfone conectado! Fale no alto-falante da câmera 📢', '', '🎙️', 'success');
+        showToast('Canal de fala conectado. Confirme o som na câmera.', '', '🎙️', 'success');
 
       } else {
-        showToast('Microfone requer conexão segura HTTPS ou localhost 🎤', '', '⚠️', 'warning');
+        throw new Error('Microfone requer conexão segura HTTPS ou localhost.');
       }
     } catch (e) {
       console.warn('Permissão de microfone negada ou indisponível:', e.message);
-      showToast('Permissão de microfone negada ou indisponível', '', '⚠️', 'warning');
-      if (isAudioTalking) {
+      showToast(e.message || 'Microfone indisponível', '', '⚠️', 'warning');
+      if (isAudioTalking && generation===audioTalkGeneration) {
         toggleAudioTalk();
       }
     }
   } else {
+    ++audioTalkGeneration;
     // DESATIVAR MICROFONE INSTANTANEAMENTE (1 TOQUE)
     isAudioTalking = false;
     isPttTalking = false;
@@ -4493,10 +4506,11 @@ async function toggleAudioTalk() {
       }
     } catch (e) {}
 
-    fetch(`${BACKEND_API_BASE}/api/camera/talkback?id=${encodeURIComponent(camId)}&action=stop`, {
+    talkUploadChain=talkUploadChain.catch(()=>{}).then(()=>fetch(`${BACKEND_API_BASE}/api/camera/talkback?id=${encodeURIComponent(camId)}&action=stop`, {
       method: 'POST'
-    }).catch(() => {});
+    })).catch(() => {});
 
+    audioTalkTarget=null;
     showToast('Microfone desativado.', '', '🔇', 'info');
   }
 }

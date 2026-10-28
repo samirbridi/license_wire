@@ -1,0 +1,32 @@
+import {timingSafeEqual} from 'node:crypto';
+import http from 'node:http';
+const same=(a,b)=>typeof a==='string'&&typeof b==='string'&&Buffer.byteLength(a)===Buffer.byteLength(b)&&timingSafeEqual(Buffer.from(a),Buffer.from(b));
+export function privateAuthFetch(url,{method='GET',headers={},body}={}){
+ const address=new URL(url);if(address.protocol!=='http:'||address.hostname!=='127.0.0.1')throw new Error('Autenticação deve permanecer local.');
+ return new Promise((accept,reject)=>{
+  const request=http.request(address,{method,headers},reply=>{const chunks=[];let size=0;reply.on('data',chunk=>{size+=chunk.length;if(size>16384)reply.destroy(new Error('Resposta de autenticação muito grande.'));else chunks.push(chunk);});reply.on('error',reject);reply.on('end',()=>accept(new Response(Buffer.concat(chunks),{status:reply.statusCode,headers:reply.headers})));});
+  request.setTimeout(5000,()=>request.destroy(new Error('Autenticação indisponível.')));request.on('error',reject);request.end(body);
+ });
+}
+export function createPortalGate({origin,gatewayToken,auth='http://127.0.0.1:19846',fetcher=privateAuthFetch}){
+ const hostname=new URL(origin).host;
+ function trusted(req){return req.headers.host===hostname&&req.headers['x-forwarded-proto']==='https'&&same(req.headers['x-mizin-gateway'],gatewayToken);}
+ function headers(req){const out={'host':hostname,'x-forwarded-proto':'https','x-mizin-gateway':gatewayToken};for(const k of ['cookie','origin','content-type','x-csrf-token','x-mizin-client-ip'])if(req.headers[k])out[k]=req.headers[k];return out;}
+ async function session(req){if(!trusted(req))return null;const result=await fetcher(auth+'/api/session',{headers:headers(req),signal:AbortSignal.timeout(5000)});return result.ok?result.json():null;}
+ async function protect(req,res){
+  const fail=(code,error)=>{res.writeHead(code,{'Content-Type':'application/json','Cache-Control':'no-store'});res.end(JSON.stringify({error}));return false;};
+  if(!trusted(req))return fail(403,'Passagem privada não autorizada.');
+  const pathname=new URL(req.url,origin).pathname;
+  if(['/api/session','/api/logout'].includes(pathname)){
+   let body; if(req.method==='POST'){const parts=[];let size=0;for await(const c of req){size+=c.length;if(size>4096)return fail(413,'Requisição muito grande.');parts.push(c);}body=Buffer.concat(parts);}
+   const reply=await fetcher(auth+pathname,{method:req.method,headers:headers(req),body,signal:AbortSignal.timeout(5000)});
+   res.writeHead(reply.status,Object.fromEntries(reply.headers));res.end(Buffer.from(await reply.arrayBuffer()));return false;
+  }
+  let data;try{data=await session(req);}catch{return fail(503,'Autenticação temporariamente indisponível.');}
+  if(!data)return fail(401,'Vincule este navegador à central.');
+  const mutation=!['GET','HEAD'].includes(req.method)||/\/api\/(?:control|camera\/(?:ptz|zoom|patrol|preset))/.test(pathname);
+  if(mutation&&(!same(req.headers['x-csrf-token'],data.csrf)||req.headers.origin!==origin))return fail(403,'Comando não autorizado.');
+  return true;
+ }
+ return{protect,session,trusted};
+}
