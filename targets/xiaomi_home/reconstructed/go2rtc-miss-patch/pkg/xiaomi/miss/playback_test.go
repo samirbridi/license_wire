@@ -30,11 +30,9 @@ func TestPlaybackUsesModelSpecificProtocol(t *testing.T){
 }
 
 func TestPlaybackRejectsMissingOrNegativeFileAcknowledgement(t *testing.T){
- for _,status:=range []string{`{}`,`{"filefound":false}`,`{"filefound":0}`,`{"filefound":[false]}`,`bad-json`}{
-  if found,err:=confirmedPlayback(status);found||err==nil{t.Fatalf("invalid file acknowledgement accepted: %s",status)}
+ for _,status:=range []string{`{}`,`{"id":123,"status":"filenotfound"}`,`{"id":124,"status":"filefound"}`,`{"status":"filefound"}`,`bad-json`}{
+  if found,err:=confirmedPlayback(status,123);found||err==nil{t.Fatalf("invalid file acknowledgement accepted: %s",status)}
  }
- for _,status:=range []string{`{"filefound":true}`,`{"filefound":1}`,`{"filefound":[true]}`}{
-  if found,err:=confirmedPlayback(status);!found||err!=nil{t.Fatalf("valid acknowledgement refused: %s",status)}
- }
- if found,err:=confirmedPlayback("");found||err!=nil{t.Fatal("an absent acknowledgement must wait")}
+ if found,err:=confirmedPlayback(`{"id":123,"status":"filefound"}`,123);!found||err!=nil{t.Fatal("valid acknowledgement refused")}
+ if found,err:=confirmedPlayback("",123);found||err!=nil{t.Fatal("an absent acknowledgement must wait")}
 }

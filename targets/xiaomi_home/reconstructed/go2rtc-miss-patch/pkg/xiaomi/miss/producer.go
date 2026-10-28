@@ -19,18 +19,13 @@ type Producer struct {
 	initialPkts []*Packet
 }
 
-func confirmedPlayback(status string) (bool,error) {
-	if status=="" {return false,nil}
-	var state map[string]json.RawMessage
-	if err:=json.Unmarshal([]byte(status),&state);err!=nil{return false,fmt.Errorf("invalid SD playback acknowledgement")}
-	raw,ok:=state["filefound"];if !ok{return false,fmt.Errorf("SD acknowledgement missing filefound: %s",status)}
-	var found bool
-	if json.Unmarshal(raw,&found)==nil {if found{return true,nil};return false,fmt.Errorf("recording file not found")}
-	var number int
-	if json.Unmarshal(raw,&number)==nil {if number==1{return true,nil};return false,fmt.Errorf("recording file not found")}
-	var values []bool
-	if json.Unmarshal(raw,&values)==nil&&len(values)==1 {if values[0]{return true,nil};return false,fmt.Errorf("recording file not found")}
-	return false,fmt.Errorf("unsupported SD filefound acknowledgement: %s",status)
+func confirmedPlayback(status string, expectedID int64) (bool,error) {
+ if status=="" {return false,nil}
+ var state struct { ID int64 `json:"id"`; Status string `json:"status"` }
+ if err:=json.Unmarshal([]byte(status),&state);err!=nil{return false,fmt.Errorf("invalid SD playback acknowledgement")}
+ if expectedID<=0||state.ID!=expectedID{return false,fmt.Errorf("SD acknowledgement belongs to another recording")}
+ if state.Status!="filefound"{return false,fmt.Errorf("recording file not confirmed")}
+ return true,nil
 }
 
 func Dial(rawURL string) (core.Producer, error) {
@@ -97,7 +92,7 @@ func probe(client *Client, audio bool) ([]*core.Media, []*Packet, error) {
 
 		// On isa.camera.hlc7, 0x102 emits a few live frames before 0x10E ("filefound") switches to SD playback.
 		if client.playbackMode && client.model == "isa.camera.hlc7" {
-			confirmed,statusErr:=confirmedPlayback(client.LastPlaybackStatus())
+			confirmed,statusErr:=confirmedPlayback(client.LastPlaybackStatus(),client.lastPlaybackSession.Load())
 			if statusErr!=nil{return nil,nil,statusErr}
 			if !confirmed {continue}
 		}
