@@ -1,5 +1,23 @@
 # CHANGELOG — tuya_smartlife
 
+## v0.32.1 (build 0041) - 2026-10-28
+
+### 💥 Breaking Changes
+
+- Nenhum.
+
+### ✨ Features
+
+- Nenhum.
+
+### 🐛 Fixes
+
+- fix: reduz consultas do painel e protege reconexao da autenticacao (commit `c8cec0cd55204f18640f164479b96e67cb8a88d7`)
+
+### ⚡ Improvements
+
+- Nenhum.
+
 ## v0.32.0 (build 0040) - 2026-10-28
 
 ### 💥 Breaking Changes

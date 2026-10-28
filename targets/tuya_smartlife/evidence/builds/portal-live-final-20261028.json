@@ -1,0 +1,20 @@
+{
+  "runId": "portal-live-final-20261028",
+  "sourceCommit": "c8cec0cd55204f18640f164479b96e67cb8a88d7",
+  "previous": "v0.32.0 (build 0040)",
+  "version": "v0.32.1 (build 0041)",
+  "build": 41,
+  "date": "2026-10-28",
+  "status": "built",
+  "commits": [
+    {
+      "sha": "c8cec0cd55204f18640f164479b96e67cb8a88d7",
+      "subject": "fix: reduz consultas do painel e protege reconexao da autenticacao",
+      "body": "",
+      "type": "fix",
+      "description": "reduz consultas do painel e protege reconexao da autenticacao",
+      "breaking": false
+    }
+  ],
+  "artifact": "runtime/builds/build-0041"
+}
