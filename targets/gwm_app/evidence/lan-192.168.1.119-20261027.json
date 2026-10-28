@@ -1,0 +1,54 @@
+{
+  "schema": "gwm-lan-observation/v1",
+  "observed_at_utc": "2026-10-28T02:41:21.245Z",
+  "local_date": "2026-10-27",
+  "timezone": "America/Sao_Paulo",
+  "record_type": "normalized observation of actual command outputs",
+  "target_ip": "192.168.1.119",
+  "vehicle_identity": "NOT_CONFIRMED",
+  "vehicle_model": "ORA 5 GWM, as reported by owner",
+  "host_network": {
+    "interface": "Ethernet",
+    "ipv4": "192.168.1.30",
+    "netmask": "255.255.255.0",
+    "gateway": "192.168.1.1",
+    "physical_wifi_interface": "disconnected"
+  },
+  "sandbox_attempt": {
+    "powershell_cim_network_inventory": "access denied",
+    "tcp_80": "EACCES",
+    "tcp_443": "EACCES",
+    "interpretation": "Execution-environment restriction; not evidence about vehicle services."
+  },
+  "network_permission_retry": {
+    "execution": "outside sandbox network restriction, approved by automatic review",
+    "icmp": { "sent": 2, "received": 0, "lost_percent": 100, "timeout_ms_per_request": 1000 },
+    "tcp": [
+      { "host": "192.168.1.119", "port": 80, "status": "timeout", "timeout_ms": 2500 },
+      { "host": "192.168.1.119", "port": 443, "status": "timeout", "timeout_ms": 2500 }
+    ],
+    "arp_entry_after_tests": null,
+    "arp_output": "Nenhuma entrada ARP foi encontrada."
+  },
+  "scope": {
+    "ip_addresses_probed": ["192.168.1.119"],
+    "tcp_application_payload_sent": false,
+    "authentication_attempted": false,
+    "cloud_api_contacted": false,
+    "vehicle_commands_sent": false,
+    "software_installed_on_vehicle": false,
+    "firmware_or_configuration_written": false,
+    "rea_analysis_this_session": false
+  },
+  "conclusion": "No successful communication with the reported IP. Neither vehicle identity nor service availability was established. Timeouts do not establish that ports are closed or that the vehicle is offline.",
+  "possible_causes_not_verified": [
+    "Address changed or DHCP lease is stale",
+    "Head unit asleep or disconnected",
+    "Wireless client isolation, guest network or VLAN separation",
+    "Network filtering"
+  ],
+  "sources": [
+    "https://www.gwmmotors.com.br/pt/modelos/ora5",
+    "https://www.gwmmotors.com.br/pt/servicos/servicos-conectados"
+  ]
+}
