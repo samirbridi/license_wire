@@ -7,7 +7,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css?v=0.30.1-build0034">
+  <link rel="stylesheet" href="style.css?v=0.30.2-build0035">
   <link rel="manifest" href="manifest.json">
   <link rel="icon" type="image/svg+xml" href="icon.svg">
   <link rel="apple-touch-icon" href="icon.svg">
@@ -54,7 +54,7 @@
         <div>
           <div style="display:flex; align-items:center; gap:8px;">
             <div class="brand-title">MIZIN HOME</div>
-            <span class="badge badge-version" id="headerVersionBadge" style="background: rgba(56, 189, 248, 0.15); border: 1px solid rgba(56, 189, 248, 0.35); color: #38bdf8; font-family: 'JetBrains Mono', monospace; font-size: 10px; padding: 2px 7px; border-radius: 4px; font-weight: 600;">v0.30.1 (build 0034)</span>
+            <span class="badge badge-version" id="headerVersionBadge" style="background: rgba(56, 189, 248, 0.15); border: 1px solid rgba(56, 189, 248, 0.35); color: #38bdf8; font-family: 'JetBrains Mono', monospace; font-size: 10px; padding: 2px 7px; border-radius: 4px; font-weight: 600;">v0.30.2 (build 0035)</span>
           </div>
           <div class="brand-sub">CENTRAL DE CONTROLE RESIDENCIAL</div>
         </div>
@@ -247,7 +247,7 @@
             </div>
             <button class="btn btn-primary gate-ha-btn" id="btnPulseGate" onclick="pulseGate()">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px;margin-right:6px;"><path d="M3 21h18M3 10h18M5 6l7-3 7 3M4 10v11M20 10v11"/></svg>
-              Acionar Portão
+              Abrir Portão 🚪
             </button>
           </div>
           <div class="metric-footer-stacked">
@@ -1538,37 +1538,31 @@
 
             </div>
 
-            <!-- Barra de Áudio Bidirecional (Retorno de Áudio + Push-to-Talk) -->
-            <div class="ptz-audio-intercom-box">
-              <div class="audio-status-pill">
-                <span class="status-dot online"></span>
-                <span id="audioStatusText">Áudio Bidirecional: Microfone e Alto-Falante Prontos</span>
-                <div class="audio-wave-meter" id="audioWaveMeter" style="display:none;">
-                  <span class="wave-bar"></span><span class="wave-bar"></span><span class="wave-bar"></span><span class="wave-bar"></span>
+            <!-- Barra Integrada de Controles & Áudio (Fluida, sem caixas de janela) -->
+            <div class="cam-integrated-toolbar">
+              <div class="cam-toolbar-status-row">
+                <div class="audio-status-pill">
+                  <span class="status-dot online"></span>
+                  <span id="audioStatusText">Áudio Bidirecional Pronto</span>
+                  <div class="audio-wave-meter" id="audioWaveMeter" style="display:none;">
+                    <span class="wave-bar"></span><span class="wave-bar"></span><span class="wave-bar"></span><span class="wave-bar"></span>
+                  </div>
                 </div>
-              </div>
-              <div class="audio-controls-row">
-                <button class="btn-audio-action" id="btnAudioListen" onclick="toggleAudioListen()" title="Ouvir som do ambiente da câmera em tempo real">
-                  <span id="audioListenIcon">🔊</span> <span id="audioListenText">Ouvir Retorno</span>
-                </button>
-                <button class="btn-audio-action btn-ptt-talk" id="btnAudioTalk" onclick="toggleAudioTalk()" title="Clique para ativar ou desativar o microfone (igual ao app Xiaomi)">
-                  <span id="audioTalkIcon">🎙️</span> <span id="audioTalkText">Falar (Microfone)</span>
+                <button type="button" class="btn-live-sd-pill" onclick="switchTheaterTab('sd')" title="Acessar gravações contínuas salvas no cartão MicroSD">
+                  📼 Gravações SD 24h &rarr;
                 </button>
               </div>
-            </div>
 
-            <!-- Acesso Rápido às Gravações SD -->
-            <div class="live-sd-quick-bar" style="display:flex; justify-content:space-between; align-items:center; background:rgba(255,255,255,0.025); border:1px solid rgba(255,255,255,0.08); border-radius:10px; padding:12px 16px; margin-top:2px;">
-              <div style="display:flex; align-items:center; gap:8px;">
-                <span style="font-size:16px;">📼</span>
-                <div>
-                  <div style="font-size:12px; font-weight:700; color:var(--text-main);">Gravações Contínuas MicroSD (24h)</div>
-                  <div style="font-size:10px; color:var(--text-muted);" id="liveSdQuickInfo">Linha do tempo interativa e detecções IA disponíveis</div>
-                </div>
+              <div class="cam-primary-buttons-row">
+                <button class="btn-cam-action btn-cam-listen" id="btnAudioListen" onclick="toggleAudioListen()" title="Ouvir áudio ao vivo da câmera">
+                  <span id="audioListenIcon">🔊</span>
+                  <span id="audioListenText">Ouvir Retorno</span>
+                </button>
+                <button class="btn-cam-action btn-cam-talk btn-ptt-talk" id="btnAudioTalk" onclick="toggleAudioTalk()" title="Falar no microfone da câmera em tempo real">
+                  <span id="audioTalkIcon">🎙️</span>
+                  <span id="audioTalkText">Falar (Microfone)</span>
+                </button>
               </div>
-              <button type="button" class="btn btn-sm btn-outline-cyan" onclick="switchTheaterTab('sd')" style="font-size:11px; padding:5px 12px; white-space:nowrap;">
-                Abrir Aba Gravações ▶
-              </button>
             </div>
 
           </div>
@@ -1855,10 +1849,8 @@
       </div>
       <!-- FIM DA ABA 2: GRAVAÇÕES SD -->
 
-      <div class="modal-footer" style="margin-top:14px; display:flex; justify-content:space-between; align-items:center;">
-        <span style="font-size:11px; color:var(--text-muted);" id="ptzModalFooterStatus">Protocolo go2rtc • Criptografia P2P Xiaomi • Conexão Local Direta</span>
-        <button class="btn btn-secondary" onclick="closePtzModal()">Fechar Monitoramento</button>
-      </div>
+      <!-- Rodapé ultra-compacto integrado -->
+      <div style="display:none;" id="ptzModalFooterStatus">Protocolo go2rtc • Criptografia P2P Xiaomi • Conexão Local Direta</div>
     </div>
   </div>
 
@@ -2393,6 +2385,6 @@
   <!-- Floating Toast Notifications Container -->
   <div id="toastContainer" class="toast-container"></div>
 
-  <script src="app.js?v=0.30.1-build0034"></script>
+  <script src="app.js?v=0.30.2-build0035"></script>
 </body>
 </html>

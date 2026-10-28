@@ -3,6 +3,20 @@
 Todas as descobertas, módulos dissecados e correções desta análise são registrados aqui.
 Formato de versão obrigatório: `vX.Y.Z (build XXXX)`.
 
+## v0.30.2 (build 0035) - 2026-10-28
+
+### 🐛 Fixes
+- fix: integração fluida e contínua dos controles sob o streaming de vídeo no modal de câmeras:
+  - Elimina o aspecto de "janela dentro de janela", removendo molduras, bordas e fundos aninhados que causavam corte do vídeo
+  - Garante visualização 100% íntegra da câmera (proporção 16:9 uncropped) adaptando dinamicamente a altura em PC, tablet e mobile
+  - Posiciona a barra de ações primárias (`[🔊 Ouvir Retorno]` e `[🎙️ Falar Microfone]`) diretamente sob o vídeo, visíveis na mesma tela sem necessidade de scroll vertical
+  - Oculta o rodapé redundante do modal liberando espaço vertical valioso dedicado ao feed da câmera
+  - Suprime barras de rolagem nativas cinzas do Windows em `.ha-actions-row`, `.ha-actions-buttons`, `.custom-shortcuts-scroll`, `.navbar-nav-strip` e `.room-filters`
+  - Mantém o botão `⚙️ Personalizar` perfeitamente alinhado na mesma linha dos atalhos rápidos e guias em todas as resoluções
+  - Sincronização em tempo real dos botões e status do portão residencial (`Abrir Portão 🚪` e `Fechar Portão 🚪`) em todos os cards e barras
+
+---
+
 ## v0.30.1 (build 0034) - 2026-10-28
 
 ### 🐛 Fixes

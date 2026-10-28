@@ -1411,34 +1411,12 @@ async function fetchDevices() {
 
     // Atualiza status do portão no card de topo (Visão Geral)
     const gateDev = devices.find(d => d.category === 'ckmkzq' || (d.name && d.name.toLowerCase().includes('portão')));
-    const topGateBadge = document.getElementById('gateStateBadge');
-    const topGateDesc = document.getElementById('gateStateDesc');
     let isGateOpen = false;
     if (gateDev) {
       const gDps = gateDev.live_dps || {};
       isGateOpen = gDps['3'] === true || gDps['6'] === 'open';
-      if (topGateBadge) {
-        topGateBadge.innerText = isGateOpen ? '🚨 ABERTO' : '🔒 FECHADO';
-        topGateBadge.className = isGateOpen ? 'badge badge-live' : 'badge badge-emerald';
-      }
-      if (topGateDesc) {
-        topGateDesc.innerText = isGateOpen ? 'Sensor: Portão Aberto 🚨' : 'Sensor: Fechado & Trancado 🔒';
-        topGateDesc.style.color = isGateOpen ? 'var(--accent-rose)' : 'var(--accent-emerald)';
-      }
-
-      const camBarStatus = document.getElementById('camBarGateStatus');
-      const camBarIcon = document.getElementById('camBarGateIcon');
-      const ptzGateStatus = document.getElementById('ptzFloatingGateStatus');
-      if (camBarStatus) {
-        camBarStatus.innerHTML = isGateOpen ? 'Aberto 🚨' : 'Fechado 🔒';
-        camBarStatus.style.color = isGateOpen ? '#fb7185' : '#34d399';
-      }
-      if (camBarIcon) camBarIcon.innerText = isGateOpen ? '🚨' : '🚪';
-      if (ptzGateStatus) {
-        ptzGateStatus.innerHTML = isGateOpen ? 'Aberto 🚨' : 'Fechado 🔒';
-        ptzGateStatus.style.color = isGateOpen ? '#fb7185' : '#34d399';
-      }
     }
+    updateGateUiState(isGateOpen);
 
     // Renderização dinâmica dos Glance Chips e Atalhos
     renderGlanceBar();
@@ -2281,6 +2259,83 @@ window.gateTransitState = window.gateTransitState || null; // 'opening' | 'closi
 let gatePollingInterval = null;
 let gatePollCycles = 0;
 
+function updateGateUiState(isGateOpen) {
+  const topGateBadge = document.getElementById('gateStateBadge');
+  const topGateDesc = document.getElementById('gateStateDesc');
+  const btnPulseGate = document.getElementById('btnPulseGate');
+  const camBarStatus = document.getElementById('camBarGateStatus');
+  const camBarIcon = document.getElementById('camBarGateIcon');
+  const ptzGateStatus = document.getElementById('ptzFloatingGateStatus');
+
+  if (window.gateTransitState === 'opening') {
+    if (topGateBadge) {
+      topGateBadge.innerText = '⏳ ABRINDO';
+      topGateBadge.className = 'badge badge-mode';
+    }
+    if (topGateDesc) {
+      topGateDesc.innerText = 'Abrindo Portão... ⏳';
+      topGateDesc.style.color = 'var(--accent-cyan)';
+    }
+    if (btnPulseGate) {
+      btnPulseGate.disabled = true;
+      btnPulseGate.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px;margin-right:6px;"><path d="M3 21h18M3 10h18M5 6l7-3 7 3M4 10v11M20 10v11"/></svg> Abrindo... ⏳';
+    }
+    if (camBarStatus) {
+      camBarStatus.innerHTML = 'Abrindo... ⏳';
+      camBarStatus.style.color = 'var(--accent-cyan)';
+    }
+    if (ptzGateStatus) {
+      ptzGateStatus.innerHTML = 'Abrindo... ⏳';
+      ptzGateStatus.style.color = 'var(--accent-cyan)';
+    }
+  } else if (window.gateTransitState === 'closing') {
+    if (topGateBadge) {
+      topGateBadge.innerText = '⏳ FECHANDO';
+      topGateBadge.className = 'badge badge-warning';
+    }
+    if (topGateDesc) {
+      topGateDesc.innerText = 'Fechando Portão... ⏳';
+      topGateDesc.style.color = '#f59e0b';
+    }
+    if (btnPulseGate) {
+      btnPulseGate.disabled = true;
+      btnPulseGate.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px;margin-right:6px;"><path d="M3 21h18M3 10h18M5 6l7-3 7 3M4 10v11M20 10v11"/></svg> Fechando... ⏳';
+    }
+    if (camBarStatus) {
+      camBarStatus.innerHTML = 'Fechando... ⏳';
+      camBarStatus.style.color = '#f59e0b';
+    }
+    if (ptzGateStatus) {
+      ptzGateStatus.innerHTML = 'Fechando... ⏳';
+      ptzGateStatus.style.color = '#f59e0b';
+    }
+  } else {
+    if (topGateBadge) {
+      topGateBadge.innerText = isGateOpen ? '🚨 ABERTO' : '🔒 FECHADO';
+      topGateBadge.className = isGateOpen ? 'badge badge-live' : 'badge badge-emerald';
+    }
+    if (topGateDesc) {
+      topGateDesc.innerText = isGateOpen ? 'Portão Aberto 🚨' : 'Portão Fechado & Trancado 🔒';
+      topGateDesc.style.color = isGateOpen ? 'var(--accent-rose)' : 'var(--accent-emerald)';
+    }
+    if (btnPulseGate) {
+      btnPulseGate.disabled = false;
+      btnPulseGate.innerHTML = isGateOpen 
+        ? '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px;margin-right:6px;"><path d="M3 21h18M3 10h18M5 6l7-3 7 3M4 10v11M20 10v11"/></svg> Fechar Portão 🚪'
+        : '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px;margin-right:6px;"><path d="M3 21h18M3 10h18M5 6l7-3 7 3M4 10v11M20 10v11"/></svg> Abrir Portão 🚪';
+    }
+    if (camBarStatus) {
+      camBarStatus.innerHTML = isGateOpen ? 'Aberto 🚨' : 'Fechado 🔒';
+      camBarStatus.style.color = isGateOpen ? '#fb7185' : '#34d399';
+    }
+    if (camBarIcon) camBarIcon.innerText = isGateOpen ? '🚨' : '🚪';
+    if (ptzGateStatus) {
+      ptzGateStatus.innerHTML = isGateOpen ? 'Aberto 🚨' : 'Fechado 🔒';
+      ptzGateStatus.style.color = isGateOpen ? '#fb7185' : '#34d399';
+    }
+  }
+}
+
 function startGatePollingWatcher(devId) {
   if (gatePollingInterval) clearInterval(gatePollingInterval);
   gatePollCycles = 0;
@@ -2297,6 +2352,7 @@ function startGatePollingWatcher(devId) {
         if (window.gateTransitState === 'opening' && confirmedOpen) {
           clearInterval(gatePollingInterval);
           window.gateTransitState = null;
+          updateGateUiState(true);
           renderQuickGrid();
           renderCustomShortcuts();
           showToast('Portão Aberto', 'O portão completou a abertura total!', '🚨', 'warning');
@@ -2306,12 +2362,14 @@ function startGatePollingWatcher(devId) {
         if (window.gateTransitState === 'closing' && !confirmedOpen) {
           clearInterval(gatePollingInterval);
           window.gateTransitState = null;
+          updateGateUiState(false);
           renderQuickGrid();
           renderCustomShortcuts();
           showToast('Portão Fechado', 'Portão fechado e trancado com segurança!', '🔒', 'success');
           return;
         }
 
+        updateGateUiState(confirmedOpen);
         renderQuickGrid();
         renderCustomShortcuts();
       }
@@ -2321,6 +2379,9 @@ function startGatePollingWatcher(devId) {
     if (gatePollCycles >= 18) {
       clearInterval(gatePollingInterval);
       window.gateTransitState = null;
+      const gateDev = devices.find(d => d.id === devId || d.category === 'ckmkzq' || (d.name && d.name.toLowerCase().includes('portão')));
+      const confirmedOpen = gateDev && gateDev.live_dps ? (gateDev.live_dps['3'] === true || gateDev.live_dps['6'] === 'open') : false;
+      updateGateUiState(confirmedOpen);
       renderQuickGrid();
       renderCustomShortcuts();
     }
@@ -2355,6 +2416,7 @@ async function triggerGatePulse(devId, event) {
     badgeEl.className = nextTransit === 'opening' ? 'badge badge-mode' : 'badge badge-warning';
   }
 
+  updateGateUiState(isCurrentlyOpen);
   renderCustomShortcuts();
   showToast('Portão da Garagem', nextTransit === 'opening' ? 'Comando enviado! Abrindo portão...' : 'Comando enviado! Fechando portão...', '🚪', 'info');
 
@@ -2382,12 +2444,7 @@ async function pulseGate() {
   const nextTransit = isCurrentlyOpen ? 'closing' : 'opening';
   window.gateTransitState = nextTransit;
 
-  const btn = document.getElementById('btnPulseGate');
-  if (btn) {
-    btn.disabled = true;
-    btn.innerText = nextTransit === 'opening' ? 'Abrindo... ⏳' : 'Fechando... ⏳';
-  }
-
+  updateGateUiState(isCurrentlyOpen);
   renderQuickGrid();
   renderCustomShortcuts();
   showToast('Portão da Garagem', nextTransit === 'opening' ? 'Acionando abertura do portão...' : 'Acionando fechamento do portão...', '🚪', 'info');
@@ -2404,13 +2461,6 @@ async function pulseGate() {
     }
   } catch (err) {
     showToast('Erro no Portão', err.message, '🚨', 'danger');
-  }
-
-  if (btn) {
-    setTimeout(() => {
-      btn.disabled = false;
-      btn.innerText = 'Acionar Portão';
-    }, 1500);
   }
 
   startGatePollingWatcher(gateDev ? gateDev.id : 'eb49c5d1977172327aqb1q');
@@ -3726,6 +3776,19 @@ function openPtzModal(camId) {
   const isGateCam = camId.includes('portao') || camId.includes('garagem') || (camObj.name && (camObj.name.toLowerCase().includes('portão') || camObj.name.toLowerCase().includes('garagem')));
   if (floatingGateBtn) {
     floatingGateBtn.style.display = isGateCam ? 'inline-flex' : 'none';
+  }
+
+  // Ajuste do Grid para Câmeras Fixas vs Motorizada (Outdoor Pro PTZ)
+  const contentGrid = document.querySelector('.ptz-modal-content-grid');
+  const ptzControlsCol = document.querySelector('.ptz-controls-column');
+  if (contentGrid) {
+    if (isOutdoorPro) {
+      contentGrid.classList.remove('is-fixed-cam');
+      if (ptzControlsCol) ptzControlsCol.style.display = '';
+    } else {
+      contentGrid.classList.add('is-fixed-cam');
+      if (ptzControlsCol) ptzControlsCol.style.display = 'none';
+    }
   }
 
   // Configuração por Modelo

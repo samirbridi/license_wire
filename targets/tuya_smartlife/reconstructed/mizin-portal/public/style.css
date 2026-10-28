@@ -63,6 +63,10 @@
 .theater-sd-panel,
 .devices-table-wrap,
 .energy-report-tables-grid,
+.navbar-nav-strip,
+.custom-shortcuts-scroll,
+.custom-shortcuts-bar,
+.energy-table-tabs,
 .modal-card {
   -webkit-overflow-scrolling: touch !important;
   scrollbar-width: none !important;
@@ -83,6 +87,14 @@
 .sd-stat-card::-webkit-scrollbar,
 .theater-sd-panel::-webkit-scrollbar,
 .devices-table-wrap::-webkit-scrollbar,
+.navbar-nav-strip::-webkit-scrollbar,
+.custom-shortcuts-scroll::-webkit-scrollbar,
+.custom-shortcuts-bar::-webkit-scrollbar,
+.energy-table-tabs::-webkit-scrollbar {
+  display: none !important;
+  width: 0 !important;
+  height: 0 !important;
+}
 .energy-report-tables-grid::-webkit-scrollbar,
 .modal-card::-webkit-scrollbar {
   display: none !important;
@@ -3356,24 +3368,29 @@ button.btn-close:active {
 /* ============================================================= */
 .modal-camera-ptz {
   width: 96vw !important;
-  max-width: 1480px !important;
-  height: 92vh !important;
+  max-width: 1440px !important;
+  height: 94vh !important;
   max-height: 94vh !important;
-  background: rgba(11, 17, 32, 0.97) !important;
+  background: rgba(11, 17, 32, 0.98) !important;
   backdrop-filter: blur(28px) !important;
   border: 1px solid rgba(56, 189, 248, 0.22) !important;
   box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8), 0 0 40px rgba(56, 189, 248, 0.1) !important;
   display: flex !important;
   flex-direction: column !important;
   overflow: hidden !important;
-  padding: 24px 28px !important;
+  padding: 14px 20px 10px !important;
   box-sizing: border-box !important;
-  gap: 12px !important;
+  gap: 6px !important;
+}
+
+.modal-camera-ptz .modal-footer {
+  display: none !important;
 }
 
 @media (max-width: 768px) {
   .modal-camera-ptz {
-    padding: 16px 14px !important;
+    padding: 10px 10px 8px !important;
+    gap: 6px !important;
   }
 }
 
@@ -3382,9 +3399,10 @@ button.btn-close:active {
   align-items: center;
   justify-content: space-between;
   flex-wrap: wrap;
-  gap: 12px;
-  padding-bottom: 12px;
+  gap: 10px;
+  padding-bottom: 8px;
   border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  flex-shrink: 0;
 }
 
 .ptz-view-mode-tabs {
@@ -3477,22 +3495,22 @@ button.btn-close:active {
 .theater-tabs-bar {
   display: flex;
   align-items: center;
-  gap: 14px;
-  margin-top: 12px;
-  margin-bottom: 18px;
+  gap: 10px;
+  margin-top: 4px;
+  margin-bottom: 8px;
   border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-  padding-bottom: 14px;
-  flex-wrap: wrap;
+  padding-bottom: 6px;
+  flex-shrink: 0;
 }
 
 .theater-tab-btn {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 10px;
   background: rgba(255, 255, 255, 0.035);
   border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 10px;
-  padding: 8px 16px;
+  border-radius: 8px;
+  padding: 6px 14px;
   color: var(--text-muted);
   cursor: pointer;
   transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
@@ -3675,11 +3693,19 @@ button.btn-close:active {
 .ptz-modal-content-grid {
   display: grid;
   grid-template-columns: minmax(0, 1.85fr) minmax(320px, 1.05fr);
-  gap: 22px;
-  margin-top: 8px;
-  flex: 1;
+  gap: 16px;
+  margin-top: 4px;
+  flex: 1 1 auto;
   min-height: 0;
+  height: 100%;
   overflow: hidden;
+}
+
+.ptz-modal-content-grid.is-fixed-cam {
+  grid-template-columns: 1fr !important;
+  max-width: 1100px !important;
+  margin: 0 auto !important;
+  width: 100% !important;
 }
 
 @media (max-width: 980px) {
@@ -3692,21 +3718,31 @@ button.btn-close:active {
 .ptz-view-column {
   display: flex;
   flex-direction: column;
-  gap: 18px;
-  overflow-y: auto;
-  padding-right: 6px;
+  gap: 8px;
+  overflow: hidden;
+  padding-right: 0;
+  flex: 1 1 auto;
+  min-height: 0;
+  height: 100%;
+  justify-content: space-between;
 }
 
 .ptz-dual-video-container {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   width: 100%;
+  flex: 1 1 auto;
+  min-height: 0;
+  height: 100%;
+  overflow: hidden;
+  position: relative;
 }
 
 .ptz-dual-video-container.dual-active {
+  display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 16px;
+  gap: 12px;
 }
 
 @media (max-width: 768px) {
@@ -3720,13 +3756,17 @@ button.btn-close:active {
   background: #000;
   border-radius: 12px;
   overflow: hidden;
-  border: 1px solid rgba(255, 255, 255, 0.16);
+  border: 1px solid rgba(255, 255, 255, 0.12);
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.55);
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.75);
   aspect-ratio: 16 / 9;
   width: 100%;
+  max-width: 100%;
+  height: 100%;
+  max-height: 100%;
+  margin: 0 auto;
 }
 
 .ptz-main-player-wrap video,
@@ -3736,6 +3776,7 @@ button.btn-close:active {
   width: 100% !important;
   height: 100% !important;
   max-height: 100% !important;
+  max-width: 100% !important;
   object-fit: contain !important;
 }
 
@@ -3800,13 +3841,26 @@ button.btn-close:active {
   transform: scale(1.04);
 }
 
-/* Áudio Intercom & Talkback */
+/* Barra Integrada de Controles & Áudio - Fluida, Sem Caixas de Janela */
+.cam-integrated-toolbar,
 .ptz-audio-intercom-box {
-  background: rgba(255, 255, 255, 0.035);
-  border: 1px solid rgba(255, 255, 255, 0.09);
-  border-radius: 12px;
-  padding: 14px 18px;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25);
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  padding: 4px 0 0 0 !important;
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 8px !important;
+  width: 100% !important;
+}
+
+.cam-toolbar-status-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  gap: 12px;
+  margin-bottom: 2px;
 }
 
 .audio-status-pill {
@@ -3815,72 +3869,107 @@ button.btn-close:active {
   gap: 8px;
   font-size: 11px;
   color: var(--text-muted);
-  margin-bottom: 10px;
 }
 
-.audio-wave-meter {
-  display: flex;
-  align-items: center;
-  gap: 2px;
-  height: 14px;
-}
-
-.wave-bar {
-  width: 3px;
-  height: 100%;
-  background: var(--accent-cyan);
-  border-radius: 2px;
-  animation: soundWave 0.8s ease-in-out infinite alternate;
-}
-
-.wave-bar:nth-child(2) { animation-delay: 0.2s; height: 70%; }
-.wave-bar:nth-child(3) { animation-delay: 0.4s; height: 100%; }
-.wave-bar:nth-child(4) { animation-delay: 0.1s; height: 40%; }
-
-@keyframes soundWave {
-  0% { transform: scaleY(0.3); opacity: 0.4; }
-  100% { transform: scaleY(1); opacity: 1; }
-}
-
-.audio-controls-row {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 10px;
-}
-
-.btn-audio-action {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  background: rgba(255, 255, 255, 0.05);
+.btn-live-sd-pill {
+  background: rgba(255, 255, 255, 0.04);
   border: 1px solid rgba(255, 255, 255, 0.12);
-  color: var(--text-main);
-  padding: 10px 14px;
-  border-radius: var(--radius-sm);
-  font-size: 12px;
+  color: var(--text-muted);
+  font-size: 11px;
   font-weight: 600;
+  padding: 5px 12px;
+  border-radius: 20px;
   cursor: pointer;
   transition: all 0.2s ease;
+  white-space: nowrap;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
 }
 
-.btn-audio-action:hover {
-  background: rgba(56, 189, 248, 0.2);
+.btn-live-sd-pill:hover {
+  background: rgba(56, 189, 248, 0.15);
   border-color: var(--accent-cyan);
   color: var(--accent-cyan);
+  transform: translateY(-1px);
 }
 
+.cam-primary-buttons-row,
+.audio-controls-row {
+  display: grid !important;
+  grid-template-columns: 1fr 1fr !important;
+  gap: 12px !important;
+  width: 100% !important;
+}
+
+.btn-cam-action,
+.btn-audio-action {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 10px !important;
+  padding: 12px 18px !important;
+  border-radius: 10px !important;
+  font-size: 13px !important;
+  font-weight: 700 !important;
+  cursor: pointer !important;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  border: 1px solid rgba(255, 255, 255, 0.14) !important;
+  background: rgba(255, 255, 255, 0.05) !important;
+  color: var(--text-main) !important;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.3) !important;
+}
+
+.btn-cam-action:hover,
+.btn-audio-action:hover {
+  transform: translateY(-1px) !important;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.45) !important;
+}
+
+.btn-cam-listen,
+.btn-audio-action:not(.btn-ptt-talk) {
+  background: rgba(56, 189, 248, 0.08) !important;
+  border-color: rgba(56, 189, 248, 0.3) !important;
+  color: #38bdf8 !important;
+}
+
+.btn-cam-listen:hover,
+.btn-audio-action:not(.btn-ptt-talk):hover {
+  background: rgba(56, 189, 248, 0.2) !important;
+  border-color: #38bdf8 !important;
+  color: #ffffff !important;
+  box-shadow: 0 0 16px rgba(56, 189, 248, 0.35) !important;
+}
+
+.btn-cam-listen.active-listening {
+  background: #0284c7 !important;
+  color: #ffffff !important;
+  border-color: #38bdf8 !important;
+  box-shadow: 0 0 20px rgba(56, 189, 248, 0.6) !important;
+}
+
+.btn-cam-talk,
 .btn-ptt-talk {
-  background: rgba(244, 63, 94, 0.15);
-  border-color: rgba(244, 63, 94, 0.4);
-  color: #fb7185;
+  background: rgba(244, 63, 94, 0.1) !important;
+  border-color: rgba(244, 63, 94, 0.35) !important;
+  color: #fb7185 !important;
 }
 
+.btn-cam-talk:hover,
+.btn-ptt-talk:hover {
+  background: rgba(244, 63, 94, 0.22) !important;
+  border-color: #fb7185 !important;
+  color: #ffffff !important;
+  box-shadow: 0 0 16px rgba(244, 63, 94, 0.35) !important;
+}
+
+.btn-cam-talk.active-talking,
 .btn-ptt-talk.active-talking {
-  background: var(--accent-rose) !important;
-  color: white !important;
-  box-shadow: 0 0 20px rgba(244, 63, 94, 0.8) !important;
-  animation: pulseTalk 1s infinite alternate;
+  background: #e11d48 !important;
+  border-color: #f43f5e !important;
+  color: #ffffff !important;
+  box-shadow: 0 0 24px rgba(244, 63, 94, 0.8) !important;
+  animation: pulseTalk 1s infinite alternate !important;
 }
 
 @keyframes pulseTalk {
@@ -5046,13 +5135,32 @@ input:checked + .ha-slider:before {
     grid-template-columns: repeat(2, 1fr);
   }
   .ha-actions-row {
-    flex-direction: column;
-    align-items: flex-start;
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    gap: 8px !important;
+    width: 100% !important;
   }
   .ha-actions-buttons {
-    width: 100%;
-    overflow-x: auto;
-    padding-bottom: 6px;
+    flex: 1 1 auto !important;
+    min-width: 0 !important;
+    overflow-x: auto !important;
+    white-space: nowrap !important;
+    scrollbar-width: none !important;
+    -ms-overflow-style: none !important;
+    display: flex !important;
+    gap: 8px !important;
+    align-items: center !important;
+  }
+  .ha-actions-buttons::-webkit-scrollbar {
+    display: none !important;
+    width: 0 !important;
+    height: 0 !important;
+  }
+  .ha-customize-btn {
+    flex-shrink: 0 !important;
+    white-space: nowrap !important;
   }
 }
 
@@ -5518,36 +5626,70 @@ input:checked + .ha-slider:before {
     max-width: 98vw !important;
     height: 96vh !important;
     max-height: 96vh !important;
-    overflow-y: auto !important;
-    -webkit-overflow-scrolling: touch !important;
-    padding: 12px 10px !important;
-    gap: 8px !important;
+    overflow: hidden !important;
+    display: flex !important;
+    flex-direction: column !important;
+    padding: 10px 10px 8px !important;
+    gap: 6px !important;
     border-radius: 14px !important;
   }
 
   .ptz-modal-content-grid {
     display: flex !important;
     flex-direction: column !important;
-    overflow: visible !important;
-    gap: 10px !important;
+    flex: 1 1 auto !important;
+    height: 100% !important;
+    min-height: 0 !important;
+    overflow: hidden !important;
+    gap: 6px !important;
     margin-top: 2px !important;
   }
 
   .ptz-view-column {
-    overflow: visible !important;
+    flex: 1 1 auto !important;
+    height: 100% !important;
+    min-height: 0 !important;
+    overflow: hidden !important;
     padding-right: 0 !important;
-    gap: 8px !important;
+    gap: 6px !important;
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: space-between !important;
+  }
+
+  .ptz-dual-video-container {
+    flex: 1 1 auto !important;
+    height: 100% !important;
+    min-height: 0 !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    overflow: hidden !important;
+    width: 100% !important;
   }
 
   .ptz-main-player-wrap {
     width: 100% !important;
+    height: 100% !important;
+    max-height: 100% !important;
     aspect-ratio: 16 / 9 !important;
-    min-height: 210px !important;
-    max-height: 52vh !important;
-    flex-shrink: 0 !important;
     border-radius: 10px !important;
     background: #000 !important;
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.6) !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    overflow: hidden !important;
+  }
+
+  .ptz-main-player-wrap video,
+  .ptz-main-player-wrap img,
+  .ptz-main-player-wrap video-stream {
+    width: 100% !important;
+    height: 100% !important;
+    max-width: 100% !important;
+    max-height: 100% !important;
+    object-fit: contain !important;
   }
 
   /* Seletor de Câmera de 2 Visões (Ampla / Teleobjetiva / Dupla) */
@@ -5571,28 +5713,31 @@ input:checked + .ha-slider:before {
     border-radius: 8px !important;
   }
 
-  /* Botões de Áudio (Alto-falante e Microfone) com destaque e fácil toque */
+  /* Barra de Áudio Fluida no Mobile/Tablet - Zero Caixas de Janela */
+  .cam-integrated-toolbar,
   .ptz-audio-intercom-box {
-    padding: 10px 12px !important;
-    background: rgba(15, 23, 42, 0.85) !important;
-    border: 1px solid rgba(56, 189, 248, 0.25) !important;
-    border-radius: 12px !important;
-    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.4) !important;
-    margin-top: 4px !important;
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    padding: 2px 0 0 0 !important;
+    margin-top: 2px !important;
+    width: 100% !important;
   }
 
+  .cam-primary-buttons-row,
   .audio-controls-row {
-    display: flex !important;
+    display: grid !important;
+    grid-template-columns: 1fr 1fr !important;
     gap: 8px !important;
     width: 100% !important;
   }
 
+  .btn-cam-action,
   .btn-audio-action {
-    flex: 1 !important;
-    padding: 12px 8px !important;
+    padding: 12px 6px !important;
     font-size: 12px !important;
     font-weight: 700 !important;
-    border-radius: 8px !important;
+    border-radius: 10px !important;
     display: inline-flex !important;
     align-items: center !important;
     justify-content: center !important;
