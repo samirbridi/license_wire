@@ -1,0 +1,61 @@
+{
+  "schema": "gwm-owner-ui-observation/v1",
+  "recordedOn": "2026-10-28",
+  "timezone": "America/Sao_Paulo",
+  "method": "Visual inspection of four owner-supplied photos through the image viewer; not a network readback or firmware extraction",
+  "photosViewed": [
+    "C:/Users/Avell Mizin/Downloads/20261028_000633.jpg",
+    "C:/Users/Avell Mizin/Downloads/20261028_000649.jpg",
+    "C:/Users/Avell Mizin/Downloads/20261028_000919.jpg",
+    "C:/Users/Avell Mizin/Downloads/20261028_000931.jpg"
+  ],
+  "originalPhotoPreservation": {
+    "status": "NOT_COMPLETED",
+    "reason": "The source photos were successfully viewed and listed, but were not found during either the subsequent sandbox copy or the permission-enabled copy attempt",
+    "copiesMade": 0,
+    "sourceHashesAvailable": false,
+    "agentDeletedOrMovedSourceFiles": false
+  },
+  "confirmed": {
+    "displayedSoftwareLabel": "Coffee OS 3.3.00213",
+    "softwareVersion": "3.3.00213",
+    "navigationVisible": ["Sistema", "Sobre"],
+    "usbUpdateButtonText": "Atualização OTA USB",
+    "diagnosticControlText": "Diagnóstico e reparo",
+    "diagnosticButtonText": "Ligar",
+    "diagnosticInfoIconPresent": true,
+    "updateDialogCode": "851",
+    "updateDialogText": "Não foram detetados pacotes de atualização disponíveis, confirme"
+  },
+  "tentative": {
+    "appStoreVersion": "1.8.25.12.11_6",
+    "appStoreVersionConfidence": "Tentative transcription due to motion blur; not the OS version",
+    "editableDeviceName": "GWM_BC03",
+    "deviceNameConfidence": "Tentative transcription; editable name is not a hardware model"
+  },
+  "ownerFollowup": {
+    "diagnosticInfoIcon": "Owner tapped the information icon and reported that nothing appeared",
+    "diagnosticModeActivationRequested": false
+  },
+  "notEstablished": [
+    "Latest available firmware version",
+    "Android version or authenticated hardware identity",
+    "ADB availability",
+    "Meaning of update code 851",
+    "Diagnostic-mode behavior on this ORA 5",
+    "Firmware extraction or administrator access"
+  ],
+  "scope": {
+    "networkQueriesThisPhotoStage": false,
+    "vehicleSettingsChangedByAgent": false,
+    "firmwarePackageObtained": false,
+    "sourcePhotosEditedByAgent": false
+  },
+  "relatedModelDocumentation": {
+    "model": "GWM Wey 07",
+    "source": "https://www.gwmmotors.com.br/content/dam/gwm/pages/br/pt/models/wey/manual-do-proprietario/manual-do-proprietario-wey-07.pdf",
+    "printedPage": 266,
+    "observation": "Same-named menu is documented as vehicle service mode affecting high-voltage connection, driving and charging",
+    "applicabilityToOra5": "NOT_CONFIRMED; do not interpret the button as head-unit debugging"
+  }
+}

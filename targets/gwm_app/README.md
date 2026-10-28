@@ -18,11 +18,15 @@
 ## 🎯 2. Estado Atual e Próximos Passos (Multi-IDE Sync)
 *Estado original por Antigravity; diagnóstico LAN atualizado por Codex em 2026-10-27/28.*
 
+### Versão confirmada nas fotos da central
+
+Inspeção visual das fotos do proprietário em **Sistema → Sobre** confirma **Coffee OS 3.3.00213**. A transcrição está registrada em [`notes/07_coffee_os_photos.md`](notes/07_coffee_os_photos.md); o arquivamento das fotos e seus hashes não foi concluído porque os arquivos não foram encontrados nas tentativas posteriores de cópia. A tela também mostra **Diagnóstico e reparo → Ligar**; o ícone ⓘ não abriu descrição segundo o proprietário. Não houve ativação. Em outro GWM (Wey 07), essa opção é documentada como modo de manutenção veicular; não presumir que seja depuração da multimídia. O significado de 851 na verificação de atualização e a versão mais recente disponível permanecem não confirmados.
+
 ### Diagnóstico LAN com a central ligada
 
 O proprietário confirmou **ORA 5 2026/2027, Coffee OS 3**, estacionado em P e ligado. O IP `192.168.1.119` passou a responder; MAC observado `30:4A:C4:79:46:D5`. A porta **7000** respondeu como **AirTunes/450.14.1**, com RTSP OPTIONS 200. Das 18 portas selecionadas, nenhuma outra ofereceu conexão na coleta registrada. A consulta de metadados `/info` retornou 455 no estado atual. Não foi obtido acesso ao sistema, firmware completo ou telemetria, e nenhuma função foi alterada. `450.14.1` não é a versão do Coffee OS.
 
-Consultar [`notes/06_local_wifi_powered_on.md`](notes/06_local_wifi_powered_on.md) e [`evidence/lan-probe-2026-10-28T02-56-20.657Z.json`](evidence/lan-probe-2026-10-28T02-56-20.657Z.json). Próximos passos: localizar a versão completa na central e identificar uma interface documentada ou um artefato legítimo para REA/Ghidra. Script reproduzível: `node targets/gwm_app/scripts/probe-local-network.mjs`.
+Consultar [`notes/06_local_wifi_powered_on.md`](notes/06_local_wifi_powered_on.md) e [`evidence/lan-probe-2026-10-28T02-56-20.657Z.json`](evidence/lan-probe-2026-10-28T02-56-20.657Z.json). A versão completa já foi identificada nas fotos acima. Próximos passos: identificar uma interface documentada ou um artefato legítimo para REA/Ghidra, orientado ao build 3.3.00213. Script reproduzível: `node targets/gwm_app/scripts/probe-local-network.mjs`.
 
 ### ✅ Concluído nesta etapa:
 - [x] Inicialização isolada do alvo `targets/gwm_app` segundo a diretriz `AGENTS.md`.
