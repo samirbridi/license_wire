@@ -2635,7 +2635,7 @@ button.btn-close:active {
 /* Telas Grandes (Desktop Full HD / 4K) */
 @media (min-width: 1280px) {
   .metrics-grid {
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
     gap: 20px;
   }
   .metric-card {
@@ -5043,7 +5043,7 @@ input:checked + .ha-slider:before {
     font-size: 11px;
   }
   .metrics-grid {
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(2, 1fr);
   }
   .ha-actions-row {
     flex-direction: column;
@@ -5616,7 +5616,6 @@ input:checked + .ha-slider:before {
     font-size: 10px !important;
     border-radius: 6px !important;
   }
-  }
 
   .theater-tabs-bar {
     display: grid !important;
@@ -5856,7 +5855,14 @@ input:checked + .ha-slider:before {
     min-width: 580px !important;
   }
 
-  /* 6. Cards de Veículos Elétricos na Garagem (Visão Geral) */
+  /* 6. Cards da Visão Geral: 2 colunas em tablets, 1 coluna em smartphones */
+  .metrics-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 14px !important;
+  }
+}
+
+@media (max-width: 600px) {
   .metrics-grid {
     grid-template-columns: 1fr !important;
     gap: 12px !important;

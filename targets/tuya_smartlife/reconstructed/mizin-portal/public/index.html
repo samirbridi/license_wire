@@ -7,7 +7,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css?v=0.30.0-build0033">
+  <link rel="stylesheet" href="style.css?v=0.30.1-build0034">
   <link rel="manifest" href="manifest.json">
   <link rel="icon" type="image/svg+xml" href="icon.svg">
   <link rel="apple-touch-icon" href="icon.svg">
@@ -54,7 +54,7 @@
         <div>
           <div style="display:flex; align-items:center; gap:8px;">
             <div class="brand-title">MIZIN HOME</div>
-            <span class="badge badge-version" id="headerVersionBadge" style="background: rgba(56, 189, 248, 0.15); border: 1px solid rgba(56, 189, 248, 0.35); color: #38bdf8; font-family: 'JetBrains Mono', monospace; font-size: 10px; padding: 2px 7px; border-radius: 4px; font-weight: 600;">v0.30.0 (build 0033)</span>
+            <span class="badge badge-version" id="headerVersionBadge" style="background: rgba(56, 189, 248, 0.15); border: 1px solid rgba(56, 189, 248, 0.35); color: #38bdf8; font-family: 'JetBrains Mono', monospace; font-size: 10px; padding: 2px 7px; border-radius: 4px; font-weight: 600;">v0.30.1 (build 0034)</span>
           </div>
           <div class="brand-sub">CENTRAL DE CONTROLE RESIDENCIAL</div>
         </div>
@@ -262,52 +262,38 @@
           </div>
         </div>
 
-        <!-- Card 5A: Garagem • GWM Ora 5 -->
-        <div class="metric-card glow-cyan is-clickable" onclick="switchTab('ev'); selectEvVehicle('ora5');" title="Abrir Central GWM Ora 5">
+        <!-- Card 5: Garagem & Veículos Elétricos (Unified Card) -->
+        <div class="metric-card glow-cyan is-clickable" onclick="switchTab('ev')" title="Clique para abrir a central dos Veículos Elétricos">
           <div class="metric-header">
-            <span class="metric-title">GARAGEM • GWM ORA 5</span>
+            <span class="metric-title">VEÍCULOS ELÉTRICOS (GARAGEM)</span>
             <div class="metric-header-badges">
-              <span class="badge badge-live">🟢 Online</span>
+              <span class="badge badge-live" id="evOverviewStatusBadge" style="white-space: nowrap; font-size: 11px;">⚡ 2 Veículos Online</span>
             </div>
           </div>
-          <div class="metric-value-row">
-            <div class="metric-value" id="evQuickOraSoc" style="color:var(--accent-cyan);">84%</div>
-            <div class="metric-unit">SoC</div>
-            <span class="metric-sub" id="evQuickOraLock" style="margin-left:auto; font-size:12px; font-weight:600;">🔒 Trancado</span>
+          <div style="display:flex; justify-content:space-between; gap:10px; margin-top:8px;">
+            <div style="flex:1; background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.07); border-radius:8px; padding:8px 10px;">
+              <div style="font-size:11px; color:var(--text-muted); display:flex; justify-content:space-between;">
+                <span style="font-weight:600; color:var(--text-main);">🚗 GWM Ora 5</span>
+                <span id="evQuickOraLock">🔒 Trancado</span>
+              </div>
+              <div style="font-size:18px; font-weight:700; color:var(--accent-cyan); margin-top:2px;" id="evQuickOraSoc">84%</div>
+              <div style="font-size:11px; color:var(--text-muted);" id="evQuickOraRange">293 km autonomia</div>
+              <div style="font-size:10px; color:var(--text-dim); margin-top:3px;">TRL-4I59 • Preto</div>
+            </div>
+            <div style="flex:1; background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.07); border-radius:8px; padding:8px 10px;">
+              <div style="font-size:11px; color:var(--text-muted); display:flex; justify-content:space-between;">
+                <span style="font-weight:600; color:var(--text-main);">⚡ Dolphin Mini GS</span>
+                <span id="evQuickBydLock">🔒 Trancado</span>
+              </div>
+              <div style="font-size:18px; font-weight:700; color:#10b981; margin-top:2px;" id="evQuickBydSoc">78%</div>
+              <div style="font-size:11px; color:var(--text-muted);" id="evQuickBydRange">218 km autonomia</div>
+              <div style="font-size:10px; color:var(--text-dim); margin-top:3px;">TQR-1A36 • Blade 38,88kWh</div>
+            </div>
           </div>
           <div class="metric-footer-stacked">
             <div class="metric-footer-line">
-              <span class="footer-lbl">Autonomia:</span>
-              <span class="footer-val" id="evQuickOraRange" style="color:var(--accent-cyan); font-weight:600;">293 km restantes</span>
-            </div>
-            <div class="metric-footer-line">
-              <span class="footer-lbl">Veículo:</span>
-              <span class="footer-val">Placa TRL-4I59 • Cor Preto</span>
-            </div>
-          </div>
-        </div>
-
-        <!-- Card 5B: Garagem • BYD Dolphin Mini GS -->
-        <div class="metric-card glow-emerald is-clickable" onclick="switchTab('ev'); selectEvVehicle('dolphin_mini');" title="Abrir Central BYD Dolphin Mini GS">
-          <div class="metric-header">
-            <span class="metric-title">GARAGEM • DOLPHIN MINI GS</span>
-            <div class="metric-header-badges">
-              <span class="badge badge-live">🟢 Online</span>
-            </div>
-          </div>
-          <div class="metric-value-row">
-            <div class="metric-value" id="evQuickBydSoc" style="color:#10b981;">78%</div>
-            <div class="metric-unit">SoC</div>
-            <span class="metric-sub" id="evQuickBydLock" style="margin-left:auto; font-size:12px; font-weight:600;">🔒 Trancado</span>
-          </div>
-          <div class="metric-footer-stacked">
-            <div class="metric-footer-line">
-              <span class="footer-lbl">Autonomia:</span>
-              <span class="footer-val" id="evQuickBydRange" style="color:#10b981; font-weight:600;">218 km restantes</span>
-            </div>
-            <div class="metric-footer-line">
-              <span class="footer-lbl">Veículo:</span>
-              <span class="footer-val">Placa TQR-1A36 • Cor Preto (Blade 38,88 kWh)</span>
+              <span class="footer-lbl">Status:</span>
+              <span class="footer-val" style="color:var(--accent-cyan);">Prontos para rodar • Pneus calibrados</span>
             </div>
           </div>
         </div>
@@ -2407,6 +2393,6 @@
   <!-- Floating Toast Notifications Container -->
   <div id="toastContainer" class="toast-container"></div>
 
-  <script src="app.js?v=0.30.0-build0033"></script>
+  <script src="app.js?v=0.30.1-build0034"></script>
 </body>
 </html>

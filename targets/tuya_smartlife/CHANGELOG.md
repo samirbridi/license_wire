@@ -3,6 +3,17 @@
 Todas as descobertas, módulos dissecados e correções desta análise são registrados aqui.
 Formato de versão obrigatório: `vX.Y.Z (build XXXX)`.
 
+## v0.30.1 (build 0034) - 2026-10-28
+
+### 🐛 Fixes
+- fix: restaura o grid elegante multi-colunas da tela inicial (Visão Geral) no desktop e PC:
+  - Elimina chave órfã de fechamento de chave CSS que vazava as regras móveis de `grid-template-columns: 1fr` para monitores desktop
+  - Restaura o card unificado de `VEÍCULOS ELÉTRICOS (GARAGEM)` compacto com GWM Ora 5 e BYD Dolphin Mini GS lado a lado
+  - Configura responsividade estrita: desktop (grid multi-colunas de 280px), tablets (2 colunas) e smartphones (1 coluna)
+  - Corrige proporção de layout mantendo os 5 cards de diagnóstico na tela inicial sem faixas esticadas
+
+---
+
 ## v0.30.0 (build 0033) - 2026-10-27
 
 ### ✨ Features
