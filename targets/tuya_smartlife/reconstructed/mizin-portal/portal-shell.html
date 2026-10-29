@@ -1719,46 +1719,6 @@
       <!-- ABA 2: GRAVAÇÕES DO CARTÃO SD (TEATRO DEDICADO DE REPRODUÇÃO & ARMAZENAMENTO) -->
       <div class="theater-tab-panel" id="theaterPanelSd" style="display:none;">
         <div class="theater-sd-panel">
-          <button type="button" class="btn btn-secondary" onclick="openNasArchive()">🗄️ Gravações no NAS</button>
-
-          <!-- LINHA 1: CARTÕES DE DIAGNÓSTICO E CAPACIDADE DO CARTÃO SD -->
-          <div class="sd-stat-cards-grid">
-            <div class="sd-stat-card">
-              <span class="sd-stat-icon">💾</span>
-              <div class="sd-stat-content">
-                <span class="sd-stat-label">Cartão MicroSD &amp; Saúde</span>
-                <span class="sd-stat-val" id="sdCardHealthTitle">MicroSD High Endurance</span>
-                <span class="sd-stat-sub" id="sdCardHealthSub">Saúde: 100% Excelente (Class 10 U3 V30)</span>
-              </div>
-            </div>
-
-            <div class="sd-stat-card">
-              <span class="sd-stat-icon">📊</span>
-              <div class="sd-stat-content">
-                <span class="sd-stat-label">Armazenamento</span>
-                <span class="sd-stat-val" id="sdStorageUsageText">Calculando espaço...</span>
-                <span class="sd-stat-sub" id="sdStorageFreeText">24h contínuas</span>
-              </div>
-            </div>
-
-            <div class="sd-stat-card">
-              <span class="sd-stat-icon">🔄</span>
-              <div class="sd-stat-content">
-                <span class="sd-stat-label">Regime de Gravação</span>
-                <span class="sd-stat-val" id="sdRecordingModeText">24/7 Contínua Circular</span>
-                <span class="sd-stat-sub">Sobrescreve blocos antigos em loop</span>
-              </div>
-            </div>
-
-            <div class="sd-stat-card">
-              <span class="sd-stat-icon">🧠</span>
-              <div class="sd-stat-content">
-                <span class="sd-stat-label">Eventos Inteligentes</span>
-                <span class="sd-stat-val" id="sdEventsCountBadge">18 Detecções de IA Hoje</span>
-                <span class="sd-stat-sub">Pessoas, Veículos e Movimento</span>
-              </div>
-            </div>
-          </div>
 
           <!-- LINHA 2: PLAYER DEDICADO DE REPRODUÇÃO DO CARTÃO SD (ZERO CROP, 16:9) -->
           <div class="sd-player-theater-wrap">
@@ -1785,6 +1745,7 @@
                 <input type="date" id="timelineDateInput" class="timeline-date-picker" onchange="onTimelineDateChanged(this.value)">
                 <button type="button" class="btn btn-sm btn-secondary" onclick="stepTimelineDay(1)">Hoje ▶</button>
                 <button type="button" class="btn btn-sm btn-outline-cyan" onclick="stepTimelineToday()">📅 Hoje</button>
+                <button type="button" class="btn btn-sm btn-secondary" onclick="openNasArchive()" title="Gravações contínuas guardadas no NAS">🗄️ Gravações no NAS</button>
               </div>
             </div>
 
@@ -1840,9 +1801,48 @@
             <!-- Eventos Inteligentes Gravados no Cartão SD -->
             <div style="margin-top:12px; border-top:1px solid rgba(255,255,255,0.06); padding-top:10px;">
               <div style="font-size:11px; font-weight:700; color:var(--text-muted); margin-bottom:8px; display:flex; align-items:center; gap:6px;">
-                <span>🎯</span> EVENTOS DETECTADOS POR IA NO CARTÃO SD (CLIQUE PARA REPRODUZIR):
+                <span>🎯</span> MOMENTOS GRAVADOS NO CARTÃO SD — CLIQUE NO HORÁRIO PARA ASSISTIR
               </div>
               <div class="timeline-events-container" id="timelineEventsContainer" style="display:flex; gap:6px; flex-wrap:wrap;"></div>
+            </div>
+          </div>
+
+          <!-- INFORMAÇÕES DO CARTÃO SD (apenas informativo, abaixo da linha do tempo) -->
+          <div class="sd-stat-cards-grid sd-info-strip">
+            <div class="sd-stat-card">
+              <span class="sd-stat-icon">💾</span>
+              <div class="sd-stat-content">
+                <span class="sd-stat-label">Cartão MicroSD &amp; Saúde</span>
+                <span class="sd-stat-val" id="sdCardHealthTitle">MicroSD High Endurance</span>
+                <span class="sd-stat-sub" id="sdCardHealthSub">Saúde: 100% Excelente (Class 10 U3 V30)</span>
+              </div>
+            </div>
+
+            <div class="sd-stat-card">
+              <span class="sd-stat-icon">📊</span>
+              <div class="sd-stat-content">
+                <span class="sd-stat-label">Armazenamento</span>
+                <span class="sd-stat-val" id="sdStorageUsageText">Calculando espaço...</span>
+                <span class="sd-stat-sub" id="sdStorageFreeText">24h contínuas</span>
+              </div>
+            </div>
+
+            <div class="sd-stat-card">
+              <span class="sd-stat-icon">🔄</span>
+              <div class="sd-stat-content">
+                <span class="sd-stat-label">Regime de Gravação</span>
+                <span class="sd-stat-val" id="sdRecordingModeText">24/7 Contínua Circular</span>
+                <span class="sd-stat-sub">Sobrescreve blocos antigos em loop</span>
+              </div>
+            </div>
+
+            <div class="sd-stat-card">
+              <span class="sd-stat-icon">🧠</span>
+              <div class="sd-stat-content">
+                <span class="sd-stat-label">Eventos Inteligentes</span>
+                <span class="sd-stat-val" id="sdEventsCountBadge">18 Detecções de IA Hoje</span>
+                <span class="sd-stat-sub">Pessoas, Veículos e Movimento</span>
+              </div>
             </div>
           </div>
 

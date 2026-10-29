@@ -3395,14 +3395,24 @@ button.btn-close:active {
 }
 
 .ptz-modal-header {
-  display: flex;
+  /* Actions (Foto, Criar Cena, fechar) stay in the top-right corner at every width. */
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
   align-items: center;
-  justify-content: space-between;
-  flex-wrap: wrap;
-  gap: 10px;
+  gap: 10px 14px;
   padding-bottom: 8px;
   border-bottom: 1px solid rgba(255, 255, 255, 0.08);
   flex-shrink: 0;
+}
+.ptz-modal-header > .modal-title-with-icon { grid-column: 1; grid-row: 1; min-width: 0; }
+.ptz-modal-header > .ptz-header-actions { grid-column: 2; grid-row: 1; align-self: start; justify-self: end; }
+.ptz-modal-header > .ptz-view-mode-tabs { grid-column: 1 / -1; grid-row: 2; justify-self: start; }
+.ptz-modal-header > .ptz-quality-container { grid-column: 1 / -1; grid-row: 3; justify-self: start; flex-wrap: wrap; }
+@media (min-width: 1280px) {
+  .ptz-modal-header { grid-template-columns: minmax(0, auto) 1fr auto auto; }
+  .ptz-modal-header > .ptz-view-mode-tabs { grid-column: 2; grid-row: 1; justify-self: center; }
+  .ptz-modal-header > .ptz-quality-container { grid-column: 3; grid-row: 1; }
+  .ptz-modal-header > .ptz-header-actions { grid-column: 4; }
 }
 
 .ptz-view-mode-tabs {
@@ -6024,3 +6034,45 @@ input:checked + .ha-slider:before {
 
 
 
+
+/* ============================================================= */
+/* ABA SD: player sem faixas pretas, momentos em abas e informações */
+/* ============================================================= */
+/* Children of the scrolling column keep their natural height instead of being squeezed. */
+.theater-sd-panel > * { flex-shrink: 0; }
+.sd-player-theater-wrap {
+  width: min(100%, calc(56vh * 16 / 9));
+  max-height: 56vh;
+  min-height: 0;
+  margin-inline: auto;
+}
+.sd-event-tabs { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 8px; }
+.sd-event-tab {
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.04);
+  color: var(--text-muted);
+  font-size: 12px;
+  font-weight: 600;
+  padding: 5px 12px;
+  border-radius: 999px;
+  cursor: pointer;
+}
+.sd-event-tab small { opacity: 0.7; margin-left: 4px; }
+.sd-event-tab.active { background: rgba(56, 189, 248, 0.18); border-color: rgba(56, 189, 248, 0.5); color: var(--accent-cyan); }
+.sd-event-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(68px, 1fr)); gap: 6px; max-height: 190px; overflow-y: auto; padding-right: 2px; }
+.sd-event-time {
+  font: 600 12px 'JetBrains Mono', monospace;
+  padding: 6px 0;
+  border-radius: 8px;
+  border: 1px solid rgba(56, 189, 248, 0.35);
+  background: rgba(56, 189, 248, 0.08);
+  color: #bae6fd;
+  cursor: pointer;
+}
+.sd-event-time:hover { background: rgba(56, 189, 248, 0.22); }
+.sd-event-motion { border-color: rgba(245, 158, 11, 0.45); background: rgba(245, 158, 11, 0.08); color: #fde68a; }
+.sd-event-person, .sd-event-vehicle { border-color: rgba(56, 189, 248, 0.55); }
+.sd-info-strip { grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)) !important; gap: 10px !important; overflow: visible !important; opacity: 0.9; }
+.sd-info-strip .sd-stat-card { overflow: visible !important; padding: 10px 14px; align-items: flex-start; }
+.sd-info-strip .sd-stat-content { min-width: 0; }
+.sd-info-strip .sd-stat-val, .sd-info-strip .sd-stat-sub { white-space: normal; overflow-wrap: anywhere; }

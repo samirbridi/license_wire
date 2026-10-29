@@ -183,7 +183,18 @@ async function detectAccessMode() {
     badge.className = 'badge badge-mode badge-remote';
   }
 
-  if(window.MIZIN_PRIVATE_GATEWAY)return false;
+  if(window.MIZIN_PRIVATE_GATEWAY){
+    // Same public IP as the house: the visitor is at home, even though traffic still crosses Cloudflare.
+    try{
+      const health=await fetch('/api/health',{cache:'no-store'}).then(r=>r.ok?r.json():null);
+      if(health?.sameNetwork){
+        isLocalAccess=true;
+        if(badge){badge.innerText='🏠 EM CASA';badge.className='badge badge-mode';badge.title='Mesma rede da residência; o tráfego segue protegido pelo Cloudflare.';}
+        return true;
+      }
+    }catch{}
+    return false;
+  }
   // Diagnóstico Inteligente de Rede Local: descobre se o cliente está na mesma LAN que o servidor
   try {
     const healthUrl = `${BACKEND_API_BASE}/api/health?t=${Date.now()}`;
@@ -266,7 +277,7 @@ async function checkConnection(isManualRetry = false) {
     disconnectedSince = null;
     if (alertEl) alertEl.classList.remove('active');
     if (statusEl) {
-      statusEl.innerHTML = `ONLINE (<span id="pingMs">~${latency}ms</span>) • ${isLocalAccess ? 'REDE LOCAL' : 'MODO REMOTO'}`;
+      statusEl.innerHTML = `ONLINE (<span id="pingMs">~${latency}ms</span>) • ${isLocalAccess ? (window.MIZIN_PRIVATE_GATEWAY ? 'EM CASA' : 'REDE LOCAL') : 'MODO REMOTO'}`;
     }
     if (pulseEl) pulseEl.className = 'pulse-dot';
     if (indicatorEl) indicatorEl.className = 'status-indicator';
@@ -3745,7 +3756,17 @@ let selectedTimelineDate = new Date().toISOString().slice(0, 10);
 let pttMediaRecorder = null;
 let pttAudioStream = null;
 
+// The cameras send HEVC. When this browser decodes it, the NAS forwards the original stream instead of transcoding.
+const BROWSER_PLAYS_HEVC = (() => {
+  try {
+    const type = 'video/mp4; codecs="hvc1.1.6.L153.B0"';
+    return /probably|maybe/.test(document.createElement('video').canPlayType(type)) || !!window.MediaSource?.isTypeSupported?.(type);
+  } catch { return false; }
+})();
+let hevcPlaybackFailed = false;
+
 function resolveEffectiveCameraQuality() {
+  if ((activeCameraQuality === 'auto' || activeCameraQuality === 'native') && BROWSER_PLAYS_HEVC && !hevcPlaybackFailed) return 'original';
   if (activeCameraQuality !== 'auto') return activeCameraQuality;
   // Modo Automático Inteligente:
   // Na rede local (0ms de latência LAN) -> 1080p ou 2k
@@ -3958,7 +3979,16 @@ function connectHttpStream(videoEl, feedImg, spinnerEl, streamAlias, isMuted, on
   videoEl.onplaying = readyHandler;
   videoEl.onloadeddata = readyHandler;
   videoEl.oncanplay = readyHandler;
+  // If the original HEVC stream cannot be decoded here, fall back once to the NAS transcode.
+  const fallbackToTranscode = () => {
+    if (readyFired || quality !== 'original' || hevcPlaybackFailed) return false;
+    hevcPlaybackFailed = true;
+    connectHttpStream(videoEl, feedImg, spinnerEl, streamAlias, isMuted, onReady);
+    return true;
+  };
+  if (quality === 'original') setTimeout(fallbackToTranscode, 12000);
   videoEl.onerror = () => {
+    if (fallbackToTranscode()) return;
     if (spinnerEl) spinnerEl.style.display = 'none';
   };
 }
@@ -4592,6 +4622,38 @@ function switchTheaterTab(tab, skipAutoLoad = false) {
   }
 }
 
+// Momentos do cartão SD: abas por tipo e por período do dia, com horários compactos.
+const sdEventView = { type: 'all', period: null };
+function sdEventType(evt) {
+  const label = String(evt.label || '').toLowerCase();
+  if (/pessoa|humano|human|person/.test(label)) return 'person';
+  if (/ve[ií]culo|carro|vehicle|car/.test(label)) return 'vehicle';
+  if (/movimento|motion/.test(label)) return 'motion';
+  return 'other';
+}
+function renderSdEvents(container, events) {
+  container.style.display = 'block';
+  if (!events.length) {
+    container.innerHTML = '<span style="font-size:12px; color:var(--text-dim);">Nenhum momento registrado nesta data.</span>';
+    return;
+  }
+  const types = { all: 'Todos', motion: '🏃 Movimento', person: '🚶 Pessoas', vehicle: '🚗 Veículos', other: '📼 Outros' };
+  const periods = [['madrugada', '🌙 Madrugada', 0, 6], ['manha', '🌅 Manhã', 6, 12], ['tarde', '☀️ Tarde', 12, 18], ['noite', '🌆 Noite', 18, 24]];
+  const typed = events.map(evt => ({ evt, type: sdEventType(evt), hour: Math.floor((evt.seconds || 0) / 3600) }));
+  const ofType = typed.filter(x => sdEventView.type === 'all' || x.type === sdEventView.type);
+  const counts = Object.fromEntries(periods.map(([id, , from, to]) => [id, ofType.filter(x => x.hour >= from && x.hour < to).length]));
+  if (!sdEventView.period || !counts[sdEventView.period]) sdEventView.period = [...periods].reverse().find(([id]) => counts[id])?.[0] || 'madrugada';
+  const typeTabs = Object.entries(types).filter(([id]) => id === 'all' || typed.some(x => x.type === id));
+  const chip = (active, label, onclick) => `<button type="button" class="sd-event-tab${active ? ' active' : ''}" onclick="${onclick}">${label}</button>`;
+  const period = periods.find(([id]) => id === sdEventView.period);
+  const shown = ofType.filter(x => x.hour >= period[2] && x.hour < period[3]);
+  container.innerHTML = `
+    ${typeTabs.length > 2 ? `<div class="sd-event-tabs">${typeTabs.map(([id, label]) => chip(sdEventView.type === id, `${label} <small>${id === 'all' ? typed.length : typed.filter(x => x.type === id).length}</small>`, `sdEventView.type='${id}';renderSdEvents(this.closest('#timelineEventsContainer'), window.__sdEvents)`)).join('')}</div>` : ''}
+    <div class="sd-event-tabs">${periods.map(([id, label]) => chip(sdEventView.period === id, `${label} <small>${counts[id]}</small>`, `sdEventView.period='${id}';renderSdEvents(this.closest('#timelineEventsContainer'), window.__sdEvents)`)).join('')}</div>
+    <div class="sd-event-grid">${shown.length ? shown.map(({ evt, type }) => `<button type="button" class="sd-event-time sd-event-${type}" title="${String(evt.label || '').replace(/"/g, '')}" onclick="jumpToSdEvent(${evt.seconds}, '${String(evt.label || '').replace(/'/g, '')}', ${evt.unix || 0})">${String(evt.time || '').slice(0, 5)}</button>`).join('') : '<span style="font-size:12px; color:var(--text-dim);">Nenhum momento neste período.</span>'}</div>`;
+  window.__sdEvents = events;
+}
+
 // Régua de 24 Horas e Gravações SD Card
 async function fetchSdRecordings(camId, date, autoPlayOnLoad = false) {
   const track = document.getElementById('timelineTrack');
@@ -4646,23 +4708,8 @@ async function fetchSdRecordings(camId, date, autoPlayOnLoad = false) {
       track.innerHTML = baseBlocks + motionMarkers;
     }
 
-    // Renderiza chips de Momentos e Eventos detectados no cartão SD
-    if (eventsContainer) {
-      const events = data.events || [];
-      if (events.length === 0) {
-        eventsContainer.innerHTML = '<span style="font-size:11px; color:var(--text-dim);">Nenhum momento registrado nesta data.</span>';
-      } else {
-        eventsContainer.innerHTML = events.map(evt => {
-          const safeLabel = String(evt.label || '').replace(/'/g, '');
-          const evtUnix = evt.unix || 0;
-          return `
-            <button type="button" class="btn btn-sm btn-outline-cyan" onclick="jumpToSdEvent(${evt.seconds}, '${safeLabel}', ${evtUnix})" style="font-size:11px; padding:4px 10px; display:inline-flex; align-items:center; gap:5px;" title="Assistir gravação às ${evt.time}">
-              ${evt.icon || '🎯'} <strong>${evt.time}</strong> — ${evt.label} ▶
-            </button>
-          `;
-        }).join('');
-      }
-    }
+    // Renderiza os momentos do cartão SD agrupados por tipo e período do dia
+    if (eventsContainer) renderSdEvents(eventsContainer, data.events || []);
 
     if (autoPlayOnLoad && currentTheaterTab === 'sd') {
       const events = data.events || [];

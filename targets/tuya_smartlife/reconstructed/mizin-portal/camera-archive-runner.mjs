@@ -1,6 +1,7 @@
 import {readFile,writeFile,mkdir,rename,statfs} from 'node:fs/promises';
 import {join} from 'node:path';
 import {createArchive} from './camera-archive.mjs';
+import {cameraName} from './archive-index.mjs';
 const root=process.env.MIZIN_ARCHIVE_ROOT;
 if(!root)throw new Error('Volume de gravações não configurado.');
 const aliases=JSON.parse(await readFile(process.env.MIZIN_ARCHIVE_ALIASES,'utf8'));
@@ -27,20 +28,25 @@ async function capacity(){if(Date.now()-capacityAt<15000)return capacityValue;if
  const space=await statfs(root),free=Number(space.bavail)*Number(space.bsize),total=Number(space.blocks)*Number(space.bsize),used=await archive.usage();
  status.disk={totalBytes:total,freeBytes:free,archiveBytes:used,at:new Date().toISOString()};
  capacityValue=(!limitBytes||used<limitBytes)&&free>reserveBytes;capacityAt=Date.now();return capacityValue;})().finally(()=>{capacityJob=null;});return capacityJob;}
+// A dual-lens camera (Outdoor Pro) times out when both views connect at once: views of one physical
+// camera take turns, and the next one may connect only after the previous delivers frames (or 30 s pass).
+const cameraTurns=new Map();
+function cameraTurn(alias){const camera=cameraName(alias),previous=cameraTurns.get(camera)||Promise.resolve();let release;const mine=new Promise(done=>{release=done;});const timer=setTimeout(()=>release(),30000);const chain=previous.then(()=>mine);cameraTurns.set(camera,chain);return{ready:previous,release(){clearTimeout(timer);release();}};}
 // Validate independently: one unavailable camera must not stop the other backups.
 for(const alias of aliases)status.streams[alias]={state:'waiting'};
 await save();
 const organized=await archive.organizeLegacy();if(organized.moved.length){status.migrated=organized.moved.length;await save();}
 await Promise.all(aliases.map(async(alias,index)=>{
- await wait(index*2000);let validated=false;
+ await wait(index*2000);let validated=false,failures=0;
  while(!stopping){
   if(!await capacity()){status.streams[alias].state='paused_capacity';await save();await wait(30000);continue;}
   try{
-   if(!validated){status.streams[alias].state='testing';await save();const probe=await archive.record(alias,10,{keep:process.env.MIZIN_ARCHIVE_CONTINUOUS!=='1'});status.streams[alias]={state:'validated',validatedAt:new Date().toISOString(),probe};validated=true;await save();}
+   if(!validated){const turn=cameraTurn(alias);try{await turn.ready;status.streams[alias].state='testing';await save();const probe=await archive.record(alias,10,{keep:process.env.MIZIN_ARCHIVE_CONTINUOUS!=='1'});status.streams[alias]={state:'validated',validatedAt:new Date().toISOString(),probe};validated=true;await save();}finally{turn.release();}}
    if(process.env.MIZIN_ARCHIVE_CONTINUOUS!=='1')return;
+   const turn=cameraTurn(alias);await turn.ready;
    status.mode='continuous';status.streams[alias].state='recording';await save();
-   await archive.continuous(alias,{signal:controller.signal,segmentSeconds,canContinue:capacity,onProgress:async progress=>{status.streams[alias].lastFrameAt=progress.at;status.streams[alias].frames=progress.frame;await save();},onSegment:async record=>{status.streams[alias]={...status.streams[alias],state:'recording',lastRecording:record};await save();}});
-  }catch{status.streams[alias]={...status.streams[alias],state:'retrying',error:'Fluxo interrompido; nova tentativa em 15 segundos.'};await save();if(!stopping)await wait(15000);}
+   try{await archive.continuous(alias,{signal:controller.signal,segmentSeconds,canContinue:capacity,onProgress:async progress=>{turn.release();status.streams[alias].lastFrameAt=progress.at;status.streams[alias].frames=progress.frame;await save();},onSegment:async record=>{status.streams[alias]={...status.streams[alias],state:'recording',lastRecording:record,error:undefined};failures=0;await save();}});}finally{turn.release();}
+  }catch{failures++;const delay=Math.min(120000,15000*2**Math.min(failures-1,3))+Math.floor(Math.random()*5000);status.streams[alias]={...status.streams[alias],state:'retrying',failures,error:`Fluxo interrompido; nova tentativa em ${Math.round(delay/1000)} segundos.`};await save();if(!stopping)await wait(delay);}
  }
 }));
 if(!stopping){status.mode='test_complete';await save();}

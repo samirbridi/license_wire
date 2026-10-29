@@ -1,4 +1,5 @@
 import http from 'node:http';
+import https from 'node:https';
 import dgram from 'node:dgram';
 import {createArchive} from './camera-archive.mjs';
 import {createPortalGate} from './portal-gate.mjs';
@@ -235,6 +236,33 @@ let HAS_NVENC = false;
 })();
 
 let activeLiveStreamsCount = 0;
+
+// Through Cloudflare every visitor looks remote; a visitor whose public IP equals the house's (same IPv4, or same IPv6 /64) is at home.
+const homeAddresses = { v4: null, v6: null, at: 0, job: null };
+function traceIp(host) {
+  return new Promise(resolve => {
+    const reqTrace = https.get({ host, path: '/cdn-cgi/trace', timeout: 4000 }, res => {
+      let text = ''; res.on('data', c => { if (text.length < 4096) text += c; });
+      res.on('end', () => resolve(/^ip=(.+)$/m.exec(text)?.[1]?.trim() || null));
+    });
+    reqTrace.on('timeout', () => reqTrace.destroy());
+    reqTrace.on('error', () => resolve(null));
+  });
+}
+async function refreshHomeAddresses() {
+  if (Date.now() - homeAddresses.at < 10 * 60_000) return homeAddresses;
+  if (!homeAddresses.job) homeAddresses.job = Promise.all([traceIp('1.1.1.1'), traceIp('2606:4700:4700::1111')]).then(([v4, v6]) => {
+    Object.assign(homeAddresses, { v4: v4 || homeAddresses.v4, v6: v6 || homeAddresses.v6, at: Date.now() });
+  }).finally(() => { homeAddresses.job = null; });
+  await homeAddresses.job;
+  return homeAddresses;
+}
+const v6Prefix = ip => ip.includes(':') ? ip.toLowerCase().split(':').slice(0, 4).join(':') : null;
+async function sameHomeNetwork(clientIp) {
+  if (!clientIp) return false;
+  const home = await refreshHomeAddresses();
+  return clientIp === home.v4 || (!!home.v6 && !!v6Prefix(clientIp) && v6Prefix(clientIp) === v6Prefix(home.v6));
+}
 const cameraStartLocks = new Map();
 
 function getCameraHardwareKey(alias) {
@@ -1703,6 +1731,7 @@ const server = http.createServer(async (req, res) => {
 
   // Health check com diagnóstico de rede e detecção automática de mesma rede local
   if (url.pathname === '/api/health') {
+    const remoteClient = req.headers['x-mizin-client-ip'] || '';
     const netInterfaces = os.networkInterfaces();
     let localIp = '127.0.0.1';
     const candidateIps = [];
@@ -1738,6 +1767,7 @@ const server = http.createServer(async (req, res) => {
       serverPort: PORT,
       clientIp: clientIp,
       isDirectLocal: !portalGate && Boolean(isDirectLocal),
+      sameNetwork: portalGate ? await sameHomeNetwork(remoteClient) : Boolean(isDirectLocal),
       localDirectUrl: `http://${localIp}:${PORT}`,
       version: getCurrentVersion()
     }));
@@ -2098,7 +2128,7 @@ const server = http.createServer(async (req, res) => {
     const rawSrc = url.searchParams.get('src') || '';
     const quality = url.searchParams.get('quality') || '720p';
     const resolvedSrc = resolveStreamAlias(rawSrc);
-    const go2rtcUrl = `http://127.0.0.1:19843/api/stream.mp4?src=${encodeURIComponent(resolvedSrc)}&video=h264,h265&audio=all`;
+    const go2rtcUrl = `http://127.0.0.1:19843/api/stream.mp4?src=${encodeURIComponent(resolvedSrc)}&video=${quality === 'original' ? 'h265' : 'h264,h265'}&audio=all`;
 
     const width = quality === 'native' ? 2560 : quality === '2k' ? 2304 : quality === '1080p' ? 1920 : 1280;
     const releaseStartLock = await acquireCameraStart(resolvedSrc);
@@ -2107,17 +2137,34 @@ const server = http.createServer(async (req, res) => {
       return;
     }
 
-    activeLiveStreamsCount++;
+    // 'original' forwards the camera's HEVC untouched (browser decodes it); only transcodes load the NAS CPU.
+    const passthrough = quality === 'original';
+    if (!passthrough) activeLiveStreamsCount++;
     let streamCountDecremented = false;
     const decStreamCount = () => {
       if (!streamCountDecremented) {
         streamCountDecremented = true;
-        activeLiveStreamsCount = Math.max(0, activeLiveStreamsCount - 1);
+        if (!passthrough) activeLiveStreamsCount = Math.max(0, activeLiveStreamsCount - 1);
       }
       releaseStartLock();
     };
 
-    const makeArgs = (forceCpu = false) => [
+    const makeArgs = (forceCpu = false) => passthrough ? [
+      '-hide_banner', '-nostdin', '-loglevel', 'error',
+      '-rw_timeout', '20000000',
+      '-fflags', '+nobuffer+genpts+discardcorrupt',
+      '-avoid_negative_ts', 'make_zero',
+      '-probesize', '524288', '-analyzeduration', '1000000',
+      '-i', go2rtcUrl,
+      '-map', '0:v:0',
+      '-map', '0:a:0?',
+      '-c:v', 'copy', '-tag:v', 'hvc1',
+      '-c:a', 'aac', '-b:a', '64k', '-ar', '16000', '-ac', '1',
+      '-af', 'aresample=async=1:first_pts=0',
+      '-movflags', '+frag_keyframe+empty_moov+default_base_moof',
+      '-f', 'mp4',
+      'pipe:1'
+    ] : [
       '-hide_banner', '-nostdin', '-loglevel', 'error',
       '-rw_timeout', '20000000',
       '-fflags', '+nobuffer+genpts+discardcorrupt',
