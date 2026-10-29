@@ -1,5 +1,23 @@
 # CHANGELOG — xiaomi_home
 
+## v0.12.2 (build 0024) - 2026-10-29
+
+### 💥 Breaking Changes
+
+- Nenhum.
+
+### ✨ Features
+
+- Nenhum.
+
+### 🐛 Fixes
+
+- fix: limita o login da Outdoor e da prioridade ao replay SD sem derrubar a sessao ao vivo (commit `b64acf1a989781efdead77f53ab214188ae9f155`)
+
+### ⚡ Improvements
+
+- Nenhum.
+
 ## v0.12.1 (build 0023) - 2026-10-29
 
 ### 💥 Breaking Changes

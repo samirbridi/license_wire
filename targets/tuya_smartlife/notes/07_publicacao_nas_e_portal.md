@@ -44,6 +44,11 @@ Na publicação da 0048, o Pages subiu uma vez sem `_worker.js` (caminho errado)
 - Ponte v0.12.2: prazos no login e na sessão compartilhada, e o replay SD com prioridade (`targets/xiaomi_home/notes/18_outdoor_sessao_dupla.md`).
 - Cloudflare Observability (e-mail de 2026-10-29, cobrança por volume a partir de 1/12/2026): `homecams-portal-gateway` e `homecams-gateway` estão com observability desligada, então nada muda para a Mizin Home. Estão com logs ligados: acervo-mizin, experiencia-aline, foto-na-hora-production, fotonahora, meus-gastos, signalway e talkback-signal. Em conta sem Workers Paid, a ingestão só pausa ao atingir 0,5 GB/dia, sem cobrança. O plano da conta não pôde ser lido pela API (o token do wrangler não tem acesso a cobrança).
 
+## Build 0051 (2026-10-29)
+
+- Teste real no NAS, às 14:43–14:50 UTC. O replay SD da Outdoor (visão 2) ficou aberto por 68 s e recebeu 8 MB sem queda. Durante esse tempo, o gravador recebeu `SD playback in progress` na hora, sem tocar na câmera. Depois que o replay fechou, a visão 2 voltou em 22 s. A visão 1 só voltou às 14:50:20, por causa da espera entre tentativas (até 2 min).
+- O gravador agora espera no máximo 1 min entre tentativas, e o status guarda `cause` e `failedAt` de cada falha.
+
 ## Pendências
 
 - Integração dos veículos no NAS: os clientes GWM/BYD não estão na imagem, e os cartões informam "Sem dados".

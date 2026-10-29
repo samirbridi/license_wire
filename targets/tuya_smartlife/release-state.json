@@ -1,20 +1,28 @@
 {
-  "runId": "nas-outdoor-lens-tag-20261029",
-  "sourceCommit": "70fef6f4f20b344e32db47d23832d4413ae0684f",
-  "previous": "v0.36.0 (build 0048)",
-  "version": "v0.36.1 (build 0049)",
-  "build": 49,
+  "runId": "nas-sd-lenses-20261029",
+  "sourceCommit": "26394ffe13e2198da39dc6c5beb48004e503650d",
+  "previous": "v0.36.1 (build 0049)",
+  "version": "v0.37.0 (build 0050)",
+  "build": 50,
   "date": "2026-10-29",
   "status": "built",
   "commits": [
     {
-      "sha": "70fef6f4f20b344e32db47d23832d4413ae0684f",
-      "subject": "improve: envia pacotes grandes em partes e corrige o caminho do gateway do Pages",
+      "sha": "26394ffe13e2198da39dc6c5beb48004e503650d",
+      "subject": "feat: separa as gravacoes SD da Outdoor por lente e alinha os botoes do cabecalho",
+      "body": "Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>",
+      "type": "feat",
+      "description": "separa as gravacoes SD da Outdoor por lente e alinha os botoes do cabecalho",
+      "breaking": false
+    },
+    {
+      "sha": "37abcf8067075e2008536e0b1f5247479b558860",
+      "subject": "improve: registra as builds 0048 e 0049 com as duas visoes da Outdoor gravando juntas",
       "body": "Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>",
       "type": "improve",
-      "description": "envia pacotes grandes em partes e corrige o caminho do gateway do Pages",
+      "description": "registra as builds 0048 e 0049 com as duas visoes da Outdoor gravando juntas",
       "breaking": false
     }
   ],
-  "artifact": "runtime/builds/build-0049"
+  "artifact": "runtime/builds/build-0050"
 }

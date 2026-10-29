@@ -1,5 +1,23 @@
 # CHANGELOG — tuya_smartlife
 
+## v0.37.0 (build 0050) - 2026-10-29
+
+### 💥 Breaking Changes
+
+- Nenhum.
+
+### ✨ Features
+
+- feat: separa as gravacoes SD da Outdoor por lente e alinha os botoes do cabecalho (commit `26394ffe13e2198da39dc6c5beb48004e503650d`)
+
+### 🐛 Fixes
+
+- Nenhum.
+
+### ⚡ Improvements
+
+- improve: registra as builds 0048 e 0049 com as duas visoes da Outdoor gravando juntas (commit `37abcf8067075e2008536e0b1f5247479b558860`)
+
 ## v0.36.1 (build 0049) - 2026-10-29
 
 ### 💥 Breaking Changes

@@ -46,7 +46,7 @@ await Promise.all(aliases.map(async(alias,index)=>{
    const turn=cameraTurn(alias);await turn.ready;
    status.mode='continuous';status.streams[alias].state='recording';await save();
    try{await archive.continuous(alias,{signal:controller.signal,segmentSeconds,canContinue:capacity,onProgress:async progress=>{turn.release();status.streams[alias].lastFrameAt=progress.at;status.streams[alias].frames=progress.frame;await save();},onSegment:async record=>{status.streams[alias]={...status.streams[alias],state:'recording',lastRecording:record,error:undefined};failures=0;await save();}});}finally{turn.release();}
-  }catch{failures++;const delay=Math.min(120000,15000*2**Math.min(failures-1,3))+Math.floor(Math.random()*5000);status.streams[alias]={...status.streams[alias],state:'retrying',failures,error:`Fluxo interrompido; nova tentativa em ${Math.round(delay/1000)} segundos.`};await save();if(!stopping)await wait(delay);}
+  }catch(error){failures++;const delay=Math.min(60000,15000*2**Math.min(failures-1,2))+Math.floor(Math.random()*5000);status.streams[alias]={...status.streams[alias],state:'retrying',failures,failedAt:new Date().toISOString(),cause:String(error?.message||error).slice(0,200),error:`Fluxo interrompido; nova tentativa em ${Math.round(delay/1000)} segundos.`};await save();if(!stopping)await wait(delay);}
  }
 }));
 if(!stopping){status.mode='test_complete';await save();}
