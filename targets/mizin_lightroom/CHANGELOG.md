@@ -1,5 +1,23 @@
 # CHANGELOG - mizin_lightroom
 
+## v0.1.2 (build 0003) - 2026-10-29
+
+### 💥 Breaking Changes
+
+- Nenhum.
+
+### ✨ Features
+
+- Nenhum.
+
+### 🐛 Fixes
+
+- Nenhum.
+
+### ⚡ Improvements
+
+- improve: confirma leitura do compartilhamento e amostra de catalogo Lightroom (commit `3d40b9ad4e9a2943b0f0772d2cd7eb0feb40be79`)
+
 ## v0.1.1 (build 0002) - 2026-10-29
 
 ### 💥 Breaking Changes

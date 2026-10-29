@@ -1,0 +1,17 @@
+{
+  "previous": "v0.1.1 (build 0002)",
+  "version": "v0.1.2 (build 0003)",
+  "date": "2026-10-29",
+  "timezone": "America/Sao_Paulo",
+  "baseline": "5cbc35cf987dfbd2e532723ba6c27c0870b36689",
+  "sourceHead": "3d40b9ad4e9a2943b0f0772d2cd7eb0feb40be79",
+  "increment": "fix",
+  "commits": [
+    {
+      "hash": "3d40b9ad4e9a2943b0f0772d2cd7eb0feb40be79",
+      "subject": "improve: confirma leitura do compartilhamento e amostra de catalogo Lightroom",
+      "type": "improve",
+      "breaking": false
+    }
+  ]
+}
