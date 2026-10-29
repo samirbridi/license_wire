@@ -11,7 +11,8 @@
 - RAWs do primeiro trabalho adquiridos por compartilhamento direto confirmado: 546 pares com camera/captura e hashes verificados; entradas tecnicas locais LibRaw e modelo numerico experimental criados. Nao houve escrita nas fontes nem upload de fotos.
 - Uma extensao Lua de comparacao de previsoes salvas foi preparada em modo de leitura. Depois dos testes Lua 5.1 com doubles de SDK, o usuario mostrou o fluxo nominal funcionando no Lightroom: menu, dialogo, 92/92 fotos localizadas e cinco exemplos exibidos. Os 30 valores arredondados visiveis correspondem aos registros atuais/previsoes salvos. Ver `evidence/native-read-user-qa-20261029.json`.
 - Foram mapeadas as sete opcoes de menu observadas no Neurapix e sua adaptacao ao processamento local. O planejamento esta em `09_qa_nativo_e_modulos.md`; as funcoes futuras ainda nao fazem parte do pacote de leitura.
-- Pendente: versao real do Lightroom, GPU/RAM da maquina de edicao, pixels dos outros trabalhos, validacao entre eventos, aprovacao visual e integracao do motor para novas fotos/aplicacao reversivel.
+- Motor local portatil implementado para a selecao atual, com diagnostico, resultados e cancelamento. Quatro RAWs reais processados, incluindo um fora das 546 referencias; paridade de dominio/predicoes conferida. O novo fluxo SDK passou em Lua 5.1 com doubles e ainda exige teste nativo na maquina de edicao.
+- Pendente: diagnostico na maquina de edicao, pixels dos outros trabalhos, validacao entre eventos, aprovacao visual, gestao de estilos e aplicacao reversivel. O modelo nao foi retreinado nesta etapa.
 
 Nao e necessario exportar o SmartPreset proprietario para tentar aprender com RAWs e parametros finais do usuario. A existencia desses pares e sua cobertura precisam ser verificadas.
 

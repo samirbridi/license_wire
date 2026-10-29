@@ -28,3 +28,7 @@ dc6d5dd34596b1c0c62d0bc274d791b4c8c0b8d47d294bada33bf0cc8f31cfb3 *../private/sna
 4ec26efc8faf963eacf6dc1d499f104b54440e9bb040937ddb1be1740fb4a7db *../private/evidence/native-qa-20261029-ed601a4b/WhatsApp Image 2026-10-29 at 16.06.40.jpeg
 e3ad863faebb1c589db9e220a6297f3e07c8edcadcd85944e6dbff65e1dbaae4 *../private/evidence/native-qa-20261029-ed601a4b/WhatsApp Image 2026-10-29 at 16.09.38.jpeg
 0609b2d944af7a5f79da39fe327b8b2bddbeeaa09451b2466ddae360461431c1 *../private/evidence/native-qa-20261029-ed601a4b/WhatsApp Image 2026-10-29 at 16.09.59.jpeg
+
+# RAW adicional somente para QA e proveniencia do runtime local.
+dd3d044f119ae90ecc579133d5d7632b18d6ad8ece91240fae0c8f4110ec401a *../private/qa/local-engine-c25a3676/SHA256SUMS.txt
+1b2b3c8aedba66cfcf42d7af13911b97a396d060a4663b584c33b58dc9a6ebcf *../evidence/local-runtime-20261029.json

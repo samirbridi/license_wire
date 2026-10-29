@@ -20,7 +20,7 @@ LrTasks.startAsyncTask(function()
         end
         local lines = {
             "Comparacao de previsoes salvas para este teste. Nenhuma edicao sera aplicada.",
-            "Abra o catalogo de outubro. O pacote ainda nao calcula sugestoes para novas fotos.",
+            "Este comando compara previsoes salvas do catalogo de outubro. Para novos RAWs, use Analisar fotos selecionadas no pacote com motor local.",
             "",
         }
         local found = 0

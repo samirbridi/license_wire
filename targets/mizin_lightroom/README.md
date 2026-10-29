@@ -7,7 +7,7 @@ Projeto independente para Lightroom Classic no Windows, inicialmente para uso pe
 
 ## Estado Atual e Próximos Passos
 
-Esta entrega contem copia consistente do catalogo, extrator de parametros, aquisicao verificada de 546 RAWs e um modelo numerico experimental. A primeira extensao Lua apenas compara previsoes ja calculadas com ajustes atuais; nao aplica edicoes nem calcula imagens novas no Lightroom. O catalogo e as fotos originais permaneceram intactos. Nao foi copiado codigo ou modelo do plugin Neurapix.
+Esta entrega acrescenta motor local portatil e comandos para analisar RAWs selecionados, revisar sugestoes novas e diagnosticar o runtime. O modelo numerico continua experimental, treinado em um unico trabalho; a interface apresenta valores e CSV, sem aplicar edicoes. O catalogo e as fotos originais permaneceram intactos. Nao foi copiado codigo ou modelo do plugin Neurapix.
 
 - O IP indicado e confirmado pelo usuario e `192.168.1.58`. O nome reverso historico `DESKTOP-M34T3GL.localdomain` agora resolve para `.39`; esse outro IP nao foi contatado. Os acessos usam somente o IP e os compartilhamentos confirmados pelo usuario.
 - TCP 445 e os compartilhamentos especificos de catalogos e RAWs permitem leitura. O compartilhamento de disco `ARQUIVOS` apareceu, mas continuou negado; o restante do disco nao foi varrido.
@@ -25,13 +25,23 @@ Esta entrega contem copia consistente do catalogo, extrator de parametros, aquis
 - O usuario instalou e executou o pacote de comparacao. Os screenshots mostram menu e dialogo funcionando, 92/92 fotos localizadas e cinco fotos com ajustes atuais visiveis. Os 15 valores atuais e as 15 previsoes exibidas correspondem aos registros locais na precisao mostrada. O fluxo nominal de leitura esta validado no Lightroom da maquina de edicao.
 - Essa evidencia nao valida escrita/restauracao, inferencia de fotos novas ou qualidade fotografica das previsoes. Versao exata do aplicativo nao aparece nos screenshots. Os originais das tres imagens recebidas foram preservados em `private/evidence/`, com hashes; recibo em `evidence/native-read-user-qa-20261029.json`.
 - As 546 referencias do primeiro trabalho nao possuem MD5/SHA-256 nem tamanho de arquivo registrados nas tabelas verificadas. O pareamento futuro deve conferir mapeamento de pasta, camera e data/hora de captura, alem do nome. A faixa de captura observada e 2026-10-02, de 18:57:55.400 a 23:55:40.660, conforme o horario gravado no catalogo, sem conversao de fuso presumida.
-- Proximo: ampliar a avaliacao para outros trabalhos, melhorar a precisao e integrar analise local de fotos novas com gestao de estilos, previa e aplicacao reversivel. O escopo dos sete comandos observados no Neurapix foi mapeado em `notes/09_qa_nativo_e_modulos.md`, separando implementacao atual de propostas.
+- O motor portatil processou quatro RAWs reais. Um deles foi copiado do compartilhamento autorizado somente para QA: seu SHA-256 nao pertence aos 546 exemplos de treino/teste. Tres imagens tecnicas corresponderam byte a byte ao dominio do treino; as 30 previsoes comparadas tiveram diferenca zero. Nao houve novo treinamento nem melhora de precisao demonstrada nesta entrega.
+- A execucao Windows usou o comando gerado pelo Lua com espacos e `&` no caminho, Python isolado, PATH restrito e variaveis PYTHONHOME/PYTHONPATH invalidas. Diagnostico confirmou Python, NumPy, rawpy/LibRaw, Pillow e ExifTool incluidos. Os 36 testes passaram. Evidencia em `evidence/local-engine-qa-20261029.json` e `evidence/qa-local-engine-suite.txt`.
+- Proximo: executar os novos comandos dentro do Lightroom da maquina de edicao, ampliar a avaliacao entre trabalhos e desenvolver previa visual/aplicacao reversivel. O teste nativo de leitura do pacote anterior segue valido somente para aquele fluxo. Detalhes do novo pacote em `notes/10_motor_local_e_atualizacao.md`.
+
+## Motor local para fotos selecionadas
+
+O novo pacote inclui runtime Windows x64, dependencias, modelo privado e quatro comandos de Biblioteca > Extras de plug-in: analisar fotos selecionadas, ver ultimos resultados, diagnosticar motor local e comparar a amostra salva do piloto. A analise nova usa os caminhos da selecao atual, sem depender do catalogo de outubro ou da lista de 92 fotos.
+
+O piloto aceita de 1 a 100 RAWs CR3 em cor da Canon EOS R6m2. Exibe exposicao, temperatura e contraste; o CSV inclui os dez controles experimentais. Registra progresso, cancelamento, erros por foto e SHA-256 das fontes, preservando os originais. Os valores de referencia exibidos foram lidos no inicio da tarefa. As imagens tecnicas geradas sao entradas LibRaw, sem o estilo aplicado, e nao representam uma previa Adobe.
+
+Atualizacao: extrair o ZIP inteiro em uma pasta nova e permanente; guardar a instalacao anterior. No Gerenciador de plug-ins, remover o cadastro antigo e adicionar a nova pasta `.lrplugin`. Executar primeiro o diagnostico e depois analisar 1 a 5 fotos. O mesmo identificador de plugin e mantido. Passos completos e limites em `notes/10_motor_local_e_atualizacao.md`; o LEIA-ME acompanha o ZIP privado. Escrita no catalogo, copias virtuais, treino pelo menu, selecao automatica e fluxos de importacao continuam pendentes.
 
 ## Primeiro plugin de comparacao
 
 Fontes em `reconstructed/lightroom-pilot/`. O gerador `scripts/build_lightroom_pilot.py` le a VERSION calculada por commits e produz ZIP privado com `MizinLightroom.lrplugin` e previsoes salvas. O pacote nao inclui fotos, executaveis, dependencias Python ou pesos do modelo. Contem caminhos privados das 92 referencias, portanto nao deve ser publicado como pacote generico.
 
-Na maquina de edicao: extrair o ZIP numa pasta permanente, adicionar `MizinLightroom.lrplugin` em Arquivo > Gerenciador de plug-ins, abrir o catalogo de outubro e executar Biblioteca > Extras de plug-in > Mizin: comparar amostra do piloto. A janela consulta ajustes atuais e mostra ate cinco exemplos. Nao escreve no catalogo, nao aplica ajustes e nao chama servicos de rede. O usuario confirmou esse fluxo por screenshots; edicao automatica e qualidade das previsoes ainda nao foram aprovadas. O pacote instalado e o build 0006; esta revisao registra QA e planejamento.
+Historico do primeiro pacote: o usuario adicionou `MizinLightroom.lrplugin` no Gerenciador, abriu o catalogo de outubro e executou o comparador. O dialogo consultou ajustes atuais e mostrou cinco exemplos. O fluxo de leitura do build 0006 foi confirmado por screenshots. A nova extensao conserva esse comando separado, com as previsoes salvas; ele nao substitui a analise nova.
 
 Entrega confirmada: ZIP em `\\192.168.1.58\Users\Public\Documents\MizinLightroomPilot\MizinLightroom-0.3.0-build0006-d05d06ba\`. Somente uma nova pasta e o arquivo de entrega foram adicionados a maquina de edicao; as fotos e o catalogo permaneceram intactos. Hash de origem e entrega iguais. Recibos em `evidence/native-pilot-package-20261029.json` e `evidence/native-pilot-delivery-20261029.json`.
 

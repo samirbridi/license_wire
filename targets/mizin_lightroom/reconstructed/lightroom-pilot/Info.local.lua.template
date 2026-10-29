@@ -1,0 +1,13 @@
+return {
+    LrSdkVersion = 6.0,
+    LrSdkMinimumVersion = 6.0,
+    LrToolkitIdentifier = "com.mizin.lightroom.pilot",
+    LrPluginName = "Mizin Lightroom - Motor local experimental",
+    VERSION = { major = __MAJOR__, minor = __MINOR__, revision = __PATCH__, build = "__BUILD__", display = "__DISPLAY_VERSION__" },
+    LrLibraryMenuItems = {
+        { title = "Mizin: analisar fotos selecionadas", file = "AnalyzeSelected.lua", enabledWhen = "photosAvailable" },
+        { title = "Mizin: ver ultimos resultados", file = "LastResults.lua" },
+        { title = "Mizin: diagnosticar motor local", file = "DiagnoseEngine.lua" },
+        { title = "Mizin: comparar amostra salva do piloto", file = "ComparePilot.lua", enabledWhen = "photosAvailable" },
+    },
+}

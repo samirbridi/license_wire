@@ -12,14 +12,14 @@ Ha diferencas relevantes nos exemplos: a exposicao de `CRI_2028.CR3` e 1,03 na r
 
 ## Comparacao funcional e proposta local
 
-As sete opcoes abaixo foram observadas nos screenshots. Sua funcao foi conferida na documentacao publica oficial. Os nomes da nossa coluna sao propostas de produto; somente o comparador ja instalado esta disponivel no Lightroom.
+As sete opcoes abaixo foram observadas nos screenshots. Sua funcao foi conferida na documentacao publica oficial. Os nomes da nossa coluna sao propostas de produto. O comparador antigo tem QA nativo; o novo pacote implementa analise da selecao, resultados e diagnostico, com QA local e teste nativo ainda pendente.
 
 | Opcao observada | Modulo proposto | Funcao local e estado atual |
 | --- | --- | --- |
 | Start Culling (Beta) | Selecionar fotos | Agrupar sequencias, facilitar comparacao e registrar estrelas/bandeiras. Planejado; nunca inferir rejeicao pela simples ausencia de uma foto no treino. |
 | Create SmartPreset | Criar e gerenciar estilos | Escolher referencias aprovadas, treinar e avaliar revisoes do estilo. Existe um modelo numerico experimental por scripts; interface, varios estilos e treino na maquina de edicao pendentes. |
-| Edit Photos | Editar fotos selecionadas | Analisar RAWs novos, selecionar estilo e controles, revisar previa e aplicar em copias virtuais. Inferencia integrada e escrita ainda pendentes. |
-| Download Edits | Processamentos e resultados | Fila local com progresso, cancelamento, retomada e resultados associados a cada foto. Planejado. |
+| Edit Photos | Editar fotos selecionadas | Analise nova da selecao e revisao numerica implementadas no pacote local, com um estilo experimental. Selecao de estilos, previa visual e escrita reversivel pendentes. |
+| Download Edits | Processamentos e resultados | Progresso, cancelamento entre fotos, erros por arquivo, JSON/CSV e consulta do ultimo resultado implementados. Retomada automatica e historico pela interface pendentes. |
 | Set Up Flows | Fluxos locais | Importacao e processamento a partir de pastas/cartoes, com revisao e tratamento de duplicatas. Planejado; integracao com camera/cartao exige teste real. |
 | Send Corrections | Aprender com correcoes | Capturar ajustes finais explicitamente aprovados e produzir nova revisao avaliada do modelo. Planejado; a aprovacao inicial do acervo ja foi registrada separadamente. |
 | Adjust SmartPreset | Ajustar estilo | Alterar preferencias e intensidade de um estilo, com previa e receita persistida, sem exigir novo treino para cada ajuste global. Planejado. |
@@ -36,7 +36,7 @@ O guia de edicao do Neurapix tambem documenta mascaras, recorte e endireitamento
 4. **Estilos e aprendizado continuo:** registro de referencias aprovadas, separacao treino/avaliacao e revisoes de modelo. Manter separado o ajuste global de preferencias do reprocessamento dos exemplos para treino. Validar uma revisao antes de torna-la ativa e permitir recuperar a anterior.
 5. **Selecao e fluxos:** implementar e avaliar agrupamento/triagem e importacao automatizada depois do nucleo de edicao. Marcar escolhas por estrelas/bandeiras, preservando RAWs e edicoes recebidas. Testar cada origem fisica no ambiente real.
 
-Cada comando deve entrar no menu junto de sua operacao funcional, persistencia e teste nativo. Esta revisao de QA/planejamento nao gera um novo pacote do plugin nem altera o pacote instalado.
+Cada comando deve entrar no menu junto de sua operacao funcional e persistencia, com QA nativo como etapa de validacao. O mapeamento inicial foi uma revisao de documentacao. A implementacao posterior em `10_motor_local_e_atualizacao.md` produz um novo pacote funcional; a instalacao antiga permanece preservada ate a atualizacao pelo usuario.
 
 ## Fontes verificadas em 2026-10-29
 

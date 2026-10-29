@@ -1,0 +1,276 @@
+"""Offline selection inference. Writes only new job files; never Lightroom/RAW edits."""
+from __future__ import annotations
+
+import argparse
+import csv
+import datetime as dt
+import json
+import math
+import os
+import platform
+import subprocess
+import sys
+import time
+import traceback
+import uuid
+from pathlib import Path
+
+os.environ['OMP_NUM_THREADS'] = '4'
+os.environ['OPENBLAS_NUM_THREADS'] = '1'
+
+from raw_features import sha256_file, source_reader, technical_render
+from train_numeric_pilot import TARGETS, build_matrix, native_predictions
+
+DOMAIN = 'LIBRAW_CAMERA_WB_SRGB_HALF_SIZE_NO_AUTO_BRIGHT_V1'
+MAX_PHOTOS = 100
+DISPLAY_TARGETS = ('Exposure2012', 'Temperature', 'Contrast2012')
+
+
+def utc_now():
+    return dt.datetime.now(dt.timezone.utc).isoformat()
+
+
+def read_json(path, limit=8 * 1024 * 1024):
+    with Path(path).open('rb') as stream:
+        content = stream.read(limit + 1)
+    if len(content) > limit:
+        raise ValueError('JSON excede o limite de tamanho')
+    def reject(value):
+        raise ValueError('Numero JSON invalido: ' + value)
+    return json.loads(content.decode('utf-8-sig'), parse_constant=reject)
+
+
+def write_json(path, value):
+    path = Path(path)
+    temporary = path.with_name(path.name + '.tmp-' + uuid.uuid4().hex)
+    with temporary.open('x', encoding='utf-8', newline='\n') as stream:
+        json.dump(value, stream, ensure_ascii=False, allow_nan=False, indent=2)
+        stream.flush()
+        os.fsync(stream.fileno())
+    # Windows readers can briefly deny replacement while the SDK reads progress.
+    for attempt in range(21):
+        try:
+            os.replace(temporary, path)
+            break
+        except PermissionError:
+            if attempt == 20:
+                raise
+            time.sleep(0.05)
+
+
+def finite_number(value):
+    return type(value) in (int, float) and math.isfinite(value)
+
+
+def validate_model(model):
+    if model.get('schema') != 'mizin-lightroom.numeric-pilot/1' or model.get('inputDomain') != DOMAIN:
+        raise ValueError('Modelo ou dominio de entrada incompativel')
+    if model.get('supportedTreatment') != 'color':
+        raise ValueError('Este motor espera um modelo em cor')
+    keys = model.get('featureNames', [])
+    if not keys or len(keys) > 256 or len(set(keys)) != len(keys) or not all(isinstance(k, str) for k in keys):
+        raise ValueError('Schema de atributos invalido')
+    if model.get('log1pFeatures') != [k for k in keys if k.startswith('capture')]:
+        raise ValueError('Transformacao de atributos incompativel')
+    targets = model.get('targets', {})
+    if not set(DISPLAY_TARGETS).issubset(targets) or not set(targets).issubset(TARGETS):
+        raise ValueError('Controles do modelo incompativeis')
+    for name, target in targets.items():
+        regression = target['regression']
+        for key, size in (('featureCenters', len(keys)), ('featureScales', len(keys)), ('weights', len(keys) + 1)):
+            values = regression[key]
+            if len(values) != size or not all(finite_number(v) for v in values):
+                raise ValueError('Coeficientes invalidos')
+        if any(v <= 0 for v in regression['featureScales']):
+            raise ValueError('Escalas invalidas')
+        if not finite_number(regression['targetCenter']) or not finite_number(regression['targetScale']) or regression['targetScale'] <= 0:
+            raise ValueError('Escala do alvo invalida')
+        bounds = target['nativeBoundsFromTrainingOnly']
+        if len(bounds) != 2 or not all(finite_number(v) for v in bounds) or bounds[0] > bounds[1]:
+            raise ValueError('Limites do controle invalidos')
+        if target['logTarget'] != (name == 'Temperature') or (name == 'Temperature' and bounds[0] <= 0):
+            raise ValueError('Transformacao do controle invalida')
+    return model
+
+
+def predict_features(model, features):
+    if any(not finite_number(v) for v in features.values()):
+        raise ValueError('Atributos nao finitos')
+    matrix = build_matrix([{'features': features}], model['featureNames'])
+    output = {}
+    for name, target in model['targets'].items():
+        value = float(native_predictions(target['regression'], matrix, target['nativeBoundsFromTrainingOnly'], target['logTarget'])[0])
+        if not math.isfinite(value):
+            raise ValueError('Previsao nao finita')
+        output[name] = value
+    return output
+
+
+def metadata_for(path, executable, argument_path):
+    text = str(path).replace('\\', '/')
+    if any(ord(c) < 32 for c in text):
+        raise ValueError('Caminho com caracteres de controle')
+    with argument_path.open('x', encoding='utf-8', newline='\n') as stream:
+        stream.write('--\n' + text + '\n')
+    command = [str(executable), '-config', '', '-fast2', '-json', '-charset', 'filename=UTF8',
+               '-FileName', '-FileType', '-EXIF:Model', '-ISO', '-ExposureTime#', '-FNumber', '-FocalLength#',
+               '-@', str(argument_path)]
+    result = subprocess.run(command, capture_output=True, encoding='utf-8', errors='strict', timeout=90,
+                            creationflags=getattr(subprocess, 'CREATE_NO_WINDOW', 0), check=False)
+    if result.returncode:
+        raise RuntimeError('Leitura de metadados falhou: ' + result.stderr[:600])
+    rows = json.loads(result.stdout)
+    if len(rows) != 1 or rows[0].get('Error'):
+        raise ValueError('Metadados indisponiveis')
+    row = rows[0]
+    if os.path.normcase(os.path.abspath(row['SourceFile'])) != os.path.normcase(str(path)):
+        raise ValueError('Metadados associados a outro arquivo')
+    if row.get('FileType') != 'CR3':
+        raise ValueError('Este piloto aceita somente RAW CR3')
+    return row
+
+
+def runtime_info():
+    import numpy
+    import rawpy
+    import PIL
+    return {'python': platform.python_version(), 'architecture': platform.machine(), 'os': platform.platform(),
+            'cpuCount': os.cpu_count(), 'numpy': numpy.__version__, 'rawpy': rawpy.__version__,
+            'libraw': '.'.join(map(str, rawpy.libraw_version)), 'pillow': PIL.__version__,
+            'isolatedPython': bool(sys.flags.isolated)}
+
+
+def csv_report(path, rows):
+    with path.open('x', encoding='utf-8-sig', newline='') as stream:
+        writer = csv.writer(stream, delimiter=';')
+        writer.writerow(['foto', 'estado', 'controle', 'lido_no_inicio', 'sugestao', 'erro'])
+        def cell(value):
+            text = str(value)
+            # Keep RAW names as text if opened in a spreadsheet.
+            return "'" + text if text.startswith(('=', '+', '-', '@', '\t', '\r', '\n')) else text
+        for row in rows:
+            if row['status'] != 'COMPUTED':
+                writer.writerow([cell(row['filename']), row['status'], '', '', '', cell(row.get('error', ''))])
+                continue
+            for control, value in row['predictions'].items():
+                current = row['current'].get(control)
+                writer.writerow([cell(row['filename']), row['status'], control,
+                                 '' if current is None else str(round(current, 4)).replace('.', ','),
+                                 str(round(value, 4)).replace('.', ','), ''])
+
+
+def run_job(job, bundle):
+    job, bundle = Path(job).resolve(strict=True), Path(bundle).resolve(strict=True)
+    if job.is_relative_to(bundle):
+        raise ValueError('Resultados devem ficar fora da pasta do plugin')
+    if any((job / name).exists() for name in ('run.lock', 'status.json', 'results.json', 'results.csv')):
+        raise ValueError('A tarefa ja foi executada; crie uma nova pasta')
+    with (job / 'run.lock').open('x', encoding='ascii') as stream:
+        stream.write(str(os.getpid()))
+    report = {'schema': 'mizin-lightroom.selection-analysis/1', 'startedUtc': utc_now(), 'status': 'FAILED',
+              'results': [], 'catalogWrites': 0, 'sourceWrites': 0, 'photosUploaded': 0,
+              'photographicQualityApproved': False, 'crossEventGeneralizationValidated': False}
+    started = time.monotonic()
+    def progress(phase, completed=0, total=0, filename=''):
+        write_json(job / 'status.json', {'phase': phase, 'completed': completed, 'total': total,
+                                         'filename': filename, 'updatedUtc': utc_now()})
+    try:
+        progress('STARTING')
+        request = read_json(job / 'request.json')
+        if request.get('schema') != 'mizin-lightroom.selection-request/1' or request.get('operation') not in ('analyze', 'diagnostic'):
+            raise ValueError('Pedido incompativel')
+        report['jobId'] = request['jobId']
+        info = read_json(bundle / 'BuildInfo.json')
+        model_path = bundle / 'Models' / 'pilot-model.json'
+        if sha256_file(model_path) != info['modelSha256']:
+            raise ValueError('Modelo diferente do incluido no pacote')
+        model = validate_model(read_json(model_path))
+        runtime = runtime_info()
+        if runtime['rawpy'] not in model['rawpyVersions'] or runtime['libraw'] not in model['librawVersions']:
+            raise ValueError('Decodificador diferente do dominio de treino')
+        report.update({'version': info['version'], 'modelSha256': info['modelSha256'], 'modelStatus': model['status'],
+                       'styleName': info['styleName'], 'runtime': runtime, 'lightroomVersion': request.get('lightroomVersion'),
+                       'operation': request['operation'], 'displayTargets': list(DISPLAY_TARGETS)})
+        executable = bundle / 'Tools' / 'ExifTool' / 'exiftool.exe'
+        if not executable.is_file():
+            raise ValueError('ExifTool ausente; extraia o pacote completo')
+        if request['operation'] == 'diagnostic':
+            result = subprocess.run([str(executable), '-config', '', '-ver'], capture_output=True, text=True,
+                                    timeout=30, creationflags=getattr(subprocess, 'CREATE_NO_WINDOW', 0))
+            if result.returncode:
+                raise RuntimeError('ExifTool nao iniciou')
+            report['runtime']['exiftool'] = result.stdout.strip()
+            report['status'] = 'DIAGNOSTIC_OK'
+            return report
+        photos = request.get('photos')
+        if not isinstance(photos, list) or not 1 <= len(photos) <= MAX_PHOTOS:
+            raise ValueError('Selecione entre 1 e 100 fotos para este piloto')
+        report['requestedPhotos'] = len(photos)
+        ids = [row.get('id') for row in photos]
+        if not all(isinstance(i, str) and 0 < len(i) <= 128 for i in ids) or len(set(ids)) != len(ids):
+            raise ValueError('Identificadores de fotos invalidos')
+        for index, photo in enumerate(photos):
+            if (job / 'cancel.request').exists():
+                report['status'] = 'CANCELLED'
+                break
+            path_text = photo.get('path', '')
+            row = {'id': photo['id'], 'path': path_text, 'filename': Path(path_text).name,
+                   'status': 'FAILED', 'current': {k: v for k, v in photo.get('current', {}).items()
+                                                  if k in TARGETS and finite_number(v)}}
+            report['results'].append(row)
+            progress('PROCESSING', index, len(photos), row['filename'])
+            try:
+                path = Path(path_text)
+                if not path.is_absolute() or path.suffix.lower() != '.cr3' or not path.is_file():
+                    raise ValueError('RAW CR3 original indisponivel neste caminho')
+                if photo.get('treatment') != 'color':
+                    raise ValueError('Modelo experimental somente para fotos em cor')
+                before = path.stat()
+                with source_reader(path):
+                    digest = sha256_file(path)
+                    meta = metadata_for(path, executable, job / f'metadata-{index:04}.args')
+                    if meta.get('Model', '').strip() not in model['supportedCameraModels']:
+                        raise ValueError('Camera nao suportada por este modelo: ' + meta.get('Model', 'desconhecida'))
+                    image = job / f'input-{index:04}.jpg'
+                    extracted = technical_render(path, image, meta)
+                    if sha256_file(path) != digest:
+                        raise ValueError('Arquivo original alterado durante a analise')
+                    after = path.stat()
+                    if (before.st_size, before.st_mtime_ns) != (after.st_size, after.st_mtime_ns):
+                        raise ValueError('Metadados do arquivo mudaram durante a analise')
+                predictions = predict_features(model, extracted['features'])
+                row.update({'status': 'COMPUTED', 'computedUtc': utc_now(), 'predictions': predictions,
+                            'sourceSha256': digest, 'sourceMetadataStable': True, 'cameraModel': meta['Model'],
+                            'inputDomain': extracted['inputDomain'], 'technicalInputRelative': image.name,
+                            'technicalInputSha256': extracted['jpegSha256'],
+                            'missingFeatures': [k for k in model['featureNames'] if k not in extracted['features']]})
+            except Exception as error:
+                row['error'] = str(error)[:1500]
+            progress('PROCESSING', index + 1, len(photos), row['filename'])
+        else:
+            report['status'] = 'COMPLETED' if all(r['status'] == 'COMPUTED' for r in report['results']) else 'COMPLETED_WITH_ERRORS'
+        csv_report(job / 'results.csv', report['results'])
+    except Exception as error:
+        report['error'] = str(error)[:2000]
+        with (job / 'engine-error.txt').open('x', encoding='utf-8') as stream:
+            traceback.print_exc(file=stream)
+    finally:
+        report['finishedUtc'] = utc_now()
+        report['elapsedSeconds'] = round(time.monotonic() - started, 3)
+        report['computedPhotos'] = sum(r['status'] == 'COMPUTED' for r in report['results'])
+        report['failedPhotos'] = sum(r['status'] != 'COMPUTED' for r in report['results'])
+        write_json(job / 'results.json', report)
+        progress(report['status'], len(report['results']), len(report['results']))
+    return report
+
+
+def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--job', type=Path, required=True)
+    args = parser.parse_args()
+    report = run_job(args.job, Path(__file__).resolve().parents[1])
+    return 1 if report['status'] == 'FAILED' else 0
+
+
+if __name__ == '__main__':
+    raise SystemExit(main())

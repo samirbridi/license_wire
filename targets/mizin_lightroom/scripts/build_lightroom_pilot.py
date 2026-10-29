@@ -38,13 +38,9 @@ def lua_literal(value):
     raise TypeError('Unsupported Lua data value')
 
 
-def build(dataset,manifest):
-    dataset=Path(dataset)
-    version=(ROOT/'VERSION').read_text(encoding='utf-8-sig').strip()
-    match=re.fullmatch(r'v(\d+)\.(\d+)\.(\d+) \(build (\d+)\)',version)
-    if not match:
-        raise ValueError('Invalid computed project version')
-    model_dir=sorted((dataset/'pilot-models').glob('*'))[-1]
+def saved_entries(dataset, manifest, model_dir=None):
+    dataset = Path(dataset)
+    model_dir=Path(model_dir) if model_dir else sorted((dataset/'pilot-models').glob('*'))[-1]
     evaluation=json.loads((model_dir/'evaluation.json').read_text(encoding='utf-8'))
     predictions=[json.loads(line) for line in (model_dir/'holdout-predictions.jsonl').read_text(encoding='utf-8').splitlines()]
     references={r['imageId']:r for r in (json.loads(line) for line in Path(manifest).read_text(encoding='utf-8').splitlines())}
@@ -58,6 +54,16 @@ def build(dataset,manifest):
                         'imageId':row['imageId'],'predictions':selected})
     if len(entries)!=evaluation['testSamples']:
         raise ValueError('Saved prediction count mismatch')
+    return entries
+
+
+def build(dataset,manifest):
+    dataset=Path(dataset)
+    version=(ROOT/'VERSION').read_text(encoding='utf-8-sig').strip()
+    match=re.fullmatch(r'v(\d+)\.(\d+)\.(\d+) \(build (\d+)\)',version)
+    if not match:
+        raise ValueError('Invalid computed project version')
+    entries = saved_entries(dataset, manifest)
     label='MizinLightroom-'+'.'.join(match.group(i) for i in (1,2,3))+'-build'+match.group(4)
     delivery=ROOT/'private'/'deliveries'/(label+'-'+uuid.uuid4().hex[:8])
     plugin=delivery/'MizinLightroom.lrplugin'
