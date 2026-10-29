@@ -68,3 +68,11 @@ Correções:
 - Na 0054, a Vista 2 passou na verificação de 10 s do gravador, mas a gravação contínua caía em poucos segundos. A ponte não registrava erro.
 - Causa: quem entra numa sessão já aberta recebe na hora o trecho de vídeo desde o último VPS da sua lente (até ~80 quadros). O `probe` encerra ao passar de 45 quadros de vídeo sem ter visto áudio e abre o fluxo sem a faixa de áudio. O ffmpeg do gravador usa `-map 0:a:0` e sai com erro.
 - Correção: o trecho guardado também mantém os 8 pacotes de áudio mais recentes (`dualTailAudio`). O teste do hub confere que quem entra depois recebe áudio.
+
+## Resultado na build 0055 do portal (bridge v0.13.3), 19:02–19:08 UTC
+
+- Partida: as duas visões gravando às 19:03:08, depois de uma falha conjunta às 19:02:47. A Vista 2 entra na sessão aberta sem falhar.
+- Replay SD duplo: Vista 1 com status 200 em 13,9 s, Vista 2 em 2,9 s na mesma sessão. 7,0 MB e 5,4 MB em 55 s e 40 s.
+- Depois do replay: o ao vivo reconectou 3 s após o fechamento (19:05:58), mas a câmera parou de mandar quadros em ~10 s e recusou handshakes até ~19:07. A Vista 2 voltou às 19:07:37 e a Vista 1 às 19:08:31. Mesmo com `MSG_CLOSE`, a CW701 fica ~1,5–2,5 min sem atender depois de uma sessão de replay. O cartão SD cobre esse intervalo.
+- Próximo passo possível: fazer o replay dentro da mesma sessão do ao vivo, como o app oficial (troca de modo sem novo handshake), para eliminar esse intervalo.
+
