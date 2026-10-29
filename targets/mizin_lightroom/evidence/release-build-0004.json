@@ -1,0 +1,17 @@
+{
+  "previous": "v0.1.2 (build 0003)",
+  "version": "v0.2.0 (build 0004)",
+  "date": "2026-10-29",
+  "timezone": "America/Sao_Paulo",
+  "baseline": "e283d98e5cb277adfe29c5de89ab31afd7cca424",
+  "sourceHead": "199a5a609170e1d3b6989c222138b8f1f408a75c",
+  "increment": "feat",
+  "commits": [
+    {
+      "hash": "199a5a609170e1d3b6989c222138b8f1f408a75c",
+      "subject": "feat: preserva catalogo Lightroom e extrai referencias aprovadas de estilo",
+      "type": "feat",
+      "breaking": false
+    }
+  ]
+}

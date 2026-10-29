@@ -1,5 +1,23 @@
 # CHANGELOG - mizin_lightroom
 
+## v0.2.0 (build 0004) - 2026-10-29
+
+### 💥 Breaking Changes
+
+- Nenhum.
+
+### ✨ Features
+
+- feat: preserva catalogo Lightroom e extrai referencias aprovadas de estilo (commit `199a5a609170e1d3b6989c222138b8f1f408a75c`)
+
+### 🐛 Fixes
+
+- Nenhum.
+
+### ⚡ Improvements
+
+- Nenhum.
+
 ## v0.1.2 (build 0003) - 2026-10-29
 
 ### 💥 Breaking Changes
