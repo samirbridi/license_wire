@@ -1,5 +1,41 @@
 # CHANGELOG — tuya_smartlife
 
+## v0.36.1 (build 0049) - 2026-10-29
+
+### 💥 Breaking Changes
+
+- Nenhum.
+
+### ✨ Features
+
+- Nenhum.
+
+### 🐛 Fixes
+
+- Nenhum.
+
+### ⚡ Improvements
+
+- improve: envia pacotes grandes em partes e corrige o caminho do gateway do Pages (commit `70fef6f4f20b344e32db47d23832d4413ae0684f`)
+
+## v0.36.0 (build 0048) - 2026-10-29
+
+### 💥 Breaking Changes
+
+- Nenhum.
+
+### ✨ Features
+
+- feat: publica a ponte nova da Outdoor Pro junto com o portal no NAS (commit `19e7914e71836b7154fadf2b6c7d977f41af1e85`)
+
+### 🐛 Fixes
+
+- Nenhum.
+
+### ⚡ Improvements
+
+- improve: documenta e automatiza a publicacao no NAS e registra as builds 0046 e 0047 (commit `70a300a489301818c914b6c34392e9168bc3bee3`)
+
 ## v0.35.1 (build 0047) - 2026-10-29
 
 ### 💥 Breaking Changes

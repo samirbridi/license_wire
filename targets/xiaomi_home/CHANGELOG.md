@@ -1,5 +1,23 @@
 # CHANGELOG — xiaomi_home
 
+## v0.12.1 (build 0023) - 2026-10-29
+
+### 💥 Breaking Changes
+
+- Nenhum.
+
+### ✨ Features
+
+- Nenhum.
+
+### 🐛 Fixes
+
+- fix: identifica a lente da Outdoor Pro pelo byte 15 dos flags observado no NAS (commit `80632bf661824e3c2b0373be2bca18f7541e6988`)
+
+### ⚡ Improvements
+
+- Nenhum.
+
 ## v0.12.0 (build 0022) - 2026-10-29
 
 ### 💥 Breaking Changes

@@ -1,0 +1,20 @@
+{
+  "runId": "bridge-outdoor-lens-tag-20261029",
+  "sourceCommit": "80632bf661824e3c2b0373be2bca18f7541e6988",
+  "previous": "v0.12.0 (build 0022)",
+  "version": "v0.12.1 (build 0023)",
+  "build": 23,
+  "date": "2026-10-29",
+  "status": "built",
+  "commits": [
+    {
+      "sha": "80632bf661824e3c2b0373be2bca18f7541e6988",
+      "subject": "fix: identifica a lente da Outdoor Pro pelo byte 15 dos flags observado no NAS",
+      "body": "Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>",
+      "type": "fix",
+      "description": "identifica a lente da Outdoor Pro pelo byte 15 dos flags observado no NAS",
+      "breaking": false
+    }
+  ],
+  "artifact": "runtime/builds/build-0023"
+}

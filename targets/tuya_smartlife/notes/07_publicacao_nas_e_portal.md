@@ -28,7 +28,13 @@ Projeto do Container Manager: `mizin-home` (id `9d574df2-822f-44f9-9918-d31c7540
 
 Os logs da ponte mostraram 111 timeouts `probe: miss` na Outdoor (192.168.1.85) em 70 minutos. As demais câmeras ficaram estáveis. Na 0043, a visão 2 gravou 85 arquivos e a visão 1 só 20; na 0046, com conexão ordenada, a visão 1 grava e a visão 2 não conecta. Com uma sessão P2P por visão, a câmera entrega uma visão por vez. O app oficial abre as duas na mesma sessão (o replay usa canais `[0,10]` e `avchannelmerge`, conforme `targets/xiaomi_home/notes/13_plugins_sem_usb.md`).
 
-Na 0047, o gravador prioriza a visão que está funcionando: a outra só tenta de novo após 10 min. O painel avisa quando a visão 2 não abre. **Próxima tarefa:** estender a ponte go2rtc (`targets/xiaomi_home/reconstructed/go2rtc-miss-patch`) para pedir os dois canais na mesma sessão.
+Na 0047, o gravador prioriza a visão que está funcionando: a outra só tenta de novo após 10 min. O painel avisa quando a visão 2 não abre. 
+
+**Resolvido nas builds 0048/0049 (ponte v0.12.0/v0.12.1).** A ponte abre uma única sessão com `videoquality` + `videoquality2` e separa as lentes pelo byte 15 dos `flags` do quadro. Detalhes em `targets/xiaomi_home/notes/18_outdoor_sessao_dupla.md`. A 0048 coletou os cabeçalhos reais e caiu sozinha para o modo antigo. A 0049 detectou o campo (`lens tag at header offset 15 width 1 second=1`, 14:11 UTC).
+
+Verificado em 2026-10-29: as sete visões ficaram em `recording`, e os segmentos `11-11-43_visao1.mkv` (197 s) e `11-11-51_visao2.mkv` (188 s), HEVC 2880×1620 + Opus e com SHA-256 diferentes, foram gravados ao mesmo tempo. Ainda falta o proprietário confirmar visualmente que a visão 1 continua sendo a lente principal.
+
+Na publicação da 0048, o Pages subiu uma vez sem `_worker.js` (caminho errado) e foi republicado com o gateway em seguida. O passo 5 agora indica o caminho completo.
 
 ## Pendências
 
