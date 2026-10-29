@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"net/url"
 	"strconv"
+	"sync"
 	"time"
 
 	"github.com/AlexxIT/go2rtc/pkg/core"
@@ -21,6 +22,56 @@ type Producer struct {
 	src         dualSource // the client itself, or one lens of a shared dual session
 	dual        *dualView
 	initialPkts []*Packet
+	gop         gopCache
+}
+
+// gopCache keeps the video since the last keyframe. A viewer that joins a running stream (the NAS
+// recorder keeps every camera open) gets it at once instead of waiting 2-4 s for the camera's next one.
+type gopCache struct {
+	mu     sync.Mutex
+	pkts   []*core.Packet
+	hooked map[*core.Receiver]bool
+}
+
+const gopCacheMax = 600
+
+func (g *gopCache) add(pkt *core.Packet, keyframe bool) {
+	g.mu.Lock()
+	defer g.mu.Unlock()
+	if keyframe {
+		g.pkts = nil
+	} else if g.pkts == nil {
+		return // nothing to start from until the first keyframe
+	}
+	if len(g.pkts) >= gopCacheMax {
+		g.pkts = nil // a GOP this long is not worth replaying; wait for the next keyframe
+		return
+	}
+	g.pkts = append(g.pkts, pkt)
+}
+
+// hook makes recv replay the cached GOP to every child that attaches later.
+func (g *gopCache) hook(recv *core.Receiver) {
+	g.mu.Lock()
+	defer g.mu.Unlock()
+	if g.hooked[recv] {
+		return
+	}
+	if g.hooked == nil {
+		g.hooked = map[*core.Receiver]bool{}
+	}
+	g.hooked[recv] = true
+	recv.OnChild = func(child *core.Node) {
+		g.mu.Lock()
+		pkts := append([]*core.Packet(nil), g.pkts...)
+		g.mu.Unlock()
+		if child.Input == nil {
+			return
+		}
+		for _, pkt := range pkts {
+			child.Input(pkt)
+		}
+	}
 }
 
 func confirmedPlayback(status string, expectedID int64) (bool, error) {
@@ -418,6 +469,10 @@ func (p *Producer) Start() error {
 
 		for _, recv := range p.Receivers {
 			if recv.Codec.Name == name {
+				if pkt.CodecID == codecH264 || pkt.CodecID == codecH265 {
+					p.gop.hook(recv)
+					p.gop.add(pkt2, startsGOP(pkt))
+				}
 				recv.WriteRTP(pkt2)
 				break
 			}

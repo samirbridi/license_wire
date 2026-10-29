@@ -96,3 +96,10 @@ Correções:
 - Replay SD duplo: Vista 1 com status 200 em 10,3 s, Vista 2 em 1,8 s, 6,2 MB e 4,9 MB. Log: `19:30:26 SD replay 1793282400 on the same connection`. As visões ao vivo terminaram com `camera switched to SD playback`.
 - Fim do replay às 19:31:19. Log: `19:31:23 back to live on the same connection`. **As duas visões gravando de novo às 19:31:26, 7 s depois** (antes eram 1,5–2,5 min), e estáveis em seguida.
 
+
+## Cache de quadro-chave para quem entra depois (bridge v0.15.0)
+
+- Medição em 2026-10-29 pelo homecams: pelo WebSocket da ponte, os primeiros dados chegam em 0,2–0,8 s, mas a imagem só aparece em 0,5–8,5 s. Quem entra num fluxo já aberto (o gravador do NAS mantém todas as câmeras abertas) espera o próximo quadro-chave da câmera.
+- `pkg/core` (cópia de v1.9.15 com patch): `Node.OnChild` roda quando um consumidor se conecta. A fila de vídeo não-RTP de cada `Sender` passou de 64 para 1024 pacotes, para caber um GOP.
+- `miss.Producer` guarda o vídeo desde o último VPS/SPS (`gopCache`, até 600 pacotes) e entrega esse trecho na hora a cada consumidor novo. Teste: `gop_test.go`.
+- O teste `pkg/core/core_test.go` (`StripUserinfo`) já não compila no go2rtc v1.9.15 original e não faz parte do build.
