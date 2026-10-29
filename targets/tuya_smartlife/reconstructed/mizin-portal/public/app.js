@@ -4117,6 +4117,17 @@ function switchCameraViewMode(mode) {
   if (tabV1) tabV1.className = `view-mode-tab ${mode === 'view1' ? 'active' : ''}`;
   if (tabV2) tabV2.className = `view-mode-tab ${mode === 'view2' ? 'active' : ''}`;
 
+  if (currentTheaterTab === 'sd') {
+    // Recordings: the switch picks the lens shown on the SD timeline and player; live streams stay closed.
+    const previousLens = sdPlayLens;
+    if (mode === 'view1') sdPlayLens = '0';
+    if (mode === 'view2') sdPlayLens = '1';
+    fetchSdRecordings(activePtzCam, selectedTimelineDate, false);
+    const sdVideo = document.getElementById('sdPlaybackVideoElement');
+    if (sdVideo && sdVideo.getAttribute('src') && previousLens !== sdPlayLens) playCurrentSdSegment(currentSdPlaySeconds);
+    return;
+  }
+
   const alias1 = 'outdoor_pro_poste_quality3';
   const alias2 = 'outdoor_pro_poste_channel2_quality3';
 
@@ -4732,6 +4743,24 @@ function renderSdEvents(container, events) {
   window.__sdEvents = events;
 }
 
+// Outdoor Pro: the SD card keeps one recording per lens (channel 0 and 1). The view switch picks the lens;
+// "Dupla Visão" shows one timeline lane per lens and the clicked lane chooses what plays.
+let sdPlayLens = '0';
+const sdLensLabel = lens => (lens === '1' ? 'Vista 2' : 'Vista 1');
+function sdHasTwoLenses() {
+  const selector = document.getElementById('ptzViewModeSelector');
+  return !!selector && selector.style.display !== 'none';
+}
+function sdLensesShown() {
+  if (!sdHasTwoLenses()) return ['0'];
+  if (activeCameraViewMode === 'view1') return ['0'];
+  if (activeCameraViewMode === 'view2') return ['1'];
+  return ['0', '1'];
+}
+function markSdLaneActive() {
+  document.querySelectorAll('.timeline-lane-label').forEach(el => el.classList.toggle('active', el.dataset.lens === sdPlayLens));
+}
+
 // Régua de 24 Horas e Gravações SD Card
 async function fetchSdRecordings(camId, date, autoPlayOnLoad = false) {
   const track = document.getElementById('timelineTrack');
@@ -4747,8 +4776,13 @@ async function fetchSdRecordings(camId, date, autoPlayOnLoad = false) {
   const liveSdQuickInfo = document.getElementById('liveSdQuickInfo');
 
   try {
-    const res = await fetch(`${BACKEND_API_BASE}/api/camera/recordings?id=${encodeURIComponent(camId)}&date=${encodeURIComponent(date)}`);
-    const data = await res.json();
+    const lenses = sdLensesShown();
+    if (!lenses.includes(sdPlayLens)) sdPlayLens = lenses[0];
+    const responses = await Promise.all(lenses.map(lens =>
+      fetch(`${BACKEND_API_BASE}/api/camera/recordings?id=${encodeURIComponent(camId)}&date=${encodeURIComponent(date)}&channel=${lens}`)
+        .then(r => r.json()).catch(() => null)));
+    const data = responses[lenses.indexOf(sdPlayLens)] || responses.find(Boolean);
+    if (!data) throw new Error('Cartão SD sem resposta');
     currentSdRecordings = data.periods || [];
 
     const totalGb = (data.storageTotalMb / 1024).toFixed(0);
@@ -4767,23 +4801,31 @@ async function fetchSdRecordings(camId, date, autoPlayOnLoad = false) {
     if (eventsCountBadge) eventsCountBadge.innerText = `${(data.events || []).length} Momentos Disponíveis`;
     if (liveSdQuickInfo) liveSdQuickInfo.innerText = `MicroSD ${totalGb}GB (${usedGb}GB ocupado) • ${(data.events || []).length} momentos`;
 
-    // Renderiza blocos de gravação contínua + marcadores de movimento destacados na régua
+    // Renderiza blocos de gravação contínua + marcadores de movimento destacados na régua (uma faixa por lente)
     if (track) {
-      const baseBlocks = currentSdRecordings.map((p, idx) => {
-        const leftPct = (p.start / 86400) * 100;
-        const widthPct = Math.max(0.5, ((p.end - p.start) / 86400) * 100);
-        return `<div class="timeline-block" onclick="seekTimelineClick(event)" style="left:${leftPct}%; width:${widthPct}%; background:#10b981; opacity:0.65; cursor:pointer;" title="Gravação Contínua SD: ${p.label || (formatSecondsToTime(p.start) + ' - ' + formatSecondsToTime(p.end))}"></div>`;
-      }).join('');
+      const dual = lenses.length > 1;
+      const ruler = document.getElementById('timelineRulerContainer');
+      if (ruler) ruler.classList.toggle('dual-lanes', dual);
+      track.innerHTML = lenses.map((lens, i) => {
+        const laneData = responses[i];
+        if (!laneData) return '';
+        const lane = dual ? ` lane-${i}` : '';
+        const prefix = sdHasTwoLenses() ? `${sdLensLabel(lens)} • ` : '';
+        const baseBlocks = (laneData.periods || []).map(p => {
+          const leftPct = (p.start / 86400) * 100;
+          const widthPct = Math.max(0.5, ((p.end - p.start) / 86400) * 100);
+          return `<div class="timeline-block${lane}" onclick="seekTimelineClick(event)" style="left:${leftPct}%; width:${widthPct}%; background:#10b981; opacity:0.65; cursor:pointer;" title="${prefix}Gravação Contínua SD: ${p.label || (formatSecondsToTime(p.start) + ' - ' + formatSecondsToTime(p.end))}"></div>`;
+        }).join('');
 
-      // Marcadores verticais dourados/laranja de movimento detectado
-      const motionSegments = (data.daySegments || []).filter(s => s.m > 0);
-      const motionMarkers = motionSegments.map(s => {
-        const leftPct = (s.s / 86400) * 100;
-        const widthPct = Math.max(0.35, ((s.d || 60) / 86400) * 100);
-        return `<div class="timeline-motion-marker" onclick="seekTimelineExact(${s.s}, ${s.u}, event)" style="position:absolute; left:${leftPct}%; width:${widthPct}%; height:100%; background:#f59e0b; border-radius:2px; z-index:3; cursor:pointer;" title="⚡ Movimento Detectado às ${formatSecondsToTime(s.s)}"></div>`;
+        // Marcadores verticais dourados/laranja de movimento detectado
+        const motionMarkers = (laneData.daySegments || []).filter(s => s.m > 0).map(s => {
+          const leftPct = (s.s / 86400) * 100;
+          const widthPct = Math.max(0.35, ((s.d || 60) / 86400) * 100);
+          return `<div class="timeline-motion-marker${lane}" onclick="seekTimelineExact(${s.s}, ${s.u}, event, '${lens}')" style="position:absolute; left:${leftPct}%; width:${widthPct}%; height:100%; background:#f59e0b; border-radius:2px; z-index:3; cursor:pointer;" title="⚡ ${prefix}Movimento Detectado às ${formatSecondsToTime(s.s)}"></div>`;
+        }).join('');
+        const label = dual ? `<span class="timeline-lane-label lane-${i}${lens === sdPlayLens ? ' active' : ''}" data-lens="${lens}">${sdLensLabel(lens)}</span>` : '';
+        return baseBlocks + motionMarkers + label;
       }).join('');
-
-      track.innerHTML = baseBlocks + motionMarkers;
     }
 
     // Renderiza os momentos do cartão SD agrupados por tipo e período do dia
@@ -4805,8 +4847,9 @@ let sdPlaybackTimer = null;
 let currentSdPlaySeconds = 36000;
 let currentPlaybackSpeed = 1;
 
-function seekTimelineExact(seconds, unixTs, event) {
+function seekTimelineExact(seconds, unixTs, event, lens) {
   if (event) event.stopPropagation();
+  if (lens) sdPlayLens = String(lens);
   switchTheaterTab('sd', true);
   const needle = document.getElementById('timelineNeedle');
   const timeTip = document.getElementById('timelineNeedleTime');
@@ -4839,6 +4882,7 @@ function seekTimelineClick(event) {
   if (!ruler || !needle) return;
 
   const rect = ruler.getBoundingClientRect();
+  if (ruler.classList.contains('dual-lanes')) sdPlayLens = (event.clientY - rect.top) < rect.height / 2 ? '0' : '1';
   const clickX = event.clientX - rect.left;
   const pct = Math.max(0, Math.min(100, (clickX / rect.width) * 100));
   needle.style.left = `${pct}%`;
@@ -4916,7 +4960,9 @@ function playCurrentSdSegment(targetSeconds, optLabel, optUnix) {
   const overlayText = document.getElementById('sdPlaybackOverlayText');
 
   const labelSuffix = optLabel ? ` — ${optLabel}` : '';
-  if (overlayText) overlayText.innerText = `● GRAVAÇÃO SD • ${selectedTimelineDate} ${time}${labelSuffix}`;
+  const lensPrefix = sdHasTwoLenses() ? `${sdLensLabel(sdPlayLens)} • ` : '';
+  if (overlayText) overlayText.innerText = `● GRAVAÇÃO SD • ${lensPrefix}${selectedTimelineDate} ${time}${labelSuffix}`;
+  markSdLaneActive();
   if (spinner) spinner.style.display = 'block';
 
   // Atualiza posição da agulha na régua
@@ -4934,7 +4980,7 @@ function playCurrentSdSegment(targetSeconds, optLabel, optUnix) {
     sdVideo.autoplay = true;
     sdVideo.muted = !isAudioListening;
     const unixParam = (optUnix && optUnix > 1577836800) ? `&unix=${optUnix}` : '';
-    sdVideo.src = `${BACKEND_API_BASE}/api/camera/recordings/stream?id=${encodeURIComponent(camId)}&date=${encodeURIComponent(selectedTimelineDate)}&time=${encodeURIComponent(time)}&sec=${seconds}${unixParam}&speed=${currentPlaybackSpeed}&t=${Date.now()}`;
+    sdVideo.src = `${BACKEND_API_BASE}/api/camera/recordings/stream?id=${encodeURIComponent(camId)}&date=${encodeURIComponent(selectedTimelineDate)}&time=${encodeURIComponent(time)}&sec=${seconds}${unixParam}&speed=${currentPlaybackSpeed}&channel=${sdPlayLens}&t=${Date.now()}`;
     sdVideo.load();
     const p = sdVideo.play();
     if (p) p.catch(() => {
@@ -4970,13 +5016,14 @@ function startSdTimelineTracking() {
 
     if (needle) needle.style.left = `${pct}%`;
     if (timeTip) timeTip.innerText = formatted;
-    if (overlayText) overlayText.innerText = `● GRAVAÇÃO SD • ${selectedTimelineDate} ${formatted} (MicroSD Reprodução)`;
+    const lensPrefix = sdHasTwoLenses() ? `${sdLensLabel(sdPlayLens)} • ` : '';
+    if (overlayText) overlayText.innerText = `● GRAVAÇÃO SD • ${lensPrefix}${selectedTimelineDate} ${formatted} (MicroSD Reprodução)`;
   }, 1000);
 }
 
 function downloadCurrentSdClip() {
   const formatted = formatSecondsToTime(currentSdPlaySeconds);
-  const url = `${BACKEND_API_BASE}/api/camera/recordings/clip?id=${encodeURIComponent(activePtzCam || 'outdoor_pro_poste')}&date=${encodeURIComponent(selectedTimelineDate)}&time=${encodeURIComponent(formatted)}&sec=${currentSdPlaySeconds}`;
+  const url = `${BACKEND_API_BASE}/api/camera/recordings/clip?id=${encodeURIComponent(activePtzCam || 'outdoor_pro_poste')}&date=${encodeURIComponent(selectedTimelineDate)}&time=${encodeURIComponent(formatted)}&sec=${currentSdPlaySeconds}&channel=${sdPlayLens}`;
   window.open(url, '_blank');
   showToast(`Exportação do clipe MP4 (${formatted}) iniciada! 💾`);
 }

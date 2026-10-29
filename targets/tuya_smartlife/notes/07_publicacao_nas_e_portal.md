@@ -36,6 +36,14 @@ Verificado em 2026-10-29: as sete visões ficaram em `recording`, e os segmentos
 
 Na publicação da 0048, o Pages subiu uma vez sem `_worker.js` (caminho errado) e foi republicado com o gateway em seguida. O passo 5 agora indica o caminho completo.
 
+## Build 0050 (2026-10-29)
+
+- Gravações SD da Outdoor separadas por lente: o seletor Dupla/Vista 1/Vista 2 vale também na aba de gravações. Em Dupla, a régua tem uma faixa por lente, e clicar numa faixa reproduz aquela lente (`channel=0/1` no catálogo, no replay e no clipe).
+- Os botões Foto, Criar Cena e × ficaram com a mesma altura e alinhados ao centro do cabeçalho.
+- O gravador perdeu a espera de 10 min quando a outra visão grava: com a sessão compartilhada, ela só derrubava a visão que voltava.
+- Ponte v0.12.2: prazos no login e na sessão compartilhada, e o replay SD com prioridade (`targets/xiaomi_home/notes/18_outdoor_sessao_dupla.md`).
+- Cloudflare Observability (e-mail de 2026-10-29, cobrança por volume a partir de 1/12/2026): `homecams-portal-gateway` e `homecams-gateway` estão com observability desligada, então nada muda para a Mizin Home. Estão com logs ligados: acervo-mizin, experiencia-aline, foto-na-hora-production, fotonahora, meus-gastos, signalway e talkback-signal. Em conta sem Workers Paid, a ingestão só pausa ao atingir 0,5 GB/dia, sem cobrança. O plano da conta não pôde ser lido pela API (o token do wrangler não tem acesso a cobrança).
+
 ## Pendências
 
 - Integração dos veículos no NAS: os clientes GWM/BYD não estão na imagem, e os cartões informam "Sem dados".

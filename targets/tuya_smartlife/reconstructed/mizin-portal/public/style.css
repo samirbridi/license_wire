@@ -3426,7 +3426,7 @@ button.btn-close:active {
   flex-shrink: 0;
 }
 .ptz-modal-header > .modal-title-with-icon { grid-column: 1; grid-row: 1; min-width: 0; }
-.ptz-modal-header > .ptz-header-actions { grid-column: 2; grid-row: 1; align-self: start; justify-self: end; }
+.ptz-modal-header > .ptz-header-actions { grid-column: 2; grid-row: 1; align-self: center; justify-self: end; }
 .ptz-modal-header > .ptz-view-mode-tabs { grid-column: 1 / -1; grid-row: 2; justify-self: start; }
 .ptz-modal-header > .ptz-quality-container { grid-column: 1 / -1; grid-row: 3; justify-self: start; flex-wrap: wrap; }
 @media (min-width: 1280px) {
@@ -3519,6 +3519,51 @@ button.btn-close:active {
   align-items: center;
   gap: 8px;
 }
+/* Same height, type and border for Foto, Criar Cena and close. */
+.ptz-header-actions > .btn {
+  height: 34px;
+  padding: 0 12px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1;
+  border-radius: 8px;
+  white-space: nowrap;
+}
+.ptz-header-actions > .btn-close { width: 34px !important; height: 34px !important; }
+.btn-outline-emerald {
+  background: transparent;
+  border: 1px solid rgba(16, 185, 129, 0.45);
+  color: #34d399;
+}
+.btn-outline-emerald:hover {
+  background: rgba(16, 185, 129, 0.12);
+  border-color: #10b981;
+}
+
+/* Outdoor Pro SD timeline: one lane per lens when both views are shown. */
+.timeline-ruler-container.dual-lanes { height: 46px; }
+.timeline-ruler-container.dual-lanes .timeline-block,
+.timeline-ruler-container.dual-lanes .timeline-motion-marker { top: auto !important; bottom: auto !important; height: calc(50% - 4px) !important; }
+.timeline-ruler-container.dual-lanes .lane-0 { top: 3px !important; }
+.timeline-ruler-container.dual-lanes .lane-1 { top: calc(50% + 1px) !important; }
+.timeline-lane-label {
+  position: absolute;
+  left: 4px;
+  z-index: 4;
+  font-size: 9px;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.85);
+  background: rgba(2, 8, 22, 0.75);
+  padding: 1px 4px;
+  border-radius: 4px;
+  pointer-events: none;
+}
+.timeline-lane-label.lane-0 { top: 4px; }
+.timeline-lane-label.lane-1 { top: calc(50% + 2px); }
+.timeline-lane-label.active { color: #fde68a; border: 1px solid rgba(245, 158, 11, 0.6); }
 
 /* ============================================================= */
 /* THEATER TABS: AO VIVO & CONTROLES vs GRAVAÇÕES SD (24H)       */
