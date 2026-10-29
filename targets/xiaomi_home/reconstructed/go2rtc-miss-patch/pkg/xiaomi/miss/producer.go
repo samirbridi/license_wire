@@ -1,6 +1,7 @@
 package miss
 
 import (
+	"errors"
 	"encoding/json"
 	"fmt"
 	"net/url"
@@ -55,40 +56,24 @@ func Dial(rawURL string) (core.Producer, error) {
 		return nil, fmt.Errorf("miss: SD playback in progress on this camera")
 	}
 
-	if key := DualPlaybackKey(query); key != "" && dualEnabled(query.Get("model")) {
-		view, client, err := joinDual(key, query.Get("model"), dualLens(query.Get("channel")), func() (*Client, error) {
-			client, err := NewClient(rawURL)
-			if err != nil {
-				return nil, err
-			}
-			if err = client.StartPlaybackDual(query.Get("playback"), query.Get("speed")); err != nil {
-				_ = client.Close()
-				return nil, err
-			}
-			return client, nil
-		})
-		if err != nil {
-			return nil, err
-		}
-		prod, err := newProducer(client, view, query)
-		if err != nil {
-			_ = view.Close()
-			return nil, err
-		}
-		return prod, nil
-	}
-
-	if query.Get("playback") == "" && dualEnabled(query.Get("model")) {
+	if model := query.Get("model"); dualEnabled(model) {
 		key := query.Get("did")
 		if key == "" {
 			key = u.Host
 		}
-		view, client, err := joinDual(key, query.Get("model"), dualLens(query.Get("channel")), func() (*Client, error) {
+		// Live and SD replay share one connection per camera (see dual.go).
+		want := dualMode{playback: query.Get("playback"), speed: query.Get("speed"), quality: query.Get("subtype"), audio: query.Get("audio")}
+		view, client, err := joinDual(key, model, dualLens(query.Get("channel")), want, func() (*Client, error) {
 			client, err := NewClient(rawURL)
 			if err != nil {
 				return nil, err
 			}
-			if err = client.StartMedia("dual", query.Get("subtype"), query.Get("audio")); err != nil {
+			if want.playback != "" {
+				err = client.StartPlaybackDual(want.playback, want.speed)
+			} else {
+				err = client.StartMedia("dual", want.quality, want.audio)
+			}
+			if err != nil {
 				_ = client.Close()
 				return nil, err
 			}
@@ -101,6 +86,10 @@ func Dial(rawURL string) (core.Producer, error) {
 				return nil, err
 			}
 			return prod, nil
+		}
+		// Only a failed lens detection sends views back to separate sessions.
+		if !errors.Is(err, errDualDisabled) {
+			return nil, err
 		}
 		dualLog("view %s falls back to its own session: %v", query.Get("channel"), err)
 	}

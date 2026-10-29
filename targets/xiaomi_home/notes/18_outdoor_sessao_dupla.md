@@ -76,3 +76,11 @@ Correções:
 - Depois do replay: o ao vivo reconectou 3 s após o fechamento (19:05:58), mas a câmera parou de mandar quadros em ~10 s e recusou handshakes até ~19:07. A Vista 2 voltou às 19:07:37 e a Vista 1 às 19:08:31. Mesmo com `MSG_CLOSE`, a CW701 fica ~1,5–2,5 min sem atender depois de uma sessão de replay. O cartão SD cobre esse intervalo.
 - Próximo passo possível: fazer o replay dentro da mesma sessão do ao vivo, como o app oficial (troca de modo sem novo handshake), para eliminar esse intervalo.
 
+
+## Replay SD na mesma conexão do ao vivo (bridge v0.14.0)
+
+- A sessão compartilhada por câmera (`dual.go`) agora tem modo: `live` ou `pb:<instante>`. Um pedido de replay SD não abre outra conexão: na conexão aberta, a ponte manda `VIDEO_STOP` e depois `PLAYBACK_REQ` com `channel:[0,10]`. As visões ao vivo terminam com `camera switched to SD playback` e o gravador tenta de novo depois. Enquanto alguém assiste o replay, o ao vivo é recusado (`errPlaybackBusy`).
+- Ao mudar de modo, quadros em trânsito do modo anterior são descartados: cada lente recomeça no próximo VPS (`gated`).
+- Trocar o instante (seek) troca o replay na mesma conexão. Quando ninguém mais assiste, depois de 3 s (`dualReplayGrace`, para cobrir o seek) a ponte manda `STREAM_CTRL op 3` + `VIDEO_STOP` e `VIDEO_START` duplo, voltando ao ao vivo **sem handshake**. A sessão espera o gravador por até 3 min (`dualAfterReplay`).
+- Para a CW701, o handler da ponte não fecha mais as sessões da câmera ao abrir um replay. Nos outros modelos não mudou nada.
+- Teste: `dual_mode_test.go`, que cobre ao vivo → replay → ao vivo numa conexão sintética: comandos enviados, visões ao vivo encerradas, ao vivo recusado durante o replay, recomeço no quadro-chave, volta ao ao vivo e fechamento por ociosidade.

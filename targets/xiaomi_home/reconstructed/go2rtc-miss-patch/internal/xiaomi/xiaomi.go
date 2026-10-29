@@ -42,6 +42,7 @@ func Init() {
 
 		did := u.Query().Get("did")
 		isPlayback := u.Query().Get("playback") != ""
+		dualCamera := miss.DualEnabled(u.Query().Get("model"))
 		if isPlayback && did != "" {
 			// Block live dials before closing them: the cloud lookup below takes time.
 			done := miss.MarkPlaybackPending(did)
@@ -50,8 +51,8 @@ func Init() {
 		if did != "" {
 			closeTempClient(did)
 			// Only SD playback takes the camera over; live dials never close a playback (see miss.Dial).
-			// The second lens of a dual SD playback joins the session the first one opened.
-			if key := miss.DualPlaybackKey(u.Query()); isPlayback && (key == "" || !miss.DualSessionOpen(key)) {
+			// Dual-lens cameras switch their one shared connection instead of opening another.
+			if isPlayback && !dualCamera {
 				miss.CloseClientsForDID(did, false)
 			}
 		}
@@ -72,7 +73,9 @@ func Init() {
 		if err != nil {
 			// A live dial already connecting may have won the camera: close it and try once more.
 			log.Debug().Msgf("xiaomi: playback retry after %v", err)
-			miss.CloseClientsForDID(did, false)
+			if !dualCamera {
+				miss.CloseClientsForDID(did, false)
+			}
 			time.Sleep(1500 * time.Millisecond)
 			prod, err = xiaomi.Dial(rawURL)
 		}

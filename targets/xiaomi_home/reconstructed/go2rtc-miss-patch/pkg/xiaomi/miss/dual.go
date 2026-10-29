@@ -3,7 +3,6 @@ package miss
 import (
 	"errors"
 	"fmt"
-	"net/url"
 	"os"
 	"strings"
 	"sync"
@@ -17,17 +16,42 @@ import (
 // session per device and feeds one view per lens.
 // Observed on the NAS (2026-10-29): the lens is the top byte of the frame flags (header byte 15),
 // 0 for the main lens and 1 for the second; byte 12 bit 0 marks keyframes. Detection stays automatic.
+//
+// The same session also serves SD replay, as the official app does: switching modes sends commands on the
+// open connection instead of a new handshake. After a separate replay session the CW701 refused new
+// sessions for 1.5-2.5 min (seen on the NAS, 2026-10-29), leaving the NAS recorder without the camera.
 
 const (
 	dualViewMain   = 0
 	dualViewSecond = 10
 )
 
-var errDualClosed = errors.New("miss: dual view closed")
+var (
+	errDualClosed    = errors.New("miss: dual view closed")
+	errDualDisabled  = errors.New("miss: dual session recently failed")
+	errPlaybackBusy  = errors.New("miss: SD playback in progress on this camera")
+	errSwitchedToSD  = errors.New("miss: camera switched to SD playback")
+	errReplayReplace = errors.New("miss: SD playback moved to another instant")
+)
 
 type dualSource interface {
 	ReadPacket() (*Packet, error)
 	SetDeadline(t time.Time) error
+}
+
+// dualMode is what the shared session streams: live, or the SD replay of one instant.
+type dualMode struct {
+	playback string // replay start (unix seconds); empty for live
+	speed    string
+	quality  string // live subtype
+	audio    string
+}
+
+func (m dualMode) name() string {
+	if m.playback == "" {
+		return "live"
+	}
+	return "pb:" + m.playback
 }
 
 type dualHub struct {
@@ -35,10 +59,15 @@ type dualHub struct {
 	client *Client
 	src    dualSource
 	stop   func()
+	live   dualMode // how live is restarted after a replay
 
 	ready     chan struct{}
+	switchMu  sync.Mutex // serializes mode changes (camera commands)
 	mu        sync.Mutex
 	views     map[*dualView]struct{}
+	mode      string // dualMode.name(), or "switching"
+	gated     map[uint32]bool
+	idleGen   int
 	field     dualField
 	err       error
 	pending   []*Packet
@@ -51,6 +80,7 @@ type dualView struct {
 	lens     uint32
 	pkts     chan *Packet
 	done     chan struct{}
+	err      error
 	deadline atomic.Int64
 	once     sync.Once
 }
@@ -61,6 +91,9 @@ var (
 	dualFailures = map[string]time.Time{}
 	dualFields   = map[string]dualField{}
 )
+
+// DualEnabled reports a camera whose live and SD streams go through the shared session.
+func DualEnabled(model string) bool { return dualEnabled(model) }
 
 func dualEnabled(model string) bool {
 	return model == "xiaomi.camera.cw701" && os.Getenv("MIZIN_MISS_DUAL") != "0"
@@ -73,36 +106,23 @@ func dualLens(channel string) uint32 {
 	return dualViewSecond
 }
 
-// DualPlaybackKey names the shared SD playback session of both lenses ("pbdual" streams), empty otherwise.
-func DualPlaybackKey(query url.Values) string {
-	if query.Get("pbdual") == "" || query.Get("playback") == "" {
-		return ""
-	}
-	return query.Get("did") + "|pb|" + query.Get("playback")
-}
-
-// DualSessionOpen reports a live shared session under this key: the second lens joins it instead of
-// closing the camera's sessions.
-func DualSessionOpen(key string) bool {
-	dualMu.Lock()
-	defer dualMu.Unlock()
-	return dualHubs[key] != nil
-}
-
 func dualLog(format string, args ...any) {
 	fmt.Fprintf(os.Stderr, "[miss dual] "+format+"\n", args...)
 }
 
-// joinDual returns a view of the shared session for this device, dialing it when needed.
-func joinDual(key, model string, lens uint32, dial func() (*Client, error)) (*dualView, *Client, error) {
+// joinDual returns a view of the device's shared session in the wanted mode, dialing it when needed.
+func joinDual(key, model string, lens uint32, want dualMode, dial func() (*Client, error)) (*dualView, *Client, error) {
 	dualMu.Lock()
 	if until, ok := dualFailures[key]; ok && time.Now().Before(until) {
 		dualMu.Unlock()
-		return nil, nil, fmt.Errorf("miss: dual session recently failed")
+		return nil, nil, errDualDisabled
 	}
 	hub := dualHubs[key]
 	if hub == nil {
-		hub = &dualHub{key: key, ready: make(chan struct{}), views: map[*dualView]struct{}{}, field: dualFields[model]}
+		hub = &dualHub{key: key, ready: make(chan struct{}), views: map[*dualView]struct{}{}, field: dualFields[model], mode: want.name()}
+		if want.playback == "" {
+			hub.live = want
+		}
 		dualHubs[key] = hub
 		dualMu.Unlock()
 		client, err := dial()
@@ -124,22 +144,28 @@ func joinDual(key, model string, lens uint32, dial func() (*Client, error)) (*du
 			return nil, nil, fmt.Errorf("miss: shared session still connecting")
 		}
 	}
-	view, err := hub.join(lens)
+	view, err := hub.enter(lens, want)
 	if err != nil {
 		return nil, nil, err
 	}
 	return view, hub.client, nil
 }
 
+// join adds a view in the current mode (tests and same-mode joins).
 func (h *dualHub) join(lens uint32) (*dualView, error) {
 	h.mu.Lock()
 	defer h.mu.Unlock()
+	return h.addViewLocked(lens)
+}
+
+func (h *dualHub) addViewLocked(lens uint32) (*dualView, error) {
 	if h.err != nil {
 		return nil, h.err
 	}
+	h.idleGen++
 	v := &dualView{hub: h, lens: lens, pkts: make(chan *Packet, 1024), done: make(chan struct{})}
 	h.views[v] = struct{}{}
-	if h.field.ok() {
+	if h.field.ok() && !h.gated[lens] {
 		// Late joiners start from the buffered tail so they reach the next keyframe quickly.
 		for _, pkt := range h.pending {
 			v.offer(h.field, pkt)
@@ -148,28 +174,138 @@ func (h *dualHub) join(lens uint32) (*dualView, error) {
 	return v, nil
 }
 
-// dualLinger keeps an empty session open briefly: the recorder's check followed by continuous recording,
-// or a viewer switching views, rejoins it instead of closing and reopening the camera connection.
-var dualLinger = 6 * time.Second
+// enter joins the wanted mode, switching the session first when needed. SD replay takes the session over
+// from live views (the recorder retries later); live never interrupts a replay that is being watched.
+func (h *dualHub) enter(lens uint32, want dualMode) (*dualView, error) {
+	h.switchMu.Lock()
+	defer h.switchMu.Unlock()
+	h.mu.Lock()
+	if h.err != nil {
+		defer h.mu.Unlock()
+		return nil, h.err
+	}
+	if h.mode == want.name() {
+		defer h.mu.Unlock()
+		return h.addViewLocked(lens)
+	}
+	if want.playback == "" && len(h.views) > 0 {
+		h.mu.Unlock()
+		return nil, errPlaybackBusy
+	}
+	reason := errSwitchedToSD
+	if strings.HasPrefix(h.mode, "pb:") {
+		reason = errReplayReplace
+	}
+	h.detachLocked(reason)
+	h.mode = "switching"
+	h.mu.Unlock()
+
+	err := h.switchTo(want)
+
+	h.mu.Lock()
+	defer h.mu.Unlock()
+	if err != nil {
+		h.mu.Unlock()
+		h.fail(err, 0)
+		h.mu.Lock()
+		return nil, err
+	}
+	h.setModeLocked(want)
+	return h.addViewLocked(lens)
+}
+
+// detachLocked ends the views of the outgoing mode; their streams fail and reconnect on their own terms.
+func (h *dualHub) detachLocked(reason error) {
+	for v := range h.views {
+		v.err = reason
+		v.once.Do(func() { close(v.done) })
+	}
+	h.views = map[*dualView]struct{}{}
+	h.pending = nil
+}
+
+func (h *dualHub) setModeLocked(m dualMode) {
+	h.mode = m.name()
+	// Frames of the previous mode may still be in flight: each lens restarts at its next keyframe.
+	h.gated = map[uint32]bool{dualViewMain: true, dualViewSecond: true}
+	h.pending = nil
+}
+
+// switchTo stops the current stream on the open connection and starts the wanted one.
+func (h *dualHub) switchTo(want dualMode) error {
+	c := h.client
+	_ = c.StopMedia()
+	time.Sleep(150 * time.Millisecond)
+	if want.playback == "" {
+		c.playbackMode = false
+		live := h.live
+		dualLog("session %s: back to live on the same connection", h.key)
+		return c.StartMedia("dual", live.quality, live.audio)
+	}
+	dualLog("session %s: SD replay %s on the same connection", h.key, want.playback)
+	return c.StartPlaybackDual(want.playback, want.speed)
+}
+
+// dualLinger keeps an empty live session open briefly: the recorder's check followed by continuous
+// recording, or a viewer switching views, rejoins it instead of closing and reopening the connection.
+// After a replay the session waits longer in live mode, so the recorder rejoins without a handshake.
+var (
+	dualLinger         = 6 * time.Second
+	dualAfterReplay    = 3 * time.Minute
+	dualReplayGrace    = 3 * time.Second
+)
 
 func (h *dualHub) leave(v *dualView) {
 	h.mu.Lock()
+	if _, ok := h.views[v]; !ok {
+		h.mu.Unlock()
+		return
+	}
 	delete(h.views, v)
 	empty := len(h.views) == 0
+	mode := h.mode
+	h.idleGen++
+	gen := h.idleGen
 	h.mu.Unlock()
 	if !empty {
 		return
 	}
-	if strings.Contains(h.key, "|pb|") {
-		// An SD replay nobody watches frees the camera at once for the live session.
-		h.fail(errDualClosed, 0)
+	if strings.HasPrefix(mode, "pb:") {
+		// Nobody watches the replay: after a short grace (seeks reopen it) return the connection to live.
+		time.AfterFunc(dualReplayGrace, func() { h.backToLive(mode, gen) })
 		return
 	}
-	time.AfterFunc(dualLinger, func() {
-		h.mu.Lock()
-		still := len(h.views) == 0
+	h.closeWhenIdle(dualLinger, gen)
+}
+
+func (h *dualHub) backToLive(from string, gen int) {
+	h.switchMu.Lock()
+	defer h.switchMu.Unlock()
+	h.mu.Lock()
+	if h.err != nil || h.mode != from || len(h.views) > 0 || h.idleGen != gen {
 		h.mu.Unlock()
-		if still {
+		return
+	}
+	h.mode = "switching"
+	h.mu.Unlock()
+	if err := h.switchTo(h.live); err != nil {
+		h.fail(err, 0)
+		return
+	}
+	h.mu.Lock()
+	h.setModeLocked(h.live)
+	h.idleGen++
+	gen = h.idleGen
+	h.mu.Unlock()
+	h.closeWhenIdle(dualAfterReplay, gen)
+}
+
+func (h *dualHub) closeWhenIdle(after time.Duration, gen int) {
+	time.AfterFunc(after, func() {
+		h.mu.Lock()
+		idle := len(h.views) == 0 && h.idleGen == gen
+		h.mu.Unlock()
+		if idle {
 			h.fail(errDualClosed, 0)
 		}
 	})
@@ -220,6 +356,10 @@ func (h *dualHub) run(model string) {
 			h.mu.Unlock()
 			return
 		}
+		if h.mode == "switching" {
+			h.mu.Unlock()
+			continue
+		}
 		if !h.field.ok() {
 			h.pending = append(h.pending, pkt)
 			field, ok := detectDualField(h.pending)
@@ -243,6 +383,16 @@ func (h *dualHub) run(model string) {
 			}
 			h.mu.Unlock()
 			continue
+		}
+		if isVideo(pkt.CodecID) {
+			lens := h.field.lens(pkt)
+			if h.gated[lens] {
+				if !startsGOP(pkt) {
+					h.mu.Unlock()
+					continue
+				}
+				h.gated[lens] = false
+			}
 		}
 		for v := range h.views {
 			if !v.offer(h.field, pkt) {
@@ -283,7 +433,10 @@ func (v *dualView) ReadPacket() (*Packet, error) {
 		return pkt, nil
 	case <-v.done:
 		v.hub.mu.Lock()
-		err := v.hub.err
+		err := v.err
+		if err == nil {
+			err = v.hub.err
+		}
 		v.hub.mu.Unlock()
 		if err == nil {
 			err = errDualClosed

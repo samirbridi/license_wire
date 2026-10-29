@@ -3,7 +3,6 @@ package miss
 import (
 	"encoding/binary"
 	"encoding/json"
-	"net/url"
 	"testing"
 
 	"github.com/AlexxIT/go2rtc/pkg/xiaomi/crypto"
@@ -45,16 +44,5 @@ func TestDualPlaybackRequestsBothLensesInOneSession(t *testing.T) {
 	}
 	if req.Start[0] != 1793100000 || req.Start[1] != 1793100002 || req.Offset[0] != 30 || req.Offset[1] != 28 {
 		t.Fatalf("lens files not resolved separately: %+v", req)
-	}
-}
-
-func TestDualPlaybackKeyOnlyForDualStreams(t *testing.T) {
-	q := url.Values{"did": {"d"}, "playback": {"1793100030"}}
-	if DualPlaybackKey(q) != "" {
-		t.Fatal("single-lens playback got a shared key")
-	}
-	q.Set("pbdual", "1")
-	if DualPlaybackKey(q) != "d|pb|1793100030" {
-		t.Fatal(DualPlaybackKey(q))
 	}
 }
