@@ -405,8 +405,21 @@ func tailFromKeyframes(pkts []*Packet, f dualField) []*Packet {
 	return out
 }
 
+// dualTailAudio is how many recent audio packets the tail keeps: without them a late joiner's probe ends on
+// the buffered video alone and opens the stream without its audio track (the NAS recorder requires one).
+const dualTailAudio = 8
+
 func appendTail(tail []*Packet, pkt *Packet, f dualField) []*Packet {
 	if !isVideo(pkt.CodecID) {
+		tail = append(tail, pkt)
+		audio := 0
+		for i := len(tail) - 1; i >= 0; i-- {
+			if !isVideo(tail[i].CodecID) {
+				if audio++; audio > dualTailAudio {
+					return append(tail[:i], tail[i+1:]...)
+				}
+			}
+		}
 		return tail
 	}
 	if startsGOP(pkt) {

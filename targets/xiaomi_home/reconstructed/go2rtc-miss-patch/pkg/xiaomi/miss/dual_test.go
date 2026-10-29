@@ -143,9 +143,25 @@ func TestDualHubSplitsLensesAndClosesWithLastView(t *testing.T) {
 	// A late joiner starts from the latest keyframe of its lens.
 	late, _ := hub.join(dualViewSecond)
 	_ = late.SetDeadline(time.Now().Add(100 * time.Millisecond))
-	first, err := late.ReadPacket()
-	if err != nil || !startsGOP(first) || first.Header[28] != 10 {
-		t.Fatalf("late joiner did not start at a keyframe: %v", err)
+	var first *Packet
+	lateAudio := 0
+	for {
+		p, err := late.ReadPacket()
+		if err != nil {
+			break
+		}
+		if !isVideo(p.CodecID) {
+			lateAudio++
+		} else if first == nil {
+			first = p
+		}
+	}
+	if first == nil || !startsGOP(first) || first.Header[28] != 10 {
+		t.Fatal("late joiner did not start at a keyframe")
+	}
+	// The probe of a late joiner must also see the audio track.
+	if lateAudio == 0 || lateAudio > dualTailAudio {
+		t.Fatalf("late joiner got %d audio packets", lateAudio)
 	}
 	_ = late.Close()
 	_ = main.Close()

@@ -62,3 +62,9 @@ Correções:
 - Causa: `cs2.Conn` fechava apenas o socket, sem mandar `MSG_CLOSE` (0xF0) para a câmera, embora o tipo já estivesse declarado. Cada sessão encerrada pela ponte continuava ocupando uma vaga na câmera até o timeout dela.
 - Correção: `cs2.Conn.Close` manda `{0xF1, 0xF0, 0, 0}` (3 vezes em UDP, sem ack; 1 vez em TCP) antes de fechar. Teste: `cs2/close_test.go`.
 - A sessão de replay SD não fica mais aberta 6 s depois de encerrada: libera a câmera na hora para o ao vivo. Isso continua valendo só para o ao vivo.
+
+## Áudio de quem entra depois (bridge v0.13.3)
+
+- Na 0054, a Vista 2 passou na verificação de 10 s do gravador, mas a gravação contínua caía em poucos segundos. A ponte não registrava erro.
+- Causa: quem entra numa sessão já aberta recebe na hora o trecho de vídeo desde o último VPS da sua lente (até ~80 quadros). O `probe` encerra ao passar de 45 quadros de vídeo sem ter visto áudio e abre o fluxo sem a faixa de áudio. O ffmpeg do gravador usa `-map 0:a:0` e sai com erro.
+- Correção: o trecho guardado também mantém os 8 pacotes de áudio mais recentes (`dualTailAudio`). O teste do hub confere que quem entra depois recebe áudio.
