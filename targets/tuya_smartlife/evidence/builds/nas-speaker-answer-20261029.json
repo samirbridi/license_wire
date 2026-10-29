@@ -1,0 +1,11 @@
+{
+  "runId": "nas-speaker-answer-20261029",
+  "sourceCommit": "ab9ca308094416084c9dce3edb2bf40585fd9b26",
+  "previous": "v0.40.0 (build 0059)",
+  "version": "v0.40.1 (build 0060)",
+  "build": 60,
+  "date": "2026-10-29",
+  "status": "built",
+  "commits": [],
+  "artifact": "runtime/builds/build-0060"
+}

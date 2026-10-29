@@ -85,7 +85,14 @@ Na publicação da 0048, o Pages subiu uma vez sem `_worker.js` (caminho errado)
 
 "Imagem" nas colunas "Antes" é o tempo até 300 KB; a última coluna é o evento `playing` no player do painel, com a resolução nativa decodificada (2304×1296 e 2880×1624).
 
+## Builds 0059 e 0060 — microfone e câmeras de uma lente (2026-10-29)
+
+- O proxy `/api/ws` usa o mesmo fluxo que o gravador mantém aberto (`recorderStreamAlias`: `aw300_garagem` → `aw300_garagem_quality3`, Mi 2K → `_quality4`). Antes, as câmeras de uma lente abriam uma sessão nova e fria a cada visualização. Medido às 23:48 UTC pelo player do painel, com os nomes base: 0,6–2,3 s.
+- Fala contínua (`camera-talk-stream.mjs`, `/api/camera/talk-ws`): uma WebSocket por fala, PCM 16 kHz a cada 64 ms, um ffmpeg por fala (Opus de 20 ms, uma página Ogg por pacote) e uma requisição em fluxo para `api/xiaomi/talkstream` da ponte, que entrega 40 ms a cada 40 ms. Como no app oficial, a câmera confirma o canal antes do áudio e o som da câmera fica mudo durante a fala. O envio antigo, um POST por bloco, continua como reserva. Teste: `test/talk.test.mjs`, com ffmpeg real: ~100 pacotes em 2 s, o primeiro em menos de 1 s.
+- Verificado (0060, 23:55 UTC): canal de fala da Outdoor confirmado pela câmera em 1,4 s (resposta binária 0), com 2 s de silêncio enviados. Som real no alto-falante ainda **não confirmado**: depende do proprietário falar e ouvir na câmera.
+
 ## Pendências
+
 
 
 

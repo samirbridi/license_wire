@@ -1,5 +1,25 @@
 # CHANGELOG — tuya_smartlife
 
+## v0.40.1 (build 0060) - 2026-10-29
+
+### 💥 Breaking Changes
+
+- Nenhum.
+
+### ✨ Features
+
+- Nenhum.
+
+### 🐛 Fixes
+
+- Nenhum.
+
+### ⚡ Improvements
+
+- Nenhum.
+
+Recompilação do commit `ab9ca308094416084c9dce3edb2bf40585fd9b26`, sem novas alterações de fonte.
+
 ## v0.40.0 (build 0059) - 2026-10-29
 
 ### 💥 Breaking Changes
