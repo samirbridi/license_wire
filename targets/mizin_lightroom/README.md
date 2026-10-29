@@ -1,6 +1,6 @@
 # Mizin Lightroom - aquisicao local e perfil de referencia
 
-> **Versão da Análise**: `v0.3.1 (build 0007)`
+> **Versão da Análise**: `v0.4.0 (build 0008)`
 > Atualizado em: 2026-10-29, America/Sao_Paulo.
 
 Projeto independente para Lightroom Classic no Windows, inicialmente para uso pessoal. Treinamento e inferencia devem acontecer nos computadores do usuario. O Lightroom continua responsavel pela revelacao e renderizacao final.
@@ -36,6 +36,8 @@ O novo pacote inclui runtime Windows x64, dependencias, modelo privado e quatro 
 O piloto aceita de 1 a 100 RAWs CR3 em cor da Canon EOS R6m2. Exibe exposicao, temperatura e contraste; o CSV inclui os dez controles experimentais. Registra progresso, cancelamento, erros por foto e SHA-256 das fontes, preservando os originais. Os valores de referencia exibidos foram lidos no inicio da tarefa. As imagens tecnicas geradas sao entradas LibRaw, sem o estilo aplicado, e nao representam uma previa Adobe.
 
 Atualizacao: extrair o ZIP inteiro em uma pasta nova e permanente; guardar a instalacao anterior. No Gerenciador de plug-ins, remover o cadastro antigo e adicionar a nova pasta `.lrplugin`. Executar primeiro o diagnostico e depois analisar 1 a 5 fotos. O mesmo identificador de plugin e mantido. Passos completos e limites em `notes/10_motor_local_e_atualizacao.md`; o LEIA-ME acompanha o ZIP privado. Escrita no catalogo, copias virtuais, treino pelo menu, selecao automatica e fluxos de importacao continuam pendentes.
+
+Pacote funcional entregue: `\\192.168.1.58\Users\Public\Documents\MizinLightroomPilot\MizinLightroom-0.4.0-build0008-9f44a1dc\MizinLightroom-0.4.0-build0008-motor-local.zip`. ZIP de 43.678.177 bytes, SHA-256 `ae325995e7cfd74e6b1d378ccbce029f395ad9157b80fb0f6719a8f247ef5aa5`, origem e destino iguais. Os 1.623 hashes do manifesto, CRC do ZIP e oito arquivos Lua 5.1 foram verificados; o proprio pacote final calculou novamente um RAW fora das referencias. Recibos em `evidence/local-plugin-package-20261029.json` e `evidence/local-plugin-delivery-20261029.json`. Teste dos novos comandos no Lightroom da maquina de edicao permanece pendente.
 
 ## Primeiro plugin de comparacao
 

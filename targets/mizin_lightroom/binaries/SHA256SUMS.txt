@@ -1,4 +1,4 @@
-# SHA-256 do catalogo, manifesto RAW e screenshots de QA preservados.
+# SHA-256 dos originais, manifestos e pacotes preservados neste alvo.
 # Dados privados fora do Git; caminhos relativos a esta pasta binaries.
 250f400b4cbe6418e95c05d12fd39a75df6f99573bf571becf69e0aa0ed2201a *../private/snapshots/20261029-124518-192a6383/original/202610 - OUTUBRO.lrcat
 f887ed23c6d6350c4338efd1ee50fda8464022b93c71ec38c243319e24d72e12 *../private/snapshots/20261029-124518-192a6383/original/202610 - OUTUBRO.lrcat-data/000009.blob
@@ -32,3 +32,6 @@ e3ad863faebb1c589db9e220a6297f3e07c8edcadcd85944e6dbff65e1dbaae4 *../private/evi
 # RAW adicional somente para QA e proveniencia do runtime local.
 dd3d044f119ae90ecc579133d5d7632b18d6ad8ece91240fae0c8f4110ec401a *../private/qa/local-engine-c25a3676/SHA256SUMS.txt
 1b2b3c8aedba66cfcf42d7af13911b97a396d060a4663b584c33b58dc9a6ebcf *../evidence/local-runtime-20261029.json
+
+# Pacote funcional do motor local entregue, com origem e destino conferidos.
+ae325995e7cfd74e6b1d378ccbce029f395ad9157b80fb0f6719a8f247ef5aa5 *../private/deliveries/MizinLightroom-0.4.0-build0008-9f44a1dc/MizinLightroom-0.4.0-build0008-motor-local.zip

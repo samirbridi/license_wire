@@ -1,5 +1,23 @@
 # CHANGELOG - mizin_lightroom
 
+## v0.4.0 (build 0008) - 2026-10-29
+
+### 💥 Breaking Changes
+
+- Nenhum.
+
+### ✨ Features
+
+- feat: integra motor local portatil para analisar RAWs selecionados (commit `d1497888ca6971f4af56c9f4fd5cb87720f5103d`)
+
+### 🐛 Fixes
+
+- Nenhum.
+
+### ⚡ Improvements
+
+- Nenhum.
+
 ## v0.3.1 (build 0007) - 2026-10-29
 
 ### 💥 Breaking Changes

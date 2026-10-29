@@ -1,0 +1,17 @@
+{
+  "previous": "v0.3.1 (build 0007)",
+  "version": "v0.4.0 (build 0008)",
+  "date": "2026-10-29",
+  "timezone": "America/Sao_Paulo",
+  "baseline": "b3f063e1f0fea30f4472c4e7801fb8a65d611baa",
+  "sourceHead": "d1497888ca6971f4af56c9f4fd5cb87720f5103d",
+  "increment": "feat",
+  "commits": [
+    {
+      "hash": "d1497888ca6971f4af56c9f4fd5cb87720f5103d",
+      "subject": "feat: integra motor local portatil para analisar RAWs selecionados",
+      "type": "feat",
+      "breaking": false
+    }
+  ]
+}

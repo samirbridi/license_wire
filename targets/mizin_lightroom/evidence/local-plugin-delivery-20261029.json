@@ -1,0 +1,12 @@
+{
+  "schema": "mizin-lightroom.local-plugin-delivery/1",
+  "version": "v0.4.0 (build 0008)",
+  "date": "2026-10-29",
+  "destination": "\\\\192.168.1.58\\Users\\Public\\Documents\\MizinLightroomPilot\\MizinLightroom-0.4.0-build0008-9f44a1dc\\MizinLightroom-0.4.0-build0008-motor-local.zip",
+  "sha256": "ae325995e7cfd74e6b1d378ccbce029f395ad9157b80fb0f6719a8f247ef5aa5",
+  "bytes": 43678177,
+  "sourceAndDestinationSha256Match": true,
+  "existingPluginOverwritten": false,
+  "installedOrActivatedAutomatically": false,
+  "catalogOrRawWrites": 0
+}
