@@ -16,7 +16,8 @@ window.mizinDeploy = async ({build, previous, zipSha256, composeSha256, previous
   const api = async params => { const r = await fetch('/webapi/entry.cgi', {method: 'POST', headers: {'X-SYNO-TOKEN': token, 'Content-Type': 'application/x-www-form-urlencoded'}, body: new URLSearchParams(params)}); const d = await r.json(); if (!d.success) throw new Error(`${params.api}.${params.method}: ${JSON.stringify(d.error)}`); return d.data; };
   const sha = async data => [...new Uint8Array(await crypto.subtle.digest('SHA-256', data))].map(b => b.toString(16).padStart(2, '0')).join('');
   const wait = async (apiName, version, taskid) => { for (let i = 0; i < 180; i++) { await sleep(1000); const s = await api({api: apiName, method: 'status', version, taskid}); if (s.finished) return s; } throw new Error(apiName + ' sem conclusão'); };
-  const file = document.getElementById('mizinUpload')?.files[0];
+  // Packages over 10 MB arrive as .partN files (make-nas-code-zip.py), joined into window.__mizinZip as a File named like the zip.
+  const file = window.__mizinZip || document.getElementById('mizinUpload')?.files[0];
   if (!file || file.name !== `nas-portal-build-${build}-code.zip`) throw new Error('Pacote da build não selecionado.');
   const bytes = await file.arrayBuffer();
   if (await sha(bytes) !== zipSha256) throw new Error('SHA-256 do pacote não confere.');

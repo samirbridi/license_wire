@@ -42,3 +42,8 @@ with zipfile.ZipFile(out, 'x', zipfile.ZIP_DEFLATED) as z:
         add((Path(root.name) / p.relative_to(root)).as_posix(), p.read_bytes())
     add(f'{root.name}/compose-volume4.yaml', compose.encode('utf-8'))
 print(out, out.stat().st_size, hashlib.sha256(out.read_bytes()).hexdigest())
+# The Chrome upload tool takes up to 10 MB per file: larger packages also go out as .partN pieces.
+data = out.read_bytes(); chunk = 9 * 1024 * 1024
+if len(data) > chunk:
+    for i in range(0, len(data), chunk):
+        part = out.with_name(f'{out.name}.part{i // chunk + 1}'); part.write_bytes(data[i:i + chunk]); print(part)
