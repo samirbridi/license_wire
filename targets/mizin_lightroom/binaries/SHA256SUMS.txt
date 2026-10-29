@@ -41,3 +41,6 @@ ae325995e7cfd74e6b1d378ccbce029f395ad9157b80fb0f6719a8f247ef5aa5 *../private/del
 
 # Coorte derivada do JSON nativo lido; bytes originais indisponiveis apos leitura.
 0a9073c9ea25ae938653c04560a64c93ed42e6130b5ba7916aabb6ae21dd3a51 *../private/evidence/native-parsed-results-29a30adc/parsed-cohort.json
+
+# Pacote funcional com coletor de referencias aprovado no QA local e entregue.
+19351638061522823692f520cf077489f57b7b4caf3c5b488489ae272fa25f5e *../private/deliveries/MizinLightroom-0.5.0-build0010-dc7fe970/MizinLightroom-0.5.0-build0010-motor-local.zip

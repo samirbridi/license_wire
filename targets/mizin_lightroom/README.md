@@ -1,6 +1,6 @@
 # Mizin Lightroom - aquisicao local e perfil de referencia
 
-> **Versão da Análise**: `v0.4.1 (build 0009)`
+> **Versão da Análise**: `v0.5.0 (build 0010)`
 > Atualizado em: 2026-10-29, America/Sao_Paulo.
 
 Projeto independente para Lightroom Classic no Windows, inicialmente para uso pessoal. Treinamento e inferencia devem acontecer nos computadores do usuario. O Lightroom continua responsavel pela revelacao e renderizacao final.
@@ -44,6 +44,8 @@ Atualizacao: extrair o ZIP inteiro em uma pasta nova e permanente; guardar a ins
 Para preparar treino, selecionar inicialmente cinco RAWs originais em cor com ajustes finais aprovados e executar **Mizin: coletar referencias aprovadas**. Informar data/nome do trabalho e confirmar a aprovacao; o coletor produz `references.jsonl` sem pixels. Testar depois coletas de 50 a 100 referencias variadas por trabalho, mantendo trabalhos separados. A coleta suporta somente os dez controles basicos, sem reconstruir curvas, HSL, perfis ou mascaras.
 
 Pacote funcional entregue: `\\192.168.1.58\Users\Public\Documents\MizinLightroomPilot\MizinLightroom-0.4.0-build0008-9f44a1dc\MizinLightroom-0.4.0-build0008-motor-local.zip`. ZIP de 43.678.177 bytes, SHA-256 `ae325995e7cfd74e6b1d378ccbce029f395ad9157b80fb0f6719a8f247ef5aa5`, origem e destino iguais. Os 1.623 hashes do manifesto, CRC do ZIP e oito arquivos Lua 5.1 foram verificados; o proprio pacote final calculou novamente um RAW fora das referencias. Recibos de geracao/entrega em `evidence/local-plugin-package-20261029.json` e `evidence/local-plugin-delivery-20261029.json`. O usuario depois confirmou o fluxo nominal no Lightroom 15.6. Cancelamento nativo, reabertura do historico e aplicacao de ajustes continuam com QA proprio pendente.
+
+Pacote com coletor entregue: `\\192.168.1.58\Users\Public\Documents\MizinLightroomPilot\MizinLightroom-0.5.0-build0010-dc7fe970\MizinLightroom-0.5.0-build0010-motor-local.zip`. SHA-256 `19351638061522823692f520cf077489f57b7b4caf3c5b488489ae272fa25f5e`, 43681449 bytes, origem e destino iguais. Analise e coleta do proprio pacote final passaram com RAW real, 1.624 hashes de arquivo e nove fontes Lua verificados. Os pesos continuam iguais ao piloto; a janela de coleta ainda requer QA nativo. Recebimentos de JSONL podem ser colocados em subpastas por trabalho/coleta de `\\192.168.1.58\Users\Public\Documents\MizinLightroomPilot\Referencias-20261029`. Recibos em `evidence/reference-collector-package-20261029.json` e `evidence/reference-collector-delivery-20261029.json`.
 
 ## Primeiro plugin de comparacao
 

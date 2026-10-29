@@ -1,5 +1,23 @@
 # CHANGELOG - mizin_lightroom
 
+## v0.5.0 (build 0010) - 2026-10-29
+
+### 💥 Breaking Changes
+
+- Nenhum.
+
+### ✨ Features
+
+- feat: coleta referencias aprovadas por trabalho no Lightroom (commit `b00ced70e7ef4e329594a86e9f56cbb77ea4d6d6`)
+
+### 🐛 Fixes
+
+- Nenhum.
+
+### ⚡ Improvements
+
+- Nenhum.
+
 ## v0.4.1 (build 0009) - 2026-10-29
 
 ### 💥 Breaking Changes

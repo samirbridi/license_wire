@@ -1,0 +1,13 @@
+{
+  "schema": "mizin-lightroom.reference-collector-delivery/1",
+  "version": "v0.5.0 (build 0010)",
+  "date": "2026-10-29",
+  "destination": "\\\\192.168.1.58\\Users\\Public\\Documents\\MizinLightroomPilot\\MizinLightroom-0.5.0-build0010-dc7fe970\\MizinLightroom-0.5.0-build0010-motor-local.zip",
+  "sha256": "19351638061522823692f520cf077489f57b7b4caf3c5b488489ae272fa25f5e",
+  "bytes": 43681449,
+  "sourceAndDestinationSha256Match": true,
+  "referenceTransferDirectory": "\\\\192.168.1.58\\Users\\Public\\Documents\\MizinLightroomPilot\\Referencias-20261029",
+  "existingPluginOverwritten": false,
+  "installedOrActivatedAutomatically": false,
+  "catalogOrRawWrites": 0
+}

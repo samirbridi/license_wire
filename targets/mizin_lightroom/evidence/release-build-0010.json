@@ -1,0 +1,17 @@
+{
+  "previous": "v0.4.1 (build 0009)",
+  "version": "v0.5.0 (build 0010)",
+  "date": "2026-10-29",
+  "timezone": "America/Sao_Paulo",
+  "baseline": "598a835d552a38facea1d84d87c828c5ae8ecfe5",
+  "sourceHead": "b00ced70e7ef4e329594a86e9f56cbb77ea4d6d6",
+  "increment": "feat",
+  "commits": [
+    {
+      "hash": "b00ced70e7ef4e329594a86e9f56cbb77ea4d6d6",
+      "subject": "feat: coleta referencias aprovadas por trabalho no Lightroom",
+      "type": "feat",
+      "breaking": false
+    }
+  ]
+}
