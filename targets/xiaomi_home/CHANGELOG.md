@@ -1,5 +1,23 @@
 # CHANGELOG — xiaomi_home
 
+## v0.14.0 (build 0029) - 2026-10-29
+
+### 💥 Breaking Changes
+
+- Nenhum.
+
+### ✨ Features
+
+- feat: troca a Outdoor entre ao vivo e replay SD na mesma conexao, sem novo handshake (commit `2186fabb5b87b9074fe9025dd8e53e59bddeb87a`)
+
+### 🐛 Fixes
+
+- Nenhum.
+
+### ⚡ Improvements
+
+- improve: registra o replay SD duplo da Outdoor verificado na build 0055 (commit `a1d0ded01106bfb1073996c70560e6a6e3376fbb`)
+
 ## v0.13.3 (build 0028) - 2026-10-29
 
 ### 💥 Breaking Changes
