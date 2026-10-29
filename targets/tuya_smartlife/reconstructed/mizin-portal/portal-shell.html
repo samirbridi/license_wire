@@ -262,38 +262,51 @@
           </div>
         </div>
 
-        <!-- Card 5: Garagem & Veículos Elétricos (Unified Card) -->
-        <div class="metric-card glow-cyan is-clickable" onclick="switchTab('ev')" title="Clique para abrir a central dos Veículos Elétricos">
+        <!-- Cards 5 e 6: um cartão por veículo elétrico -->
+        <div class="metric-card glow-cyan is-clickable" onclick="switchTab('ev'); selectEvVehicle('ora5');" title="Abrir a central do GWM Ora 5">
           <div class="metric-header">
-            <span class="metric-title">VEÍCULOS ELÉTRICOS (GARAGEM)</span>
+            <span class="metric-title">🚗 GWM ORA 5</span>
             <div class="metric-header-badges">
-              <span class="badge badge-live" id="evOverviewStatusBadge" style="white-space: nowrap; font-size: 11px;">⚡ 2 Veículos Online</span>
+              <span class="badge badge-live" id="evQuickOraLock" style="white-space: nowrap; font-size: 11px;">🔒 Trancado</span>
             </div>
           </div>
-          <div style="display:flex; justify-content:space-between; gap:10px; margin-top:8px;">
-            <div style="flex:1; background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.07); border-radius:8px; padding:8px 10px;">
-              <div style="font-size:11px; color:var(--text-muted); display:flex; justify-content:space-between;">
-                <span style="font-weight:600; color:var(--text-main);">🚗 GWM Ora 5</span>
-                <span id="evQuickOraLock">🔒 Trancado</span>
-              </div>
-              <div style="font-size:18px; font-weight:700; color:var(--accent-cyan); margin-top:2px;" id="evQuickOraSoc">84%</div>
-              <div style="font-size:11px; color:var(--text-muted);" id="evQuickOraRange">293 km autonomia</div>
-              <div style="font-size:10px; color:var(--text-dim); margin-top:3px;">TRL-4I59 • Preto</div>
-            </div>
-            <div style="flex:1; background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.07); border-radius:8px; padding:8px 10px;">
-              <div style="font-size:11px; color:var(--text-muted); display:flex; justify-content:space-between;">
-                <span style="font-weight:600; color:var(--text-main);">⚡ Dolphin Mini GS</span>
-                <span id="evQuickBydLock">🔒 Trancado</span>
-              </div>
-              <div style="font-size:18px; font-weight:700; color:#10b981; margin-top:2px;" id="evQuickBydSoc">78%</div>
-              <div style="font-size:11px; color:var(--text-muted);" id="evQuickBydRange">218 km autonomia</div>
-              <div style="font-size:10px; color:var(--text-dim); margin-top:3px;">TQR-1A36 • Blade 38,88kWh</div>
-            </div>
+          <div class="ev-quick-body">
+            <div class="ev-quick-soc" id="evQuickOraSoc" style="color:var(--accent-cyan);">--%</div>
+            <div class="ev-quick-meter"><span id="evQuickOraBar" style="background:var(--accent-cyan);"></span></div>
+            <div class="ev-quick-range" id="evQuickOraRange">-- km de autonomia</div>
           </div>
           <div class="metric-footer-stacked">
             <div class="metric-footer-line">
-              <span class="footer-lbl">Status:</span>
-              <span class="footer-val" style="color:var(--accent-cyan);">Prontos para rodar • Pneus calibrados</span>
+              <span class="footer-lbl">Placa:</span>
+              <span class="footer-val">TRL-4I59 • Preto</span>
+            </div>
+            <div class="metric-footer-line">
+              <span class="footer-lbl">Dados:</span>
+              <span class="footer-val" id="evQuickOraSource">—</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="metric-card glow-cyan is-clickable" onclick="switchTab('ev'); selectEvVehicle('dolphin_mini');" title="Abrir a central do BYD Dolphin Mini">
+          <div class="metric-header">
+            <span class="metric-title">⚡ BYD DOLPHIN MINI</span>
+            <div class="metric-header-badges">
+              <span class="badge badge-live" id="evQuickBydLock" style="white-space: nowrap; font-size: 11px;">🔒 Trancado</span>
+            </div>
+          </div>
+          <div class="ev-quick-body">
+            <div class="ev-quick-soc" id="evQuickBydSoc" style="color:#10b981;">--%</div>
+            <div class="ev-quick-meter"><span id="evQuickBydBar" style="background:#10b981;"></span></div>
+            <div class="ev-quick-range" id="evQuickBydRange">-- km de autonomia</div>
+          </div>
+          <div class="metric-footer-stacked">
+            <div class="metric-footer-line">
+              <span class="footer-lbl">Placa:</span>
+              <span class="footer-val">TQR-1A36 • Blade 38,88 kWh</span>
+            </div>
+            <div class="metric-footer-line">
+              <span class="footer-lbl">Dados:</span>
+              <span class="footer-val" id="evQuickBydSource">—</span>
             </div>
           </div>
         </div>
@@ -392,6 +405,7 @@
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:13px;height:13px;"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg>
               Foco Único
             </button>
+            <button class="cam-mode-btn" id="btnCustomizeFocus" onclick="openCameraFocusSettings()" title="Escolher a câmera em destaque e a ordem" style="display:none;">⚙️ Personalizar</button>
           </div>
 
           <button class="btn btn-secondary btn-sm" onclick="refreshCameraFeeds()" title="Atualizar todos os streams ao vivo">

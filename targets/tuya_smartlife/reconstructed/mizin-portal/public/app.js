@@ -2842,6 +2842,72 @@ let activePtzCam = null;
 let isAudioListening = false;
 let isPttTalking = false;
 
+// Foco Único personalizável: câmera em destaque, ordem das demais e posição do destaque (lado ou acima).
+let cameraFocusPrefs = (() => { try { return JSON.parse(localStorage.getItem('mizin_cam_focus') || 'null') || {}; } catch { return {}; } })();
+function saveCameraFocusPrefs() {
+  try { localStorage.setItem('mizin_cam_focus', JSON.stringify(cameraFocusPrefs)); } catch {}
+  syncSaveUiConfig({ cameraFocus: cameraFocusPrefs });
+}
+function applyCameraFocus() {
+  const grid = document.getElementById('camerasGrid');
+  if (!grid) return;
+  const cards = [...grid.querySelectorAll('.camera-card[data-cam-id]')];
+  const ids = cards.map(c => c.dataset.camId);
+  const saved = (cameraFocusPrefs.order || []).filter(id => ids.includes(id));
+  const order = [...saved, ...ids.filter(id => !saved.includes(id))];
+  const focus = ids.includes(cameraFocusPrefs.focus) ? cameraFocusPrefs.focus : order[0];
+  const focusMode = currentCameraLayout === 'focus';
+  grid.classList.toggle('focus-top', focusMode && cameraFocusPrefs.position === 'top');
+  for (const card of cards) {
+    const isFocus = focusMode && card.dataset.camId === focus;
+    card.classList.toggle('is-focus', isFocus);
+    card.style.order = focusMode ? (isFocus ? -1 : order.indexOf(card.dataset.camId)) : '';
+  }
+  const customize = document.getElementById('btnCustomizeFocus');
+  if (customize) customize.style.display = focusMode ? '' : 'none';
+}
+function openCameraFocusSettings() {
+  const cams = window._cachedCameras || [];
+  if (!cams.length) return;
+  const saved = (cameraFocusPrefs.order || []).filter(id => cams.some(c => c.id === id));
+  const order = [...saved, ...cams.map(c => c.id).filter(id => !saved.includes(id))];
+  let focus = cams.some(c => c.id === cameraFocusPrefs.focus) ? cameraFocusPrefs.focus : order[0];
+  let position = cameraFocusPrefs.position === 'top' ? 'top' : 'side';
+  const name = id => cams.find(c => c.id === id)?.name || id;
+  const dialog = document.createElement('dialog');
+  dialog.className = 'focus-settings-dialog';
+  const render = () => {
+    dialog.innerHTML = `
+      <div class="focus-settings-head"><h3>Personalizar Foco Único</h3><button type="button" class="btn-close" data-act="close" title="Fechar">&times;</button></div>
+      <p class="focus-settings-hint">Escolha a câmera em destaque e a ordem das demais.</p>
+      <div class="focus-settings-position">
+        <span>Destaque:</span>
+        <button type="button" class="sd-event-tab${position === 'side' ? ' active' : ''}" data-act="side">◧ Grande à esquerda</button>
+        <button type="button" class="sd-event-tab${position === 'top' ? ' active' : ''}" data-act="top">⬒ Largura total acima</button>
+      </div>
+      <ol class="focus-settings-list">${order.map((id, i) => `
+        <li class="${id === focus ? 'is-focus' : ''}">
+          <label><input type="radio" name="focusCam" value="${id}" ${id === focus ? 'checked' : ''}> ${name(id)}</label>
+          <span><button type="button" data-act="up" data-i="${i}" ${i === 0 ? 'disabled' : ''} title="Subir">▲</button><button type="button" data-act="down" data-i="${i}" ${i === order.length - 1 ? 'disabled' : ''} title="Descer">▼</button></span>
+        </li>`).join('')}</ol>
+      <div class="focus-settings-actions"><button type="button" class="btn btn-secondary btn-sm" data-act="close">Cancelar</button><button type="button" class="btn btn-primary btn-sm" data-act="save">Salvar</button></div>`;
+  };
+  dialog.addEventListener('change', e => { if (e.target.name === 'focusCam') { focus = e.target.value; render(); } });
+  dialog.addEventListener('click', e => {
+    const target = e.target.closest('[data-act]');
+    if (!target) return;
+    const act = target.dataset.act, i = Number(target.dataset.i);
+    if (act === 'close') dialog.close();
+    if (act === 'side' || act === 'top') { position = act; render(); }
+    if (act === 'up' || act === 'down') { const j = act === 'up' ? i - 1 : i + 1; [order[i], order[j]] = [order[j], order[i]]; render(); }
+    if (act === 'save') { cameraFocusPrefs = { focus, order, position }; saveCameraFocusPrefs(); applyCameraFocus(); dialog.close(); showToast('Foco Único personalizado ✅', 'success'); }
+  });
+  dialog.addEventListener('close', () => dialog.remove());
+  render();
+  document.body.append(dialog);
+  dialog.showModal();
+}
+
 function setCameraLayout(mode) {
   currentCameraLayout = mode;
   document.querySelectorAll('.cam-mode-btn').forEach(b => b.classList.remove('active'));
@@ -2852,6 +2918,7 @@ function setCameraLayout(mode) {
   if (grid) {
     grid.className = 'cameras-grid layout-' + mode;
   }
+  applyCameraFocus();
   showToast(`Modo de exibição: ${mode === '2x2' ? 'Multiview 2x2' : (mode === 'focus' ? 'Foco Único' : 'Grade Padrão')}`);
 }
 
@@ -4990,7 +5057,7 @@ async function fetchCameras() {
       });
 
       return `
-        <div class="camera-card">
+        <div class="camera-card" data-cam-id="${cam.id}">
           <div class="camera-preview" onclick="openPtzModal('${cam.id}')" style="cursor:pointer;">
             <img src="${streamUrl}" alt="${cam.name}" loading="lazy" style="background:#000; width:100%; height:100%; object-fit:contain !important; display:block;" onerror="this.onerror=null; this.src='${fallbackSvg}';">
             <div class="camera-overlay-badge">
@@ -5022,6 +5089,7 @@ async function fetchCameras() {
         </div>
       `;
     }).join('');
+    applyCameraFocus();
     camerasLoadedOnce = true;
   } catch (err) {
     console.error('Erro ao carregar câmeras:', err);
@@ -6182,23 +6250,21 @@ function updateEvOverviewCard() {
   const ora = evVehiclesData.ora5;
   const byd = evVehiclesData.dolphin_mini;
 
-  if (ora) {
-    const elSoc = document.getElementById('evQuickOraSoc');
-    const elRange = document.getElementById('evQuickOraRange');
-    const elLock = document.getElementById('evQuickOraLock');
-    if (elSoc) elSoc.innerText = `${ora.batterySoc}%`;
-    if (elRange) elRange.innerText = `${ora.evRangeKm} km autonomia`;
-    if (elLock) elLock.innerText = ora.doorsLocked ? '🔒 Trancado' : '🔓 Aberto';
-  }
-
-  if (byd) {
-    const elSoc = document.getElementById('evQuickBydSoc');
-    const elRange = document.getElementById('evQuickBydRange');
-    const elLock = document.getElementById('evQuickBydLock');
-    if (elSoc) elSoc.innerText = `${byd.batterySoc}%`;
-    if (elRange) elRange.innerText = `${byd.evRangeKm} km autonomia`;
-    if (elLock) elLock.innerText = byd.doorsLocked ? '🔒 Trancado' : '🔓 Aberto';
-  }
+  // One card per vehicle; the source line says when values are simulated or cached instead of live.
+  const fill = (prefix, veh) => {
+    if (!veh) return;
+    const set = (id, text) => { const el = document.getElementById(prefix + id); if (el) el.innerText = text; };
+    set('Soc', `${veh.batterySoc}%`);
+    set('Range', `${veh.evRangeKm} km de autonomia`);
+    set('Lock', veh.doorsLocked ? '🔒 Trancado' : '🔓 Aberto');
+    const source = String(veh.source || '');
+    const synced = veh.lastSync ? new Date(veh.lastSync).toLocaleString('pt-BR', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' }) : '';
+    set('Source', /simulad/i.test(source) ? '⚠️ Simulados (integração pendente)' : /oficial/i.test(source) ? `Nuvem oficial · ${synced}` : `Último dado salvo · ${synced}`);
+    const bar = document.getElementById(prefix + 'Bar');
+    if (bar) bar.style.width = `${Math.max(0, Math.min(100, Number(veh.batterySoc) || 0))}%`;
+  };
+  fill('evQuickOra', ora);
+  fill('evQuickByd', byd);
 }
 
 function selectEvVehicle(vehId) {
