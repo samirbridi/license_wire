@@ -1,5 +1,23 @@
 # CHANGELOG - mizin_lightroom
 
+## v0.2.1 (build 0005) - 2026-10-29
+
+### 💥 Breaking Changes
+
+- Nenhum.
+
+### ✨ Features
+
+- Nenhum.
+
+### 🐛 Fixes
+
+- Nenhum.
+
+### ⚡ Improvements
+
+- improve: registra preflight do compartilhamento RAW e criterios de pareamento (commit `51e0e26880b209393f45275d62807cc47de8c402`)
+
 ## v0.2.0 (build 0004) - 2026-10-29
 
 ### 💥 Breaking Changes
