@@ -71,13 +71,19 @@ services:
       MIZIN_ARCHIVE_ROOT: /archive
       MIZIN_ARCHIVE_ALIASES: /data/archive-aliases.json
       MIZIN_ARCHIVE_CONTINUOUS: "1"
-      MIZIN_ARCHIVE_LIMIT_GB: "750"
+      MIZIN_ARCHIVE_LIMIT_GB: "0"
       MIZIN_ARCHIVE_ROTATE: "1"
-      MIZIN_ARCHIVE_RESERVE_GB: "50"
+      MIZIN_ARCHIVE_HIGH_WATER: "0.90"
+      MIZIN_ARCHIVE_LOW_WATER: "0.85"
+      MIZIN_ARCHIVE_RESERVE_GB: "40"
+      MIZIN_ARCHIVE_SEGMENT_MINUTES: "15"
+      MIZIN_ARCHIVE_REQUIRE_BACKUP: "0"
+      MIZIN_R2_STATE_ROOT: /cloud-state
     depends_on:
       bridge: {condition: service_started}
     volumes:
       - ./data/archive-aliases.json:/data/archive-aliases.json:ro
+      - ./data/xiaomi/runtime/central/identity/cloud-state:/cloud-state:ro
       - /volume4/HDD 1TB - V2/Mizin-Cameras:/archive
     tmpfs: [/tmp]
   cloud-backup:
@@ -93,6 +99,8 @@ services:
       MIZIN_ARCHIVE_ALIASES: /data/archive-aliases.json
       MIZIN_R2_SECRETS_ROOT: /cloud-secrets
       MIZIN_R2_STATE_ROOT: /cloud-state
+      MIZIN_R2_MAX_GB: "120"
+      MIZIN_R2_MIB_PER_SECOND: "1"
     depends_on:
       prepare: {condition: service_completed_successfully}
     volumes:

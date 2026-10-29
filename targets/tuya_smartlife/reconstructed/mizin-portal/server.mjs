@@ -22,6 +22,8 @@ const PILOT = process.env.MIZIN_PILOT === '1';
 const PORT = process.env.PORT || 19860;
 const REGISTRY_PATH = path.join(WORKSPACE, 'targets/tuya_smartlife/runtime/devices_registry.json');
 const CAMERAS_PATH = path.join(WORKSPACE, 'targets/xiaomi_home/runtime/central/cameras.json');
+const R2_STATE_DIR = path.join(WORKSPACE, 'targets/xiaomi_home/runtime/central/identity/cloud-state');
+const localDayOf = at => new Date(at).toLocaleDateString('en-CA', { timeZone: 'America/Sao_Paulo' });
 const TOKEN_PATH = path.join(WORKSPACE, 'targets/tuya_smartlife/runtime/tuya_token.json');
 const SCHEDULES_PATH = path.join(WORKSPACE, 'targets/tuya_smartlife/runtime/schedules.json');
 const LOGS_PATH = path.join(WORKSPACE, 'targets/tuya_smartlife/runtime/activity_logs.json');
@@ -1848,18 +1850,26 @@ const server = http.createServer(async (req, res) => {
   }
 
   if(url.pathname==='/api/camera/archive'&&req.method==='GET'){
+    // One timeline: recent files from the NAS, older ones that only remain in the R2 backup.
+    let status=null,cloud={records:[]},backup=null;try{status=JSON.parse(fs.readFileSync(path.join(process.env.MIZIN_ARCHIVE_ROOT||'','status.json'),'utf8'));}catch{}
+    try{cloud=JSON.parse(fs.readFileSync(path.join(R2_STATE_DIR,'r2-state.json'),'utf8'));}catch{}
+    try{backup=JSON.parse(fs.readFileSync(path.join(R2_STATE_DIR,'r2-sync-status.json'),'utf8'));}catch{}
+    const day=url.searchParams.get('day'),cam=url.searchParams.get('camera'),inDay=r=>(!day||localDayOf(r.startedAt)===day)&&(!cam||r.alias.startsWith(cam));
+    const uploaded=new Map((cloud.records||[]).map(r=>[r.id,r])),local=(await archive.list()).filter(inDay);const ids=new Set(local.map(r=>r.id));
+    const recordings=[...local.map(r=>({...r,location:uploaded.has(r.id)?'nas+cloud':'nas'})),...(cloud.records||[]).filter(r=>!ids.has(r.id)&&inDay(r)).map(({key,etag,...r})=>({...r,location:'cloud'}))].sort((a,b)=>b.startedAt.localeCompare(a.startedAt)).slice(0,10000);
+    const days=[...new Set([...(await archive.list()),...(cloud.records||[])].map(r=>localDayOf(r.startedAt)))].sort().reverse();
     res.writeHead(200,{'Content-Type':'application/json','Cache-Control':'no-store'});
-    let status=null;try{status=JSON.parse(fs.readFileSync(path.join(process.env.MIZIN_ARCHIVE_ROOT||'','status.json'),'utf8'));}catch{}
-    res.end(JSON.stringify({enabled:archive.enabled,status,recordings:await archive.list()}));return;
+    res.end(JSON.stringify({enabled:archive.enabled,status,backup:backup&&{state:backup.state,storedBytes:backup.storedBytes,records:backup.records,lastSuccessAt:backup.lastSuccessAt,enabled:backup.enabled,at:backup.at},days,recordings}));return;
   }
   if(url.pathname==='/api/camera/archive/file'&&req.method==='GET'){
     try{
       const {file,record}=await archive.file(url.searchParams.get('id')||'');
       if(url.searchParams.get('download')==='1'){
-        res.writeHead(200,{'Content-Type':'video/x-matroska','Content-Disposition':`attachment; filename="${record.alias}-${record.startedAt.replace(/[:.]/g,'-')}.mkv"`});
+        res.writeHead(200,{'Content-Type':'video/x-matroska','Content-Disposition':`attachment; filename="${record.alias.replace(/_quality\d+$/,'')}_${localDayOf(record.startedAt)}_${(record.file||record.id+'.mkv')}"`});
         fs.createReadStream(file).pipe(res);return;
       }
-      const child=spawn(FFMPEG_BIN,['-hide_banner','-nostdin','-loglevel','error','-i',file,'-map','0:v:0','-map','0:a:0','-vf','scale=1280:-2','-c:v','libx264','-preset','ultrafast','-crf','25','-pix_fmt','yuv420p','-c:a','aac','-b:a','64k','-movflags','frag_keyframe+empty_moov+default_base_moof','-f','mp4','pipe:1'],{windowsHide:true,stdio:['ignore','pipe','pipe']});
+      const start=Math.max(0,Math.min(Number(url.searchParams.get('start'))||0,Math.max(0,(record.duration||0)-1)));
+      const child=spawn(FFMPEG_BIN,['-hide_banner','-nostdin','-loglevel','error',...(start?['-ss',start.toFixed(1)]:[]),'-i',file,'-map','0:v:0','-map','0:a:0','-vf','scale=1280:-2','-c:v','libx264','-preset','ultrafast','-crf','25','-pix_fmt','yuv420p','-c:a','aac','-b:a','64k','-movflags','frag_keyframe+empty_moov+default_base_moof','-f','mp4','pipe:1'],{windowsHide:true,stdio:['ignore','pipe','pipe']});
       child.stderr.resume();let begun=false;
       child.stdout.on('data',chunk=>{if(!begun){begun=true;res.writeHead(200,{'Content-Type':'video/mp4','Cache-Control':'no-store'});}res.write(chunk);});
       child.on('error',()=>{if(!res.headersSent)res.writeHead(503);res.end();});child.on('close',()=>{if(!res.headersSent)res.writeHead(503);res.end();});
@@ -3240,14 +3250,14 @@ const server = http.createServer(async (req, res) => {
         const payload = body ? JSON.parse(body) : {};
         const { vehicle, command, param } = payload;
         const vName = vehicle === 'dolphin_mini' ? 'BYD Dolphin Mini' : 'GWM Ora 5';
-        logActivity('ev_' + (vehicle || 'car'), vName, `Comando ${command}`, `Comando remoto acionado: ${command} (${param || 'padrão'})`, 'Portal Web', '⚡', 'info');
-
-        res.writeHead(200, { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' });
+        // No vehicle cloud command is wired yet: never report a lock/unlock/climate change that did not happen.
+        logActivity('ev_' + (vehicle || 'car'), vName, `Comando ${command}`, `Comando remoto não enviado: integração de comandos ainda não disponível (${command})`, 'Portal Web', '⚡', 'warning');
+        res.writeHead(501, { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' });
         res.end(JSON.stringify({
-          success: true,
+          success: false,
           vehicle,
           command,
-          message: `Comando "${command}" enviado com sucesso para ${vName}!`,
+          error: `comandos remotos do ${vName} ainda não estão integrados; nada foi enviado ao veículo.`,
           timestamp: new Date().toISOString()
         }));
       } catch (err) {

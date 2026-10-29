@@ -1,4 +1,4 @@
-import {mkdir,readFile,readdir,rename,stat,writeFile,realpath} from 'node:fs/promises';
+import {mkdir,readFile,readdir,rename,stat,writeFile,realpath,unlink} from 'node:fs/promises';
 import {join,resolve,sep,basename} from 'node:path';
 import {randomUUID,createHash} from 'node:crypto';
 import {spawn} from 'node:child_process';
@@ -18,12 +18,16 @@ export function createArchive({root,ffmpeg='ffmpeg',ffprobe='ffprobe',aliases,sp
   });
  }
  function enabled(){if(!directory)throw new Error('Gravação no NAS ainda não configurada.');}
- async function publish(partial,id,alias,startedAt,minimumDuration){
+ async function inspectFile(partial,minimumDuration){
   const probe=JSON.parse((await command([ffprobe,'-v','error','-show_streams','-show_format','-of','json',partial],15)).toString());
   if(!probe.streams?.some(s=>s.codec_type==='video')||!probe.streams?.some(s=>s.codec_type==='audio')||!Number.isFinite(Number(probe.format.duration))||Number(probe.format.duration)<minimumDuration)throw new Error('Gravação incompleta; arquivo preservado para diagnóstico.');
-  const folder=index.folder(alias,startedAt);await mkdir(folder,{recursive:true,mode:0o700});const destination=join(folder,id+'.mkv');await rename(partial,destination);const info=await stat(destination),hash=createHash('sha256');for await(const chunk of createReadStream(destination))hash.update(chunk);
-  const record={id,alias,startedAt,duration:Number(probe.format.duration),bytes:info.size,sha256:hash.digest('hex'),container:'matroska',transcoded:false,source:'nas',streams:probe.streams.map(s=>({type:s.codec_type,codec:s.codec_name,width:s.width,height:s.height,sampleRate:s.sample_rate,channels:s.channels}))};
-  await writeFile(join(folder,id+'.json'),JSON.stringify(record,null,2),{flag:'wx',mode:0o600});index.invalidate();return record;
+  return probe;
+ }
+ async function publish(partial,id,alias,startedAt,minimumDuration){
+  const probe=await inspectFile(partial,minimumDuration);
+  const {dir,name}=await index.reserveName(alias,startedAt);await mkdir(join(dir,'.meta'),{recursive:true,mode:0o700});const destination=join(dir,name+'.mkv');await rename(partial,destination);const info=await stat(destination),hash=createHash('sha256');for await(const chunk of createReadStream(destination))hash.update(chunk);
+  const record={id,alias,startedAt,file:name+'.mkv',duration:Number(probe.format.duration),bytes:info.size,sha256:hash.digest('hex'),container:'matroska',transcoded:false,source:'nas',streams:probe.streams.map(s=>({type:s.codec_type,codec:s.codec_name,width:s.width,height:s.height,sampleRate:s.sample_rate,channels:s.channels}))};
+  await writeFile(join(dir,'.meta',name+'.json'),JSON.stringify(record,null,2),{flag:'wx',mode:0o600});index.invalidate();return record;
  }
  async function list(){
   if(!index)return[];return(await index.entries()).map(x=>x.record).reverse().slice(0,10000);
@@ -33,7 +37,7 @@ export function createArchive({root,ffmpeg='ffmpeg',ffprobe='ffprobe',aliases,sp
   async usage(){enabled();return index.usage({statFile});},
   async enforceRetention(options){enabled();return index.prune(options);},
   async organizeLegacy(options){enabled();return index.organizeLegacy(options);},
-  async record(alias,seconds=10){
+  async record(alias,seconds=10,{keep=true}={}){
    enabled();if(!known.has(alias)||!Number.isInteger(seconds)||seconds<5||seconds>300)throw new Error('Câmera ou duração inválida.');
    await mkdir(directory,{recursive:true,mode:0o700});
    const space=await import('node:fs/promises').then(fs=>fs.statfs(directory));
@@ -41,14 +45,16 @@ export function createArchive({root,ffmpeg='ffmpeg',ffprobe='ffprobe',aliases,sp
    const working=join(directory,'_work');await mkdir(working,{recursive:true,mode:0o700});const id=randomUUID().replaceAll('-',''),partial=join(working,id+'.partial.mkv'),startedAt=new Date().toISOString();
    const source=sourceFor(alias);
    await command([ffmpeg,'-hide_banner','-nostdin','-loglevel','error','-rw_timeout','20000000','-fflags','+genpts','-i',source,'-t',String(seconds),'-map','0:v:0','-map','0:a:0','-c','copy','-fs','268435456','-avoid_negative_ts','make_zero','-f','matroska',partial],seconds+50);
-   return publish(partial,id,alias,startedAt,seconds-1);
+   if(keep)return publish(partial,id,alias,startedAt,seconds-1);
+   // Validation only: the probe must pass, but the short test file is not kept in the archive.
+   try{const probe=await inspectFile(partial,seconds-1);return{id,alias,startedAt,duration:Number(probe.format.duration),validationOnly:true};}finally{await unlink(partial).catch(()=>{});}
   },
-  async continuous(alias,{signal,segmentSeconds=300,canContinue=async()=>true,onSegment=async()=>{},onProgress=async()=>{},stallMs=90000}={}){
-   enabled();if(!known.has(alias)||!Number.isInteger(segmentSeconds)||segmentSeconds<2||segmentSeconds>300)throw new Error('Gravador contínuo inválido.');
+  async continuous(alias,{signal,segmentSeconds=900,clockAligned=true,canContinue=async()=>true,onSegment=async()=>{},onProgress=async()=>{},stallMs=90000}={}){
+   enabled();if(!known.has(alias)||!Number.isInteger(segmentSeconds)||segmentSeconds<2||segmentSeconds>3600)throw new Error('Gravador contínuo inválido.');
    await mkdir(directory,{recursive:true,mode:0o700});
    const working=join(directory,'_work');await mkdir(working,{recursive:true,mode:0o700});const run=randomUUID().replaceAll('-',''),csv=join(working,run+'.segments.csv'),started=Date.now(),seen=new Set();
    let stopped=false,failure=null,checking=null,lastFrameAt=Date.now(),lastFrame=0,progressBuffer='';
-   const child=spawnProcess(ffmpeg,['-hide_banner','-nostdin','-loglevel','error','-rw_timeout','20000000','-fflags','+genpts','-i',sourceFor(alias),'-map','0:v:0','-map','0:a:0','-c','copy','-avoid_negative_ts','make_zero','-progress','pipe:1','-stats_period','5','-f','segment','-segment_format','matroska','-segment_time',String(segmentSeconds),'-reset_timestamps','1','-segment_list',csv,'-segment_list_type','csv',join(working,run+'-%06d.partial.mkv')],{windowsHide:true,stdio:['ignore','pipe','pipe']});
+   const child=spawnProcess(ffmpeg,['-hide_banner','-nostdin','-loglevel','error','-rw_timeout','20000000','-fflags','+genpts','-i',sourceFor(alias),'-map','0:v:0','-map','0:a:0','-c','copy','-avoid_negative_ts','make_zero','-progress','pipe:1','-stats_period','5','-f','segment','-segment_format','matroska','-segment_time',String(segmentSeconds),...(clockAligned?['-segment_atclocktime','1']:[]),'-reset_timestamps','1','-segment_list',csv,'-segment_list_type','csv',join(working,run+'-%06d.partial.mkv')],{windowsHide:true,stdio:['ignore','pipe','pipe']});
    child.stderr.resume();
    child.stdout.on('data',chunk=>{progressBuffer+=chunk.toString();if(progressBuffer.length>65536)progressBuffer=progressBuffer.slice(-8192);let end;while((end=progressBuffer.indexOf('\n'))>=0){const line=progressBuffer.slice(0,end).trim();progressBuffer=progressBuffer.slice(end+1);if(line.startsWith('frame=')){const frame=Number(line.slice(6));if(frame>lastFrame){lastFrame=frame;lastFrameAt=Date.now();void onProgress({frame,at:new Date(lastFrameAt).toISOString()}).catch(()=>{});}}}});
    const stop=()=>{stopped=true;child.kill('SIGINT');};signal?.addEventListener('abort',stop,{once:true});

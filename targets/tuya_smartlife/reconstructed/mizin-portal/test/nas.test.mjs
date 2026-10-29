@@ -46,7 +46,7 @@ test('continuous archive keeps one input and preserves every video packet across
   const ffmpeg=process.env.TEST_FFMPEG,ffprobe=ffmpeg.replace(/ffmpeg(?:\.exe)?$/,'ffprobe'+(process.platform==='win32'?'.exe':'')),input=join(root,'source.mkv'),output=join(root,'archive');
   execFileSync(ffmpeg,['-hide_banner','-nostdin','-loglevel','error','-f','lavfi','-i','testsrc2=size=320x180:rate=10','-f','lavfi','-i','sine=frequency=440:sample_rate=8000','-t','7','-c:v','libx264','-preset','ultrafast','-g','20','-c:a','pcm_s16le',input],{windowsHide:true});
   let inputs=0;const archive=createArchive({root:output,aliases:['owned'],ffmpeg,ffprobe,sourceFor:()=>{inputs++;return input;}});
-  const result=await archive.continuous('owned',{segmentSeconds:2});assert.equal(inputs,1);assert.ok(result.segments>=3);
+  const result=await archive.continuous('owned',{segmentSeconds:2,clockAligned:false});assert.equal(inputs,1);assert.ok(result.segments>=3);
   const records=await archive.list();assert.equal(records.length,result.segments);let packets=0;
   for(const record of records){assert.equal(record.transcoded,false);const {file}=await archive.file(record.id);const probe=JSON.parse(execFileSync(ffprobe,['-v','error','-count_packets','-select_streams','v:0','-show_entries','stream=nb_read_packets','-of','json',file],{encoding:'utf8',windowsHide:true}));packets+=Number(probe.streams[0].nb_read_packets);assert.ok(record.streams.some(s=>s.type==='audio'));}
   assert.equal(packets,70);
