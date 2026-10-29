@@ -1,4 +1,4 @@
-# SHA-256 dos arquivos preservados na aquisicao autorizada do catalogo.
+# SHA-256 do catalogo, manifesto RAW e screenshots de QA preservados.
 # Dados privados fora do Git; caminhos relativos a esta pasta binaries.
 250f400b4cbe6418e95c05d12fd39a75df6f99573bf571becf69e0aa0ed2201a *../private/snapshots/20261029-124518-192a6383/original/202610 - OUTUBRO.lrcat
 f887ed23c6d6350c4338efd1ee50fda8464022b93c71ec38c243319e24d72e12 *../private/snapshots/20261029-124518-192a6383/original/202610 - OUTUBRO.lrcat-data/000009.blob
@@ -23,3 +23,8 @@ dc6d5dd34596b1c0c62d0bc274d791b4c8c0b8d47d294bada33bf0cc8f31cfb3 *../private/sna
 
 # Manifesto dos 546 RAWs privados verificados.
 1ee3d479fb5b74271f79dbaa6df96c69dea97ef10ef54cc9eca5a0091177b6e1 *../private/raw-datasets/20261029T172842Z-c6cf2182/SHA256SUMS.txt
+
+# Screenshots recebidos do usuario; originais mantidos privados e inalterados.
+4ec26efc8faf963eacf6dc1d499f104b54440e9bb040937ddb1be1740fb4a7db *../private/evidence/native-qa-20261029-ed601a4b/WhatsApp Image 2026-10-29 at 16.06.40.jpeg
+e3ad863faebb1c589db9e220a6297f3e07c8edcadcd85944e6dbff65e1dbaae4 *../private/evidence/native-qa-20261029-ed601a4b/WhatsApp Image 2026-10-29 at 16.09.38.jpeg
+0609b2d944af7a5f79da39fe327b8b2bddbeeaa09451b2466ddae360461431c1 *../private/evidence/native-qa-20261029-ed601a4b/WhatsApp Image 2026-10-29 at 16.09.59.jpeg

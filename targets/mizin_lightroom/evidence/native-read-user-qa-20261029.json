@@ -1,0 +1,58 @@
+{
+  "schema": "mizin-lightroom.native-read-qa/1",
+  "date": "2026-10-29",
+  "timezone": "America/Sao_Paulo",
+  "evidenceOrigin": "USER_SUPPLIED_SCREENSHOTS_AND_INSTALLATION_REPORT",
+  "packageUnderTest": "v0.3.0 (build 0006)",
+  "packageVersionVisibleInScreenshot": false,
+  "packageVersionBasis": "Delivered package and matching menu/dialog/prediction data",
+  "privateEvidenceDirectory": "private/evidence/native-qa-20261029-ed601a4b",
+  "sourceImages": [
+    {
+      "imageNumber": 1,
+      "filename": "WhatsApp Image 2026-10-29 at 16.06.40.jpeg",
+      "sha256": "4ec26efc8faf963eacf6dc1d499f104b54440e9bb040937ddb1be1740fb4a7db",
+      "copyHashMatched": true,
+      "privateRelative": "private/evidence/native-qa-20261029-ed601a4b/WhatsApp Image 2026-10-29 at 16.06.40.jpeg"
+    },
+    {
+      "imageNumber": 2,
+      "filename": "WhatsApp Image 2026-10-29 at 16.09.38.jpeg",
+      "sha256": "e3ad863faebb1c589db9e220a6297f3e07c8edcadcd85944e6dbff65e1dbaae4",
+      "copyHashMatched": true,
+      "privateRelative": "private/evidence/native-qa-20261029-ed601a4b/WhatsApp Image 2026-10-29 at 16.09.38.jpeg"
+    },
+    {
+      "imageNumber": 3,
+      "filename": "WhatsApp Image 2026-10-29 at 16.09.59.jpeg",
+      "sha256": "0609b2d944af7a5f79da39fe327b8b2bddbeeaa09451b2466ddae360461431c1",
+      "copyHashMatched": true,
+      "privateRelative": "private/evidence/native-qa-20261029-ed601a4b/WhatsApp Image 2026-10-29 at 16.09.59.jpeg"
+    }
+  ],
+  "observations": {
+    "menuEntryVisible": true,
+    "dialogOpened": true,
+    "knownPhotosLocated": 92,
+    "knownPhotosExpected": 92,
+    "displayedPhotos": 5,
+    "currentDevelopValuesVisible": 15,
+    "currentValuesMatchingSnapshotRounded": 15,
+    "savedPredictionValuesMatchingPackageRounded": 15
+  },
+  "status": "PASS_NATIVE_READ_COMPARISON_SHOWN",
+  "sourceOnlyReadTestsPreviouslyPassed": true,
+  "lightroomAppVersionVerified": false,
+  "catalogWriteOrRollbackTested": false,
+  "newPhotoInferenceTested": false,
+  "automaticEditingTested": false,
+  "visualQualityOfPredictionsApproved": false,
+  "limits": [
+    "Screenshots confirm the displayed nominal read flow, not a write/rollback workflow.",
+    "Displayed rounded values were checked for five photos; current develop settings were not shown for all 92.",
+    "The menu and predictions identify the expected package but no version number is visible in the screenshots.",
+    "User approval of reference edits is not approval of predicted edits."
+  ],
+  "packageLiteralPredictionsRechecked": 15,
+  "packageLiteralDataSHA256": "13bd5217cceebb04b32ebae2fc48c991a3f22661c0f30a8aafd2d8d46fdf507c"
+}
