@@ -1,0 +1,27 @@
+test_compressed_history_roundtrip_and_size_validation (test_catalog_reader.CatalogReaderTests.test_compressed_history_roundtrip_and_size_validation) ... ok
+test_dataset_keeps_proxies_virtuals_and_rejects_out_of_eligible_pool (test_catalog_reader.CatalogReaderTests.test_dataset_keeps_proxies_virtuals_and_rejects_out_of_eligible_pool) ... ok
+test_depth_and_decompression_limits (test_catalog_reader.CatalogReaderTests.test_depth_and_decompression_limits) ... ok
+test_duplicate_keys_are_rejected (test_catalog_reader.CatalogReaderTests.test_duplicate_keys_are_rejected) ... ok
+test_global_and_nested_parameters_are_distinct (test_catalog_reader.CatalogReaderTests.test_global_and_nested_parameters_are_distinct) ... ok
+test_proxy_detection_and_missing_values (test_catalog_reader.CatalogReaderTests.test_proxy_detection_and_missing_values) ... ok
+test_readonly_connection_cannot_write (test_catalog_reader.CatalogReaderTests.test_readonly_connection_cannot_write) ... ok
+test_strings_and_unusual_named_keys (test_catalog_reader.CatalogReaderTests.test_strings_and_unusual_named_keys) ... ok
+test_untrusted_lua_is_never_executed (test_catalog_reader.CatalogReaderTests.test_untrusted_lua_is_never_executed) ... ok
+test_comparison_only_reads_catalog (test_lightroom_pilot.LightroomPilotTests.test_comparison_only_reads_catalog) ... ok
+test_data_escaping_remains_data_in_lua51 (test_lightroom_pilot.LightroomPilotTests.test_data_escaping_remains_data_in_lua51) ... ok
+test_wrong_catalog_does_not_write_or_crash (test_lightroom_pilot.LightroomPilotTests.test_wrong_catalog_does_not_write_or_crash) ... ok
+test_serialization_and_missing_inputs_are_finite (test_numeric_pilot.NumericPilotTests.test_serialization_and_missing_inputs_are_finite) ... ok
+test_signal_prediction_beats_constant_without_test_fit (test_numeric_pilot.NumericPilotTests.test_signal_prediction_beats_constant_without_test_fit) ... ok
+test_temporal_groups_never_overlap_and_test_is_later (test_numeric_pilot.NumericPilotTests.test_temporal_groups_never_overlap_and_test_is_later) ... ok
+test_changed_source_size_is_rejected_before_copy (test_raw_dataset.RawDatasetTests.test_changed_source_size_is_rejected_before_copy) ... ok
+test_copy_hash_source_preservation_and_no_overwrite (test_raw_dataset.RawDatasetTests.test_copy_hash_source_preservation_and_no_overwrite) ... ok
+test_metadata_batches_keep_path_identity_and_readonly_options (test_raw_dataset.RawDatasetTests.test_metadata_batches_keep_path_identity_and_readonly_options) ... ok
+test_same_name_wrong_event_or_camera_is_rejected (test_raw_dataset.RawDatasetTests.test_same_name_wrong_event_or_camera_is_rejected) ... ok
+test_second_precision_is_explicit (test_raw_dataset.RawDatasetTests.test_second_precision_is_explicit) ... ok
+test_subsecond_wall_clock_matches_without_wrong_utc_conversion (test_raw_dataset.RawDatasetTests.test_subsecond_wall_clock_matches_without_wrong_utc_conversion) ... ok
+test_wrong_root_unapproved_and_duplicate_inputs_fail (test_raw_dataset.RawDatasetTests.test_wrong_root_unapproved_and_duplicate_inputs_fail) ... ok
+
+----------------------------------------------------------------------
+Ran 22 tests in 0.230s
+
+OK

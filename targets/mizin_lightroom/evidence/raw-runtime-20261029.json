@@ -1,0 +1,27 @@
+{
+  "schema": "mizin-lightroom.raw-dependencies/1",
+  "python": "3.12.14",
+  "packages": {
+    "rawpy": "0.27.1",
+    "numpy": "2.3.5",
+    "Pillow": "12.3.0"
+  },
+  "exiftool": {
+    "version": "13.60",
+    "source": "https://github.com/exiftool/exiftool",
+    "commit": "980409314fddbd83d9092b5c160fafab7f67fd52",
+    "scriptSha256": "08e8783689898d6a57d075d13732b5f9e5ca8760a4454750cc3e1e2774e97cbb",
+    "licenseLocation": "private/tools/exiftool/LICENSE",
+    "defaultUserConfigDisabled": true
+  },
+  "installLocation": "private/runtime/raw-pipeline",
+  "thirdPartySourcesLocation": "private/tools/exiftool",
+  "systemPythonModified": false,
+  "photoUploadsRequired": false,
+  "runtimeInternetRequiredForProcessing": false,
+  "primaryDocumentation": [
+    "https://pypi.org/project/rawpy/",
+    "https://letmaik.github.io/rawpy/api/rawpy.RawPy.html",
+    "https://github.com/exiftool/exiftool"
+  ]
+}

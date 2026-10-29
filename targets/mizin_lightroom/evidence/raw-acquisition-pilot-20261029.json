@@ -1,0 +1,170 @@
+{
+  "schema": "mizin-lightroom.raw-acquisition-and-pilot/1",
+  "date": "2026-10-29",
+  "timezone": "America/Sao_Paulo",
+  "source": {
+    "readableShare": "\\\\192.168.1.58\\2026-10-02 - formatura victoria",
+    "wholeDiskShareRead": "ACCESS_DENIED",
+    "wholeDiskEnumerated": false,
+    "dnsAliasGuard": "Historical hostname now resolves to 192.168.1.39; it was not contacted. Explicit authorized IP 192.168.1.58 was used."
+  },
+  "dataset": {
+    "relativeDirectory": "private/raw-datasets/20261029T172842Z-c6cf2182",
+    "status": "VERIFIED_RAW_AND_TECHNICAL_INPUTS",
+    "copiedFiles": 546,
+    "totalBytes": 17087609188,
+    "decodedFiles": 546,
+    "sha256ChecksPassed": 546,
+    "metadataPairsVerified": 546,
+    "localMetadataRevalidated": true,
+    "capturePrecisions": {
+      "SUBSECOND_WALL_CLOCK": 546
+    },
+    "sourceWriteOperations": 0,
+    "photosUploaded": 0,
+    "styleVariants": {
+      "color": 524,
+      "monochrome": 22
+    },
+    "rawManifestSha256": "1ee3d479fb5b74271f79dbaa6df96c69dea97ef10ef54cc9eca5a0091177b6e1",
+    "featureManifestSha256": "ff2d65662d0e3ab0a85fbb1181990148d566dc2f2f6e5434f7df93057e44de93",
+    "inputDomain": "LIBRAW_CAMERA_WB_SRGB_HALF_SIZE_NO_AUTO_BRIGHT_V1",
+    "adobeRenderEquivalenceClaimed": false
+  },
+  "pilot": {
+    "relativeModelDirectory": "private/raw-datasets/20261029T172842Z-c6cf2182/pilot-models/20261029T174242827221Z",
+    "modelSha256": "9f1cd19d844f269bbd6f932e82089df9deb87f8b7de9eda06c7959814a465422",
+    "type": "ridge regression over local numeric pixel/capture features",
+    "colorSamples": 524,
+    "trainingSamples": 432,
+    "testSamples": 92,
+    "featureCount": 40,
+    "eventCount": 1,
+    "metrics": {
+      "Exposure2012": {
+        "status": "EVALUATED_ON_SINGLE_EVENT_TEMPORAL_HOLDOUT",
+        "trainLabels": 432,
+        "testLabels": 92,
+        "mae": 0.24692473033591827,
+        "trainingMedianBaselineMae": 0.348695652173913,
+        "trainingMedianValue": -0.05,
+        "improvementVsMedianPercent": 29.18617459194363,
+        "selectedAlphaUsingInnerValidationOnly": 100.0,
+        "betterThanMedianOnThisHoldout": true
+      },
+      "Temperature": {
+        "status": "EVALUATED_ON_SINGLE_EVENT_TEMPORAL_HOLDOUT",
+        "trainLabels": 432,
+        "testLabels": 92,
+        "mae": 403.4676731943497,
+        "trainingMedianBaselineMae": 904.4673913043479,
+        "trainingMedianValue": 4592.5,
+        "improvementVsMedianPercent": 55.39168387126682,
+        "selectedAlphaUsingInnerValidationOnly": 100.0,
+        "betterThanMedianOnThisHoldout": true
+      },
+      "Tint": {
+        "status": "EVALUATED_ON_SINGLE_EVENT_TEMPORAL_HOLDOUT",
+        "trainLabels": 432,
+        "testLabels": 92,
+        "mae": 2.1214835300950337,
+        "trainingMedianBaselineMae": 1.358695652173913,
+        "trainingMedianValue": 6.0,
+        "improvementVsMedianPercent": -56.141187814994474,
+        "selectedAlphaUsingInnerValidationOnly": 100.0,
+        "betterThanMedianOnThisHoldout": false
+      },
+      "Contrast2012": {
+        "status": "EVALUATED_ON_SINGLE_EVENT_TEMPORAL_HOLDOUT",
+        "trainLabels": 432,
+        "testLabels": 92,
+        "mae": 7.219881047426937,
+        "trainingMedianBaselineMae": 10.869565217391305,
+        "trainingMedianValue": 14.0,
+        "improvementVsMedianPercent": 33.57709436367218,
+        "selectedAlphaUsingInnerValidationOnly": 10.0,
+        "betterThanMedianOnThisHoldout": true
+      },
+      "Highlights2012": {
+        "status": "EVALUATED_ON_SINGLE_EVENT_TEMPORAL_HOLDOUT",
+        "trainLabels": 432,
+        "testLabels": 92,
+        "mae": 1.0340264910243686,
+        "trainingMedianBaselineMae": 0.6304347826086957,
+        "trainingMedianValue": -38.0,
+        "improvementVsMedianPercent": -64.01799512800329,
+        "selectedAlphaUsingInnerValidationOnly": 100.0,
+        "betterThanMedianOnThisHoldout": false
+      },
+      "Shadows2012": {
+        "status": "EVALUATED_ON_SINGLE_EVENT_TEMPORAL_HOLDOUT",
+        "trainLabels": 432,
+        "testLabels": 92,
+        "mae": 3.1356897982886585,
+        "trainingMedianBaselineMae": 3.9347826086956523,
+        "trainingMedianValue": 28.0,
+        "improvementVsMedianPercent": 20.308436065592108,
+        "selectedAlphaUsingInnerValidationOnly": 100.0,
+        "betterThanMedianOnThisHoldout": true
+      },
+      "Whites2012": {
+        "status": "EVALUATED_ON_SINGLE_EVENT_TEMPORAL_HOLDOUT",
+        "trainLabels": 432,
+        "testLabels": 92,
+        "mae": 2.169287925385015,
+        "trainingMedianBaselineMae": 1.684782608695652,
+        "trainingMedianValue": -60.0,
+        "improvementVsMedianPercent": -28.757734926078317,
+        "selectedAlphaUsingInnerValidationOnly": 100.0,
+        "betterThanMedianOnThisHoldout": false
+      },
+      "Blacks2012": {
+        "status": "EVALUATED_ON_SINGLE_EVENT_TEMPORAL_HOLDOUT",
+        "trainLabels": 432,
+        "testLabels": 92,
+        "mae": 2.547366602567655,
+        "trainingMedianBaselineMae": 2.652173913043478,
+        "trainingMedianValue": -3.0,
+        "improvementVsMedianPercent": 3.95175105072775,
+        "selectedAlphaUsingInnerValidationOnly": 100.0,
+        "betterThanMedianOnThisHoldout": true
+      },
+      "Saturation": {
+        "status": "EVALUATED_ON_SINGLE_EVENT_TEMPORAL_HOLDOUT",
+        "trainLabels": 432,
+        "testLabels": 92,
+        "mae": 0.5024485917074031,
+        "trainingMedianBaselineMae": 0.391304347826087,
+        "trainingMedianValue": 10.0,
+        "improvementVsMedianPercent": -28.403528991891893,
+        "selectedAlphaUsingInnerValidationOnly": 100.0,
+        "betterThanMedianOnThisHoldout": false
+      },
+      "Vibrance": {
+        "status": "EVALUATED_ON_SINGLE_EVENT_TEMPORAL_HOLDOUT",
+        "trainLabels": 432,
+        "testLabels": 92,
+        "mae": 0.41943380644733386,
+        "trainingMedianBaselineMae": 0.3804347826086957,
+        "trainingMedianValue": 10.0,
+        "improvementVsMedianPercent": -10.251171980442034,
+        "selectedAlphaUsingInnerValidationOnly": 100.0,
+        "betterThanMedianOnThisHoldout": false
+      }
+    },
+    "crossEventGeneralizationValidated": false,
+    "photographicQualityApproved": false,
+    "lightroomHostValidated": false,
+    "automaticEditingEnabled": false
+  },
+  "preservedEarlierAttempt": {
+    "relativeDirectory": "private/raw-datasets/20261029T172244Z-60392161",
+    "result": "Metadata timeout after 300 seconds; zero RAW files copied. Preserved for evidence."
+  },
+  "limitations": [
+    "This is not performance equivalence to Neurapix.",
+    "The pilot is limited to one event and one camera; temporal test groups are not separate jobs.",
+    "Five controls were worse than the training-median baseline on this holdout; no automatic application is enabled.",
+    "The LibRaw inputs do not reproduce Adobe profiles/masks/rendering."
+  ]
+}

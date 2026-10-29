@@ -1,0 +1,10 @@
+return {
+    LrSdkVersion = 6.0,
+    LrSdkMinimumVersion = 6.0,
+    LrToolkitIdentifier = "com.mizin.lightroom.pilot",
+    LrPluginName = "Mizin Lightroom - Piloto de comparacao",
+    VERSION = { major = __MAJOR__, minor = __MINOR__, revision = __PATCH__, build = "__BUILD__", display = "__DISPLAY_VERSION__" },
+    LrLibraryMenuItems = {
+        { title = "Mizin: comparar amostra do piloto", file = "ComparePilot.lua", enabledWhen = "photosAvailable" },
+    },
+}

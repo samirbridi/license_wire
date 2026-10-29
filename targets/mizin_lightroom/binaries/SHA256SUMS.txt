@@ -20,3 +20,6 @@ aba1fa2e89ec134ccf0a619cf45fb58c168538b99db7aac74450e78d177fa596 *../private/sna
 8e39b0183cfa692b8a3ddfb66c8a0c9cddf4518eae668a932ba0ef87c7aff7d0 *../private/snapshots/20261029-124518-192a6383/original/202610 - OUTUBRO.lrcat-data/OPTIONS-000040
 8e39b0183cfa692b8a3ddfb66c8a0c9cddf4518eae668a932ba0ef87c7aff7d0 *../private/snapshots/20261029-124518-192a6383/original/202610 - OUTUBRO.lrcat-data/OPTIONS-000044
 dc6d5dd34596b1c0c62d0bc274d791b4c8c0b8d47d294bada33bf0cc8f31cfb3 *../private/snapshots/20261029-124518-192a6383/original/202610 - OUTUBRO.lrcat-data/PackageIcon.ico
+
+# Manifesto dos 546 RAWs privados verificados.
+1ee3d479fb5b74271f79dbaa6df96c69dea97ef10ef54cc9eca5a0091177b6e1 *../private/raw-datasets/20261029T172842Z-c6cf2182/SHA256SUMS.txt

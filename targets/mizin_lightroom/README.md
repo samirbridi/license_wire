@@ -7,10 +7,10 @@ Projeto independente para Lightroom Classic no Windows, inicialmente para uso pe
 
 ## Estado Atual e Próximos Passos
 
-Esta entrega contem pesquisa, inventario, copia consistente de um catalogo autorizado e extrator de parametros. O catalogo de trabalho permaneceu intacto na outra maquina. Nao existe ainda plugin de edicao, modelo treinado ou comprovacao de qualidade fotografica; nenhum RAW ou arquivo do plugin Neurapix foi copiado.
+Esta entrega contem copia consistente do catalogo, extrator de parametros, aquisicao verificada de 546 RAWs e um modelo numerico experimental. A primeira extensao Lua apenas compara previsoes ja calculadas com ajustes atuais; nao aplica edicoes nem calcula imagens novas no Lightroom. O catalogo e as fotos originais permaneceram intactos. Nao foi copiado codigo ou modelo do plugin Neurapix.
 
-- A maquina indicada pelo usuario, `192.168.1.58`, resolveu para `DESKTOP-M34T3GL.localdomain`.
-- TCP 445 esta aberto. Depois do compartilhamento pelo usuario, `net view` lista `Users`, `LR CATALOGOS` e `LRCatalogos`.
+- O IP indicado e confirmado pelo usuario e `192.168.1.58`. O nome reverso historico `DESKTOP-M34T3GL.localdomain` agora resolve para `.39`; esse outro IP nao foi contatado. Os acessos usam somente o IP e os compartilhamentos confirmados pelo usuario.
+- TCP 445 e os compartilhamentos especificos de catalogos e RAWs permitem leitura. O compartilhamento de disco `ARQUIVOS` apareceu, mas continuou negado; o restante do disco nao foi varrido.
 - O usuario confirmou catalogos em `D:\LR CATALOGOS` e perfil em `C:\Users\Cris Bridi`.
 - A leitura funciona por `\\192.168.1.58\LR CATALOGOS` (com espaco). O alias `LRCatalogos` retorna acesso negado; usar o caminho comprovado, sem solicitar nova configuracao para esse alias.
 - Depois da confirmacao humana de fechamento do Lightroom, lock/WAL/SHM desapareceram. Foi preservado um snapshot privado de 20 arquivos, 1.851.905.958 bytes, com vinte comparacoes SHA-256 aprovadas e metadados das fontes estaveis. Nenhuma escrita foi feita na origem.
@@ -18,10 +18,19 @@ Esta entrega contem pesquisa, inventario, copia consistente de um catalogo autor
 - O catalogo possui 37.871 imagens. Foram extraidos parametros atuais e historico associado ao Neurapix para 3.601 arquivos distintos da Canon EOS R6m2, em oito raizes de trabalhos: 3.513 em cor e 88 em preto e branco, sem erros de parser.
 - O usuario confirmou que todas as edicoes de outubro estao revisadas e aprovadas. Essa confirmacao esta registrada separadamente; alteracoes no historico nunca sao usadas como prova de revisao humana.
 - Os 33.687 DNGs referenciados na pasta de smart previews e as copias virtuais nao foram misturados aos 3.601 exemplos selecionados por historico Neurapix.
-- Pendente: acesso aos pixels RAW, renderizacoes neutras consistentes, versao real do Lightroom e QA do futuro plugin. Os caminhos RAW pertencem a outras pastas da maquina remota, fora do compartilhamento de catalogos.
-- Teste apos o usuario informar o compartilhamento RAW pronto: `\\192.168.1.58\RAWReferencia` nao ficou disponivel. O novo compartilhamento `Upper West Perdizes` apareceu, mas retornou acesso negado. Foi solicitado o caminho de rede exato exibido pelo Windows; nenhum RAW foi lido ou copiado.
+- O usuario confirmou o compartilhamento direto `\\192.168.1.58\2026-10-02 - formatura victoria`. Dos 2.755 CR3 existentes, apenas os 546 ligados a referencias aprovadas foram copiados: 17.087.609.188 bytes, com SHA-256 de cada copia e estabilidade das fontes conferidos.
+- Camera Canon EOS R6m2 e captura, incluindo subseguundos, corresponderam aos 546 registros do catalogo antes da copia e foram revalidadas na copia local. Todos os 546 decodificaram, com hashes RAW iguais depois da leitura. O lote tem 524 referencias em cor e 22 em P&B.
+- Foram geradas entradas tecnicas LibRaw com WB da camera, sem ajustes do Lightroom; nao se afirma equivalencia com a renderizacao Adobe. Fotos e modelos permaneceram privados, sem upload.
+- O piloto de regressao foi treinado nas 432 referencias em cor anteriores e avaliado em 92 posteriores, agrupadas por meia hora, dentro do mesmo trabalho. Melhorou exposicao, temperatura, contraste, sombras e pretos contra a mediana de treino; cinco controles ficaram piores. Nao ha validacao entre trabalhos nem aprovacao visual das previsoes.
+- A extensao de comparacao mostra somente exposicao, temperatura e contraste de previsoes salvas das 92 fotos de teste, em modo de leitura. QA em Lua 5.1 passou; o Lightroom nao esta instalado nesta maquina, e o teste nativo na maquina de edicao segue pendente.
 - As 546 referencias do primeiro trabalho nao possuem MD5/SHA-256 nem tamanho de arquivo registrados nas tabelas verificadas. O pareamento futuro deve conferir mapeamento de pasta, camera e data/hora de captura, alem do nome. A faixa de captura observada e 2026-10-02, de 18:57:55.400 a 23:55:40.660, conforme o horario gravado no catalogo, sem conversao de fuso presumida.
-- Proximo: obter um primeiro trabalho RAW aprovado, validar acesso aos perfis e representacao das configuracoes no SDK, gerar entradas neutras e preparar treino/teste separados por trabalho. Detalhes em `notes/06_aquisicao_e_referencias.md`.
+- Proximo: testar a extensao de leitura no Lightroom, obter pixels de outros trabalhos para validacao entre eventos e evoluir o modelo antes de implementar aplicacao reversivel de ajustes. Detalhes em `notes/07_raws_e_piloto.md` e `notes/08_plugin_comparacao.md`.
+
+## Primeiro plugin de comparacao
+
+Fontes em `reconstructed/lightroom-pilot/`. O gerador `scripts/build_lightroom_pilot.py` le a VERSION calculada por commits e produz ZIP privado com `MizinLightroom.lrplugin` e previsoes salvas. O pacote nao inclui fotos, executaveis, dependencias Python ou pesos do modelo. Contem caminhos privados das 92 referencias, portanto nao deve ser publicado como pacote generico.
+
+Na maquina de edicao: extrair o ZIP numa pasta permanente, adicionar `MizinLightroom.lrplugin` em Arquivo > Gerenciador de plug-ins, abrir o catalogo de outubro e executar Biblioteca > Extras de plug-in > Mizin: comparar amostra do piloto. A janela consulta ajustes atuais e mostra ate cinco exemplos. Nao escreve no catalogo, nao aplica ajustes e nao chama servicos de rede. O pacote e um alvo de QA nativo, nao uma versao de edicao automatica aprovada.
 
 ## Aproveitamento das edicoes existentes
 

@@ -1,0 +1,12 @@
+test_changed_source_size_is_rejected_before_copy (test_raw_dataset.RawDatasetTests.test_changed_source_size_is_rejected_before_copy) ... ok
+test_copy_hash_source_preservation_and_no_overwrite (test_raw_dataset.RawDatasetTests.test_copy_hash_source_preservation_and_no_overwrite) ... ok
+test_metadata_batches_keep_path_identity_and_readonly_options (test_raw_dataset.RawDatasetTests.test_metadata_batches_keep_path_identity_and_readonly_options) ... ok
+test_same_name_wrong_event_or_camera_is_rejected (test_raw_dataset.RawDatasetTests.test_same_name_wrong_event_or_camera_is_rejected) ... ok
+test_second_precision_is_explicit (test_raw_dataset.RawDatasetTests.test_second_precision_is_explicit) ... ok
+test_subsecond_wall_clock_matches_without_wrong_utc_conversion (test_raw_dataset.RawDatasetTests.test_subsecond_wall_clock_matches_without_wrong_utc_conversion) ... ok
+test_wrong_root_unapproved_and_duplicate_inputs_fail (test_raw_dataset.RawDatasetTests.test_wrong_root_unapproved_and_duplicate_inputs_fail) ... ok
+
+----------------------------------------------------------------------
+Ran 7 tests in 0.072s
+
+OK

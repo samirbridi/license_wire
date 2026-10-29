@@ -1,6 +1,6 @@
 # Arquitetura proposta - ainda nao implementada
 
-Atualizacao da fase de dados: copiador seguro e extrator offline do catalogo foram implementados em `scripts/`. O motor de previsao e o plugin Lua ainda nao existem. O snapshot privado gerou 3.601 referencias de ajustes atuais aprovados; entradas RAW e renderizacoes neutras continuam pendentes.
+Atualizacao: copiador, extrator do catalogo, aquisicao RAW e piloto de regressao local foram implementados em `scripts/`. Ha 546 pares com entradas tecnicas LibRaw e um modelo experimental de um evento. A extensao Lua apenas compara previsoes salvas; o motor ainda nao esta integrado a inferencia para novas fotos ou aplicacao de ajustes no Lightroom. Os 3.601 registros do catalogo seguem disponiveis para ampliar treino/validacao quando os demais RAWs forem acessiveis.
 
 1. Plugin Lua consulta fotos selecionadas, parametros de revelacao e metadados pelo SDK. Aquisicao sem modificar o catalogo e preferivel na primeira etapa.
 2. Exportador cria dataset local com identificador, camera/perfil/process version, parametros finais e referencias visuais. Preservar RAWs e registrar se a edicao esta aprovada.

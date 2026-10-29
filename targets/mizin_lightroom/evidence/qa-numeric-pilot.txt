@@ -1,0 +1,8 @@
+test_serialization_and_missing_inputs_are_finite (test_numeric_pilot.NumericPilotTests.test_serialization_and_missing_inputs_are_finite) ... ok
+test_signal_prediction_beats_constant_without_test_fit (test_numeric_pilot.NumericPilotTests.test_signal_prediction_beats_constant_without_test_fit) ... ok
+test_temporal_groups_never_overlap_and_test_is_later (test_numeric_pilot.NumericPilotTests.test_temporal_groups_never_overlap_and_test_is_later) ... ok
+
+----------------------------------------------------------------------
+Ran 3 tests in 0.484s
+
+OK

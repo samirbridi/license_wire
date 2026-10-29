@@ -1,0 +1,8 @@
+test_comparison_only_reads_catalog (test_lightroom_pilot.LightroomPilotTests.test_comparison_only_reads_catalog) ... ok
+test_data_escaping_remains_data_in_lua51 (test_lightroom_pilot.LightroomPilotTests.test_data_escaping_remains_data_in_lua51) ... ok
+test_wrong_catalog_does_not_write_or_crash (test_lightroom_pilot.LightroomPilotTests.test_wrong_catalog_does_not_write_or_crash) ... ok
+
+----------------------------------------------------------------------
+Ran 3 tests in 0.017s
+
+OK

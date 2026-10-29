@@ -2,6 +2,8 @@
 
 Data: 2026-10-29, America/Sao_Paulo.
 
+Estado posterior: o primeiro lote RAW ja foi adquirido e o experimento numerico foi executado. Esta nota preserva a etapa de recuperacao dos parametros; estado atual e resultados em `07_raws_e_piloto.md`, com o primeiro pacote de comparacao em `08_plugin_comparacao.md`.
+
 ## Resultado comprovado
 
 | Verificacao | Resultado |

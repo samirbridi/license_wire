@@ -2,6 +2,8 @@
 
 Atualizado em 2026-10-29, America/Sao_Paulo.
 
+Atualizacao posterior: catalogo e primeiro lote de 546 RAWs ja foram copiados com hashes e fontes intactas. O acesso RAW funcionou pelo compartilhamento direto da formatura confirmado pelo usuario, nao pelo compartilhamento ARQUIVOS. Os testes iniciais abaixo ficam como historico. Consultar `07_raws_e_piloto.md` para o resultado atual.
+
 ## Caminhos informados pelo usuario
 
 - Maquina: `192.168.1.58`.

@@ -15,3 +15,11 @@ O analisador verifica o hash do catalogo antes e depois, consulta apenas a copia
 
 O dataset contem caminhos e metadados pessoais; permanece em `private/`, ignorado pelo Git. A aprovacao de referencia foi obtida diretamente do usuario. Nao houve envio de fotos a provedores, acesso a credenciais nem extracao de modelos do Neurapix.
 
+## RAWs e extensao de comparacao
+
+A aquisicao RAW usa somente referencias aprovadas de um trabalho explicitamente mapeado para um compartilhamento confirmado. Valida caminho relativo, unicidade fisica, camera e captura; exige resultados de metadados de todos os arquivos antes de copiar. Abre fontes Windows sem compartilhar escrita, verifica hash da copia e estabilidade de tamanho/data, marca a copia como ReadOnly e revalida metadados localmente. Leitura LibRaw nao alterou os hashes locais. Arquivos nao selecionados e XMPs nao foram copiados ou modificados.
+
+O leitor ExifTool e chamado sem configuracao de usuario, em modo de leitura, com argumentos em arquivo UTF-8 e sem shell. O modo fast2 foi usado somente com verificacao explicita dos campos exigidos; nao se afirma leitura de todos os MakerNotes. Fontes de dependencias e versoes foram registradas, sem alterar Python global.
+
+A extensao Lua de comparacao importa somente Application, Dialogs, PathUtils e Tasks. Nao contem chamadas de escrita no catalogo, rede ou execucao de processos. Dados Lua do pacote sao gerados por serializador literal com escape testado; nao sao o texto Lua bruto extraido do catalogo. Modelo, fotos, entradas tecnicas e ZIP com caminhos pessoais permanecem privados. A leitura de credenciais limitou-se a verificar a existencia de uma entrada salva para o IP, sem extrair senhas; nenhuma conexao foi removida nem politica SMB alterada.
+
