@@ -1,5 +1,7 @@
 # Arquitetura proposta - ainda nao implementada
 
+Atualizacao da fase de dados: copiador seguro e extrator offline do catalogo foram implementados em `scripts/`. O motor de previsao e o plugin Lua ainda nao existem. O snapshot privado gerou 3.601 referencias de ajustes atuais aprovados; entradas RAW e renderizacoes neutras continuam pendentes.
+
 1. Plugin Lua consulta fotos selecionadas, parametros de revelacao e metadados pelo SDK. Aquisicao sem modificar o catalogo e preferivel na primeira etapa.
 2. Exportador cria dataset local com identificador, camera/perfil/process version, parametros finais e referencias visuais. Preservar RAWs e registrar se a edicao esta aprovada.
 3. A entrada precisa de renderizacao neutra consistente. Uma miniatura ja editada nao pode ser tratada como original sem ajustes. Evitar vazamento dos resultados finais para as entradas do treinamento.

@@ -1,0 +1,16 @@
+﻿{
+    "GeneratedUtc":  "2026-10-29T15:47:04.9640089Z",
+    "Status":  "PASS",
+    "Checks":  {
+                   "verified_copy":  true,
+                   "companions_preserved":  true,
+                   "sources_unchanged":  true,
+                   "copy_marked_readonly":  true,
+                   "live_catalog_refused":  true,
+                   "source_lock_preserved":  true,
+                   "path_traversal_refused":  true,
+                   "existing_writer_without_lock_refused":  true
+               },
+    "Scope":  "SYNTHETIC_COPY_SAFETY",
+    "PowerShell":  "5.1.19041.6456"
+}

@@ -1,0 +1,146 @@
+{
+  "schema": "mizin-lightroom.acquisition-summary/1",
+  "date": "2026-10-29",
+  "timezone": "America/Sao_Paulo",
+  "snapshot": {
+    "relativeDirectory": "private/snapshots/20261029-124518-192a6383",
+    "status": "VERIFIED",
+    "fileCount": 20,
+    "totalBytes": 1851905958,
+    "hashComparisonsPassed": 20,
+    "catalogSha256": "250f400b4cbe6418e95c05d12fd39a75df6f99573bf571becf69e0aa0ed2201a",
+    "sourceWriteOperations": 0,
+    "sourceMetadataStable": true,
+    "runtimeFilesAbsentBeforeAndAfter": true
+  },
+  "analysis": {
+    "relativeSummary": "private/snapshots/20261029-124518-192a6383/analysis/extraction-20261029T155812079523Z/summary.json",
+    "sqliteQuickCheck": [
+      "ok"
+    ],
+    "catalogUnchanged": true,
+    "catalogImageCount": 37871,
+    "catalogVirtualCopies": 74,
+    "formats": [
+      {
+        "fileFormat": "DNG",
+        "count": 33687
+      },
+      {
+        "fileFormat": "RAW",
+        "count": 3603
+      },
+      {
+        "fileFormat": "JPG",
+        "count": 578
+      },
+      {
+        "fileFormat": "TIFF",
+        "count": 2
+      },
+      {
+        "fileFormat": "HEIC",
+        "count": 1
+      }
+    ],
+    "neurapixHistorySteps": 3728,
+    "photosWithNeurapixHistory": 3601,
+    "parsedPhotos": 3601,
+    "parseFailures": 0,
+    "distinctCandidateFiles": 3601,
+    "candidateEventRoots": 8,
+    "candidateCameras": {
+      "Canon EOS R6m2": 3601
+    },
+    "variants": {
+      "color": 3513,
+      "monochrome": 88
+    },
+    "parameterCoverage": {
+      "Look": 3601,
+      "Exposure2012": 3601,
+      "Contrast2012": 3601,
+      "Highlights2012": 3601,
+      "Shadows2012": 3601,
+      "Whites2012": 3601,
+      "Blacks2012": 3601,
+      "Temperature": 3600,
+      "Tint": 3600,
+      "CustomTemperature": 623,
+      "CustomTint": 623,
+      "WhiteBalance": 3601,
+      "Vibrance": 3601,
+      "Saturation": 3601,
+      "ConvertToGrayscale": 3601,
+      "ProcessVersion": 3601,
+      "CameraProfile": 3601,
+      "CropAngle": 3598,
+      "CropTop": 2432,
+      "CropBottom": 2387,
+      "CropLeft": 3550,
+      "CropRight": 3539,
+      "Sharpness": 3601,
+      "ColorNoiseReduction": 3601,
+      "LensProfileEnable": 3601,
+      "ParametricDarks": 3601,
+      "ParametricLights": 3601,
+      "ParametricHighlights": 3601,
+      "SplitToningBalance": 3601,
+      "SplitToningHighlightHue": 3601,
+      "SplitToningHighlightSaturation": 3601,
+      "SplitToningShadowHue": 3601,
+      "SplitToningShadowSaturation": 3601,
+      "ToneCurveName2012": 3601,
+      "ToneCurvePV2012": 3601,
+      "ToneCurvePV2012Red": 3601,
+      "ToneCurvePV2012Green": 3601,
+      "ToneCurvePV2012Blue": 3601,
+      "HueAdjustmentYellow": 3601,
+      "HueAdjustmentGreen": 3601,
+      "HueAdjustmentBlue": 1352,
+      "HueAdjustmentMagenta": 1076,
+      "SaturationAdjustmentOrange": 3601,
+      "SaturationAdjustmentYellow": 3601,
+      "SaturationAdjustmentGreen": 3601,
+      "SaturationAdjustmentBlue": 3601,
+      "LuminanceAdjustmentOrange": 3601,
+      "LuminanceAdjustmentMagenta": 1223,
+      "ColorGradeBlending": 3601,
+      "ColorGradeGlobalHue": 3601,
+      "ColorGradeGlobalSat": 3601,
+      "ColorGradeGlobalLum": 3601,
+      "ColorGradeMidtoneHue": 3601,
+      "ColorGradeMidtoneSat": 3601,
+      "ColorGradeMidtoneLum": 3601,
+      "ColorGradeHighlightLum": 3601,
+      "ColorGradeShadowLum": 3601,
+      "LuminanceAdjustmentRed": 1661,
+      "LuminanceAdjustmentAqua": 1264,
+      "HueAdjustmentOrange": 466,
+      "HueAdjustmentAqua": 2072,
+      "SaturationAdjustmentRed": 1413,
+      "SaturationAdjustmentAqua": 892,
+      "LuminanceAdjustmentYellow": 1390,
+      "Clarity2012": 1259,
+      "Texture": 1035,
+      "HueAdjustmentRed": 644,
+      "SaturationAdjustmentMagenta": 784,
+      "LuminanceAdjustmentGreen": 1453,
+      "LuminanceAdjustmentBlue": 1373,
+      "Dehaze": 27,
+      "ParametricShadows": 7,
+      "LuminanceSmoothing": 2
+    },
+    "referenceApprovalConfirmedByUser": true,
+    "approvalDate": "2026-10-29",
+    "rawInputsRead": 0,
+    "trainedModelAvailable": false
+  },
+  "limitations": [
+    "This is a private data acquisition and extraction milestone, not Lightroom host/plugin QA.",
+    "Current approved edits are the target examples; a history row associated with a Neurapix step was not validated as its after-state in Lightroom.",
+    "Parameters absent from serialization remain absent; no Lightroom defaults were invented.",
+    "External profiles/LUTs, AI masks and BigData were preserved as references/companions, not reconstructed.",
+    "RAW paths refer to the remote editing computer. Pixel access and neutral renders are still required for training."
+  ]
+}

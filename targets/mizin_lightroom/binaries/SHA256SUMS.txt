@@ -1,2 +1,22 @@
-# Hashes SHA-256 dos binários originais sob análise
-# Formato: <SHA256> *<NomeDoArquivo>
+# SHA-256 dos arquivos preservados na aquisicao autorizada do catalogo.
+# Dados privados fora do Git; caminhos relativos a esta pasta binaries.
+250f400b4cbe6418e95c05d12fd39a75df6f99573bf571becf69e0aa0ed2201a *../private/snapshots/20261029-124518-192a6383/original/202610 - OUTUBRO.lrcat
+f887ed23c6d6350c4338efd1ee50fda8464022b93c71ec38c243319e24d72e12 *../private/snapshots/20261029-124518-192a6383/original/202610 - OUTUBRO.lrcat-data/000009.blob
+722389164b70a3ce017524dacf8a631ddf8b7fc5be2484c5af69779c98b18703 *../private/snapshots/20261029-124518-192a6383/original/202610 - OUTUBRO.lrcat-data/000015.blob
+295568e9161e065180b7c35c2db62f6998e84b712b56c7e0df6a7c8027d4a1c9 *../private/snapshots/20261029-124518-192a6383/original/202610 - OUTUBRO.lrcat-data/000020.sst
+5dd6d421acb7821893782c11bd5cb09b1c0a034f2cd5265dfbcee02507df4f0f *../private/snapshots/20261029-124518-192a6383/original/202610 - OUTUBRO.lrcat-data/000023.sst
+5514dac285dcec13a62485053cd132aa3df74637ded406b5eb6c203a500830f9 *../private/snapshots/20261029-124518-192a6383/original/202610 - OUTUBRO.lrcat-data/000024.blob
+e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855 *../private/snapshots/20261029-124518-192a6383/original/202610 - OUTUBRO.lrcat-data/000041.log
+06bbfaf793b9061ba299146242120e0397a3c1d765c559bb6b80d0196883b125 *../private/snapshots/20261029-124518-192a6383/original/202610 - OUTUBRO.lrcat-data/CURRENT
+1b4057da1f3fe95e23c5f42827d5e61007134e595d3e264c7fb527770722f52f *../private/snapshots/20261029-124518-192a6383/original/202610 - OUTUBRO.lrcat-data/desktop.ini
+5a4e864773ef75a8c324719c9b31eb1d0bcfc8f868a4c86723c8dfb078797b28 *../private/snapshots/20261029-124518-192a6383/original/202610 - OUTUBRO.lrcat-data/IDENTITY
+e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855 *../private/snapshots/20261029-124518-192a6383/original/202610 - OUTUBRO.lrcat-data/LOCK
+29e301174b648681be65858cbc02481a6d45cfe8761059dafac7f028a7bb38c8 *../private/snapshots/20261029-124518-192a6383/original/202610 - OUTUBRO.lrcat-data/LOG
+0dbd1e38d1dc1f12dfb6675ee8ddc7be44b86f0f4eb905616c04e4c7c024a2f9 *../private/snapshots/20261029-124518-192a6383/original/202610 - OUTUBRO.lrcat-data/LOG.old.1793132526225574
+4d8a0ffd5b642aa7e38a7c75d7f235a3363f2427e6c82b63a38acbaafe7b84ac *../private/snapshots/20261029-124518-192a6383/original/202610 - OUTUBRO.lrcat-data/LOG.old.1793134066459319
+d0786dcea7b533e83478f3c0b80f7bb60f57cb0b7e651d413ccb4e84c5432e89 *../private/snapshots/20261029-124518-192a6383/original/202610 - OUTUBRO.lrcat-data/LOG.old.1793134612429855
+aba1fa2e89ec134ccf0a619cf45fb58c168538b99db7aac74450e78d177fa596 *../private/snapshots/20261029-124518-192a6383/original/202610 - OUTUBRO.lrcat-data/LOG.old.1793208831324300
+3df49cf8a1b887b40dfa1da3ccf6c55e231e872602e30528de9c07b4e50bc901 *../private/snapshots/20261029-124518-192a6383/original/202610 - OUTUBRO.lrcat-data/MANIFEST-000042
+8e39b0183cfa692b8a3ddfb66c8a0c9cddf4518eae668a932ba0ef87c7aff7d0 *../private/snapshots/20261029-124518-192a6383/original/202610 - OUTUBRO.lrcat-data/OPTIONS-000040
+8e39b0183cfa692b8a3ddfb66c8a0c9cddf4518eae668a932ba0ef87c7aff7d0 *../private/snapshots/20261029-124518-192a6383/original/202610 - OUTUBRO.lrcat-data/OPTIONS-000044
+dc6d5dd34596b1c0c62d0bc274d791b4c8c0b8d47d294bada33bf0cc8f31cfb3 *../private/snapshots/20261029-124518-192a6383/original/202610 - OUTUBRO.lrcat-data/PackageIcon.ico

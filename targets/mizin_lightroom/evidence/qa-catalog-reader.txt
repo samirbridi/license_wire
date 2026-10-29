@@ -1,0 +1,14 @@
+test_compressed_history_roundtrip_and_size_validation (test_catalog_reader.CatalogReaderTests.test_compressed_history_roundtrip_and_size_validation) ... ok
+test_dataset_keeps_proxies_virtuals_and_rejects_out_of_eligible_pool (test_catalog_reader.CatalogReaderTests.test_dataset_keeps_proxies_virtuals_and_rejects_out_of_eligible_pool) ... ok
+test_depth_and_decompression_limits (test_catalog_reader.CatalogReaderTests.test_depth_and_decompression_limits) ... ok
+test_duplicate_keys_are_rejected (test_catalog_reader.CatalogReaderTests.test_duplicate_keys_are_rejected) ... ok
+test_global_and_nested_parameters_are_distinct (test_catalog_reader.CatalogReaderTests.test_global_and_nested_parameters_are_distinct) ... ok
+test_proxy_detection_and_missing_values (test_catalog_reader.CatalogReaderTests.test_proxy_detection_and_missing_values) ... ok
+test_readonly_connection_cannot_write (test_catalog_reader.CatalogReaderTests.test_readonly_connection_cannot_write) ... ok
+test_strings_and_unusual_named_keys (test_catalog_reader.CatalogReaderTests.test_strings_and_unusual_named_keys) ... ok
+test_untrusted_lua_is_never_executed (test_catalog_reader.CatalogReaderTests.test_untrusted_lua_is_never_executed) ... ok
+
+----------------------------------------------------------------------
+Ran 9 tests in 0.147s
+
+OK

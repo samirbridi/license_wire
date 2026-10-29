@@ -1,4 +1,6 @@
 private/
+__pycache__/
+*.pyc
 evidence/qa-fixtures/
 evidence/inventory-*/
 *.lrcat
