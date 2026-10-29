@@ -144,6 +144,21 @@ func GetActivePlaybackClient(did string) *Client {
 	return GetActiveClient(did)
 }
 
+// PlaybackActive reports an open SD playback session for the device.
+func PlaybackActive(did string) bool {
+	if did == "" {
+		return false
+	}
+	activeClientsMu.RLock()
+	defer activeClientsMu.RUnlock()
+	for _, c := range activeClients[did] {
+		if c != nil && !c.closed.Load() && c.playbackMode {
+			return true
+		}
+	}
+	return false
+}
+
 func CloseClientsForDID(did string, onlyPlayback bool) {
 	if did == "" {
 		return
@@ -204,11 +219,15 @@ func NewClient(rawURL string) (*Client, error) {
 		return nil, err
 	}
 
+	// A camera busy with another session may never answer the login; without a deadline the dial hangs
+	// forever (and, with a shared dual-lens session, every view waiting on it).
+	_ = conn.SetDeadline(time.Now().Add(10 * time.Second))
 	err = login(conn, query.Get("client_public"), query.Get("sign"))
 	if err != nil {
 		_ = conn.Close()
 		return nil, err
 	}
+	_ = conn.SetDeadline(time.Time{})
 
 	client := &Client{
 		Conn:         conn,

@@ -100,7 +100,11 @@ func joinDual(key, model string, lens uint32, dial func() (*Client, error)) (*du
 		go hub.run(model)
 	} else {
 		dualMu.Unlock()
-		<-hub.ready
+		select {
+		case <-hub.ready:
+		case <-time.After(30 * time.Second):
+			return nil, nil, fmt.Errorf("miss: shared session still connecting")
+		}
 	}
 	view, err := hub.join(lens)
 	if err != nil {

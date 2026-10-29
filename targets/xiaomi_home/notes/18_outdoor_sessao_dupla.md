@@ -25,3 +25,20 @@ Com uma sessão P2P por visão, a CW701 entrega uma lente por vez. Os logs da po
 ## Por que não testei no Windows
 
 A ponte de teste local abriu a sessão, mas recebeu `read udp … i/o timeout`. Este Windows não tem regra de firewall para o executável novo (a regra `Codex-Xiaomi-Local-Diagnostic-UDP` não existe), e firewall não é alterado sem o proprietário. A validação real é feita no NAS, com o log acima.
+
+## Queda às 14:18 UTC e correções (bridge v0.12.2)
+
+O que se viu no NAS:
+
+- 14:18:17 — a consulta do catálogo SD estourou o tempo (18 s) no portal.
+- 14:18:41 — a sessão compartilhada foi fechada do nosso lado (`use of closed network connection`): abrir o replay SD fechava todos os clientes da câmera (`CloseClientsForDID(did, false)`).
+- 14:19:41 — uma nova sessão compartilhada parou junto com as duas visões, e depois disso nenhuma tentativa voltou. O log da ponte ficou quase mudo e o gravador repetiu a cada 120 s.
+
+Causa provável: o `login` da sessão MISS não tinha prazo. Com a câmera ocupada pelo replay, a conexão nova ficava esperando para sempre. Com o hub, as duas visões esperavam juntas por `hub.ready`.
+
+Correções:
+
+- O `login` tem prazo de 10 s. Quem entra no hub espera no máximo 30 s.
+- O replay SD tem prioridade. Abrir o replay ainda fecha as sessões ao vivo, mas um pedido ao vivo não fecha mais o replay: enquanto houver replay aberto na câmera, ele falha na hora com `SD playback in progress`, sem tocar na câmera. Antes, o gravador e o replay se derrubavam um ao outro. Quando o portal fecha o replay, o gravador volta a conectar na próxima tentativa (até cerca de 2 min). O próprio cartão SD cobre esse intervalo.
+- Teste: `session_test.go`.
+

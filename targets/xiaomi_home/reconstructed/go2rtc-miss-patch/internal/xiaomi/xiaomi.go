@@ -44,7 +44,10 @@ func Init() {
 		isPlayback := u.Query().Get("playback") != ""
 		if did != "" {
 			closeTempClient(did)
-			miss.CloseClientsForDID(did, !isPlayback)
+			// Only SD playback takes the camera over; live dials never close a playback (see miss.Dial).
+			if isPlayback {
+				miss.CloseClientsForDID(did, false)
+			}
 		}
 
 		if u.User != nil {

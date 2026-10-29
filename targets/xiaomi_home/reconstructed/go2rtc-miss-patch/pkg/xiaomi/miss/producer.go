@@ -49,6 +49,12 @@ func Dial(rawURL string) (core.Producer, error) {
 	}
 	query := u.Query()
 
+	// SD playback has priority: the camera keeps one media session, and live dials (the NAS recorder retries
+	// every few seconds) would tear the playback down. Live resumes once the playback stream is closed.
+	if query.Get("playback") == "" && PlaybackActive(query.Get("did")) {
+		return nil, fmt.Errorf("miss: SD playback in progress on this camera")
+	}
+
 	if query.Get("playback") == "" && dualEnabled(query.Get("model")) {
 		key := query.Get("did")
 		if key == "" {
