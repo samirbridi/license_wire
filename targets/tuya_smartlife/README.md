@@ -120,3 +120,19 @@ O convite inicial fica no File Station, em `docker/nas-portal-build-0036/data/xi
 A build `v0.33.0 (build 0044)` organiza o acervo em `<camera>/<AAAA-MM-DD>/HH-MM-SS[_visao2].mkv`, com segmentos de 15 minutos alinhados ao relógio, e migra os arquivos antigos sem reescrever bytes. O limite fixo foi removido: ao atingir 90% do Volume 4, o gravador apaga as gravações mais antigas até 85%, priorizando as que já têm cópia confirmada no R2. O R2 passa a enviar do mais antigo para o mais novo, com limite configurável (`MIZIN_R2_MAX_GB`, padrão 120 GiB). A tela "Gravações" ganhou linha do tempo de 24 h unindo NAS e nuvem, com reprodução a partir do ponto clicado. Detalhes: [`notes/06_gravacoes_nas_r2.md`](notes/06_gravacoes_nas_r2.md).
 
 Estado em 2026-10-29: o portal público responde e o backend do NAS está ativo, mas `/api/auth/status` indica `setupRequired: true`. Nenhum administrador foi criado na nova identidade, por isso ainda não há acesso aos dispositivos e câmeras. O proprietário precisa abrir o link de `Mizin-Home/data/xiaomi/runtime/central/identity/owner-setup.json` (File Station, Volume 4), que vale 24 h e é renovado a cada reinício do serviço `auth`. O pacote `evidence/private/nas-portal-build-0044.zip` e `compose-volume4-0044.yaml` estão prontos; a publicação no NAS e no Pages ainda não foi feita. Os comandos remotos de veículos agora respondem 501 em vez de simular sucesso.
+
+### Builds 0046–0047 publicadas no NAS e no Pages (Claude Code, 2026-10-29)
+
+A publicação passou a ser automática pelo DSM no Chrome; o procedimento está em [`notes/07_publicacao_nas_e_portal.md`](notes/07_publicacao_nas_e_portal.md) e em `scripts/nas-dsm-deploy.js`. Mudanças entregues:
+
+- 820 gravações migradas para câmera/dia/horário, com segmentos de 15 min.
+- O par `_visao1`/`_visao2` da Outdoor usa o mesmo horário.
+- Ao vivo em HEVC original, sem converter no NAS, quando o navegador suporta.
+- Selo "EM CASA" quando o IP público coincide com o da casa.
+- Cabeçalhos com ações no canto superior direito.
+- "Minha conta" centralizada e com abas; "Minha conta" e "Sair" à direita.
+- Aba do SD com momentos organizados por tipo e período, player sem faixas e informações abaixo.
+- Foco Único personalizável.
+- Veículos em dois cartões, informando quando não há dados.
+
+Limitação confirmada: com uma sessão por visão, a Outdoor Pro entrega uma visão por vez. O gravador prioriza a visão ativa. O próximo passo é pedir os dois canais na mesma sessão na ponte go2rtc.

@@ -1,0 +1,20 @@
+{
+  "runId": "portal-outdoor-priority-20261029",
+  "sourceCommit": "dbd92ac353d43ddf1a7f5128eb2a003e695bd412",
+  "previous": "v0.35.0 (build 0046)",
+  "version": "v0.35.1 (build 0047)",
+  "build": 47,
+  "date": "2026-10-29",
+  "status": "built",
+  "commits": [
+    {
+      "sha": "dbd92ac353d43ddf1a7f5128eb2a003e695bd412",
+      "subject": "fix: prioriza a visao ativa da Outdoor, avisa o limite da segunda visao e espera o HEVC original",
+      "body": "Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>",
+      "type": "fix",
+      "description": "prioriza a visao ativa da Outdoor, avisa o limite da segunda visao e espera o HEVC original",
+      "breaking": false
+    }
+  ],
+  "artifact": "runtime/builds/build-0047"
+}

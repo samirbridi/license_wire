@@ -1,0 +1,28 @@
+{
+  "runId": "portal-dual-view-names-20261029",
+  "sourceCommit": "d670a493934da837694555571dafe4944a4861f3",
+  "previous": "v0.33.0 (build 0044)",
+  "version": "v0.34.0 (build 0045)",
+  "build": 45,
+  "date": "2026-10-29",
+  "status": "built",
+  "commits": [
+    {
+      "sha": "d670a493934da837694555571dafe4944a4861f3",
+      "subject": "feat: identifica as duas visoes da Outdoor Pro como par visao1 e visao2 no mesmo horario",
+      "body": "Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>",
+      "type": "feat",
+      "description": "identifica as duas visoes da Outdoor Pro como par visao1 e visao2 no mesmo horario",
+      "breaking": false
+    },
+    {
+      "sha": "66c4754daa368a72cacb44dabb7cedb8660f0dce",
+      "subject": "improve: documenta organizacao das gravacoes, build 0044 e estado do acesso ao NAS",
+      "body": "Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>",
+      "type": "improve",
+      "description": "documenta organizacao das gravacoes, build 0044 e estado do acesso ao NAS",
+      "breaking": false
+    }
+  ],
+  "artifact": "runtime/builds/build-0045"
+}

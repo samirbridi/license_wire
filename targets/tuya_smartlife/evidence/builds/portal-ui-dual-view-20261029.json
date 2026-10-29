@@ -1,0 +1,28 @@
+{
+  "runId": "portal-ui-dual-view-20261029",
+  "sourceCommit": "b3598b6f654933872bbf0bf27117aa411e17c8db",
+  "previous": "v0.34.0 (build 0045)",
+  "version": "v0.35.0 (build 0046)",
+  "build": 46,
+  "date": "2026-10-29",
+  "status": "built",
+  "commits": [
+    {
+      "sha": "b3598b6f654933872bbf0bf27117aa411e17c8db",
+      "subject": "feat: personaliza o foco unico das cameras e separa os veiculos em dois cartoes",
+      "body": "Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>",
+      "type": "feat",
+      "description": "personaliza o foco unico das cameras e separa os veiculos em dois cartoes",
+      "breaking": false
+    },
+    {
+      "sha": "6c5e0889f0324bdd446565275104f3d0d8aeb82b",
+      "subject": "fix: estabiliza visoes da Outdoor e reorganiza ao vivo, conta e gravacoes SD",
+      "body": "- Gravador conecta as visoes de uma mesma camera em sequencia, com espera crescente\n- Ao vivo usa HEVC original quando o navegador suporta, sem converter no NAS\n- Selo EM CASA quando o IP publico coincide com o da residencia\n- Botoes do cabecalho da camera fixos no canto superior direito\n- Minha conta centralizada com abas; Minha conta e Sair a direita\n- Momentos do SD por tipo e periodo, player sem faixas e informacoes abaixo\n\nCo-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>",
+      "type": "fix",
+      "description": "estabiliza visoes da Outdoor e reorganiza ao vivo, conta e gravacoes SD",
+      "breaking": false
+    }
+  ],
+  "artifact": "runtime/builds/build-0046"
+}

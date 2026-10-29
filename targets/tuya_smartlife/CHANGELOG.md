@@ -1,5 +1,59 @@
 # CHANGELOG — tuya_smartlife
 
+## v0.35.1 (build 0047) - 2026-10-29
+
+### 💥 Breaking Changes
+
+- Nenhum.
+
+### ✨ Features
+
+- Nenhum.
+
+### 🐛 Fixes
+
+- fix: prioriza a visao ativa da Outdoor, avisa o limite da segunda visao e espera o HEVC original (commit `dbd92ac353d43ddf1a7f5128eb2a003e695bd412`)
+
+### ⚡ Improvements
+
+- Nenhum.
+
+## v0.35.0 (build 0046) - 2026-10-29
+
+### 💥 Breaking Changes
+
+- Nenhum.
+
+### ✨ Features
+
+- feat: personaliza o foco unico das cameras e separa os veiculos em dois cartoes (commit `b3598b6f654933872bbf0bf27117aa411e17c8db`)
+
+### 🐛 Fixes
+
+- fix: estabiliza visoes da Outdoor e reorganiza ao vivo, conta e gravacoes SD (commit `6c5e0889f0324bdd446565275104f3d0d8aeb82b`)
+
+### ⚡ Improvements
+
+- Nenhum.
+
+## v0.34.0 (build 0045) - 2026-10-29
+
+### 💥 Breaking Changes
+
+- Nenhum.
+
+### ✨ Features
+
+- feat: identifica as duas visoes da Outdoor Pro como par visao1 e visao2 no mesmo horario (commit `d670a493934da837694555571dafe4944a4861f3`)
+
+### 🐛 Fixes
+
+- Nenhum.
+
+### ⚡ Improvements
+
+- improve: documenta organizacao das gravacoes, build 0044 e estado do acesso ao NAS (commit `66c4754daa368a72cacb44dabb7cedb8660f0dce`)
+
 ## v0.33.0 (build 0044) - 2026-10-28
 
 ### 💥 Breaking Changes
