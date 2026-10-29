@@ -5,6 +5,7 @@ import {createArchive} from './camera-archive.mjs';
 import {createPortalGate} from './portal-gate.mjs';
 import {cameraMetadata} from './camera-inventory.mjs';
 import {createTalkback,encodeSpeech} from './camera-talkback.mjs';
+import {createTalkStream} from './camera-talk-stream.mjs';
 import net from 'node:net';
 import os from 'node:os';
 import fs from 'node:fs';
@@ -304,6 +305,10 @@ function acquireCameraStart(alias) {
 }
 
 let cachedGo2rtcMeta = null;
+// Live viewers join the stream the NAS recorder keeps open (same camera profile): no new camera session,
+// and the bridge's keyframe cache answers at once. Single-lens cameras used to open a cold session here.
+function recorderStreamAlias(src){if(!src||/_quality\d$/.test(src))return src;const meta=loadGo2rtcStreamsMeta();for(const suffix of['_quality3','_quality4'])if(meta.has(src+suffix))return src+suffix;return src;}
+
 function loadGo2rtcStreamsMeta() {
   if(cachedGo2rtcMeta)return cachedGo2rtcMeta;
   const inventory=path.join(WORKSPACE,'targets/xiaomi_home/runtime/central/bridge-streams.json');
@@ -1701,6 +1706,7 @@ async function getEnergyMetrics() {
   }
 }
 
+const talkStream=createTalkStream({ffmpeg:FFMPEG_BIN,resolveCamera:getXiaomiStreamMeta,openSpeaker:async target=>{const reply=await go2rtcJsonRequest('POST','/api/xiaomi/talkback',{...target,action:'start'},8000);if(reply?.ok!==true)throw new Error('A câmera não confirmou o canal de fala.');return reply;}});
 const transmitSpeech=createTalkback({resolveCamera:getXiaomiStreamMeta,send:body=>go2rtcJsonRequest('POST','/api/xiaomi/talkback',body,15000),encode:(data,type,opus)=>encodeSpeech(FFMPEG_BIN,data,type,opus)});
 
 const gateConfig=process.env.MIZIN_GATEWAY_CONFIG?JSON.parse(fs.readFileSync(process.env.MIZIN_GATEWAY_CONFIG,'utf8')):null;
@@ -3777,8 +3783,10 @@ server.on('upgrade', async (req, clientSocket, head) => {
   }
 
   if(pathname==='/api/dashboard/events'&&dashboardEvents){await dashboardEvents.upgrade(req,clientSocket,head);return;}
+  if(pathname==='/api/camera/talk-ws'){await talkStream.upgrade(req,clientSocket,head,new URL(req.url,`http://${host}`).searchParams.get('id'));return;}
   if (pathname==='/api/ws') {
-    const alias=new URL(req.url,`http://${host}`).searchParams.get('src');if(!loadGo2rtcStreamsMeta().has(alias)){clientSocket.destroy();return;}
+    const requested=new URL(req.url,`http://${host}`).searchParams.get('src');const alias=recorderStreamAlias(requested);if(!loadGo2rtcStreamsMeta().has(alias)){clientSocket.destroy();return;}
+    if(alias!==requested)req.url=`/api/ws?src=${encodeURIComponent(alias)}`;
     console.log(`[WS Proxy] Conexão WebSocket estabelecida para go2rtc: ${req.url}`);
     const upstream = net.connect(19843, '127.0.0.1', () => {
       let reqHeaders = `${req.method} ${req.url} HTTP/1.1\r\n`;

@@ -1,5 +1,23 @@
 # CHANGELOG — xiaomi_home
 
+## v0.16.0 (build 0032) - 2026-10-29
+
+### 💥 Breaking Changes
+
+- Nenhum.
+
+### ✨ Features
+
+- feat: espera a camera liberar o alto-falante e entrega a fala em fluxo continuo (commit `bbca7d5070c6a00ed9fde8dccae76c4b9117a28f`)
+
+### 🐛 Fixes
+
+- Nenhum.
+
+### ⚡ Improvements
+
+- Nenhum.
+
 ## v0.15.0 (build 0031) - 2026-10-29
 
 ### 💥 Breaking Changes

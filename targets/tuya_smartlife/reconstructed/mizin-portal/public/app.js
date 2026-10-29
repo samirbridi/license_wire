@@ -4558,6 +4558,82 @@ let audioTalkCycleTimeout = null;
 let audioTalkTarget = null;
 let talkUploadChain = Promise.resolve();
 let audioTalkGeneration = 0;
+let audioTalkSocket = null;
+let talkMutedListen = false;
+
+// Continuous talk channel (camera-talk-stream.mjs): one WebSocket per talk carrying 16 kHz PCM every 64 ms.
+// The portal encodes the whole talk at once and the bridge paces 40 ms frames to the camera, after the
+// camera confirms the speaker channel (as the official app does). Resolves true, 'busy' or false (fallback).
+function talkSocketUrl(camId) {
+  const base = BACKEND_API_BASE ? BACKEND_API_BASE.replace(/^http/, 'ws') : `${window.location.protocol === 'https:' ? 'wss:' : 'ws:'}//${window.location.host}`;
+  return `${base}/api/camera/talk-ws?id=${encodeURIComponent(camId)}`;
+}
+
+function startTalkSocket(camId, generation) {
+  return new Promise(resolve => {
+    let ws, ready = false;
+    try { ws = new WebSocket(talkSocketUrl(camId)); } catch (e) { resolve(false); return; }
+    ws.binaryType = 'arraybuffer';
+    const timer = setTimeout(() => { if (!ready) { try { ws.close(); } catch (e) {} resolve(false); } }, 10000);
+    ws.onmessage = ev => {
+      if (typeof ev.data !== 'string') return;
+      let msg = {};
+      try { msg = JSON.parse(ev.data); } catch (e) {}
+      if (msg.type === 'ready' && !ready) {
+        ready = true;
+        clearTimeout(timer);
+        if (generation !== audioTalkGeneration || !isAudioTalking) { ws.close(); resolve(false); return; }
+        audioTalkSocket = ws;
+        beginTalkCapture(ws);
+        resolve(true);
+      } else if (msg.type === 'error') {
+        clearTimeout(timer);
+        if (!ready) { resolve(/ocupad|occupied|busy/i.test(msg.error || '') ? 'busy' : false); return; }
+        showToast(msg.error || 'A câmera encerrou o canal de fala.', '', '⚠️', 'warning');
+      }
+    };
+    ws.onerror = () => { clearTimeout(timer); if (!ready) resolve(false); };
+    ws.onclose = () => {
+      clearTimeout(timer);
+      if (!ready) { resolve(false); return; }
+      if (audioTalkSocket === ws) {
+        audioTalkSocket = null;
+        if (isAudioTalking && generation === audioTalkGeneration) toggleAudioTalk();
+      }
+    };
+  });
+}
+
+function beginTalkCapture(ws) {
+  const AudioCtx = window.AudioContext || window.webkitAudioContext;
+  const actx = new AudioCtx({ sampleRate: 16000 });
+  audioTalkCtx = actx;
+  const micSource = actx.createMediaStreamSource(audioTalkStream);
+  // 1024 samples = 64 ms at 16 kHz: small blocks keep the voice close to real time.
+  const node = actx.createScriptProcessor(1024, 1, 1);
+  audioTalkScriptNode = node;
+  const ratio = actx.sampleRate / 16000;
+  const silentGain = actx.createGain();
+  silentGain.gain.value = 0;
+  node.onaudioprocess = ev => {
+    if (!isAudioTalking || ws.readyState !== 1 || ws.bufferedAmount > 128 * 1024) return;
+    const input = ev.inputBuffer.getChannelData(0);
+    // Some browsers ignore the requested rate: average down to 16 kHz.
+    const length = Math.floor(input.length / ratio);
+    const pcm16 = new Int16Array(length);
+    for (let i = 0; i < length; i++) {
+      let sum = 0, count = 0;
+      for (let j = Math.floor(i * ratio); j < Math.floor((i + 1) * ratio) && j < input.length; j++) { sum += input[j]; count++; }
+      let v = count ? sum / count : 0;
+      if (v > 1) v = 1; else if (v < -1) v = -1;
+      pcm16[i] = v < 0 ? v * 0x8000 : v * 0x7FFF;
+    }
+    ws.send(pcm16.buffer);
+  };
+  micSource.connect(node);
+  node.connect(silentGain);
+  silentGain.connect(actx.destination);
+}
 
 async function toggleAudioTalk() {
   const btn = document.getElementById('btnAudioTalk');
@@ -4601,6 +4677,19 @@ async function toggleAudioTalk() {
           return;
         }
         audioTalkStream=microphone;
+
+        // Like the official app, the camera's sound is muted while talking (no echo of your own voice).
+        talkMutedListen = isAudioListening;
+        if (talkMutedListen) toggleAudioListen();
+        const viaSocket = await startTalkSocket(camId, generation);
+        if (generation !== audioTalkGeneration) return;
+        if (viaSocket === 'busy') throw new Error('O canal de fala da câmera está ocupado (outro aparelho falando com ela).');
+        if (viaSocket === true) {
+          if (text) text.innerText = 'Falar ativo';
+          if (statusText) statusText.innerText = 'Canal de fala aberto e confirmado pela câmera.';
+          showToast('Canal de fala conectado. Pode falar.', '', '🎙️', 'success');
+          return;
+        }
 
         // Abre canal de alto-falante na câmera (0x106 MISS_CMD_SPEAKER_START_REQ)
         talkUploadChain=talkUploadChain.catch(()=>{}).then(()=>generation===audioTalkGeneration?fetch(`${BACKEND_API_BASE}/api/camera/talkback?id=${encodeURIComponent(camId)}&action=start`,{method:'POST'}):null);
@@ -4707,6 +4796,15 @@ async function toggleAudioTalk() {
     if (waveMeter && !isAudioListening) waveMeter.style.display = 'none';
 
     try {
+      if (audioTalkSocket) {
+        const socket = audioTalkSocket;
+        audioTalkSocket = null;
+        try { socket.close(); } catch (e) {}
+      }
+      if (talkMutedListen) {
+        talkMutedListen = false;
+        if (!isAudioListening) toggleAudioListen();
+      }
       if (audioTalkScriptNode) {
         try { audioTalkScriptNode.disconnect(); } catch (e) {}
         audioTalkScriptNode = null;
