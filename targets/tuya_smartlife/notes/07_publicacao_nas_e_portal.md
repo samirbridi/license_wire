@@ -67,7 +67,26 @@ Na publicação da 0048, o Pages subiu uma vez sem `_worker.js` (caminho errado)
 - Ponte v0.14.0/v0.14.1: o replay SD da Outdoor usa a mesma conexão do ao vivo, trocando de modo sem novo handshake. Quem entra depois na sessão compartilhada recebe o áudio.
 - Verificado às 19:29–19:32 UTC: partida limpa, o replay SD duplo funcionando e as duas visões gravando de novo 7 s depois de fechar o replay (antes eram 1,5–2,5 min). Detalhes na nota 18 do xiaomi_home.
 
+## Build 0058 — ao vivo rápido (2026-10-29)
+
+- O painel abre o ao vivo em qualidade original pelo WebSocket da ponte (MSE do go2rtc, `connectWsStream`), sem ffmpeg no portal. O fluxo HTTP `/api/camera-stream` continua como reserva: falha, 12 s sem imagem ou navegador sem HEVC/MediaSource (por exemplo, iPhone, que não tem `MediaSource`).
+- Ponte v0.15.0: cache do trecho desde o último quadro-chave para quem entra num fluxo já aberto.
+- Medido pelo homecams, com as sete câmeras gravando (20:09–20:12 UTC):
+
+| Câmera | Antes: HTTP, imagem | Antes: WebSocket, imagem | 0058: player do painel, tocando |
+|---|---|---|---|
+| AW300 Garagem | 12,1 s | 3,3 s | 0,46 s |
+| AW300 Portão | 3,5 s | 0,5 s | 0,53 s |
+| Mi 2K Sala | 10,8 s | 6,3 s | 0,58 s |
+| Mi 2K Externa | 9,7 s | 4,2 s | 0,51 s |
+| Mi 2K Estúdio | 13,8 s | 8,5 s | 1,14 s |
+| Outdoor Vista 1 | 10,4 s | 4,4 s | 0,65 s |
+| Outdoor Vista 2 | 8,1 s | 2,5 s | 0,43 s |
+
+"Imagem" nas colunas "Antes" é o tempo até 300 KB; a última coluna é o evento `playing` no player do painel, com a resolução nativa decodificada (2304×1296 e 2880×1624).
+
 ## Pendências
+
 
 
 - Integração dos veículos no NAS: os clientes GWM/BYD não estão na imagem, e os cartões informam "Sem dados".

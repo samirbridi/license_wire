@@ -1,5 +1,23 @@
 # CHANGELOG — tuya_smartlife
 
+## v0.39.0 (build 0058) - 2026-10-29
+
+### 💥 Breaking Changes
+
+- Nenhum.
+
+### ✨ Features
+
+- feat: abre o ao vivo pelo WebSocket da ponte com o fluxo HTTP como reserva (commit `9bacb3c809a72bacd6f8c6d61a171ca27c8fca06`)
+
+### 🐛 Fixes
+
+- Nenhum.
+
+### ⚡ Improvements
+
+- improve: registra a volta ao ao vivo em 7 s depois do replay SD na build 0057 (commit `bca61cb275cb79cfdace7881b2ebd5ef00349996`)
+
 ## v0.38.5 (build 0057) - 2026-10-29
 
 ### 💥 Breaking Changes
