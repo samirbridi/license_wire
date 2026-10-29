@@ -1,5 +1,23 @@
 # CHANGELOG — tuya_smartlife
 
+## v0.37.1 (build 0051) - 2026-10-29
+
+### 💥 Breaking Changes
+
+- Nenhum.
+
+### ✨ Features
+
+- Nenhum.
+
+### 🐛 Fixes
+
+- fix: encurta a espera do gravador e registra a causa de cada falha (commit `2a29ccc7030ba6bea97039c54b1ccb0dd4284ec2`)
+
+### ⚡ Improvements
+
+- Nenhum.
+
 ## v0.37.0 (build 0050) - 2026-10-29
 
 ### 💥 Breaking Changes

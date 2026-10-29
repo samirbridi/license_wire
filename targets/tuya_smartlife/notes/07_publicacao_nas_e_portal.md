@@ -48,6 +48,7 @@ Na publicação da 0048, o Pages subiu uma vez sem `_worker.js` (caminho errado)
 
 - Teste real no NAS, às 14:43–14:50 UTC. O replay SD da Outdoor (visão 2) ficou aberto por 68 s e recebeu 8 MB sem queda. Durante esse tempo, o gravador recebeu `SD playback in progress` na hora, sem tocar na câmera. Depois que o replay fechou, a visão 2 voltou em 22 s. A visão 1 só voltou às 14:50:20, por causa da espera entre tentativas (até 2 min).
 - O gravador agora espera no máximo 1 min entre tentativas, e o status guarda `cause` e `failedAt` de cada falha.
+- 0051 verificada às 14:56 UTC: as sete visões estavam gravando. A visão 1 da Outdoor teve uma interrupção na partida (`cause`: "Fluxo interrompido; os segmentos concluídos foram preservados.") e voltou em menos de 1 min. Na tela: os botões Foto, Criar Cena e × estão alinhados, e a régua SD em Dupla Visão mostra as faixas Vista 1 e Vista 2 (catálogo de 705 e 704 arquivos em 29/10).
 
 ## Pendências
 

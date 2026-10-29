@@ -1,28 +1,20 @@
 {
-  "runId": "nas-sd-lenses-20261029",
-  "sourceCommit": "26394ffe13e2198da39dc6c5beb48004e503650d",
-  "previous": "v0.36.1 (build 0049)",
-  "version": "v0.37.0 (build 0050)",
-  "build": 50,
+  "runId": "nas-recorder-retry-20261029",
+  "sourceCommit": "2a29ccc7030ba6bea97039c54b1ccb0dd4284ec2",
+  "previous": "v0.37.0 (build 0050)",
+  "version": "v0.37.1 (build 0051)",
+  "build": 51,
   "date": "2026-10-29",
   "status": "built",
   "commits": [
     {
-      "sha": "26394ffe13e2198da39dc6c5beb48004e503650d",
-      "subject": "feat: separa as gravacoes SD da Outdoor por lente e alinha os botoes do cabecalho",
+      "sha": "2a29ccc7030ba6bea97039c54b1ccb0dd4284ec2",
+      "subject": "fix: encurta a espera do gravador e registra a causa de cada falha",
       "body": "Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>",
-      "type": "feat",
-      "description": "separa as gravacoes SD da Outdoor por lente e alinha os botoes do cabecalho",
-      "breaking": false
-    },
-    {
-      "sha": "37abcf8067075e2008536e0b1f5247479b558860",
-      "subject": "improve: registra as builds 0048 e 0049 com as duas visoes da Outdoor gravando juntas",
-      "body": "Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>",
-      "type": "improve",
-      "description": "registra as builds 0048 e 0049 com as duas visoes da Outdoor gravando juntas",
+      "type": "fix",
+      "description": "encurta a espera do gravador e registra a causa de cada falha",
       "breaking": false
     }
   ],
-  "artifact": "runtime/builds/build-0050"
+  "artifact": "runtime/builds/build-0051"
 }
