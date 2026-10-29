@@ -3,6 +3,7 @@ package miss
 import (
 	"errors"
 	"fmt"
+	"net/url"
 	"os"
 	"sync"
 	"sync/atomic"
@@ -69,6 +70,22 @@ func dualLens(channel string) uint32 {
 		return dualViewMain
 	}
 	return dualViewSecond
+}
+
+// DualPlaybackKey names the shared SD playback session of both lenses ("pbdual" streams), empty otherwise.
+func DualPlaybackKey(query url.Values) string {
+	if query.Get("pbdual") == "" || query.Get("playback") == "" {
+		return ""
+	}
+	return query.Get("did") + "|pb|" + query.Get("playback")
+}
+
+// DualSessionOpen reports a live shared session under this key: the second lens joins it instead of
+// closing the camera's sessions.
+func DualSessionOpen(key string) bool {
+	dualMu.Lock()
+	defer dualMu.Unlock()
+	return dualHubs[key] != nil
 }
 
 func dualLog(format string, args ...any) {

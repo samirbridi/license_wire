@@ -42,3 +42,10 @@ Correções:
 - O replay SD tem prioridade. Abrir o replay ainda fecha as sessões ao vivo, mas um pedido ao vivo não fecha mais o replay: enquanto houver replay aberto na câmera, ele falha na hora com `SD playback in progress`, sem tocar na câmera. Antes, o gravador e o replay se derrubavam um ao outro. Quando o portal fecha o replay, o gravador volta a conectar na próxima tentativa (até cerca de 2 min). O próprio cartão SD cobre esse intervalo.
 - Teste: `session_test.go`.
 
+## Replay SD das duas lentes juntas (bridge v0.12.3)
+
+- O plugin (`module-10436.js`, `startPlayBack1`) manda um `MISS_CMD_PLAYBACK_REQ` com `starttime:[t0,t1]`, `endtime:[e0,e1]`, `offset:[o0,o1]`, `speed:[s,s]`, `avchannelmerge:1` e `channel:[0,10]`. O `sessionid` é o início do arquivo da lente principal.
+- A ponte faz o mesmo em `StartPlaybackDual`: resolve no catálogo o arquivo e o offset de cada lente (canal 0 e 10) e separa os quadros pelo hub de `dual.go`, com a chave `<did>|pb|<instante>`.
+- O portal cria um alias por lente (`pb_<alias>_<t>_d0/_d1`, com `pbdual=1`) e pede a Vista 2 só depois que a Vista 1 começa a tocar. A segunda lente entra na sessão aberta (`DualSessionOpen`) sem fechar as sessões da câmera.
+- Testes: `playback_dual_test.go`, com catálogo sintético.
+

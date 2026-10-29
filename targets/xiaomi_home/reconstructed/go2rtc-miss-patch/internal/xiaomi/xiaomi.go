@@ -45,7 +45,8 @@ func Init() {
 		if did != "" {
 			closeTempClient(did)
 			// Only SD playback takes the camera over; live dials never close a playback (see miss.Dial).
-			if isPlayback {
+			// The second lens of a dual SD playback joins the session the first one opened.
+			if key := miss.DualPlaybackKey(u.Query()); isPlayback && (key == "" || !miss.DualSessionOpen(key)) {
 				miss.CloseClientsForDID(did, false)
 			}
 		}

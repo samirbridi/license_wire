@@ -571,6 +571,37 @@ func (c *Client) StartPlayback(channel, startSecStr, endSecStr, offsetSecStr, sp
 	return nil
 }
 
+// StartPlaybackDual replays both lenses in one session, as the official plugin does (module 10436,
+// startPlayBack1): starttime/endtime/offset/speed arrays with channel [0,10]. Each lens resolves its own
+// SD file for the instant; frames come back tagged per lens like live (see dual.go).
+func (c *Client) StartPlaybackDual(startSecStr, speedStr string) error {
+	c.playbackMode = true
+	startSec, err := strconv.ParseInt(startSecStr, 10, 64)
+	if err != nil || startSec <= 0 {
+		return fmt.Errorf("miss: invalid playback start timestamp: %s", startSecStr)
+	}
+	speed, _ := strconv.ParseInt(speedStr, 10, 64)
+	if speed <= 0 {
+		speed = 1
+	}
+	mainStart, mainOffset := c.resolvePlaybackTarget(NormalizeChannel(c.model, 0), startSec, 0)
+	subStart, subOffset := c.resolvePlaybackTarget(NormalizeChannel(c.model, 1), startSec, 0)
+	c.lastPlaybackSession.Store(mainStart)
+
+	data := binary.BigEndian.AppendUint32(nil, cmdPlaybackReq)
+	data = fmt.Appendf(
+		data,
+		`{"sessionid":%d,"starttime":[%d,%d],"endtime":[0,0],"autoswitchtolive":0,"offset":[%d,%d],"speed":[%d,%d],"avchannelmerge":1,"channel":[0,10]}`,
+		mainStart, mainStart, subStart, mainOffset, subOffset, speed, speed,
+	)
+	if err := c.WriteCommand(data); err != nil {
+		return err
+	}
+	time.Sleep(50 * time.Millisecond)
+	_ = c.StartAudio()
+	return nil
+}
+
 func (c *Client) SetPlaybackSpeed(speed int) error {
 	if speed <= 0 {
 		speed = 1
