@@ -4004,6 +4004,14 @@ function stopHttpVideoElement(videoEl) {
   } catch (e) {}
 }
 
+function setSecondLensNotice(text) {
+  const wrap = document.getElementById('ptzPlayerWrap2');
+  if (!wrap) return;
+  let note = document.getElementById('ptzSecondLensNotice');
+  if (!note) { note = document.createElement('div'); note.id = 'ptzSecondLensNotice'; note.className = 'ptz-lens-notice'; wrap.append(note); }
+  note.textContent = text;
+  note.style.display = text ? 'flex' : 'none';
+}
 function connectCameraPlayer(streamEl, fallbackVideoEl, feedImg, spinnerEl, streamAlias, isMuted, onReadyCallback) {
   stopStreamElement(streamEl);
   if (fallbackVideoEl) {
@@ -4053,7 +4061,7 @@ function connectHttpStream(videoEl, feedImg, spinnerEl, streamAlias, isMuted, on
     connectHttpStream(videoEl, feedImg, spinnerEl, streamAlias, isMuted, onReady);
     return true;
   };
-  if (quality === 'original') setTimeout(fallbackToTranscode, 12000);
+  if (quality === 'original') setTimeout(fallbackToTranscode, 25000);
   videoEl.onerror = () => {
     if (fallbackToTranscode()) return;
     if (spinnerEl) spinnerEl.style.display = 'none';
@@ -4093,6 +4101,7 @@ function setupSingleCameraView(camObj) {
 let dualSecondaryTimer = null;
 function switchCameraViewMode(mode) {
   activeCameraViewMode = mode;
+  setSecondLensNotice('');
   if (dualSecondaryTimer) {
     clearTimeout(dualSecondaryTimer);
     dualSecondaryTimer = null;
@@ -4144,7 +4153,9 @@ function switchCameraViewMode(mode) {
     const startSecondLens = () => {
       if (v2Started || activeCameraViewMode !== 'dual' || currentTheaterTab !== 'live') return;
       v2Started = true;
-      connectCameraPlayer(stream2, video2, feed2, null, alias2, true);
+      setSecondLensNotice('');
+      connectCameraPlayer(stream2, video2, feed2, null, alias2, true, () => setSecondLensNotice(''));
+      setTimeout(() => { if (activeCameraViewMode === 'dual' && video2 && video2.readyState < 2) setSecondLensNotice('A Outdoor Pro entrega uma visão por vez nesta ponte. Enquanto a Visão 1 estiver ativa (inclusive gravando no NAS), a Visão 2 pode não abrir.'); }, 30000);
     };
     connectCameraPlayer(stream1, video1, feed1, spinner1, alias1, !isAudioListening, () => {
       dualSecondaryTimer = setTimeout(startSecondLens, 600);
@@ -6242,6 +6253,12 @@ async function fetchEvData() {
     }
   } catch (err) {
     console.warn('[EV Data Fetch Warning]:', err.message);
+    for (const prefix of ['evQuickOra', 'evQuickByd']) {
+      const source = document.getElementById(prefix + 'Source');
+      if (source) source.innerText = 'Sem dados: integração ainda não instalada no NAS';
+      const lock = document.getElementById(prefix + 'Lock');
+      if (lock) lock.innerText = 'Indisponível';
+    }
   }
 }
 

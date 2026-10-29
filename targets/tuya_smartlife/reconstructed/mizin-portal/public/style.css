@@ -3248,6 +3248,7 @@ button.btn-close:active {
   grid-row: 1 / 3;
 }
 .ev-quick-body { margin-top: 8px; }
+.ptz-lens-notice { position: absolute; inset: auto 12px 12px 12px; display: none; align-items: center; gap: 8px; padding: 10px 12px; border-radius: 10px; background: rgba(2, 8, 22, 0.85); border: 1px solid rgba(245, 158, 11, 0.45); color: #fde68a; font-size: 12px; line-height: 1.4; z-index: 3; }
 .ev-quick-soc { font-size: 30px; font-weight: 800; line-height: 1.1; }
 .ev-quick-meter { height: 6px; border-radius: 999px; background: rgba(255, 255, 255, 0.08); overflow: hidden; margin: 8px 0 6px; }
 .ev-quick-meter span { display: block; height: 100%; width: 0; border-radius: inherit; transition: width 0.4s ease; }
