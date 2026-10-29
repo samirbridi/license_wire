@@ -1,0 +1,20 @@
+{
+  "runId": "portal-nas-embedded-bridge-20261028",
+  "sourceCommit": "7e7ed5d801d76e5c6d58953c9c8bc33fada1023e",
+  "previous": "v0.32.2 (build 0042)",
+  "version": "v0.32.3 (build 0043)",
+  "build": 43,
+  "date": "2026-10-28",
+  "status": "built",
+  "commits": [
+    {
+      "sha": "7e7ed5d801d76e5c6d58953c9c8bc33fada1023e",
+      "subject": "fix: inclui ponte verificada na imagem sem executar binarios no compartilhamento",
+      "body": "",
+      "type": "fix",
+      "description": "inclui ponte verificada na imagem sem executar binarios no compartilhamento",
+      "breaking": false
+    }
+  ],
+  "artifact": "runtime/builds/build-0043"
+}

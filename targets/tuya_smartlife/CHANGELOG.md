@@ -1,5 +1,41 @@
 # CHANGELOG — tuya_smartlife
 
+## v0.32.3 (build 0043) - 2026-10-28
+
+### 💥 Breaking Changes
+
+- Nenhum.
+
+### ✨ Features
+
+- Nenhum.
+
+### 🐛 Fixes
+
+- fix: inclui ponte verificada na imagem sem executar binarios no compartilhamento (commit `7e7ed5d801d76e5c6d58953c9c8bc33fada1023e`)
+
+### ⚡ Improvements
+
+- Nenhum.
+
+## v0.32.2 (build 0042) - 2026-10-28
+
+### 💥 Breaking Changes
+
+- Nenhum.
+
+### ✨ Features
+
+- Nenhum.
+
+### 🐛 Fixes
+
+- fix: garante leitura do codigo e execucao da ponte pelo usuario do NAS (commit `a9b5239457f95aaab9fc88d7316295a7854a616f`)
+
+### ⚡ Improvements
+
+- Nenhum.
+
 ## v0.32.1 (build 0041) - 2026-10-28
 
 ### 💥 Breaking Changes

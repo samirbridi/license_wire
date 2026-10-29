@@ -1,0 +1,20 @@
+{
+  "runId": "portal-nas-runtime-access-20261028",
+  "sourceCommit": "a9b5239457f95aaab9fc88d7316295a7854a616f",
+  "previous": "v0.32.1 (build 0041)",
+  "version": "v0.32.2 (build 0042)",
+  "build": 42,
+  "date": "2026-10-28",
+  "status": "built",
+  "commits": [
+    {
+      "sha": "a9b5239457f95aaab9fc88d7316295a7854a616f",
+      "subject": "fix: garante leitura do codigo e execucao da ponte pelo usuario do NAS",
+      "body": "",
+      "type": "fix",
+      "description": "garante leitura do codigo e execucao da ponte pelo usuario do NAS",
+      "breaking": false
+    }
+  ],
+  "artifact": "runtime/builds/build-0042"
+}

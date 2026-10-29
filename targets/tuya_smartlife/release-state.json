@@ -1,20 +1,20 @@
 {
-  "runId": "portal-live-final-20261028",
-  "sourceCommit": "c8cec0cd55204f18640f164479b96e67cb8a88d7",
-  "previous": "v0.32.0 (build 0040)",
-  "version": "v0.32.1 (build 0041)",
-  "build": 41,
+  "runId": "portal-nas-embedded-bridge-20261028",
+  "sourceCommit": "7e7ed5d801d76e5c6d58953c9c8bc33fada1023e",
+  "previous": "v0.32.2 (build 0042)",
+  "version": "v0.32.3 (build 0043)",
+  "build": 43,
   "date": "2026-10-28",
   "status": "built",
   "commits": [
     {
-      "sha": "c8cec0cd55204f18640f164479b96e67cb8a88d7",
-      "subject": "fix: reduz consultas do painel e protege reconexao da autenticacao",
+      "sha": "7e7ed5d801d76e5c6d58953c9c8bc33fada1023e",
+      "subject": "fix: inclui ponte verificada na imagem sem executar binarios no compartilhamento",
       "body": "",
       "type": "fix",
-      "description": "reduz consultas do painel e protege reconexao da autenticacao",
+      "description": "inclui ponte verificada na imagem sem executar binarios no compartilhamento",
       "breaking": false
     }
   ],
-  "artifact": "runtime/builds/build-0041"
+  "artifact": "runtime/builds/build-0043"
 }
