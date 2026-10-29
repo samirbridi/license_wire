@@ -699,9 +699,14 @@ func (c *Client) deliverSpeakerReply(body string) {
 	}
 }
 
-// speakerAnswer reads MISS_CMD_SPEAKER_START_RESP the way the official plugin does (module 12413,
-// _p2pCommandHandler): "0" opens the channel, a negative code ("-…") means it is occupied.
+// speakerAnswer reads MISS_CMD_SPEAKER_START_RESP like the official plugin (module 12413, _p2pCommandHandler).
+// The CW701 answers with a 4-byte integer (seen on the NAS, 2026-10-29: 00 00 00 00 when free), the case the
+// plugin checks on iOS (ba[0] == 0); the Android branch reads ASCII ("0" free, "-…" occupied).
 func speakerAnswer(body string) (ok bool, known bool) {
+	if len(body) == 4 && (body[0] < '0' || body[0] > '9') && body[0] != '-' {
+		v := int32(binary.LittleEndian.Uint32([]byte(body)))
+		return v == 0, true
+	}
 	body = strings.TrimSpace(strings.Trim(body, "\x00\""))
 	if body == "" {
 		return false, false

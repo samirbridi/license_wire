@@ -10,6 +10,13 @@ func TestSpeakerAnswerFollowsOfficialPlugin(t *testing.T) {
 	if ok, known := speakerAnswer("-1"); ok || !known {
 		t.Fatal(`"-1" must report an occupied channel`)
 	}
+	// Binary answer of the CW701 (observed): int32 0 opens, any other value is a refusal.
+	if ok, known := speakerAnswer("\x00\x00\x00\x00"); !ok || !known {
+		t.Fatal("binary 0 must open the channel")
+	}
+	if ok, known := speakerAnswer("\xff\xff\xff\xff"); ok || !known {
+		t.Fatal("binary -1 must report an occupied channel")
+	}
 	if _, known := speakerAnswer(""); known {
 		t.Fatal("no answer must not be treated as a refusal")
 	}
