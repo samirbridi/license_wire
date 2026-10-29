@@ -10,11 +10,11 @@ Projeto independente para Lightroom Classic no Windows, inicialmente para uso pe
 Esta entrega contem pesquisa, inventario somente de leitura e planejamento. Nao existe ainda plugin de edicao, modelo treinado ou comprovacao de qualidade fotografica. Nenhum arquivo do Neurapix, RAW ou catalogo foi copiado.
 
 - A maquina indicada pelo usuario, `192.168.1.58`, resolveu para `DESKTOP-M34T3GL.localdomain`.
-- TCP 445 esta aberto; `net view` revelou o compartilhamento `Users`.
+- TCP 445 esta aberto. Depois do compartilhamento pelo usuario, `net view` lista `Users`, `LR CATALOGOS` e `LRCatalogos`.
 - O usuario confirmou catalogos em `D:\LR CATALOGOS` e perfil em `C:\Users\Cris Bridi`.
-- A sessao atual ainda ve somente o compartilhamento `Users`. Os caminhos `Users\Cris Bridi` e `LR CATALOGOS` nao estao disponiveis nessa sessao; acessos aos caminhos exatos via `C$` e `D$` foram negados pelo Windows.
-- Pendente: compartilhar a pasta de catalogos com leitura para uma conta Windows apropriada, ou executar o inventario local. Instrucoes em `notes/05_acesso_rede.md`. Isto nao prova ausencia dos arquivos.
-- Proximo: identificar catalogo, versao do Lightroom, pastas de plugins e acervo representativo; coletar copia consistente; construir exportador pelo SDK; depois treinar e avaliar um perfil em trabalhos separados dos usados no treinamento.
+- A leitura funciona por `\\192.168.1.58\LR CATALOGOS` (com espaco). O alias `LRCatalogos` retorna acesso negado; usar o caminho comprovado, sem solicitar nova configuracao para esse alias.
+- A amostra `202610 - OUTUBRO` apresentou um `.lrcat`, um `.lrcat-data` e tres arquivos de runtime/lock. Somente metadados foram lidos; nenhum catalogo foi aberto ou copiado. A presenca desses arquivos recomenda tratar o catalogo como potencialmente em uso ate verificar fechamento consistente.
+- Proximo: identificar versao do Lightroom, pastas de plugins e acervo representativo; coletar copia consistente de um catalogo escolhido; construir exportador pelo SDK; depois treinar e avaliar um perfil em trabalhos separados dos usados no treinamento.
 
 ## Aproveitamento das edicoes existentes
 

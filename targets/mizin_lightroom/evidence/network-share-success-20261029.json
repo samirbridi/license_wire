@@ -1,0 +1,33 @@
+{
+  "date": "2026-10-29",
+  "timezone": "America/Sao_Paulo",
+  "scope": "READ_ONLY_SHARE_AND_CATALOG_METADATA_TEST",
+  "target": "192.168.1.58",
+  "availableShares": ["LR CATALOGOS", "LRCatalogos", "Users"],
+  "workingShare": "\\\\192.168.1.58\\LR CATALOGOS",
+  "workingShareResult": "DIRECTORY_LISTING_SUCCESS",
+  "deniedAlias": "\\\\192.168.1.58\\LRCatalogos",
+  "deniedAliasResult": "ACCESS_DENIED_BY_REMOTE_WINDOWS",
+  "sampleDirectory": "202610 - OUTUBRO",
+  "sample": {
+    "maxDepth": 2,
+    "maxDirectories": 40,
+    "directoriesRead": 1,
+    "catalogFileCount": 1,
+    "aiCompanionCount": 1,
+    "runtimeCompanionCount": 3,
+    "searchTruncated": false,
+    "issueCount": 0
+  },
+  "privateReceipt": "private/network-test-20261029-123146-e2e568fe/catalog-metadata.json",
+  "catalogContentsRead": false,
+  "sourceFilesCopied": 0,
+  "sourceFilesModified": 0,
+  "remotePermissionsModified": false,
+  "limitations": [
+    "Directory and metadata access is confirmed; catalog contents were not opened.",
+    "Runtime and lock files indicate potential active use or stale state, not confirmed application activity.",
+    "The remaining catalog folders and RAW locations have not been inventoried.",
+    "The local SMB connection-account query returned access denied; no session-account identity was inferred."
+  ]
+}
