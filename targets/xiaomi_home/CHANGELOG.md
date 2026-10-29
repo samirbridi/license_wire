@@ -1,5 +1,23 @@
 # CHANGELOG — xiaomi_home
 
+## v0.14.1 (build 0030) - 2026-10-29
+
+### 💥 Breaking Changes
+
+- Nenhum.
+
+### ✨ Features
+
+- Nenhum.
+
+### 🐛 Fixes
+
+- fix: le o trecho inteiro da sessao compartilhada ate achar o audio da segunda visao (commit `ad6de22643bcfa49b8dff0052083b923ca756584`)
+
+### ⚡ Improvements
+
+- Nenhum.
+
 ## v0.14.0 (build 0029) - 2026-10-29
 
 ### 💥 Breaking Changes

@@ -1,28 +1,20 @@
 {
-  "runId": "bridge-shared-replay-20261029",
-  "sourceCommit": "2186fabb5b87b9074fe9025dd8e53e59bddeb87a",
-  "previous": "v0.13.3 (build 0028)",
-  "version": "v0.14.0 (build 0029)",
-  "build": 29,
+  "runId": "bridge-probe-audio-20261029",
+  "sourceCommit": "ad6de22643bcfa49b8dff0052083b923ca756584",
+  "previous": "v0.14.0 (build 0029)",
+  "version": "v0.14.1 (build 0030)",
+  "build": 30,
   "date": "2026-10-29",
   "status": "built",
   "commits": [
     {
-      "sha": "2186fabb5b87b9074fe9025dd8e53e59bddeb87a",
-      "subject": "feat: troca a Outdoor entre ao vivo e replay SD na mesma conexao, sem novo handshake",
+      "sha": "ad6de22643bcfa49b8dff0052083b923ca756584",
+      "subject": "fix: le o trecho inteiro da sessao compartilhada ate achar o audio da segunda visao",
       "body": "Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>",
-      "type": "feat",
-      "description": "troca a Outdoor entre ao vivo e replay SD na mesma conexao, sem novo handshake",
-      "breaking": false
-    },
-    {
-      "sha": "a1d0ded01106bfb1073996c70560e6a6e3376fbb",
-      "subject": "improve: registra o replay SD duplo da Outdoor verificado na build 0055",
-      "body": "Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>",
-      "type": "improve",
-      "description": "registra o replay SD duplo da Outdoor verificado na build 0055",
+      "type": "fix",
+      "description": "le o trecho inteiro da sessao compartilhada ate achar o audio da segunda visao",
       "breaking": false
     }
   ],
-  "artifact": "runtime/builds/build-0029"
+  "artifact": "runtime/builds/build-0030"
 }

@@ -1,5 +1,23 @@
 # CHANGELOG — tuya_smartlife
 
+## v0.38.4 (build 0056) - 2026-10-29
+
+### 💥 Breaking Changes
+
+- Nenhum.
+
+### ✨ Features
+
+- Nenhum.
+
+### 🐛 Fixes
+
+- Nenhum.
+
+### ⚡ Improvements
+
+- improve: registra o replay SD duplo da Outdoor verificado na build 0055 (commit `a1d0ded01106bfb1073996c70560e6a6e3376fbb`)
+
 ## v0.38.3 (build 0055) - 2026-10-29
 
 ### 💥 Breaking Changes
