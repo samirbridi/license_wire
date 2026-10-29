@@ -1,5 +1,23 @@
 # CHANGELOG - mizin_lightroom
 
+## v0.3.1 (build 0007) - 2026-10-29
+
+### 💥 Breaking Changes
+
+- Nenhum.
+
+### ✨ Features
+
+- Nenhum.
+
+### 🐛 Fixes
+
+- Nenhum.
+
+### ⚡ Improvements
+
+- improve: registra QA nativo e mapeia modulos do Lightroom (commit `227186e4e2d544c95cc423ba7300eeabcdc9c3c7`)
+
 ## v0.3.0 (build 0006) - 2026-10-29
 
 ### 💥 Breaking Changes

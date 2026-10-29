@@ -1,0 +1,17 @@
+{
+  "previous": "v0.3.0 (build 0006)",
+  "version": "v0.3.1 (build 0007)",
+  "date": "2026-10-29",
+  "timezone": "America/Sao_Paulo",
+  "baseline": "93584058334400c09657cea31630e75c45a6e0f1",
+  "sourceHead": "227186e4e2d544c95cc423ba7300eeabcdc9c3c7",
+  "increment": "fix",
+  "commits": [
+    {
+      "hash": "227186e4e2d544c95cc423ba7300eeabcdc9c3c7",
+      "subject": "improve: registra QA nativo e mapeia modulos do Lightroom",
+      "type": "improve",
+      "breaking": false
+    }
+  ]
+}
