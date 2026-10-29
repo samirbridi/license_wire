@@ -1,5 +1,23 @@
 # CHANGELOG - mizin_lightroom
 
+## v0.3.0 (build 0006) - 2026-10-29
+
+### 💥 Breaking Changes
+
+- Nenhum.
+
+### ✨ Features
+
+- feat: valida RAWs treina piloto local e prepara comparacao no Lightroom (commit `58347a1e7a1bceb3856af8d62187f7a9de131ede`)
+
+### 🐛 Fixes
+
+- Nenhum.
+
+### ⚡ Improvements
+
+- Nenhum.
+
 ## v0.2.1 (build 0005) - 2026-10-29
 
 ### 💥 Breaking Changes

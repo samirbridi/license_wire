@@ -2,6 +2,10 @@
 
 O objetivo deste pacote e provar a integracao de leitura no Lightroom antes de habilitar escrita no catalogo. Os fontes estao em `reconstructed/lightroom-pilot/`. O pacote gerado fica em `private/deliveries/` porque inclui caminhos pessoais e previsoes de 92 fotos do teste.
 
+O ZIP validado foi entregue, com hash igual ao local, em `\\192.168.1.58\Users\Public\Documents\MizinLightroomPilot\MizinLightroom-0.3.0-build0006-d05d06ba\MizinLightroom-0.3.0-build0006-piloto-leitura.zip`. Foi criada somente uma nova pasta de entrega e copiado o ZIP; nao houve instalacao automatica ou escrita nas fotos/catalogo. Extrair para uma pasta permanente do usuario, como Documentos, antes de adicionar o plugin.
+
+Resumo de pacote em `evidence/native-pilot-package-20261029.json` e entrega em `evidence/native-pilot-delivery-20261029.json`. Sintaxe do pacote real verificada em Lua 5.1, CRC do ZIP aprovado, versao gerada igual a VERSION e 92 previsoes finitas. QA dentro do Lightroom continua pendente.
+
 ## Escopo concreto
 
 - Menu Biblioteca > Extras de plug-in > Mizin: comparar amostra do piloto.

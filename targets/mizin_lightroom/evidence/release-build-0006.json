@@ -1,0 +1,17 @@
+{
+  "previous": "v0.2.1 (build 0005)",
+  "version": "v0.3.0 (build 0006)",
+  "date": "2026-10-29",
+  "timezone": "America/Sao_Paulo",
+  "baseline": "0d54c9e5565e9ef83804a22816e596af9c67ce4c",
+  "sourceHead": "58347a1e7a1bceb3856af8d62187f7a9de131ede",
+  "increment": "feat",
+  "commits": [
+    {
+      "hash": "58347a1e7a1bceb3856af8d62187f7a9de131ede",
+      "subject": "feat: valida RAWs treina piloto local e prepara comparacao no Lightroom",
+      "type": "feat",
+      "breaking": false
+    }
+  ]
+}

@@ -1,0 +1,11 @@
+{
+  "Date": "2026-10-29",
+  "Target": "192.168.1.58",
+  "Status": "DELIVERED_VERIFIED",
+  "SourcePhotosModified": false,
+  "AutomaticInstallation": false,
+  "DirectoryCreated": true,
+  "Destination": "\\\\192.168.1.58\\Users\\Public\\Documents\\MizinLightroomPilot\\MizinLightroom-0.3.0-build0006-d05d06ba\\MizinLightroom-0.3.0-build0006-piloto-leitura.zip",
+  "Sha256Match": true,
+  "Error": null
+}

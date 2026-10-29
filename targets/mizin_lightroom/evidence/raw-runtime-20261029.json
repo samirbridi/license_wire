@@ -23,5 +23,9 @@
     "https://pypi.org/project/rawpy/",
     "https://letmaik.github.io/rawpy/api/rawpy.RawPy.html",
     "https://github.com/exiftool/exiftool"
-  ]
+  ],
+  "qaOnlyPackages": {
+    "lupa": "2.8"
+  },
+  "nativePackageRuntime": "Lightroom embedded Lua; no bundled Python or third-party executables"
 }

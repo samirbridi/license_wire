@@ -1,0 +1,25 @@
+{
+  "schema": "mizin-lightroom.native-package-qa/1",
+  "version": "v0.3.0 (build 0006)",
+  "archiveRelative": "private/deliveries/MizinLightroom-0.3.0-build0006-d05d06ba/MizinLightroom-0.3.0-build0006-piloto-leitura.zip",
+  "archiveBytes": 7024,
+  "sha256": "9d36a3a9ef4d17c88aaa499f5bc6572251b62730b60505053d988453978c8ee9",
+  "savedPredictions": 92,
+  "zipCrcPassed": true,
+  "lua51SyntaxPassed": true,
+  "generatedVersionMatches": true,
+  "finitePredictions": true,
+  "files": [
+    "LEIA-ME.md",
+    "MizinLightroom.lrplugin/ComparePilot.lua",
+    "MizinLightroom.lrplugin/Info.lua",
+    "MizinLightroom.lrplugin/PilotData.lua"
+  ],
+  "imagesIncluded": false,
+  "pythonRuntimeIncluded": false,
+  "trainedWeightsIncluded": false,
+  "catalogWritesImplemented": false,
+  "liveInferenceForNewPhotosImplemented": false,
+  "lightroomHostValidated": false,
+  "nativeUserTestRequired": true
+}

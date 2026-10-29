@@ -1,6 +1,6 @@
 # Mizin Lightroom - aquisicao local e perfil de referencia
 
-> **Versão da Análise**: `v0.2.1 (build 0005)`
+> **Versão da Análise**: `v0.3.0 (build 0006)`
 > Atualizado em: 2026-10-29, America/Sao_Paulo.
 
 Projeto independente para Lightroom Classic no Windows, inicialmente para uso pessoal. Treinamento e inferencia devem acontecer nos computadores do usuario. O Lightroom continua responsavel pela revelacao e renderizacao final.
@@ -31,6 +31,8 @@ Esta entrega contem copia consistente do catalogo, extrator de parametros, aquis
 Fontes em `reconstructed/lightroom-pilot/`. O gerador `scripts/build_lightroom_pilot.py` le a VERSION calculada por commits e produz ZIP privado com `MizinLightroom.lrplugin` e previsoes salvas. O pacote nao inclui fotos, executaveis, dependencias Python ou pesos do modelo. Contem caminhos privados das 92 referencias, portanto nao deve ser publicado como pacote generico.
 
 Na maquina de edicao: extrair o ZIP numa pasta permanente, adicionar `MizinLightroom.lrplugin` em Arquivo > Gerenciador de plug-ins, abrir o catalogo de outubro e executar Biblioteca > Extras de plug-in > Mizin: comparar amostra do piloto. A janela consulta ajustes atuais e mostra ate cinco exemplos. Nao escreve no catalogo, nao aplica ajustes e nao chama servicos de rede. O pacote e um alvo de QA nativo, nao uma versao de edicao automatica aprovada.
+
+Entrega confirmada: ZIP em `\\192.168.1.58\Users\Public\Documents\MizinLightroomPilot\MizinLightroom-0.3.0-build0006-d05d06ba\`. Somente uma nova pasta e o arquivo de entrega foram adicionados a maquina de edicao; as fotos e o catalogo permaneceram intactos. Hash de origem e entrega iguais. Recibos em `evidence/native-pilot-package-20261029.json` e `evidence/native-pilot-delivery-20261029.json`.
 
 ## Aproveitamento das edicoes existentes
 
