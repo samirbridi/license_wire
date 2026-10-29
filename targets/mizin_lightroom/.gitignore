@@ -1,0 +1,11 @@
+private/
+evidence/qa-fixtures/
+evidence/inventory-*/
+*.lrcat
+*.lrcat-data
+*.lrcat-wal
+*.lrcat-shm
+*.lrcat.lock
+*.lrdata/
+*.acr
+*.xmp

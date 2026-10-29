@@ -1,0 +1,48 @@
+{
+  "date": "2026-10-29",
+  "timezone": "America/Sao_Paulo",
+  "scope": "AUTHORIZED_READ_ONLY_SMB_DISCOVERY",
+  "target": "192.168.1.58",
+  "hostname": "DESKTOP-M34T3GL.localdomain",
+  "tcp445": "OPEN",
+  "availableShares": [
+    "Users"
+  ],
+  "shareRead": "SUCCESS",
+  "shareRoot": "\\\\192.168.1.58\\Users",
+  "rootDirectories": [
+    "AppData",
+    "Default",
+    "Public"
+  ],
+  "inspectedRelativePaths": [
+    "AppData",
+    "AppData\\Roaming",
+    "AppData\\Local",
+    "AppData\\Roaming\\Adobe",
+    "AppData\\Roaming\\Adobe\\Lightroom",
+    "AppData\\Roaming\\Adobe\\Lightroom\\Modules",
+    "AppData\\Roaming\\Neurapix",
+    "AppData\\Local\\Neurapix"
+  ],
+  "foundLightroomPaths": [],
+  "foundNeurapixPaths": [],
+  "sourceFilesCopied": 0,
+  "sourceFilesModified": 0,
+  "limitations": [
+    "The visible share is not confirmed to include the editor's actual user profile.",
+    "Missing candidate paths do not prove the applications are absent.",
+    "An initial sandbox socket denial was retried with approved elevated network access; it is not a target port result."
+  ],
+  "pending": [
+    "Real Lightroom catalog location",
+    "Editing user's USERPROFILE",
+    "Consistent catalog snapshot and RAW samples"
+  ],
+  "commandEvidence": [
+    "[System.Net.Dns]::GetHostEntry('192.168.1.58').HostName",
+    "net view \\\\192.168.1.58",
+    "Get-ChildItem -LiteralPath '\\\\192.168.1.58\\Users' -Directory -Force | Select-Object Name,Attributes | ConvertTo-Json -Depth 3",
+    "Read-only Get-ChildItem of the explicit inspectedRelativePaths, limited to 80 immediate entries."
+  ]
+}

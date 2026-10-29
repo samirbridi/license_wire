@@ -1,0 +1,21 @@
+﻿{
+    "GeneratedUtc":  "2026-10-29T14:16:20.7063925Z",
+    "PowerShell":  "5.1.19041.6456",
+    "Status":  "PASS",
+    "Checks":  {
+                   "catalog_discovered":  true,
+                   "ai_companion_discovered":  true,
+                   "runtime_companions_discovered":  true,
+                   "plugin_discovered":  true,
+                   "preview_discovered":  true,
+                   "acr_companion_discovered":  true,
+                   "depth_limit_reported":  true,
+                   "existing_report_preserved":  true,
+                   "directory_budget_enforced":  true,
+                   "missing_path_reported":  true,
+                   "source_bytes_and_timestamps_preserved":  true
+               },
+    "Scope":  "SYNTHETIC_LOCAL_FIXTURE",
+    "LightroomHostTested":  false,
+    "RemoteCatalogTested":  false
+}
