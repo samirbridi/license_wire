@@ -17,6 +17,8 @@ import (
 type Producer struct {
 	core.Connection
 	client      *Client
+	src         dualSource // the client itself, or one lens of a shared dual session
+	dual        *dualView
 	initialPkts []*Packet
 }
 
@@ -41,13 +43,43 @@ func confirmedPlayback(status string, expectedID int64) (bool, error) {
 }
 
 func Dial(rawURL string) (core.Producer, error) {
+	u, err := url.Parse(rawURL)
+	if err != nil {
+		return nil, err
+	}
+	query := u.Query()
+
+	if query.Get("playback") == "" && dualEnabled(query.Get("model")) {
+		key := query.Get("did")
+		if key == "" {
+			key = u.Host
+		}
+		view, client, err := joinDual(key, query.Get("model"), dualLens(query.Get("channel")), func() (*Client, error) {
+			client, err := NewClient(rawURL)
+			if err != nil {
+				return nil, err
+			}
+			if err = client.StartMedia("dual", query.Get("subtype"), query.Get("audio")); err != nil {
+				_ = client.Close()
+				return nil, err
+			}
+			return client, nil
+		})
+		if err == nil {
+			prod, err := newProducer(client, view, query)
+			if err != nil {
+				_ = view.Close()
+				return nil, err
+			}
+			return prod, nil
+		}
+		dualLog("view %s falls back to its own session: %v", query.Get("channel"), err)
+	}
+
 	client, err := NewClient(rawURL)
 	if err != nil {
 		return nil, err
 	}
-
-	u, _ := url.Parse(rawURL)
-	query := u.Query()
 
 	if playback := query.Get("playback"); playback != "" {
 		err = client.StartPlayback(query.Get("channel"), playback, query.Get("endtime"), query.Get("offset"), query.Get("speed"))
@@ -59,18 +91,30 @@ func Dial(rawURL string) (core.Producer, error) {
 		return nil, err
 	}
 
+	prod, err := newProducer(client, nil, query)
+	if err != nil {
+		_ = client.Close()
+		return nil, err
+	}
+	return prod, nil
+}
+
+func newProducer(client *Client, view *dualView, query url.Values) (*Producer, error) {
+	var src dualSource = client
+	var transport any = client
+	if view != nil {
+		src, transport = view, view
+	}
 	minWidth, parseErr := strconv.Atoi(query.Get("minwidth"))
 	if query.Get("minwidth") == "" {
 		minWidth = 0
 		parseErr = nil
 	}
 	if parseErr != nil || minWidth < 0 || minWidth > 8192 {
-		_ = client.Close()
 		return nil, fmt.Errorf("invalid minimum video width")
 	}
-	medias, initialPkts, err := probe(client, query.Get("audio") != "0", minWidth)
+	medias, initialPkts, err := probe(client, src, query.Get("audio") != "0", minWidth)
 	if err != nil {
-		_ = client.Close()
 		return nil, err
 	}
 
@@ -82,9 +126,11 @@ func Dial(rawURL string) (core.Producer, error) {
 			RemoteAddr: client.RemoteAddr().String(),
 			UserAgent:  client.Version(),
 			Medias:     medias,
-			Transport:  client,
+			Transport:  transport,
 		},
 		client:      client,
+		src:         src,
+		dual:        view,
 		initialPkts: initialPkts,
 	}, nil
 }
@@ -120,19 +166,19 @@ func qualifiedVideo(codec *core.Codec, minWidth int) (qualified bool) {
 	return false
 }
 
-func probe(client *Client, audio bool, minWidth int) ([]*core.Media, []*Packet, error) {
+func probe(client *Client, src dualSource, audio bool, minWidth int) ([]*core.Media, []*Packet, error) {
 	probeTimeout := 15 * time.Second
 	if client.playbackMode {
 		probeTimeout = 6500 * time.Millisecond
 	}
-	_ = client.SetDeadline(time.Now().Add(probeTimeout))
+	_ = src.SetDeadline(time.Now().Add(probeTimeout))
 
 	var vcodec, acodec *core.Codec
 	var buffered []*Packet
 	videoPackets := 0
 
 	for {
-		pkt, err := client.ReadPacket()
+		pkt, err := src.ReadPacket()
 		if err != nil {
 			if vcodec != nil {
 				break
@@ -210,7 +256,7 @@ func probe(client *Client, audio bool, minWidth int) ([]*core.Media, []*Packet, 
 		}
 	}
 
-	_ = client.SetDeadline(time.Time{})
+	_ = src.SetDeadline(time.Time{})
 
 	medias := []*core.Media{
 		{
@@ -270,8 +316,8 @@ func (p *Producer) Start() error {
 			pkt = initial[0]
 			initial = initial[1:]
 		} else {
-			_ = p.client.SetDeadline(time.Now().Add(10 * time.Second))
-			pkt, err = p.client.ReadPacket()
+			_ = p.src.SetDeadline(time.Now().Add(10 * time.Second))
+			pkt, err = p.src.ReadPacket()
 			if err != nil {
 				return err
 			}
@@ -357,7 +403,9 @@ func (p *Producer) Start() error {
 }
 
 func (p *Producer) Stop() error {
-	_ = p.client.StopMedia()
+	if p.dual == nil {
+		_ = p.client.StopMedia()
+	}
 	return p.Connection.Stop()
 }
 

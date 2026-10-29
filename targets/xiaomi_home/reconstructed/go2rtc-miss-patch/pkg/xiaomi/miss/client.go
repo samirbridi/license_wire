@@ -406,6 +406,9 @@ func (c *Client) StartMedia(channel, quality, audio string) error {
 
 	data := binary.BigEndian.AppendUint32(nil, cmdVideoStart)
 	switch channel {
+	case "dual":
+		// Both lenses in one session (see dual.go).
+		data = fmt.Appendf(data, `{"videoquality":%s,"videoquality2":%s,"enableaudio":%s}`, quality, quality, audio)
 	case "", "0":
 		data = fmt.Appendf(data, `{"videoquality":%s,"enableaudio":%s}`, quality, audio)
 	default:
@@ -675,6 +678,7 @@ func (c *Client) ReadPacket() (*Packet, error) {
 		Flags:    binary.LittleEndian.Uint32(hdr[12:]),
 		Payload:  payload,
 	}
+	copy(pkt.Header[:], hdr)
 
 	if pkt.CodecID == codecPCMA || pkt.CodecID == codecOPUS || pkt.CodecID == codecPCM || pkt.CodecID == codecPCMU {
 		c.inAudioCodec.Store(pkt.CodecID)
@@ -865,6 +869,7 @@ type Packet struct {
 	//TimestampS uint32
 	//Reserved uint32
 	Payload []byte
+	Header  [hdrSize]byte // raw header; dual-lens sessions read the lens tag from it
 }
 
 func (p *Packet) SampleRate() uint32 {
