@@ -1,0 +1,33 @@
+{
+  "at": "2026-10-29T02:33:26.607Z",
+  "checks": {
+    "/": {
+      "status": 200,
+      "loginPage": true
+    },
+    "/version.json": {
+      "status": 200,
+      "version": "v0.32.1 (build 0041)"
+    },
+    "/app.js": {
+      "status": 200,
+      "matchesArtifact": true
+    },
+    "/api/auth/status": {
+      "status": 200,
+      "setupRequired": true
+    },
+    "/api/devices": {
+      "status": 401
+    },
+    "/api/portal/shell": {
+      "status": 401
+    },
+    "/api/auth/admin/users": {
+      "status": 401
+    },
+    "/api/auth/cloud/catalog": {
+      "status": 401
+    }
+  }
+}

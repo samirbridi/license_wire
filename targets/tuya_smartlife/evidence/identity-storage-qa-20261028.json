@@ -1,0 +1,19 @@
+{
+  "nasBuildInProgress": true,
+  "audibleTalkbackConfirmed": false,
+  "r2Bucket": "homecams-recordings",
+  "r2NeedsScopedCredentials": true,
+  "localTestsPassed": 34,
+  "cloudflareWorkersPlanConfirmed": false,
+  "r2ConservativeMonthlyEstimateBRL": 47.565,
+  "nativeMediaPacketPreservation": true,
+  "localWebAuthnSignatureVerified": true,
+  "physicalPasskeyDeviceVerified": false,
+  "nasPackageVolume": 4,
+  "version": "v0.32.1 (build 0041)",
+  "historicalSdImportImplemented": false,
+  "sourceCommit": "c8cec0cd55204f18640f164479b96e67cb8a88d7",
+  "r2ActualUploadsVerified": false,
+  "r2StorageLimitGiB": 120,
+  "cameraCloudBudgetBRL": 50
+}
