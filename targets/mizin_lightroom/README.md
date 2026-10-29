@@ -11,8 +11,9 @@ Esta entrega contem pesquisa, inventario somente de leitura e planejamento. Nao 
 
 - A maquina indicada pelo usuario, `192.168.1.58`, resolveu para `DESKTOP-M34T3GL.localdomain`.
 - TCP 445 esta aberto; `net view` revelou o compartilhamento `Users`.
-- A raiz acessivel mostrou `AppData`, `Default` e `Public`; perfil de edicao e catalogo ainda nao localizados. Isto nao prova ausencia do Lightroom.
-- Pendente: caminho mostrado em Editar > Configuracoes do catalogo > Geral > Localizacao e `%USERPROFILE%` da maquina de edicao.
+- O usuario confirmou catalogos em `D:\LR CATALOGOS` e perfil em `C:\Users\Cris Bridi`.
+- A sessao atual ainda ve somente o compartilhamento `Users`. Os caminhos `Users\Cris Bridi` e `LR CATALOGOS` nao estao disponiveis nessa sessao; acessos aos caminhos exatos via `C$` e `D$` foram negados pelo Windows.
+- Pendente: compartilhar a pasta de catalogos com leitura para uma conta Windows apropriada, ou executar o inventario local. Instrucoes em `notes/05_acesso_rede.md`. Isto nao prova ausencia dos arquivos.
 - Proximo: identificar catalogo, versao do Lightroom, pastas de plugins e acervo representativo; coletar copia consistente; construir exportador pelo SDK; depois treinar e avaliar um perfil em trabalhos separados dos usados no treinamento.
 
 ## Aproveitamento das edicoes existentes
@@ -36,7 +37,7 @@ Se a politica local bloquear scripts, usar `powershell.exe -NoProfile -Execution
 Para catalogos fora dos locais padrao, informar a pasta exata:
 
 ```powershell
-powershell.exe -NoProfile -File .\Get-LightroomInventory.ps1 -CatalogDirectory 'D:\Fotos\Catalogo' -OutputDirectory 'C:\Users\Public\Documents\MizinLightroom-Inventario'
+powershell.exe -NoProfile -File .\Get-LightroomInventory.ps1 -CatalogDirectory 'D:\LR CATALOGOS' -OutputDirectory 'C:\Users\Public\Documents\MizinLightroom-Inventario'
 ```
 
 `OutputDirectory` precisa ser nova e acessivel. O JSON pode conter nomes e caminhos privados; manter na rede local. Nao e necessario desativar protecao por senha, compartilhar o disco inteiro ou habilitar acesso remoto administrativo. Uma pasta especifica com leitura para o usuario apropriado e suficiente para receber o inventario.

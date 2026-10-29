@@ -1,0 +1,47 @@
+{
+  "date": "2026-10-29",
+  "timezone": "America/Sao_Paulo",
+  "scope": "AUTHORIZED_READ_ONLY_SMB_PATH_CHECK",
+  "target": "192.168.1.58",
+  "userProvidedPaths": {
+    "catalogDirectory": "D:\\LR CATALOGOS",
+    "userProfile": "C:\\Users\\Cris Bridi"
+  },
+  "availableShares": ["Users"],
+  "pathChecks": [
+    {
+      "path": "\\\\192.168.1.58\\Users\\Cris Bridi",
+      "result": "NOT_AVAILABLE_TO_CURRENT_SESSION",
+      "reportedError": "Cannot find path because it does not exist.",
+      "existenceConfirmed": false
+    },
+    {
+      "path": "\\\\192.168.1.58\\LR CATALOGOS",
+      "result": "NOT_AVAILABLE_TO_CURRENT_SESSION",
+      "reportedError": "Cannot find path because it does not exist.",
+      "existenceConfirmed": false
+    },
+    {
+      "path": "\\\\192.168.1.58\\D$\\LR CATALOGOS",
+      "result": "ACCESS_DENIED_BY_REMOTE_WINDOWS",
+      "errorId": "ItemExistsUnauthorizedAccessError,Microsoft.PowerShell.Commands.GetChildItemCommand"
+    },
+    {
+      "path": "\\\\192.168.1.58\\C$\\Users\\Cris Bridi\\AppData\\Roaming\\Adobe\\Lightroom\\Modules",
+      "result": "ACCESS_DENIED_BY_REMOTE_WINDOWS",
+      "errorId": "ItemExistsUnauthorizedAccessError,Microsoft.PowerShell.Commands.GetChildItemCommand"
+    }
+  ],
+  "sourceFilesRead": 0,
+  "sourceFilesCopied": 0,
+  "sourceFilesModified": 0,
+  "remotePermissionsModified": false,
+  "credentialsAttempted": false,
+  "existingWindowsSessionUsed": true,
+  "nextAction": "User exposes catalog folder through an authenticated read-only share, or runs the local metadata inventory.",
+  "limitations": [
+    "Access errors do not establish whether the local files exist.",
+    "The default plugin location has not been confirmed on the target machine.",
+    "No Lightroom catalog contents or Neurapix plugin files were accessed."
+  ]
+}
