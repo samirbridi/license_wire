@@ -4124,7 +4124,8 @@ function switchCameraViewMode(mode) {
     if (mode === 'view2') sdPlayLens = '1';
     fetchSdRecordings(activePtzCam, selectedTimelineDate, false);
     const sdVideo = document.getElementById('sdPlaybackVideoElement');
-    if (sdVideo && sdVideo.getAttribute('src') && previousLens !== sdPlayLens) playCurrentSdSegment(currentSdPlaySeconds);
+    if (sdVideo && sdVideo.getAttribute('src')) playCurrentSdSegment(currentSdPlaySeconds);
+    else if (previousLens !== sdPlayLens) markSdLaneActive();
     return;
   }
 
@@ -4671,6 +4672,7 @@ function switchTheaterTab(tab, skipAutoLoad = false) {
     }
     const sdVideo = document.getElementById('sdPlaybackVideoElement');
     stopHttpVideoElement(sdVideo);
+    stopHttpVideoElement(document.getElementById('sdPlaybackVideoElement2'));
 
     // Se estava na aba SD e voltou para Ao Vivo, reconecta o stream ao vivo
     if (previousTab === 'sd' && activePtzCam && !skipAutoLoad) {
@@ -4757,6 +4759,11 @@ function sdLensesShown() {
   if (activeCameraViewMode === 'view2') return ['1'];
   return ['0', '1'];
 }
+// Dupla Visão on the recordings tab replays both lenses side by side from one camera session.
+function sdDualPlayback() {
+  return sdHasTwoLenses() && activeCameraViewMode === 'dual';
+}
+let sdPlayToken = 0;
 function markSdLaneActive() {
   document.querySelectorAll('.timeline-lane-label').forEach(el => el.classList.toggle('active', el.dataset.lens === sdPlayLens));
 }
@@ -4926,9 +4933,9 @@ async function setPlaybackSpeed(speed, btnEl) {
   if (btnEl) btnEl.classList.add('active');
 
   const camId = activePtzCam || 'outdoor_pro_poste';
-  const sdVideo = document.getElementById('sdPlaybackVideoElement');
-  if (sdVideo) {
-    try { sdVideo.playbackRate = speed; } catch {}
+  for (const id of ['sdPlaybackVideoElement', 'sdPlaybackVideoElement2']) {
+    const el = document.getElementById(id);
+    if (el) try { el.playbackRate = speed; } catch {}
   }
 
   try {
@@ -4960,7 +4967,16 @@ function playCurrentSdSegment(targetSeconds, optLabel, optUnix) {
   const overlayText = document.getElementById('sdPlaybackOverlayText');
 
   const labelSuffix = optLabel ? ` — ${optLabel}` : '';
-  const lensPrefix = sdHasTwoLenses() ? `${sdLensLabel(sdPlayLens)} • ` : '';
+  const dual = sdDualPlayback();
+  const playToken = ++sdPlayToken;
+  const lensPrefix = dual ? 'Vista 1 • ' : (sdHasTwoLenses() ? `${sdLensLabel(sdPlayLens)} • ` : '');
+  const row = document.getElementById('sdPlayerRow');
+  const wrap2 = document.getElementById('sdPlayerWrap2');
+  const sdVideo2 = document.getElementById('sdPlaybackVideoElement2');
+  const spinner2 = document.getElementById('sdPlaybackSpinner2');
+  stopHttpVideoElement(sdVideo2);
+  if (row) row.classList.toggle('dual', dual);
+  if (wrap2) wrap2.style.display = dual ? 'flex' : 'none';
   if (overlayText) overlayText.innerText = `● GRAVAÇÃO SD • ${lensPrefix}${selectedTimelineDate} ${time}${labelSuffix}`;
   markSdLaneActive();
   if (spinner) spinner.style.display = 'block';
@@ -4979,17 +4995,38 @@ function playCurrentSdSegment(targetSeconds, optLabel, optUnix) {
     sdVideo.playsInline = true;
     sdVideo.autoplay = true;
     sdVideo.muted = !isAudioListening;
-    const unixParam = (optUnix && optUnix > 1577836800) ? `&unix=${optUnix}` : '';
-    sdVideo.src = `${BACKEND_API_BASE}/api/camera/recordings/stream?id=${encodeURIComponent(camId)}&date=${encodeURIComponent(selectedTimelineDate)}&time=${encodeURIComponent(time)}&sec=${seconds}${unixParam}&speed=${currentPlaybackSpeed}&channel=${sdPlayLens}&t=${Date.now()}`;
+    // Both lenses must ask for the same instant: the bridge keys the shared replay by it.
+    let unix = (optUnix && optUnix > 1577836800) ? optUnix : 0;
+    if (dual && !unix) unix = Math.min(Math.floor(Date.now() / 1000) - 90, Math.floor(new Date(`${selectedTimelineDate}T00:00:00-03:00`).getTime() / 1000) + seconds);
+    const unixParam = unix ? `&unix=${unix}` : '';
+    const streamUrl = lens => `${BACKEND_API_BASE}/api/camera/recordings/stream?id=${encodeURIComponent(camId)}&date=${encodeURIComponent(selectedTimelineDate)}&time=${encodeURIComponent(time)}&sec=${seconds}${unixParam}&speed=${currentPlaybackSpeed}&channel=${lens}${dual ? '&dual=1' : ''}&t=${Date.now()}`;
+    sdVideo.src = streamUrl(dual ? '0' : sdPlayLens);
     sdVideo.load();
     const p = sdVideo.play();
     if (p) p.catch(() => {
       sdVideo.muted = true;
       sdVideo.play().catch(() => {});
     });
+    let secondStarted = false;
     const onReady = () => {
       if (spinner) spinner.style.display = 'none';
       startSdTimelineTracking();
+      // The second lens joins the replay session the first one opened.
+      if (!dual || secondStarted || playToken !== sdPlayToken || !sdVideo2) return;
+      secondStarted = true;
+      const overlay2 = document.getElementById('sdPlaybackOverlayText2');
+      if (overlay2) overlay2.innerText = `● GRAVAÇÃO SD • Vista 2 • ${selectedTimelineDate} ${time}`;
+      if (spinner2) spinner2.style.display = 'block';
+      sdVideo2.style.display = 'block';
+      sdVideo2.muted = true;
+      sdVideo2.playsInline = true;
+      sdVideo2.src = streamUrl('1');
+      sdVideo2.load();
+      sdVideo2.play().catch(() => {});
+      const ready2 = () => { if (spinner2) spinner2.style.display = 'none'; };
+      sdVideo2.onplaying = ready2;
+      sdVideo2.onloadeddata = ready2;
+      sdVideo2.onerror = ready2;
     };
     sdVideo.onplaying = onReady;
     sdVideo.oncanplay = onReady;
@@ -5016,8 +5053,10 @@ function startSdTimelineTracking() {
 
     if (needle) needle.style.left = `${pct}%`;
     if (timeTip) timeTip.innerText = formatted;
-    const lensPrefix = sdHasTwoLenses() ? `${sdLensLabel(sdPlayLens)} • ` : '';
+    const lensPrefix = sdDualPlayback() ? 'Vista 1 • ' : (sdHasTwoLenses() ? `${sdLensLabel(sdPlayLens)} • ` : '');
     if (overlayText) overlayText.innerText = `● GRAVAÇÃO SD • ${lensPrefix}${selectedTimelineDate} ${formatted} (MicroSD Reprodução)`;
+    const overlay2 = document.getElementById('sdPlaybackOverlayText2');
+    if (overlay2 && sdDualPlayback()) overlay2.innerText = `● GRAVAÇÃO SD • Vista 2 • ${selectedTimelineDate} ${formatted}`;
   }, 1000);
 }
 

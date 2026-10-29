@@ -2414,7 +2414,7 @@ const server = http.createServer(async (req, res) => {
   }
 
   // Helper para criar stream dinâmico de Playback SD no go2rtc via MISS_CMD_PLAYBACK_REQ (0x10D)
-  async function resolvePlaybackGo2rtcUrl(camId, dateStr, timeStr, secParam, speedParam = 1, chParam = '0', unixParam = NaN) {
+  async function resolvePlaybackGo2rtcUrl(camId, dateStr, timeStr, secParam, speedParam = 1, chParam = '0', unixParam = NaN, dual = false) {
     const resolvedLive = resolveStreamAlias(camId);
     const meta = getXiaomiStreamMeta(resolvedLive) || getXiaomiStreamMeta(camId);
     if (!meta || !meta.rawUrl) {
@@ -2445,8 +2445,9 @@ const server = http.createServer(async (req, res) => {
     const chQuery = isCh1 ? '&channel=1' : '';
 
     const endtimeUnix = targetUnix + 3600;
-    const playbackAlias = `pb_${meta.alias}_${targetUnix}_c${isCh1 ? 1 : 0}`;
-    const playbackXiaomiUrl = `${baseRawUrl}${chQuery}&playback=${targetUnix}&endtime=${endtimeUnix}&offset=0&speed=${hwSpeed}`;
+    // dual: both Outdoor lenses replay in one camera session (bridge "pbdual"); each alias carries one lens.
+    const playbackAlias = `pb_${meta.alias}_${targetUnix}_${dual ? 'd' : 'c'}${isCh1 ? 1 : 0}`;
+    const playbackXiaomiUrl = `${baseRawUrl}${chQuery}&playback=${targetUnix}&endtime=${endtimeUnix}&offset=0&speed=${hwSpeed}${dual ? '&pbdual=1' : ''}`;
 
     try {
       await new Promise((resolve, reject) => {
@@ -2516,8 +2517,9 @@ const server = http.createServer(async (req, res) => {
     const speedRaw = parseFloat(url.searchParams.get('speed') || '1') || 1;
     const hwSpeed = speedRaw >= 1 ? Math.round(speedRaw) : 1;
     const chParam = url.searchParams.get('channel') || '0';
+    const dualParam = url.searchParams.get('dual') === '1';
 
-    const playbackGo2rtcUrl = await resolvePlaybackGo2rtcUrl(camId, date, time, sec, hwSpeed, chParam, unixTs);
+    const playbackGo2rtcUrl = await resolvePlaybackGo2rtcUrl(camId, date, time, sec, hwSpeed, chParam, unixTs, dualParam);
     if (!playbackGo2rtcUrl) {
       res.writeHead(404, { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' });
       res.end(JSON.stringify({ error: 'Gravação não encontrada para esta câmera' }));
