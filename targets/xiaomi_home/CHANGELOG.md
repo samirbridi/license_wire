@@ -1,5 +1,41 @@
 # CHANGELOG — xiaomi_home
 
+## v0.13.1 (build 0026) - 2026-10-29
+
+### 💥 Breaking Changes
+
+- Nenhum.
+
+### ✨ Features
+
+- Nenhum.
+
+### 🐛 Fixes
+
+- fix: impede o gravador de disputar a camera com o replay SD e reaproveita a sessao por 6 s (commit `066ca06365d4b53e764e6c0d1b259795625fc46a`)
+
+### ⚡ Improvements
+
+- Nenhum.
+
+## v0.13.0 (build 0025) - 2026-10-29
+
+### 💥 Breaking Changes
+
+- Nenhum.
+
+### ✨ Features
+
+- feat: reproduz o cartao SD das duas lentes da Outdoor numa sessao compartilhada (commit `09bf11bd14552e8f0305283f2e552701386cc01b`)
+
+### 🐛 Fixes
+
+- Nenhum.
+
+### ⚡ Improvements
+
+- Nenhum.
+
 ## v0.12.2 (build 0024) - 2026-10-29
 
 ### 💥 Breaking Changes

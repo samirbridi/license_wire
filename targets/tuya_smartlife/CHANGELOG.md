@@ -1,5 +1,23 @@
 # CHANGELOG — tuya_smartlife
 
+## v0.38.0 (build 0052) - 2026-10-29
+
+### 💥 Breaking Changes
+
+- Nenhum.
+
+### ✨ Features
+
+- feat: mostra as gravacoes SD das duas lentes da Outdoor lado a lado (commit `bd974dbc4fb5dade3db7900ee9a0ec6b34e36a53`)
+
+### 🐛 Fixes
+
+- Nenhum.
+
+### ⚡ Improvements
+
+- improve: registra a verificacao da build 0051 com as sete visoes gravando (commit `3c05dfcc4475d2dbe3205fe92ef120e392e65bcb`)
+
 ## v0.37.1 (build 0051) - 2026-10-29
 
 ### 💥 Breaking Changes

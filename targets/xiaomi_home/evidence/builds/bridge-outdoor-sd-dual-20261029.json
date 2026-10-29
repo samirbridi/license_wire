@@ -1,0 +1,20 @@
+{
+  "runId": "bridge-outdoor-sd-dual-20261029",
+  "sourceCommit": "09bf11bd14552e8f0305283f2e552701386cc01b",
+  "previous": "v0.12.2 (build 0024)",
+  "version": "v0.13.0 (build 0025)",
+  "build": 25,
+  "date": "2026-10-29",
+  "status": "built",
+  "commits": [
+    {
+      "sha": "09bf11bd14552e8f0305283f2e552701386cc01b",
+      "subject": "feat: reproduz o cartao SD das duas lentes da Outdoor numa sessao compartilhada",
+      "body": "Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>",
+      "type": "feat",
+      "description": "reproduz o cartao SD das duas lentes da Outdoor numa sessao compartilhada",
+      "breaking": false
+    }
+  ],
+  "artifact": "runtime/builds/build-0025"
+}

@@ -1,20 +1,20 @@
 {
-  "runId": "bridge-outdoor-timeouts-20261029",
-  "sourceCommit": "b64acf1a989781efdead77f53ab214188ae9f155",
-  "previous": "v0.12.1 (build 0023)",
-  "version": "v0.12.2 (build 0024)",
-  "build": 24,
+  "runId": "bridge-outdoor-sd-race-20261029",
+  "sourceCommit": "066ca06365d4b53e764e6c0d1b259795625fc46a",
+  "previous": "v0.13.0 (build 0025)",
+  "version": "v0.13.1 (build 0026)",
+  "build": 26,
   "date": "2026-10-29",
   "status": "built",
   "commits": [
     {
-      "sha": "b64acf1a989781efdead77f53ab214188ae9f155",
-      "subject": "fix: limita o login da Outdoor e da prioridade ao replay SD sem derrubar a sessao ao vivo",
+      "sha": "066ca06365d4b53e764e6c0d1b259795625fc46a",
+      "subject": "fix: impede o gravador de disputar a camera com o replay SD e reaproveita a sessao por 6 s",
       "body": "Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>",
       "type": "fix",
-      "description": "limita o login da Outdoor e da prioridade ao replay SD sem derrubar a sessao ao vivo",
+      "description": "impede o gravador de disputar a camera com o replay SD e reaproveita a sessao por 6 s",
       "breaking": false
     }
   ],
-  "artifact": "runtime/builds/build-0024"
+  "artifact": "runtime/builds/build-0026"
 }

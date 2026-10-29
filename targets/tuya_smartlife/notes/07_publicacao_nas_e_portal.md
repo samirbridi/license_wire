@@ -50,6 +50,12 @@ Na publicação da 0048, o Pages subiu uma vez sem `_worker.js` (caminho errado)
 - O gravador agora espera no máximo 1 min entre tentativas, e o status guarda `cause` e `failedAt` de cada falha.
 - 0051 verificada às 14:56 UTC: as sete visões estavam gravando. A visão 1 da Outdoor teve uma interrupção na partida (`cause`: "Fluxo interrompido; os segmentos concluídos foram preservados.") e voltou em menos de 1 min. Na tela: os botões Foto, Criar Cena e × estão alinhados, e a régua SD em Dupla Visão mostra as faixas Vista 1 e Vista 2 (catálogo de 705 e 704 arquivos em 29/10).
 
+## Builds 0052 e 0053 (2026-10-29)
+
+- 0052: o replay SD das duas lentes da Outdoor tem os players lado a lado em Dupla Visão. O pedido segue o `startPlayBack1` do app oficial (`channel:[0,10]`), e o portal cria um alias por lente com `dual=1`. A Vista 2 só é pedida depois que a Vista 1 começa a tocar.
+- Teste na 0052 (18:32–18:35 UTC): o replay duplo perdeu a corrida para o gravador (504), e o replay de uma lente funcionou. A 0053 traz a ponte v0.13.1 (bloqueio antecipado e nova tentativa, mais a sessão aberta por 6 s; ver nota 18 do xiaomi_home).
+- Na 0052, as sete visões falharam juntas às 17:16 UTC com "Tempo esgotado ao gravar", na virada de um segmento de 15 min, e voltaram sozinhas. Como não é exclusivo da Outdoor, fica em observação.
+
 ## Pendências
 
 - Integração dos veículos no NAS: os clientes GWM/BYD não estão na imagem, e os cartões informam "Sem dados".

@@ -1,0 +1,28 @@
+{
+  "runId": "nas-sd-dual-20261029",
+  "sourceCommit": "bd974dbc4fb5dade3db7900ee9a0ec6b34e36a53",
+  "previous": "v0.37.1 (build 0051)",
+  "version": "v0.38.0 (build 0052)",
+  "build": 52,
+  "date": "2026-10-29",
+  "status": "built",
+  "commits": [
+    {
+      "sha": "bd974dbc4fb5dade3db7900ee9a0ec6b34e36a53",
+      "subject": "feat: mostra as gravacoes SD das duas lentes da Outdoor lado a lado",
+      "body": "Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>",
+      "type": "feat",
+      "description": "mostra as gravacoes SD das duas lentes da Outdoor lado a lado",
+      "breaking": false
+    },
+    {
+      "sha": "3c05dfcc4475d2dbe3205fe92ef120e392e65bcb",
+      "subject": "improve: registra a verificacao da build 0051 com as sete visoes gravando",
+      "body": "Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>",
+      "type": "improve",
+      "description": "registra a verificacao da build 0051 com as sete visoes gravando",
+      "breaking": false
+    }
+  ],
+  "artifact": "runtime/builds/build-0052"
+}
