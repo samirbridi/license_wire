@@ -1,0 +1,11 @@
+{
+  "runId": "nas-cs2-close-20261029",
+  "sourceCommit": "49a72cb296511d6878a2ae454129d72d213c3c2b",
+  "previous": "v0.38.1 (build 0053)",
+  "version": "v0.38.2 (build 0054)",
+  "build": 54,
+  "date": "2026-10-29",
+  "status": "built",
+  "commits": [],
+  "artifact": "runtime/builds/build-0054"
+}

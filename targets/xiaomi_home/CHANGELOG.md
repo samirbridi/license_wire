@@ -1,5 +1,23 @@
 # CHANGELOG — xiaomi_home
 
+## v0.13.3 (build 0028) - 2026-10-29
+
+### 💥 Breaking Changes
+
+- Nenhum.
+
+### ✨ Features
+
+- Nenhum.
+
+### 🐛 Fixes
+
+- fix: entrega o audio recente a quem entra na sessao compartilhada da Outdoor (commit `a26a57ec31e0cfa286f5421535ac2d06e965590b`)
+
+### ⚡ Improvements
+
+- Nenhum.
+
 ## v0.13.2 (build 0027) - 2026-10-29
 
 ### 💥 Breaking Changes

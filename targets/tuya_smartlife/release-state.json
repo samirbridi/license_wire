@@ -1,20 +1,11 @@
 {
-  "runId": "nas-sd-race-20261029",
-  "sourceCommit": "6c98abcd27d9c12c1b12ec7525d27d5f7b050bee",
-  "previous": "v0.38.0 (build 0052)",
-  "version": "v0.38.1 (build 0053)",
-  "build": 53,
+  "runId": "nas-cs2-close-20261029",
+  "sourceCommit": "49a72cb296511d6878a2ae454129d72d213c3c2b",
+  "previous": "v0.38.1 (build 0053)",
+  "version": "v0.38.2 (build 0054)",
+  "build": 54,
   "date": "2026-10-29",
   "status": "built",
-  "commits": [
-    {
-      "sha": "6c98abcd27d9c12c1b12ec7525d27d5f7b050bee",
-      "subject": "fix: publica a ponte que da prioridade ao replay SD duplo da Outdoor",
-      "body": "Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>",
-      "type": "fix",
-      "description": "publica a ponte que da prioridade ao replay SD duplo da Outdoor",
-      "breaking": false
-    }
-  ],
-  "artifact": "runtime/builds/build-0053"
+  "commits": [],
+  "artifact": "runtime/builds/build-0054"
 }
