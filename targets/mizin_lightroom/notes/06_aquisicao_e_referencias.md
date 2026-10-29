@@ -58,6 +58,10 @@ Nesta sessao foi usado o Python 3.12.14 e SQLite 3.53.1 do runtime local do Code
 
 ## Proxima etapa
 
+Preflight posterior ao usuario informar compartilhamento pronto: `RAWReferencia` nao ficou disponivel na sessao SMB atual. `net view` listou um novo compartilhamento chamado `Upper West Perdizes`, mas a leitura retornou acesso negado. Nao concluir que esse compartilhamento corresponde ao trabalho de referencia. O caminho de rede exato exibido pelo Windows foi solicitado; nenhum RAW foi lido ou copiado.
+
+As 546 referencias do primeiro trabalho nao apresentaram MD5, SHA-256 ou tamanhos nas tabelas `AgLibraryFile`, `AgLibraryFileAssetMetadata` e `AgLibraryFileDigest`. O pareamento nao pode depender apenas de nomes, que podem se repetir entre trabalhos. A faixa de captura do conjunto e 2026-10-02T18:57:55.400 a 2026-10-02T23:55:40.660, no horario armazenado, sem presumir fuso. Conferir mapeamento de pasta, camera e metadados de captura dos RAWs antes de formar pares; hashes calculados na coleta verificam integridade da copia, nao substituem prova de correspondencia com a edicao.
+
 Obter acesso de leitura aos RAWs de um trabalho aprovado. Um primeiro conjunto disponivel no catalogo e a pasta remota `D:\2026-10-02 - FORMATURA VICTORIA`, com 546 referencias CR3 aprovadas. Compartilhar somente essa pasta com leitura, por exemplo como `RAWReferencia`, permite validar acesso e um primeiro lote sem expor o disco inteiro. Os outros sete trabalhos podem ser incorporados gradualmente.
 
 Depois: validar perfis e renderizacao neutra consistente, confirmar informacoes de hardware e versao do Lightroom, preparar treino/teste separados por trabalho e por arquivo fisico, e implementar o primeiro plugin com ajustes reversiveis. Avaliar cor e P&B separadamente. Nenhuma velocidade ou qualidade equivalente ao Neurapix foi medida ou prometida.

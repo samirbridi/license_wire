@@ -1,0 +1,33 @@
+{
+  "date": "2026-10-29",
+  "timezone": "America/Sao_Paulo",
+  "scope": "READ_ONLY_RAW_SHARE_PREFLIGHT",
+  "target": "192.168.1.58",
+  "userReportedShareReady": true,
+  "requestedShare": "\\\\192.168.1.58\\RAWReferencia",
+  "requestedShareResult": "NOT_AVAILABLE_TO_CURRENT_SESSION",
+  "visibleShares": ["LR CATALOGOS", "LRCatalogos", "Upper West Perdizes", "Users"],
+  "additionalObservedShare": "\\\\192.168.1.58\\Upper West Perdizes",
+  "additionalObservedShareResult": "ACCESS_DENIED_BY_WINDOWS",
+  "additionalShareIdentityConfirmed": false,
+  "rawFilesRead": 0,
+  "rawFilesCopied": 0,
+  "remoteWriteOperations": 0,
+  "pending": "Exact network path displayed by Windows for the intended RAW folder, with readable access.",
+  "catalogIdentityPreflight": {
+    "referenceCount": 546,
+    "withCatalogMd5": 0,
+    "withCatalogSha256": 0,
+    "withAssetFileSize": 0,
+    "withDigestFileSize": 0,
+    "firstCaptureStored": "2026-10-02T18:57:55.400",
+    "lastCaptureStored": "2026-10-02T23:55:40.660",
+    "captureTimezoneAssumed": false,
+    "matchingPolicy": "Verify explicit source-folder mapping plus filename, camera and capture metadata; do not pair unrelated events by filename alone."
+  },
+  "commands": [
+    "Get-ChildItem -LiteralPath '\\\\192.168.1.58\\RAWReferencia' -Force",
+    "net view \\\\192.168.1.58",
+    "Get-ChildItem -LiteralPath '\\\\192.168.1.58\\Upper West Perdizes' -Force"
+  ]
+}

@@ -19,6 +19,8 @@ Esta entrega contem pesquisa, inventario, copia consistente de um catalogo autor
 - O usuario confirmou que todas as edicoes de outubro estao revisadas e aprovadas. Essa confirmacao esta registrada separadamente; alteracoes no historico nunca sao usadas como prova de revisao humana.
 - Os 33.687 DNGs referenciados na pasta de smart previews e as copias virtuais nao foram misturados aos 3.601 exemplos selecionados por historico Neurapix.
 - Pendente: acesso aos pixels RAW, renderizacoes neutras consistentes, versao real do Lightroom e QA do futuro plugin. Os caminhos RAW pertencem a outras pastas da maquina remota, fora do compartilhamento de catalogos.
+- Teste apos o usuario informar o compartilhamento RAW pronto: `\\192.168.1.58\RAWReferencia` nao ficou disponivel. O novo compartilhamento `Upper West Perdizes` apareceu, mas retornou acesso negado. Foi solicitado o caminho de rede exato exibido pelo Windows; nenhum RAW foi lido ou copiado.
+- As 546 referencias do primeiro trabalho nao possuem MD5/SHA-256 nem tamanho de arquivo registrados nas tabelas verificadas. O pareamento futuro deve conferir mapeamento de pasta, camera e data/hora de captura, alem do nome. A faixa de captura observada e 2026-10-02, de 18:57:55.400 a 23:55:40.660, conforme o horario gravado no catalogo, sem conversao de fuso presumida.
 - Proximo: obter um primeiro trabalho RAW aprovado, validar acesso aos perfis e representacao das configuracoes no SDK, gerar entradas neutras e preparar treino/teste separados por trabalho. Detalhes em `notes/06_aquisicao_e_referencias.md`.
 
 ## Aproveitamento das edicoes existentes
