@@ -1,5 +1,23 @@
 # CHANGELOG — xiaomi_home
 
+## v0.16.1 (build 0033) - 2026-10-29
+
+### 💥 Breaking Changes
+
+- Nenhum.
+
+### ✨ Features
+
+- Nenhum.
+
+### 🐛 Fixes
+
+- fix: le a resposta binaria da camera ao abrir o canal de fala (commit `bca577953d50f067caf23f3390af8457b59c00ce`)
+
+### ⚡ Improvements
+
+- Nenhum.
+
 ## v0.16.0 (build 0032) - 2026-10-29
 
 ### 💥 Breaking Changes

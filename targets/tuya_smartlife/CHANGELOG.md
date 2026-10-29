@@ -1,5 +1,23 @@
 # CHANGELOG — tuya_smartlife
 
+## v0.40.0 (build 0059) - 2026-10-29
+
+### 💥 Breaking Changes
+
+- Nenhum.
+
+### ✨ Features
+
+- feat: fala continua por WebSocket e cameras de uma lente abrindo pelo fluxo do gravador (commit `78f4a2da00e3a0d9882d5a4c0a7c996d3252a65e`)
+
+### 🐛 Fixes
+
+- Nenhum.
+
+### ⚡ Improvements
+
+- improve: registra o ao vivo abrindo em 0,4-1,1 s na build 0058 (commit `25c9f6d37ee0005a341892aae1e76aeb942f0402`)
+
 ## v0.39.0 (build 0058) - 2026-10-29
 
 ### 💥 Breaking Changes

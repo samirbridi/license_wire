@@ -1,20 +1,20 @@
 {
-  "runId": "bridge-talkstream-20261029",
-  "sourceCommit": "bbca7d5070c6a00ed9fde8dccae76c4b9117a28f",
-  "previous": "v0.15.0 (build 0031)",
-  "version": "v0.16.0 (build 0032)",
-  "build": 32,
+  "runId": "bridge-speaker-answer-20261029",
+  "sourceCommit": "bca577953d50f067caf23f3390af8457b59c00ce",
+  "previous": "v0.16.0 (build 0032)",
+  "version": "v0.16.1 (build 0033)",
+  "build": 33,
   "date": "2026-10-29",
   "status": "built",
   "commits": [
     {
-      "sha": "bbca7d5070c6a00ed9fde8dccae76c4b9117a28f",
-      "subject": "feat: espera a camera liberar o alto-falante e entrega a fala em fluxo continuo",
+      "sha": "bca577953d50f067caf23f3390af8457b59c00ce",
+      "subject": "fix: le a resposta binaria da camera ao abrir o canal de fala",
       "body": "Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>",
-      "type": "feat",
-      "description": "espera a camera liberar o alto-falante e entrega a fala em fluxo continuo",
+      "type": "fix",
+      "description": "le a resposta binaria da camera ao abrir o canal de fala",
       "breaking": false
     }
   ],
-  "artifact": "runtime/builds/build-0032"
+  "artifact": "runtime/builds/build-0033"
 }

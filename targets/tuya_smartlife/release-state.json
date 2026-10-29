@@ -1,28 +1,28 @@
 {
-  "runId": "nas-ws-live-20261029",
-  "sourceCommit": "9bacb3c809a72bacd6f8c6d61a171ca27c8fca06",
-  "previous": "v0.38.5 (build 0057)",
-  "version": "v0.39.0 (build 0058)",
-  "build": 58,
+  "runId": "nas-talk-stream-20261029",
+  "sourceCommit": "78f4a2da00e3a0d9882d5a4c0a7c996d3252a65e",
+  "previous": "v0.39.0 (build 0058)",
+  "version": "v0.40.0 (build 0059)",
+  "build": 59,
   "date": "2026-10-29",
   "status": "built",
   "commits": [
     {
-      "sha": "9bacb3c809a72bacd6f8c6d61a171ca27c8fca06",
-      "subject": "feat: abre o ao vivo pelo WebSocket da ponte com o fluxo HTTP como reserva",
+      "sha": "78f4a2da00e3a0d9882d5a4c0a7c996d3252a65e",
+      "subject": "feat: fala continua por WebSocket e cameras de uma lente abrindo pelo fluxo do gravador",
       "body": "Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>",
       "type": "feat",
-      "description": "abre o ao vivo pelo WebSocket da ponte com o fluxo HTTP como reserva",
+      "description": "fala continua por WebSocket e cameras de uma lente abrindo pelo fluxo do gravador",
       "breaking": false
     },
     {
-      "sha": "bca61cb275cb79cfdace7881b2ebd5ef00349996",
-      "subject": "improve: registra a volta ao ao vivo em 7 s depois do replay SD na build 0057",
+      "sha": "25c9f6d37ee0005a341892aae1e76aeb942f0402",
+      "subject": "improve: registra o ao vivo abrindo em 0,4-1,1 s na build 0058",
       "body": "Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>",
       "type": "improve",
-      "description": "registra a volta ao ao vivo em 7 s depois do replay SD na build 0057",
+      "description": "registra o ao vivo abrindo em 0,4-1,1 s na build 0058",
       "breaking": false
     }
   ],
-  "artifact": "runtime/builds/build-0058"
+  "artifact": "runtime/builds/build-0059"
 }
