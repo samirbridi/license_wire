@@ -1,0 +1,88 @@
+{
+  "schema": "mizin-lightroom.native-selection-user-qa/1",
+  "date": "2026-10-29",
+  "source": "USER_SUPPLIED_SCREENSHOTS",
+  "packageVersionShown": "v0.4.0 (build 0008)",
+  "lightroomVersionShown": "15.6",
+  "runtimeShown": {
+    "python": "3.13.14",
+    "isolatedPython": true,
+    "rawpy": "0.27.1",
+    "libraw": "0.22.1",
+    "numpy": "2.3.5",
+    "pillow": "12.3.0",
+    "exiftool": "13.60"
+  },
+  "diagnosticJobIdVisible": "7C8EBCD4-E397-4A5F-A0FB-E2DEE3136D85",
+  "computedPhotosShown": 5,
+  "failedPhotosShown": 0,
+  "analysisStateShown": "COMPLETED",
+  "displayedReferenceValuesMatchingSnapshotRounded": 15,
+  "snapshotAssociationEventRootId": 2072046,
+  "associationBasis": "All five filenames and all fifteen displayed current values uniquely match one event in the snapshot; actual job source paths and hashes are not visible.",
+  "snapshotMatchedEventOutsideTrainingEvent": true,
+  "status": "PASS_NATIVE_DIAGNOSTIC_AND_SELECTION_ANALYSIS_SHOWN",
+  "displayedValueDifferences": {
+    "Exposure2012": {
+      "meanAbsoluteDifferenceOfDisplayedValues": 0.174,
+      "maximumAbsoluteDifferenceOfDisplayedValues": 0.36,
+      "suggestionHigherCount": 1,
+      "photos": 5
+    },
+    "Temperature": {
+      "meanAbsoluteDifferenceOfDisplayedValues": 871.4,
+      "maximumAbsoluteDifferenceOfDisplayedValues": 1665,
+      "suggestionHigherCount": 5,
+      "photos": 5
+    },
+    "Contrast2012": {
+      "meanAbsoluteDifferenceOfDisplayedValues": 6.76,
+      "maximumAbsoluteDifferenceOfDisplayedValues": 10.6,
+      "suggestionHigherCount": 2,
+      "photos": 5
+    }
+  },
+  "nativeProgressAndCancellationObserved": false,
+  "lastResultsReopenObserved": false,
+  "openResultsFolderObserved": false,
+  "visualQualityApproved": false,
+  "catalogWriteOrRollbackTested": false,
+  "rawIdentityFromJobHashVerified": false,
+  "fullResultsJsonRetrieved": false,
+  "profileResultsAccess": "KNOWN_PLUGIN_APPDATA_PATH_DENIED_BY_SMB_ACL",
+  "privateEvidenceDirectory": "private/evidence/native-selection-20261029-1fd7b48c",
+  "sourceImages": [
+    {
+      "imageNumber": 1,
+      "filename": "WhatsApp Image 2026-10-29 at 17.55.09.jpeg",
+      "viewedInUserMessage": true,
+      "localFileAvailable": false,
+      "sha256": null,
+      "preservationStatus": "VISIBLE_CONVERSATION_ATTACHMENT; MENTIONED_LOCAL_PATH_NOT_FOUND"
+    },
+    {
+      "imageNumber": 2,
+      "filename": "WhatsApp Image 2026-10-29 at 17.56.14.jpeg",
+      "viewedInUserMessage": true,
+      "localFileAvailable": false,
+      "sha256": null,
+      "preservationStatus": "VISIBLE_CONVERSATION_ATTACHMENT; MENTIONED_LOCAL_PATH_NOT_FOUND"
+    },
+    {
+      "imageNumber": 3,
+      "filename": "WhatsApp Image 2026-10-29 at 17.56.26.jpeg",
+      "viewedInUserMessage": true,
+      "localFileAvailable": false,
+      "sha256": null,
+      "preservationStatus": "VISIBLE_CONVERSATION_ATTACHMENT; MENTIONED_LOCAL_PATH_NOT_FOUND"
+    }
+  ],
+  "limits": [
+    "Five consecutive photos shown; descriptive differences are not an independent cross-event quality benchmark.",
+    "No rendered prediction was shown, and no edit was applied by this package.",
+    "Screenshot association does not cryptographically verify the RAW source paths or bytes.",
+    "Native diagnostics and result display passed; cancellation, history reopening and writes require separate evidence.",
+    "The three image attachments were visible in the conversation, but their mentioned local files were unavailable; original image bytes were not hashed."
+  ],
+  "preparedResultsTransferDirectory": "\\\\192.168.1.58\\Users\\Public\\Documents\\MizinLightroomPilot\\Resultados-0008-20261029"
+}

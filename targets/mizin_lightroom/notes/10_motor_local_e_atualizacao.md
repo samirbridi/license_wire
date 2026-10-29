@@ -35,7 +35,7 @@ Avisos/licencas recebidos sao preservados. O pacote inclui tambem o sdist oficia
 - Comando Windows gerado pelo proprio Lua executado com Pythonw, espacos e `&` no caminho, PATH restrito ao Windows e PYTHONHOME/PYTHONPATH invalidos. O diagnostico carregou as dependencias incluidas e confirmou isolamento.
 - RAWs preservados, sem escrita no catalogo ou envio de fotos. Recebimentos, pixels, pedidos e resultados individuais ficam em `private/qa/`; resumo em `evidence/local-engine-qa-20261029.json`.
 
-O computador de desenvolvimento nao executa Lightroom Classic. A nova interface, progresso e comandos precisam ser confirmados no host real. O teste nativo anterior do comparador continua limitado ao build 0006. Nao foi usada essa evidencia antiga para aprovar a nova integracao.
+O computador de desenvolvimento nao executa Lightroom Classic. Posteriormente, o usuario mostrou o diagnostico do build 0008 e a analise de cinco fotos sem falhas no Lightroom 15.6. Essa nova evidencia confirma o fluxo nominal da nova interface, separadamente do comparador do build 0006. Progresso durante a tarefa, cancelamento, abertura da pasta e reabertura de resultados ainda nao foram demonstrados nos prints. Diferencas numericas e limites em `11_qa_nativo_e_precisao.md`.
 
 ## Instalacao na maquina de edicao
 

@@ -35,3 +35,6 @@ dd3d044f119ae90ecc579133d5d7632b18d6ad8ece91240fae0c8f4110ec401a *../private/qa/
 
 # Pacote funcional do motor local entregue, com origem e destino conferidos.
 ae325995e7cfd74e6b1d378ccbce029f395ad9157b80fb0f6719a8f247ef5aa5 *../private/deliveries/MizinLightroom-0.4.0-build0008-9f44a1dc/MizinLightroom-0.4.0-build0008-motor-local.zip
+
+# Transcricao privada dos screenshots visiveis no chat; originais locais nao disponiveis.
+5782d6f9fe4c6e3e47dfd0647a307ce22e817ed60ae7439d8a8015087a62816d *../private/evidence/native-selection-20261029-1fd7b48c/transcription-and-snapshot-matches.json

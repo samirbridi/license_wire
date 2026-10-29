@@ -12,7 +12,7 @@ Ha diferencas relevantes nos exemplos: a exposicao de `CRI_2028.CR3` e 1,03 na r
 
 ## Comparacao funcional e proposta local
 
-As sete opcoes abaixo foram observadas nos screenshots. Sua funcao foi conferida na documentacao publica oficial. Os nomes da nossa coluna sao propostas de produto. O comparador antigo tem QA nativo; o novo pacote implementa analise da selecao, resultados e diagnostico, com QA local e teste nativo ainda pendente.
+As sete opcoes abaixo foram observadas nos screenshots. Sua funcao foi conferida na documentacao publica oficial. Os nomes da nossa coluna sao propostas de produto. O comparador antigo tem QA nativo; o build 0008 tambem teve diagnostico e analise da selecao mostrados funcionando no Lightroom 15.6. Esse teste nao aprova qualidade fotografica nem recursos ainda planejados.
 
 | Opcao observada | Modulo proposto | Funcao local e estado atual |
 | --- | --- | --- |
