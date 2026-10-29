@@ -1,20 +1,20 @@
 {
-  "runId": "bridge-outdoor-sd-race-20261029",
-  "sourceCommit": "066ca06365d4b53e764e6c0d1b259795625fc46a",
-  "previous": "v0.13.0 (build 0025)",
-  "version": "v0.13.1 (build 0026)",
-  "build": 26,
+  "runId": "bridge-cs2-close-20261029",
+  "sourceCommit": "ad40e8a6ac77520e3825b83cc05977ad64d7171b",
+  "previous": "v0.13.1 (build 0026)",
+  "version": "v0.13.2 (build 0027)",
+  "build": 27,
   "date": "2026-10-29",
   "status": "built",
   "commits": [
     {
-      "sha": "066ca06365d4b53e764e6c0d1b259795625fc46a",
-      "subject": "fix: impede o gravador de disputar a camera com o replay SD e reaproveita a sessao por 6 s",
+      "sha": "ad40e8a6ac77520e3825b83cc05977ad64d7171b",
+      "subject": "fix: avisa a camera ao encerrar a sessao CS2 e libera o replay SD na hora",
       "body": "Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>",
       "type": "fix",
-      "description": "impede o gravador de disputar a camera com o replay SD e reaproveita a sessao por 6 s",
+      "description": "avisa a camera ao encerrar a sessao CS2 e libera o replay SD na hora",
       "breaking": false
     }
   ],
-  "artifact": "runtime/builds/build-0026"
+  "artifact": "runtime/builds/build-0027"
 }

@@ -1,5 +1,23 @@
 # CHANGELOG — tuya_smartlife
 
+## v0.38.1 (build 0053) - 2026-10-29
+
+### 💥 Breaking Changes
+
+- Nenhum.
+
+### ✨ Features
+
+- Nenhum.
+
+### 🐛 Fixes
+
+- fix: publica a ponte que da prioridade ao replay SD duplo da Outdoor (commit `6c98abcd27d9c12c1b12ec7525d27d5f7b050bee`)
+
+### ⚡ Improvements
+
+- Nenhum.
+
 ## v0.38.0 (build 0052) - 2026-10-29
 
 ### 💥 Breaking Changes

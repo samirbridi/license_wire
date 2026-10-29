@@ -1,5 +1,23 @@
 # CHANGELOG — xiaomi_home
 
+## v0.13.2 (build 0027) - 2026-10-29
+
+### 💥 Breaking Changes
+
+- Nenhum.
+
+### ✨ Features
+
+- Nenhum.
+
+### 🐛 Fixes
+
+- fix: avisa a camera ao encerrar a sessao CS2 e libera o replay SD na hora (commit `ad40e8a6ac77520e3825b83cc05977ad64d7171b`)
+
+### ⚡ Improvements
+
+- Nenhum.
+
 ## v0.13.1 (build 0026) - 2026-10-29
 
 ### 💥 Breaking Changes
