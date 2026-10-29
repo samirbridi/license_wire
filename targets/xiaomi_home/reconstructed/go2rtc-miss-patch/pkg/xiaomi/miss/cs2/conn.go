@@ -202,6 +202,20 @@ func (c *Conn) Error() error {
 	return io.EOF
 }
 
+// Close tells the camera the session ended (MSG_CLOSE) before closing the socket. Without it the camera
+// keeps the session slot until its own timeout and refuses new sessions meanwhile (seen on the CW701:
+// about 1.5 min of handshake timeouts after every live/SD switch). UDP has no ack for it: send it 3 times.
+func (c *Conn) Close() error {
+	repeat := 3
+	if c.isTCP {
+		repeat = 1
+	}
+	for i := 0; i < repeat; i++ {
+		_, _ = c.Conn.Write([]byte{magic, msgClose, 0, 0})
+	}
+	return c.Conn.Close()
+}
+
 func (c *Conn) ReadCommand() (cmd uint32, data []byte, err error) {
 	buf, ok := c.channels[0].Pop()
 	if !ok {

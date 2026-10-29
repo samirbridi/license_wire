@@ -55,3 +55,10 @@ Correções:
 - Teste no NAS às 18:32–18:35 UTC. O replay duplo falhou duas vezes no primeiro contato (`read udp … i/o timeout` no handshake), e o replay de uma lente funcionou (200 em 5,7 s, 3,4 MB em 25 s). O log mostrou a causa: o replay fecha a sessão ao vivo, e durante o handshake dele o gravador tenta voltar e conecta ao mesmo tempo. A câmera atende só um dos dois. Nos testes duplos o ao vivo ganhou as duas vezes.
 - Correção: `MarkPlaybackPending` bloqueia os pedidos ao vivo desde o início do replay, antes de fechar as sessões e antes da consulta à nuvem. Se o replay ainda perder a corrida, a ponte fecha a sessão que entrou e tenta mais uma vez após 1,5 s.
 - A sessão compartilhada fica aberta por 6 s depois que a última visão sai (`dualLinger`). A verificação de 10 s do gravador, seguida da gravação contínua, reaproveita a conexão em vez de fechar e reabrir. Essa era a causa provável da interrupção da visão 1 na partida.
+
+## Sessões presas na câmera (bridge v0.13.2)
+
+- Teste da 0053 (18:44–18:48 UTC): o replay SD duplo funcionou. A Vista 1 abriu em 9,3 s, a Vista 2 entrou na mesma sessão em 1,4 s, e as duas receberam ~130 KB/s por 45–60 s. Depois disso, a câmera recusou novas conexões por ~1,5 min (`read udp … i/o timeout` no handshake), e o ao vivo só voltou às 18:47:47.
+- Causa: `cs2.Conn` fechava apenas o socket, sem mandar `MSG_CLOSE` (0xF0) para a câmera, embora o tipo já estivesse declarado. Cada sessão encerrada pela ponte continuava ocupando uma vaga na câmera até o timeout dela.
+- Correção: `cs2.Conn.Close` manda `{0xF1, 0xF0, 0, 0}` (3 vezes em UDP, sem ack; 1 vez em TCP) antes de fechar. Teste: `cs2/close_test.go`.
+- A sessão de replay SD não fica mais aberta 6 s depois de encerrada: libera a câmera na hora para o ao vivo. Isso continua valendo só para o ao vivo.

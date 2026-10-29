@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net/url"
 	"os"
+	"strings"
 	"sync"
 	"sync/atomic"
 	"time"
@@ -157,6 +158,11 @@ func (h *dualHub) leave(v *dualView) {
 	empty := len(h.views) == 0
 	h.mu.Unlock()
 	if !empty {
+		return
+	}
+	if strings.Contains(h.key, "|pb|") {
+		// An SD replay nobody watches frees the camera at once for the live session.
+		h.fail(errDualClosed, 0)
 		return
 	}
 	time.AfterFunc(dualLinger, func() {
