@@ -147,14 +147,26 @@ func (h *dualHub) join(lens uint32) (*dualView, error) {
 	return v, nil
 }
 
+// dualLinger keeps an empty session open briefly: the recorder's check followed by continuous recording,
+// or a viewer switching views, rejoins it instead of closing and reopening the camera connection.
+var dualLinger = 6 * time.Second
+
 func (h *dualHub) leave(v *dualView) {
 	h.mu.Lock()
 	delete(h.views, v)
 	empty := len(h.views) == 0
 	h.mu.Unlock()
-	if empty {
-		h.fail(errDualClosed, 0)
+	if !empty {
+		return
 	}
+	time.AfterFunc(dualLinger, func() {
+		h.mu.Lock()
+		still := len(h.views) == 0
+		h.mu.Unlock()
+		if still {
+			h.fail(errDualClosed, 0)
+		}
+	})
 }
 
 // fail closes the session and every view; backoff > 0 keeps new views on separate sessions meanwhile.

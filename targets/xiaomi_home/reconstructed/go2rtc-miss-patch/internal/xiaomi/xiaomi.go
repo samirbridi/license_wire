@@ -42,6 +42,11 @@ func Init() {
 
 		did := u.Query().Get("did")
 		isPlayback := u.Query().Get("playback") != ""
+		if isPlayback && did != "" {
+			// Block live dials before closing them: the cloud lookup below takes time.
+			done := miss.MarkPlaybackPending(did)
+			defer done()
+		}
 		if did != "" {
 			closeTempClient(did)
 			// Only SD playback takes the camera over; live dials never close a playback (see miss.Dial).
@@ -60,7 +65,18 @@ func Init() {
 
 		log.Debug().Msgf("xiaomi: dial %s", rawURL)
 
-		return xiaomi.Dial(rawURL)
+		if !isPlayback || did == "" {
+			return xiaomi.Dial(rawURL)
+		}
+		prod, err := xiaomi.Dial(rawURL)
+		if err != nil {
+			// A live dial already connecting may have won the camera: close it and try once more.
+			log.Debug().Msgf("xiaomi: playback retry after %v", err)
+			miss.CloseClientsForDID(did, false)
+			time.Sleep(1500 * time.Millisecond)
+			prod, err = xiaomi.Dial(rawURL)
+		}
+		return prod, err
 	})
 
 	api.HandleFunc("api/xiaomi", apiXiaomi)

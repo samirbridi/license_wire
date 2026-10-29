@@ -154,10 +154,24 @@ func TestDualHubSplitsLensesAndClosesWithLastView(t *testing.T) {
 		t.Fatal("session closed while a view is still open")
 	default:
 	}
+	dualLinger = 300 * time.Millisecond
+	defer func() { dualLinger = 6 * time.Second }()
 	_ = second.Close()
+	// Within the linger window a new view reuses the session.
+	again, err := hub.join(dualViewMain)
+	if err != nil {
+		t.Fatalf("session closed before the linger window: %v", err)
+	}
+	time.Sleep(400 * time.Millisecond)
 	select {
 	case <-stopped:
-	case <-time.After(time.Second):
+		t.Fatal("session closed while a rejoined view is open")
+	default:
+	}
+	_ = again.Close()
+	select {
+	case <-stopped:
+	case <-time.After(2 * time.Second):
 		t.Fatal("session kept open after the last view")
 	}
 	dualMu.Lock()

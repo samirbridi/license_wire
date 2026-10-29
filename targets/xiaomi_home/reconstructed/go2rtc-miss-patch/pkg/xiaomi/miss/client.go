@@ -144,10 +144,40 @@ func GetActivePlaybackClient(did string) *Client {
 	return GetActiveClient(did)
 }
 
-// PlaybackActive reports an open SD playback session for the device.
+var (
+	playbackPendingMu sync.Mutex
+	playbackPending   = map[string]int{}
+)
+
+// MarkPlaybackPending blocks live dials from the moment an SD playback starts connecting: otherwise the
+// recorder's retry races the playback handshake and the camera answers only one of them. Call the
+// returned function when the dial finished.
+func MarkPlaybackPending(did string) func() {
+	playbackPendingMu.Lock()
+	playbackPending[did]++
+	playbackPendingMu.Unlock()
+	var once sync.Once
+	return func() {
+		once.Do(func() {
+			playbackPendingMu.Lock()
+			if playbackPending[did]--; playbackPending[did] <= 0 {
+				delete(playbackPending, did)
+			}
+			playbackPendingMu.Unlock()
+		})
+	}
+}
+
+// PlaybackActive reports an SD playback session for the device, open or still connecting.
 func PlaybackActive(did string) bool {
 	if did == "" {
 		return false
+	}
+	playbackPendingMu.Lock()
+	pending := playbackPending[did] > 0
+	playbackPendingMu.Unlock()
+	if pending {
+		return true
 	}
 	activeClientsMu.RLock()
 	defer activeClientsMu.RUnlock()

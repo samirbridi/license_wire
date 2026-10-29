@@ -20,4 +20,13 @@ func TestLiveDialWaitsForSDPlayback(t *testing.T) {
 	if PlaybackActive("test-did") {
 		t.Fatal("closed playback still blocks live")
 	}
+	done := MarkPlaybackPending("test-did")
+	if !PlaybackActive("test-did") {
+		t.Fatal("connecting playback does not block live")
+	}
+	done()
+	done()
+	if PlaybackActive("test-did") {
+		t.Fatal("finished dial still blocks live")
+	}
 }

@@ -49,3 +49,9 @@ Correções:
 - O portal cria um alias por lente (`pb_<alias>_<t>_d0/_d1`, com `pbdual=1`) e pede a Vista 2 só depois que a Vista 1 começa a tocar. A segunda lente entra na sessão aberta (`DualSessionOpen`) sem fechar as sessões da câmera.
 - Testes: `playback_dual_test.go`, com catálogo sintético.
 
+
+## Corrida entre o replay SD e o gravador (bridge v0.13.1)
+
+- Teste no NAS às 18:32–18:35 UTC. O replay duplo falhou duas vezes no primeiro contato (`read udp … i/o timeout` no handshake), e o replay de uma lente funcionou (200 em 5,7 s, 3,4 MB em 25 s). O log mostrou a causa: o replay fecha a sessão ao vivo, e durante o handshake dele o gravador tenta voltar e conecta ao mesmo tempo. A câmera atende só um dos dois. Nos testes duplos o ao vivo ganhou as duas vezes.
+- Correção: `MarkPlaybackPending` bloqueia os pedidos ao vivo desde o início do replay, antes de fechar as sessões e antes da consulta à nuvem. Se o replay ainda perder a corrida, a ponte fecha a sessão que entrou e tenta mais uma vez após 1,5 s.
+- A sessão compartilhada fica aberta por 6 s depois que a última visão sai (`dualLinger`). A verificação de 10 s do gravador, seguida da gravação contínua, reaproveita a conexão em vez de fechar e reabrir. Essa era a causa provável da interrupção da visão 1 na partida.
