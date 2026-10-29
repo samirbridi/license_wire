@@ -1,0 +1,17 @@
+{
+  "previous": "v0.4.0 (build 0008)",
+  "version": "v0.4.1 (build 0009)",
+  "date": "2026-10-29",
+  "timezone": "America/Sao_Paulo",
+  "baseline": "9f62ee0215b81f19712851144684185b1317f645",
+  "sourceHead": "f52a946045deb523bf4585a6ea8d2fa6fe63e741",
+  "increment": "fix",
+  "commits": [
+    {
+      "hash": "f52a946045deb523bf4585a6ea8d2fa6fe63e741",
+      "subject": "improve: registra QA nativo e diferencas do modelo em outro trabalho",
+      "type": "improve",
+      "breaking": false
+    }
+  ]
+}

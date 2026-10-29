@@ -1,5 +1,23 @@
 # CHANGELOG - mizin_lightroom
 
+## v0.4.1 (build 0009) - 2026-10-29
+
+### 💥 Breaking Changes
+
+- Nenhum.
+
+### ✨ Features
+
+- Nenhum.
+
+### 🐛 Fixes
+
+- Nenhum.
+
+### ⚡ Improvements
+
+- improve: registra QA nativo e diferencas do modelo em outro trabalho (commit `f52a946045deb523bf4585a6ea8d2fa6fe63e741`)
+
 ## v0.4.0 (build 0008) - 2026-10-29
 
 ### 💥 Breaking Changes
