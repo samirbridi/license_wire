@@ -10,9 +10,11 @@ import (
 )
 
 // Dual-lens cameras (CW701) stream both lenses inside ONE session when MISS_CMD_VIDEO_START carries
-// videoquality and videoquality2 (official plugin, module 11108). The plugin renders the second lens as
-// "<did>_10", so frames are tagged with channel 0 or 10. Separate sessions per lens are unreliable: the
-// camera serves one of them at a time. A hub keeps one session per device and feeds one view per lens.
+// videoquality and videoquality2 (official plugin, module 11108; the second view is "<did>_10").
+// Separate sessions per lens are unreliable: the camera serves one of them at a time. A hub keeps one
+// session per device and feeds one view per lens.
+// Observed on the NAS (2026-10-29): the lens is the top byte of the frame flags (header byte 15),
+// 0 for the main lens and 1 for the second; byte 12 bit 0 marks keyframes. Detection stays automatic.
 
 const (
 	dualViewMain   = 0
@@ -215,7 +217,7 @@ func (h *dualHub) run(model string) {
 
 // offer delivers audio to every view and video only to the view of its lens.
 func (v *dualView) offer(field dualField, pkt *Packet) bool {
-	if isVideo(pkt.CodecID) && field.value(pkt) != v.lens {
+	if isVideo(pkt.CodecID) && field.lens(pkt) != v.lens {
 		return true
 	}
 	select {
@@ -272,16 +274,29 @@ func isVideo(codec uint32) bool {
 	return codec == codecH264 || codec == codecH265
 }
 
-// dualField is the header position carrying the lens tag: a single byte or a little-endian uint32.
+// dualField is the header position carrying the lens tag (a single byte or a little-endian uint32)
+// and the raw value that marks the second lens; zero marks the main lens.
 type dualField struct {
 	offset int
 	width  int
+	second uint32
 }
 
 func (f dualField) ok() bool { return f.width > 0 }
 
 func (f dualField) String() string {
-	return fmt.Sprintf("offset %d width %d", f.offset, f.width)
+	return fmt.Sprintf("offset %d width %d second=%d", f.offset, f.width, f.second)
+}
+
+// lens maps the raw tag to dualViewMain or dualViewSecond; anything else matches no view.
+func (f dualField) lens(pkt *Packet) uint32 {
+	switch f.value(pkt) {
+	case 0:
+		return dualViewMain
+	case f.second:
+		return dualViewSecond
+	}
+	return 1<<32 - 1
 }
 
 func (f dualField) value(pkt *Packet) uint32 {
@@ -292,17 +307,23 @@ func (f dualField) value(pkt *Packet) uint32 {
 	return uint32(h[f.offset])
 }
 
-// Candidates skip length, codec, sequence and timestamp. Uint32 positions are tried before single bytes.
+// Candidates skip length, codec, sequence and timestamp. The observed position (byte 15, second=1) comes
+// first. Byte 12 never counts as 0/1: its low bit is the keyframe flag.
 var dualCandidates = func() []dualField {
-	out := []dualField{{24, 4}, {28, 4}}
-	for _, off := range []int{12, 13, 14, 15, 24, 25, 26, 27, 28, 29, 30, 31} {
-		out = append(out, dualField{off, 1})
+	out := []dualField{{15, 1, 1}, {24, 4, 10}, {28, 4, 10}, {24, 4, 1}, {28, 4, 1}}
+	for _, second := range []uint32{10, 1} {
+		for _, off := range []int{12, 13, 14, 15, 24, 25, 26, 27, 28, 29, 30, 31} {
+			if second == 1 && off == 12 {
+				continue
+			}
+			out = append(out, dualField{off, 1, second})
+		}
 	}
 	return out
 }()
 
-// detectDualField finds the header position whose video values are exactly {0, 10}, each on a real share
-// of the frames. It waits for at least 40 video packets.
+// detectDualField finds the header position whose video values are exactly {0, second}, each on a real
+// share of the frames. It waits for at least 40 video packets.
 func detectDualField(pkts []*Packet) (dualField, bool) {
 	video := 0
 	for _, p := range pkts {
@@ -319,7 +340,7 @@ func detectDualField(pkts []*Packet) (dualField, bool) {
 			if !isVideo(p.CodecID) {
 				continue
 			}
-			switch f.value(p) {
+			switch f.lens(p) {
 			case dualViewMain:
 				main++
 			case dualViewSecond:
@@ -350,10 +371,10 @@ func appendTail(tail []*Packet, pkt *Packet, f dualField) []*Packet {
 		return tail
 	}
 	if startsGOP(pkt) {
-		lens := f.value(pkt)
+		lens := f.lens(pkt)
 		kept := tail[:0]
 		for _, p := range tail {
-			if isVideo(p.CodecID) && f.value(p) != lens {
+			if isVideo(p.CodecID) && f.lens(p) != lens {
 				kept = append(kept, p)
 			}
 		}

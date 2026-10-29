@@ -30,6 +30,40 @@ func interleaved(offset, n int) []*Packet {
 	return out
 }
 
+// Pattern seen on the NAS: flags 00a01e00 (main) and 00a05e01 (second), keyframes with byte 12 = 1.
+func observedCW701(n int) []*Packet {
+	var out []*Packet
+	for i := 0; i < n; i++ {
+		for _, flags := range [][4]byte{{0x00, 0xa0, 0x1e, 0x00}, {0x00, 0xa0, 0x5e, 0x01}} {
+			p := dualPacket(codecH265, i, 0, 28, i%20 == 0)
+			copy(p.Header[12:16], flags[:])
+			if i%20 == 0 {
+				p.Header[12] = 1
+			}
+			out = append(out, p)
+		}
+	}
+	return out
+}
+
+func TestDetectDualFieldMatchesObservedCW701(t *testing.T) {
+	pkts := observedCW701(30)
+	field, ok := detectDualField(pkts)
+	if !ok || field.offset != 15 || field.second != 1 {
+		t.Fatalf("got %v %v", field, ok)
+	}
+	if field.lens(pkts[0]) != dualViewMain || field.lens(pkts[1]) != dualViewSecond {
+		t.Fatal("lenses swapped")
+	}
+	// Keyframe flag alone (byte 12) must never be read as a lens tag.
+	for _, p := range pkts {
+		p.Header[15] = 0
+	}
+	if _, ok := detectDualField(pkts); ok {
+		t.Fatal("keyframe flag taken as lens tag")
+	}
+}
+
 func TestDetectDualFieldFindsLensTag(t *testing.T) {
 	for _, offset := range []int{28, 24, 13} {
 		field, ok := detectDualField(interleaved(offset, 30))

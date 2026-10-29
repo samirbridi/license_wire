@@ -1,5 +1,23 @@
 # CHANGELOG — xiaomi_home
 
+## v0.12.0 (build 0022) - 2026-10-29
+
+### 💥 Breaking Changes
+
+- Nenhum.
+
+### ✨ Features
+
+- feat: abre as duas lentes da Outdoor Pro numa sessao compartilhada da ponte (commit `cf91bdccbb573b5c6cc4861a7d922000b6c01d25`)
+
+### 🐛 Fixes
+
+- Nenhum.
+
+### ⚡ Improvements
+
+- Nenhum.
+
 ## v0.11.4 (build 0021) - 2026-10-28
 
 ### 💥 Breaking Changes

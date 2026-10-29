@@ -1,20 +1,20 @@
 {
-  "runId": "bridge-native-quality-guard-20261028",
-  "sourceCommit": "e2180602af3cadbb33d570dd75ac7ae1d2365772",
-  "previous": "v0.11.3 (build 0020)",
-  "version": "v0.11.4 (build 0021)",
-  "build": 21,
-  "date": "2026-10-28",
+  "runId": "bridge-outdoor-dual-20261029",
+  "sourceCommit": "cf91bdccbb573b5c6cc4861a7d922000b6c01d25",
+  "previous": "v0.11.4 (build 0021)",
+  "version": "v0.12.0 (build 0022)",
+  "build": 22,
+  "date": "2026-10-29",
   "status": "built",
   "commits": [
     {
-      "sha": "e2180602af3cadbb33d570dd75ac7ae1d2365772",
-      "subject": "fix: rejeita metadados de resolucao incompletos sem interromper a ponte",
-      "body": "",
-      "type": "fix",
-      "description": "rejeita metadados de resolucao incompletos sem interromper a ponte",
+      "sha": "cf91bdccbb573b5c6cc4861a7d922000b6c01d25",
+      "subject": "feat: abre as duas lentes da Outdoor Pro numa sessao compartilhada da ponte",
+      "body": "Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>",
+      "type": "feat",
+      "description": "abre as duas lentes da Outdoor Pro numa sessao compartilhada da ponte",
       "breaking": false
     }
   ],
-  "artifact": "runtime/builds/build-0021"
+  "artifact": "runtime/builds/build-0022"
 }
