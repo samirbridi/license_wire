@@ -1,6 +1,6 @@
 # Mizin Lightroom - pesquisa e preparacao local
 
-> **Versão da Análise**: `bootstrap - calculada pelos commits antes da entrega`
+> **Versão da Análise**: `v0.1.0 (build 0001)`
 > Atualizado em: 2026-10-29, America/Sao_Paulo.
 
 Projeto independente para Lightroom Classic no Windows, inicialmente para uso pessoal. Treinamento e inferencia devem acontecer nos computadores do usuario. O Lightroom continua responsavel pela revelacao e renderizacao final.

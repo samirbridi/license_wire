@@ -1,0 +1,17 @@
+{
+  "previous": "v0.0.0 (build 0000)",
+  "version": "v0.1.0 (build 0001)",
+  "date": "2026-10-29",
+  "timezone": "America/Sao_Paulo",
+  "baseline": null,
+  "sourceHead": "f04ebc8f0b293dd9d0de6bf373d5da85bb45b20f",
+  "increment": "feat",
+  "commits": [
+    {
+      "hash": "f04ebc8f0b293dd9d0de6bf373d5da85bb45b20f",
+      "subject": "feat: prepara inventario local e pesquisa do Mizin Lightroom",
+      "type": "feat",
+      "breaking": false
+    }
+  ]
+}
