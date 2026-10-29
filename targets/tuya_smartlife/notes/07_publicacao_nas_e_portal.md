@@ -6,9 +6,8 @@
 
 1. Commit com `tipo: descrição` e `node scripts/version-build.mjs --build --run-id <id>` → `runtime/builds/build-XXXX`.
 2. `python scripts/prepare-nas-package.py --code-only` → `evidence/private/nas-portal-build-XXXX/`.
-3. Pacote só de código (~320 KB, sem o binário go2rtc de 30 MB, idêntico entre builds):
-   `python -I <scratchpad>/mkcodezip.py evidence/private XXXX` → `nas-portal-build-XXXX-code.zip` e `compose-volume4-XXXX.yaml`. O script está reproduzido abaixo.
-4. No Chrome (Claude in Chrome) com o DSM `https://192.168.1.186:5001` autenticado: criar `<input type=file id="mizinUpload">`, anexar o zip com `file_upload`, colar `scripts/nas-dsm-deploy.js` e chamar `mizinDeploy({build, previous, zipSha256, composeSha256, previousComposeSha256})`.
+3. Pacote de atualização: `python -I scripts/make-nas-code-zip.py evidence/private XXXX` → `nas-portal-build-XXXX-code.zip` (~320 KB, sem o binário go2rtc de 30 MB, que é copiado da build anterior no NAS) e `compose-volume4-XXXX.yaml`. Quando a ponte muda (nova build em `targets/xiaomi_home`), use `--with-bridge`: o binário vai no zip, e o script imprime o SHA-256 dele para `bridgeSha256`.
+4. No Chrome (Claude in Chrome) com o DSM `https://192.168.1.186:5001` autenticado: criar `<input type=file id="mizinUpload">`, anexar o zip com `file_upload`, colar `scripts/nas-dsm-deploy.js` e chamar `mizinDeploy({build, previous, zipSha256, composeSha256, previousComposeSha256[, bridgeSha256]})`.
    - `composeSha256`: SHA-256 do compose com finais LF; `previousComposeSha256`: SHA-256 do compose anterior com LF e `trim()`.
    - O script confere o SHA-256 do zip, extrai, copia a ponte verificada da build anterior, confere o compose e **só substitui o projeto se a configuração ativa for exatamente a anterior**. Depois dispara "Construir" (`build_stream`); o progresso fica em `window.__build`.
 5. Pages: copiar `runtime/builds/build-XXXX/public` para `runtime/pages-build-XXXX/public`, acrescentar `_worker.js` = `cloudflare/pages.mjs` e rodar `node runtime/cloudflare-cli/node_modules/wrangler/bin/wrangler.js pages deploy public --project-name homecams --branch main --commit-dirty=true`.
@@ -35,26 +34,3 @@ Na 0047, o gravador prioriza a visão que está funcionando: a outra só tenta d
 
 - Integração dos veículos no NAS: os clientes GWM/BYD não estão na imagem, e os cartões informam "Sem dados".
 - Estratégia de nuvem: decisão do proprietário; por enquanto as gravações ficam só no NAS.
-
-## mkcodezip.py
-
-```python
-import hashlib, sys, zipfile
-from pathlib import Path
-private = Path(sys.argv[1]); build = sys.argv[2]
-root = private / f'nas-portal-build-{build}'
-compose = (root / 'compose.yaml').read_text(encoding='utf-8').replace(
-    'build: {context: ./app, dockerfile: Dockerfile}',
-    f'build: {{context: /volume4/HDD 1TB - V2/Mizin-Home/nas-portal-build-{build}/app, dockerfile: Dockerfile}}')
-(private / f'compose-volume4-{build}.yaml').write_text(compose, encoding='utf-8')
-out = private / f'nas-portal-build-{build}-code.zip'
-with zipfile.ZipFile(out, 'x', zipfile.ZIP_DEFLATED) as z:
-    def add(name, data):
-        info = zipfile.ZipInfo(name); info.create_system = 3; info.external_attr = 0o100600 << 16
-        z.writestr(info, data, compress_type=zipfile.ZIP_DEFLATED)
-    for p in root.rglob('*'):
-        if p.is_file() and p.name != 'go2rtc-linux-amd64':
-            add((Path(root.name) / p.relative_to(root)).as_posix(), p.read_bytes())
-    add(f'{root.name}/compose-volume4.yaml', compose.encode('utf-8'))
-print(out, out.stat().st_size, hashlib.sha256(out.read_bytes()).hexdigest())
-```

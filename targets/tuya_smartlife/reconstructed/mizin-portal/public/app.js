@@ -4155,7 +4155,7 @@ function switchCameraViewMode(mode) {
       v2Started = true;
       setSecondLensNotice('');
       connectCameraPlayer(stream2, video2, feed2, null, alias2, true, () => setSecondLensNotice(''));
-      setTimeout(() => { if (activeCameraViewMode === 'dual' && video2 && video2.readyState < 2) setSecondLensNotice('A Outdoor Pro entrega uma visão por vez nesta ponte. Enquanto a Visão 1 estiver ativa (inclusive gravando no NAS), a Visão 2 pode não abrir.'); }, 30000);
+      setTimeout(() => { if (activeCameraViewMode === 'dual' && video2 && video2.readyState < 2) setSecondLensNotice('A Visão 2 ainda não abriu. A ponte abre as duas lentes na mesma conexão e tenta de novo sozinha; se continuar assim, feche e abra a câmera.'); }, 30000);
     };
     connectCameraPlayer(stream1, video1, feed1, spinner1, alias1, !isAudioListening, () => {
       dualSecondaryTimer = setTimeout(startSecondLens, 600);

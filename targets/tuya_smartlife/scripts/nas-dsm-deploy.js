@@ -2,14 +2,16 @@
 // Executar na aba do DSM já autenticada (via Claude in Chrome: javascript_tool), depois de colocar o
 // pacote "nas-portal-build-XXXX-code.zip" (gerado por prepare-nas-package.py --code-only + mkcodezip)
 // num <input type=file id="mizinUpload">. Não envia credenciais: usa a sessão do próprio DSM.
+// O pacote vem de scripts/make-nas-code-zip.py.
 //
 //   await mizinDeploy({build:'0047', previous:'0046', zipSha256:'…', composeSha256:'…', previousComposeSha256:'…'})
+//   bridgeSha256:'…' quando a build traz uma ponte nova (pacote feito com --with-bridge)
 //
 // Passos: confere o SHA-256 do zip → envia para /HDD 1TB - V2/Mizin-Home → extrai → copia a ponte go2rtc
-// verificada da build anterior (idêntica; 30 MB fora do pacote) → confere o compose extraído →
+// da build anterior (30 MB fora do pacote) ou, com bridgeSha256, confere a ponte nova extraída → confere o compose extraído →
 // só substitui o projeto se a configuração ativa for exatamente a da build anterior → "Construir" em segundo
 // plano (window.__build acompanha o progresso; o projeto recria os contêineres e preserva data/ e gravações).
-window.mizinDeploy = async ({build, previous, zipSha256, composeSha256, previousComposeSha256, projectId = '9d574df2-822f-44f9-9918-d31c75409ab7'}) => {
+window.mizinDeploy = async ({build, previous, zipSha256, composeSha256, previousComposeSha256, bridgeSha256 = '', projectId = '9d574df2-822f-44f9-9918-d31c75409ab7'}) => {
   const token = window.SYNO.SDS.Session.SynoToken, base = '/HDD 1TB - V2/Mizin-Home', sleep = ms => new Promise(r => setTimeout(r, ms));
   const api = async params => { const r = await fetch('/webapi/entry.cgi', {method: 'POST', headers: {'X-SYNO-TOKEN': token, 'Content-Type': 'application/x-www-form-urlencoded'}, body: new URLSearchParams(params)}); const d = await r.json(); if (!d.success) throw new Error(`${params.api}.${params.method}: ${JSON.stringify(d.error)}`); return d.data; };
   const sha = async data => [...new Uint8Array(await crypto.subtle.digest('SHA-256', data))].map(b => b.toString(16).padStart(2, '0')).join('');
@@ -24,11 +26,16 @@ window.mizinDeploy = async ({build, previous, zipSha256, composeSha256, previous
   const ex = await api({api: 'SYNO.FileStation.Extract', method: 'start', version: '2', file_path: `${base}/${file.name}`, dest_folder_path: base, overwrite: 'false', keep_dir: 'true', create_subfolder: 'false'});
   await wait('SYNO.FileStation.Extract', '2', ex.taskid);
   const bridgeDir = 'app/workspace/targets/xiaomi_home/reconstructed/mizin-cameras/bridge';
-  const cp = await api({api: 'SYNO.FileStation.CopyMove', method: 'start', version: '3', path: JSON.stringify([`${base}/nas-portal-build-${previous}/${bridgeDir}/go2rtc-linux-amd64`]), dest_folder_path: `${base}/nas-portal-build-${build}/${bridgeDir}`, overwrite: 'false', remove_src: 'false'});
-  await wait('SYNO.FileStation.CopyMove', '3', cp.taskid);
-  const url = new URL('/webapi/entry.cgi', location.origin);
-  url.search = new URLSearchParams({api: 'SYNO.FileStation.Download', version: '2', method: 'download', path: `${base}/nas-portal-build-${build}/compose-volume4.yaml`, mode: 'open', SynoToken: token});
-  const compose = await fetch(url).then(r => r.text());
+  const download = path => { const url = new URL('/webapi/entry.cgi', location.origin); url.search = new URLSearchParams({api: 'SYNO.FileStation.Download', version: '2', method: 'download', path, mode: 'open', SynoToken: token}); return fetch(url); };
+  if (bridgeSha256) {
+    // Package built with --with-bridge: the new bridge came in the zip; confirm what was extracted.
+    const extracted = await download(`${base}/nas-portal-build-${build}/${bridgeDir}/go2rtc-linux-amd64`).then(r => r.arrayBuffer());
+    if (await sha(extracted) !== bridgeSha256) throw new Error('Ponte extraída não confere.');
+  } else {
+    const cp = await api({api: 'SYNO.FileStation.CopyMove', method: 'start', version: '3', path: JSON.stringify([`${base}/nas-portal-build-${previous}/${bridgeDir}/go2rtc-linux-amd64`]), dest_folder_path: `${base}/nas-portal-build-${build}/${bridgeDir}`, overwrite: 'false', remove_src: 'false'});
+    await wait('SYNO.FileStation.CopyMove', '3', cp.taskid);
+  }
+  const compose = await download(`${base}/nas-portal-build-${build}/compose-volume4.yaml`).then(r => r.text());
   if (await sha(new TextEncoder().encode(compose)) !== composeSha256) throw new Error('Compose extraído não confere.');
   const current = (await api({api: 'SYNO.Docker.Project', method: 'get', version: '1', id: projectId})).content.replace(/\r\n/g, '\n').trim();
   if (await sha(new TextEncoder().encode(current)) !== previousComposeSha256) throw new Error('A configuração ativa no NAS não é a da build anterior; nada foi alterado.');
