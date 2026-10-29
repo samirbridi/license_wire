@@ -3,7 +3,7 @@ window.openNasArchive=async()=>{
  const el=(tag,props={},css='')=>{const node=Object.assign(document.createElement(tag),props);if(css)node.style.cssText=css;return node;};
  const zone='America/Sao_Paulo',dayOf=at=>new Date(at).toLocaleDateString('en-CA',{timeZone:zone}),clock=at=>new Date(at).toLocaleTimeString('pt-BR',{timeZone:zone});
  const secondsOfDay=at=>{const p=new Intl.DateTimeFormat('en-GB',{timeZone:zone,hour:'2-digit',minute:'2-digit',second:'2-digit',hourCycle:'h23'}).formatToParts(new Date(at)),g=t=>Number(p.find(x=>x.type===t).value);return g('hour')*3600+g('minute')*60+g('second');};
- const cameraOf=alias=>alias.replace(/_quality\d+$/,'').replace(/_channel2$/,''),viewOf=alias=>/_channel2/.test(alias)?'Visão 2':'Principal';
+ const cameraOf=alias=>alias.replace(/_quality\d+$/,'').replace(/_channel2$/,''),viewOf=alias=>/_channel2/.test(alias)?'Visão 2':data.recordings.some(r=>r.alias!==alias&&cameraOf(r.alias)===cameraOf(alias))?'Visão 1':'Gravação';
  const title=id=>id.split('_').map(w=>/^(aw|mi|hlc|cw)\d/i.test(w)?w.toUpperCase():w.charAt(0).toUpperCase()+w.slice(1)).join(' ');
  const size=b=>b>=1024**3?(b/1024**3).toFixed(1)+' GB':(b/1024**2).toFixed(0)+' MB';
  const colors={nas:'#10b981','nas+cloud':'#14b8a6',cloud:'#3b82f6'},labels={nas:'NAS','nas+cloud':'NAS + nuvem',cloud:'Somente nuvem'};
@@ -62,7 +62,7 @@ window.openNasArchive=async()=>{
   try{
    const r=await fetch('/api/camera/archive?day='+encodeURIComponent(day.value||dayOf(Date.now())));const d=await r.json();if(!r.ok)throw new Error(d.error||'NAS indisponível.');data=d;
    if(!d.enabled){status.textContent='O armazenamento no NAS ainda não está conectado.';return;}
-   const chosen=day.value||dayOf(Date.now());day.replaceChildren(...[...new Set([dayOf(Date.now()),...d.days])].sort().reverse().map(x=>el('option',{value:x,textContent:new Date(x+'T12:00:00Z').toLocaleDateString('pt-BR',{weekday:'short',day:'2-digit',month:'2-digit',year:'numeric',timeZone:'UTC'})})));day.value=chosen;
+   const chosen=day.value||dayOf(Date.now());day.replaceChildren(...[...new Set([dayOf(Date.now()),...(d.days||[])])].sort().reverse().map(x=>el('option',{value:x,textContent:new Date(x+'T12:00:00Z').toLocaleDateString('pt-BR',{weekday:'short',day:'2-digit',month:'2-digit',year:'numeric',timeZone:'UTC'})})));day.value=chosen;
    const cams=[...new Set([...d.recordings.map(x=>cameraOf(x.alias)),...Object.keys(d.status?.streams||{}).map(cameraOf)])].sort();const previous=camera.value||(active&&cams.find(c=>active.startsWith(c)))||cams[0];
    camera.replaceChildren(...cams.map(c=>el('option',{value:c,textContent:title(c)})));if(previous)camera.value=previous;
    const disk=d.status?.disk,b=d.backup;

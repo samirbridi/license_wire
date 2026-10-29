@@ -13,11 +13,11 @@ const volume=(total,otherBytes=0)=>({total,usage:null,async disk(){return{total,
 test('one folder per camera and one per Brazilian day; files are named by local time and view',()=>fixture(async root=>{
  const index=createArchiveIndex({root,aliases:['outdoor_pro_poste_quality3','outdoor_pro_poste_channel2_quality3']});
  const one=index.folder('outdoor_pro_poste_quality3','2026-10-01T02:00:00.000Z'),two=index.folder('outdoor_pro_poste_channel2_quality3','2026-10-01T02:00:00.000Z');assert.equal(one,two);assert.equal(one,join(root,'outdoor_pro_poste','2026-09-30'));assert.throws(()=>index.folder('../foreign','2026-10-01'));
- assert.deepEqual(await index.reserveName('outdoor_pro_poste_quality3','2026-10-01T02:15:00.000Z'),{dir:one,name:'23-15-00'});
+ assert.deepEqual(await index.reserveName('outdoor_pro_poste_quality3','2026-10-01T02:15:00.000Z'),{dir:one,name:'23-15-00_visao1'});
  assert.deepEqual(await index.reserveName('outdoor_pro_poste_channel2_quality3','2026-10-01T02:15:00.000Z'),{dir:one,name:'23-15-00_visao2'});
- const first=await recording(index,'outdoor_pro_poste_quality3','2026-10-01T02:15:00.000Z');assert.equal(first.file,'23-15-00.mkv');
- assert.equal((await index.reserveName('outdoor_pro_poste_quality3','2026-10-01T02:15:00.000Z')).name,'23-15-00_2');
- assert.deepEqual((await readdir(one)).sort(),['.meta','23-15-00.mkv']);const found=await index.find(first.id);assert.equal(found.file,join(one,'23-15-00.mkv'));
+ const first=await recording(index,'outdoor_pro_poste_quality3','2026-10-01T02:15:00.000Z');assert.equal(first.file,'23-15-00_visao1.mkv');
+ assert.equal((await index.reserveName('outdoor_pro_poste_quality3','2026-10-01T02:15:00.000Z')).name,'23-15-00_visao1_2');assert.equal(createArchiveIndex({root,aliases:['mi2k_sala_quality4']}).folder('mi2k_sala_quality4','2026-10-01T02:15:00.000Z'),join(root,'mi2k_sala','2026-09-30'));assert.equal((await createArchiveIndex({root,aliases:['mi2k_sala_quality4']}).reserveName('mi2k_sala_quality4','2026-10-01T02:15:00.000Z')).name,'23-15-00');
+ assert.deepEqual((await readdir(one)).sort(),['.meta','23-15-00_visao1.mkv']);const found=await index.find(first.id);assert.equal(found.file,join(one,'23-15-00_visao1.mkv'));
 }));
 test('legacy recordings migrate to camera/day/time without changing bytes or overwriting a destination',()=>fixture(async root=>{
  const index=createArchiveIndex({root,aliases:['camera_quality3']}),r=await legacy(root,'camera_quality3','2026-10-20T12:00:00Z');

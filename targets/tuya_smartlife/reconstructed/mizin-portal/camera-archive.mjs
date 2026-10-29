@@ -23,9 +23,9 @@ export function createArchive({root,ffmpeg='ffmpeg',ffprobe='ffprobe',aliases,sp
   if(!probe.streams?.some(s=>s.codec_type==='video')||!probe.streams?.some(s=>s.codec_type==='audio')||!Number.isFinite(Number(probe.format.duration))||Number(probe.format.duration)<minimumDuration)throw new Error('Gravação incompleta; arquivo preservado para diagnóstico.');
   return probe;
  }
- async function publish(partial,id,alias,startedAt,minimumDuration){
+ async function publish(partial,id,alias,startedAt,minimumDuration,labelAt=startedAt){
   const probe=await inspectFile(partial,minimumDuration);
-  const {dir,name}=await index.reserveName(alias,startedAt);await mkdir(join(dir,'.meta'),{recursive:true,mode:0o700});const destination=join(dir,name+'.mkv');await rename(partial,destination);const info=await stat(destination),hash=createHash('sha256');for await(const chunk of createReadStream(destination))hash.update(chunk);
+  const {dir,name}=await index.reserveName(alias,labelAt);await mkdir(join(dir,'.meta'),{recursive:true,mode:0o700});const destination=join(dir,name+'.mkv');await rename(partial,destination);const info=await stat(destination),hash=createHash('sha256');for await(const chunk of createReadStream(destination))hash.update(chunk);
   const record={id,alias,startedAt,file:name+'.mkv',duration:Number(probe.format.duration),bytes:info.size,sha256:hash.digest('hex'),container:'matroska',transcoded:false,source:'nas',streams:probe.streams.map(s=>({type:s.codec_type,codec:s.codec_name,width:s.width,height:s.height,sampleRate:s.sample_rate,channels:s.channels}))};
   await writeFile(join(dir,'.meta',name+'.json'),JSON.stringify(record,null,2),{flag:'wx',mode:0o600});index.invalidate();return record;
  }
@@ -65,7 +65,9 @@ export function createArchive({root,ffmpeg='ffmpeg',ffprobe='ffprobe',aliases,sp
      const name=basename(match[1]||match[2]);if(!new RegExp('^'+run+'-\\d{6}\\.partial\\.mkv$').test(name)||seen.has(name))continue;
      const start=Number(match[3]),end=Number(match[4]);if(!Number.isFinite(start)||!Number.isFinite(end)||end<=start)throw new Error('Índice de segmentos inválido.');
      const id=createHash('sha256').update(name).digest('hex').slice(0,32);
-     const record=await publish(join(working,name),id,alias,new Date(started+start*1000).toISOString(),Math.max(0.05,end-start-1));seen.add(name);await onSegment(record);
+     const at=started+start*1000,step=segmentSeconds*1000,boundary=Math.round(at/step)*step;
+     // Clock-aligned cuts land on the first keyframe after :00/:15/:30/:45; name by that mark so both views of a camera pair up.
+     const record=await publish(join(working,name),id,alias,new Date(at).toISOString(),Math.max(0.05,end-start-1),clockAligned&&start>0&&Math.abs(at-boundary)<=30000?new Date(boundary).toISOString():new Date(at).toISOString());seen.add(name);await onSegment(record);
     }
     if(!final&&Date.now()-lastFrameAt>stallMs){failure=new Error('A câmera deixou de enviar novos quadros.');stop();}
     if(!final&&(!await canContinue()||signal?.aborted))stop();

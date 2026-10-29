@@ -2,14 +2,15 @@ import {readdir,readFile,lstat,realpath,mkdir,unlink,rmdir,appendFile,statfs,lin
 import {join,resolve,sep,dirname,basename} from 'node:path';
 const validId=id=>/^[a-f0-9]{32}$/.test(id);
 const META='.meta';
-// Layout: <camera>/<AAAA-MM-DD>/<HH-MM-SS>[_visao2].mkv, metadata in <camera>/<AAAA-MM-DD>/.meta/<same name>.json.
+// Layout: <camera>/<AAAA-MM-DD>/<HH-MM-SS>[_visao1|_visao2].mkv, metadata in <camera>/<AAAA-MM-DD>/.meta/<same name>.json.
 export const cameraName=alias=>alias.replace(/_quality\d+$/,'').replace(/_channel2$/,'');
-export const viewSuffix=alias=>/_channel2(?:_quality\d+)?$/.test(alias)?'_visao2':'';
 function localParts(at){const parts=new Intl.DateTimeFormat('en-CA',{timeZone:'America/Sao_Paulo',year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit',second:'2-digit',hourCycle:'h23'}).formatToParts(new Date(at)),get=t=>parts.find(p=>p.type===t)?.value;return{day:`${get('year')}-${get('month')}-${get('day')}`,time:`${get('hour')}-${get('minute')}-${get('second')}`};}
 export const localDay=at=>localParts(at).day;
 async function diskSpace(directory){const s=await statfs(directory);return{total:Number(s.blocks)*Number(s.bsize),free:Number(s.bavail)*Number(s.bsize)};}
 export function createArchiveIndex({root,aliases,now=()=>Date.now(),disk=diskSpace}){
- const base=resolve(root),known=new Set(aliases);let cached=null,cachedAt=0,quotaCache=null,quotaAt=0,cleaning=null;
+ const base=resolve(root),known=new Set(aliases),dual=new Set(aliases.filter(a=>/_channel2(?:_quality\d+)?$/.test(a)).map(cameraName));
+ // Cameras with two views (Outdoor Pro) always label both files, so each moment sorts as a visao1/visao2 pair.
+ const viewSuffix=alias=>/_channel2(?:_quality\d+)?$/.test(alias)?'_visao2':dual.has(cameraName(alias))?'_visao1':'';let cached=null,cachedAt=0,quotaCache=null,quotaAt=0,cleaning=null;
  function folder(alias,startedAt){if(!known.has(alias))throw new Error('Câmera desconhecida.');return join(base,cameraName(alias),localDay(startedAt));}
  function stem(alias,startedAt){return localParts(startedAt).time+viewSuffix(alias);}
  async function exists(path){try{await lstat(path);return true;}catch(e){if(e.code==='ENOENT')return false;throw e;}}
