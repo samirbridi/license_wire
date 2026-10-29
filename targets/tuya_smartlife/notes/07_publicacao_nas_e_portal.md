@@ -62,9 +62,13 @@ Na publicação da 0048, o Pages subiu uma vez sem `_worker.js` (caminho errado)
 - 0055: ponte v0.13.3 (quem entra na sessão compartilhada recebe áudio; corrige a Vista 2 que caía com `-map 0:a:0`).
 - Verificado às 19:03–19:08 UTC: as duas visões gravando, o replay SD duplo funcionando (as duas lentes juntas) e o ao vivo de volta 1,5–2,5 min depois de fechar o replay. A tela do replay duplo não foi conferida visualmente: o teste foi feito pela API do portal.
 
+## Builds 0056 e 0057 (2026-10-29)
+
+- Ponte v0.14.0/v0.14.1: o replay SD da Outdoor usa a mesma conexão do ao vivo, trocando de modo sem novo handshake. Quem entra depois na sessão compartilhada recebe o áudio.
+- Verificado às 19:29–19:32 UTC: partida limpa, o replay SD duplo funcionando e as duas visões gravando de novo 7 s depois de fechar o replay (antes eram 1,5–2,5 min). Detalhes na nota 18 do xiaomi_home.
+
 ## Pendências
 
-- Replay SD na mesma sessão do ao vivo, para eliminar o intervalo de 1,5–2,5 min sem gravação no NAS depois de usar o SD (o cartão cobre esse intervalo).
 
 - Integração dos veículos no NAS: os clientes GWM/BYD não estão na imagem, e os cartões informam "Sem dados".
 - Estratégia de nuvem: decisão do proprietário; por enquanto as gravações ficam só no NAS.

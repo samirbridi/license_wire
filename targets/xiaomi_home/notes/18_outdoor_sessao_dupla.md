@@ -89,3 +89,10 @@ Correções:
 
 - Na 0056, a Vista 2 voltou a cair logo no início da gravação contínua. O áudio guardado fica no fim do trecho em buffer, e o `probe` parava em 45 quadros de vídeo antes de chegar nele. Na 0055 funcionou só porque o quadro-chave estava perto.
 - Correção: nas visões da sessão compartilhada (ao vivo), o `probe` lê até 240 quadros antes de desistir do áudio. `TestLateJoinerProbeKeepsAudioTrack` (80 quadros e o áudio no fim) passa com a correção e falha com o limite antigo.
+
+## Verificado na build 0057 do portal (bridge v0.14.1), 19:29–19:32 UTC
+
+- Partida limpa: as duas visões gravando às 19:29:46, sem falhas.
+- Replay SD duplo: Vista 1 com status 200 em 10,3 s, Vista 2 em 1,8 s, 6,2 MB e 4,9 MB. Log: `19:30:26 SD replay 1793282400 on the same connection`. As visões ao vivo terminaram com `camera switched to SD playback`.
+- Fim do replay às 19:31:19. Log: `19:31:23 back to live on the same connection`. **As duas visões gravando de novo às 19:31:26, 7 s depois** (antes eram 1,5–2,5 min), e estáveis em seguida.
+

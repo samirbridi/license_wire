@@ -1,0 +1,11 @@
+{
+  "runId": "nas-probe-audio-20261029",
+  "sourceCommit": "a9edcdd941fe51ca3c08b60973edbe87a8f164b2",
+  "previous": "v0.38.4 (build 0056)",
+  "version": "v0.38.5 (build 0057)",
+  "build": 57,
+  "date": "2026-10-29",
+  "status": "built",
+  "commits": [],
+  "artifact": "runtime/builds/build-0057"
+}
