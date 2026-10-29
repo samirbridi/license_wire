@@ -269,6 +269,11 @@ func probe(client *Client, src dualSource, audio bool, minWidth int) ([]*core.Me
 		if client.playbackMode {
 			maxWaitVideo = 10
 		}
+		// A late joiner of the shared session gets up to a GOP of buffered video at once, with the recent
+		// audio at its end: keep reading past it, or the stream opens without audio (the NAS recorder needs it).
+		if _, shared := src.(*dualView); shared && !client.playbackMode {
+			maxWaitVideo = 240
+		}
 		if vcodec != nil && (acodec != nil || !audio || videoPackets > maxWaitVideo) {
 			break
 		}

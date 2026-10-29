@@ -84,3 +84,8 @@ Correções:
 - Trocar o instante (seek) troca o replay na mesma conexão. Quando ninguém mais assiste, depois de 3 s (`dualReplayGrace`, para cobrir o seek) a ponte manda `STREAM_CTRL op 3` + `VIDEO_STOP` e `VIDEO_START` duplo, voltando ao ao vivo **sem handshake**. A sessão espera o gravador por até 3 min (`dualAfterReplay`).
 - Para a CW701, o handler da ponte não fecha mais as sessões da câmera ao abrir um replay. Nos outros modelos não mudou nada.
 - Teste: `dual_mode_test.go`, que cobre ao vivo → replay → ao vivo numa conexão sintética: comandos enviados, visões ao vivo encerradas, ao vivo recusado durante o replay, recomeço no quadro-chave, volta ao ao vivo e fechamento por ociosidade.
+
+## Áudio de quem entra depois, segunda parte (bridge v0.14.1)
+
+- Na 0056, a Vista 2 voltou a cair logo no início da gravação contínua. O áudio guardado fica no fim do trecho em buffer, e o `probe` parava em 45 quadros de vídeo antes de chegar nele. Na 0055 funcionou só porque o quadro-chave estava perto.
+- Correção: nas visões da sessão compartilhada (ao vivo), o `probe` lê até 240 quadros antes de desistir do áudio. `TestLateJoinerProbeKeepsAudioTrack` (80 quadros e o áudio no fim) passa com a correção e falha com o limite antigo.
