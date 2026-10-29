@@ -1,5 +1,23 @@
 # CHANGELOG - mizin_lightroom
 
+## v0.1.1 (build 0002) - 2026-10-29
+
+### 💥 Breaking Changes
+
+- Nenhum.
+
+### ✨ Features
+
+- Nenhum.
+
+### 🐛 Fixes
+
+- Nenhum.
+
+### ⚡ Improvements
+
+- improve: registra caminhos do Lightroom e acesso SMB pendente (commit `bd39c577645cbeb702f45971e19b3d73b73e1da7`)
+
 ## v0.1.0 (build 0001) - 2026-10-29
 
 ### 💥 Breaking Changes

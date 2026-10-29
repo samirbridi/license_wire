@@ -1,0 +1,17 @@
+{
+  "previous": "v0.1.0 (build 0001)",
+  "version": "v0.1.1 (build 0002)",
+  "date": "2026-10-29",
+  "timezone": "America/Sao_Paulo",
+  "baseline": "2785845fc16c2d67bf5903b7eb35e08ba484390c",
+  "sourceHead": "bd39c577645cbeb702f45971e19b3d73b73e1da7",
+  "increment": "fix",
+  "commits": [
+    {
+      "hash": "bd39c577645cbeb702f45971e19b3d73b73e1da7",
+      "subject": "improve: registra caminhos do Lightroom e acesso SMB pendente",
+      "type": "improve",
+      "breaking": false
+    }
+  ]
+}
