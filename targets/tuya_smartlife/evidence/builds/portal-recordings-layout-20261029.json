@@ -1,0 +1,36 @@
+{
+  "runId": "portal-recordings-layout-20261029",
+  "sourceCommit": "bd693698358b8a4f6eb7c6ab3920d4d60adae3cc",
+  "previous": "v0.32.3 (build 0043)",
+  "version": "v0.33.0 (build 0044)",
+  "build": 44,
+  "date": "2026-10-28",
+  "status": "built",
+  "commits": [
+    {
+      "sha": "bd693698358b8a4f6eb7c6ab3920d4d60adae3cc",
+      "subject": "improve: atualiza instrucoes do pacote NAS para a nova organizacao das gravacoes",
+      "body": "Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>",
+      "type": "improve",
+      "description": "atualiza instrucoes do pacote NAS para a nova organizacao das gravacoes",
+      "breaking": false
+    },
+    {
+      "sha": "3db7f2ec4e81ac3c5f075b0e55fcd6eafb55a5f0",
+      "subject": "feat: organiza gravacoes por camera e dia com linha do tempo NAS e R2 e rotacao pelo espaco do volume",
+      "body": "- Pastas <camera>/<AAAA-MM-DD>/HH-MM-SS[_visao2].mkv, metadados em .meta; migra layouts antigos sem reescrever bytes\n- Segmentos de 15 min alinhados ao relogio; teste de 10 s nao fica mais no acervo\n- Sem limite fixo: limpeza ao atingir 90% do volume ate 85%, apagando primeiro copias confirmadas no R2\n- R2 envia do mais antigo para o mais novo, limite e velocidade configuraveis\n- Comandos remotos de veiculos deixam de simular sucesso\n\nCo-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>",
+      "type": "feat",
+      "description": "organiza gravacoes por camera e dia com linha do tempo NAS e R2 e rotacao pelo espaco do volume",
+      "breaking": false
+    },
+    {
+      "sha": "0585ac9709175dddee9b4f3fa366346fb8eb4875",
+      "subject": "improve: registra build 0043 e verificacoes publicas da identidade no NAS",
+      "body": "Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>",
+      "type": "improve",
+      "description": "registra build 0043 e verificacoes publicas da identidade no NAS",
+      "breaking": false
+    }
+  ],
+  "artifact": "runtime/builds/build-0044"
+}

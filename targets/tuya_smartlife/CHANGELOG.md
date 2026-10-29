@@ -1,5 +1,24 @@
 # CHANGELOG — tuya_smartlife
 
+## v0.33.0 (build 0044) - 2026-10-28
+
+### 💥 Breaking Changes
+
+- Nenhum.
+
+### ✨ Features
+
+- feat: organiza gravacoes por camera e dia com linha do tempo NAS e R2 e rotacao pelo espaco do volume (commit `3db7f2ec4e81ac3c5f075b0e55fcd6eafb55a5f0`)
+
+### 🐛 Fixes
+
+- Nenhum.
+
+### ⚡ Improvements
+
+- improve: atualiza instrucoes do pacote NAS para a nova organizacao das gravacoes (commit `bd693698358b8a4f6eb7c6ab3920d4d60adae3cc`)
+- improve: registra build 0043 e verificacoes publicas da identidade no NAS (commit `0585ac9709175dddee9b4f3fa366346fb8eb4875`)
+
 ## v0.32.3 (build 0043) - 2026-10-28
 
 ### 💥 Breaking Changes
