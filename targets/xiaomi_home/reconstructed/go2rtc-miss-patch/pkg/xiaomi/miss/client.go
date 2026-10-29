@@ -9,6 +9,7 @@ import (
 	"net"
 	"net/url"
 	"strconv"
+	"strings"
 	"sync"
 	"sync/atomic"
 	"time"
@@ -287,6 +288,8 @@ type Client struct {
 	speakerMu           sync.Mutex
 	speakerOn           bool
 	speakerTimer        *time.Timer
+	speakerReply        chan string
+	lastSpeakerAnswer   string
 	closed              atomic.Bool
 }
 
@@ -333,11 +336,17 @@ func (c *Client) drainCommands() {
 				if innerBE == cmdPlaybackRes || innerLE == cmdPlaybackRes {
 					c.lastPlaybackStatus.Store(string(dec[4:]))
 				}
+				if innerBE == cmdSpeakerStartRes || innerLE == cmdSpeakerStartRes {
+					c.deliverSpeakerReply(string(dec[4:]))
+				}
 			}
 		} else if len(data) > 0 {
 			debugLog("drainCommands raw did=%s model=%s cmd=0x%x body=%s", c.did, c.model, cmd, string(data))
 			if cmd == cmdPlaybackRes {
 				c.lastPlaybackStatus.Store(string(data))
+			}
+			if cmd == cmdSpeakerStartRes {
+				c.deliverSpeakerReply(string(data))
 			}
 		}
 	}
@@ -678,11 +687,44 @@ func (c *Client) touchSpeakerLocked() {
 	})
 }
 
+func (c *Client) deliverSpeakerReply(body string) {
+	c.speakerMu.Lock()
+	ch := c.speakerReply
+	c.speakerMu.Unlock()
+	if ch != nil {
+		select {
+		case ch <- body:
+		default:
+		}
+	}
+}
+
+// speakerAnswer reads MISS_CMD_SPEAKER_START_RESP the way the official plugin does (module 12413,
+// _p2pCommandHandler): "0" opens the channel, a negative code ("-…") means it is occupied.
+func speakerAnswer(body string) (ok bool, known bool) {
+	body = strings.TrimSpace(strings.Trim(body, "\x00\""))
+	if body == "" {
+		return false, false
+	}
+	if body[0] == '-' {
+		return false, true
+	}
+	return body[0] == '0', body[0] == '0'
+}
+
+var ErrSpeakerBusy = errors.New("miss: the camera speaker channel is occupied")
+
+// StartSpeaker opens the talk channel and, like the official app, waits for the camera's answer before
+// any audio goes out. Firmwares that do not answer within 1.5 s are treated as open.
 func (c *Client) StartSpeaker() error {
 	c.speakerMu.Lock()
 	alreadyOn := c.speakerOn
 	c.speakerOn = true
 	c.touchSpeakerLocked()
+	reply := make(chan string, 1)
+	if !alreadyOn {
+		c.speakerReply = reply
+	}
 	c.speakerMu.Unlock()
 
 	if alreadyOn {
@@ -694,11 +736,37 @@ func (c *Client) StartSpeaker() error {
 	if err := c.WriteCommand(data); err != nil {
 		c.speakerMu.Lock()
 		c.speakerOn = false
+		c.speakerReply = nil
 		c.speakerMu.Unlock()
 		return err
 	}
-	time.Sleep(80 * time.Millisecond)
+	var answer string
+	select {
+	case answer = <-reply:
+	case <-time.After(1500 * time.Millisecond):
+	}
+	c.speakerMu.Lock()
+	c.speakerReply = nil
+	c.lastSpeakerAnswer = answer
+	c.speakerMu.Unlock()
+	if ok, known := speakerAnswer(answer); known && !ok {
+		c.speakerMu.Lock()
+		c.speakerOn = false
+		if c.speakerTimer != nil {
+			c.speakerTimer.Stop()
+			c.speakerTimer = nil
+		}
+		c.speakerMu.Unlock()
+		return fmt.Errorf("%w (%s)", ErrSpeakerBusy, strings.TrimSpace(answer))
+	}
 	return nil
+}
+
+// LastSpeakerAnswer is the camera's reply to the latest MISS_CMD_SPEAKER_START_REQ ("" when it did not answer).
+func (c *Client) LastSpeakerAnswer() string {
+	c.speakerMu.Lock()
+	defer c.speakerMu.Unlock()
+	return c.lastSpeakerAnswer
 }
 
 func (c *Client) StopSpeaker() error {

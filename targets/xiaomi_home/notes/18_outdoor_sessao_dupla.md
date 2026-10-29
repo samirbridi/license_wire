@@ -103,3 +103,9 @@ Correções:
 - `pkg/core` (cópia de v1.9.15 com patch): `Node.OnChild` roda quando um consumidor se conecta. A fila de vídeo não-RTP de cada `Sender` passou de 64 para 1024 pacotes, para caber um GOP.
 - `miss.Producer` guarda o vídeo desde o último VPS/SPS (`gopCache`, até 600 pacotes) e entrega esse trecho na hora a cada consumidor novo. Teste: `gop_test.go`.
 - O teste `pkg/core/core_test.go` (`StripUserinfo`) já não compila no go2rtc v1.9.15 original e não faz parte do build.
+
+## Microfone: canal de fala contínuo (bridge v0.16.0)
+
+- O que o app oficial faz (plugin CW701, `module-12413.js`, `_startCall` e `_p2pCommandHandler`): manda `MISS_CMD_SPEAKER_START_REQ` (0x106, `{}`) e espera `MISS_CMD_SPEAKER_START_RESP` (0x107). O primeiro byte da resposta é `'0'` para canal livre e `'-'` para canal ocupado (`channel_is_occupied`). Só depois o `startAudioRecord()` do nativo começa a mandar o microfone, e `_toggleAudio(false)` muta o som da câmera enquanto se fala. A CW701 fala Opus, captura a 16 kHz, mono, 16 bits (`getCameraCoderParam`, `getHLCameraAudioSampleRate`).
+- Antes: a ponte mandava 0x106 e seguia após 80 ms sem ler a resposta. O painel mandava um POST por bloco de 256 ms, o portal abria um ffmpeg por bloco (reinício do codificador a cada bloco) e descartava blocos quando havia dois no caminho.
+- Agora: `StartSpeaker` espera a resposta 0x107 (até 1,5 s) e recusa com `ErrSpeakerBusy` quando ela começa com `-`. O endpoint novo `api/xiaomi/talkstream` recebe a fala inteira numa requisição em fluxo (Opus de 20 ms com prefixo de 2 bytes, ou A-law) e entrega à câmera um quadro de 40 ms a cada 40 ms, com 3 quadros de folga (`talkPace`). Testes: `talkstream_test.go` e `speaker_test.go`.

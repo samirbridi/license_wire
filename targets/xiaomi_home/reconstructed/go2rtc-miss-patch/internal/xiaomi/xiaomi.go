@@ -86,6 +86,7 @@ func Init() {
 	api.HandleFunc("api/xiaomi/storage", apiXiaomiStorage)
 	api.HandleFunc("api/xiaomi/control", apiXiaomiControl)
 	api.HandleFunc("api/xiaomi/talkback", apiXiaomiTalkback)
+	api.HandleFunc("api/xiaomi/talkstream", apiXiaomiTalkStream)
 }
 
 var log zerolog.Logger
@@ -907,7 +908,7 @@ func apiXiaomiTalkback(w http.ResponseWriter, r *http.Request) {
 			http.Error(w, err.Error(), http.StatusBadGateway)
 			return
 		}
-		api.ResponseJSON(w, map[string]any{"ok": true, "action": "start", "speakerCodec": client.SpeakerCodec()})
+		api.ResponseJSON(w, map[string]any{"ok": true, "action": "start", "speakerCodec": client.SpeakerCodec(), "speakerAnswer": client.LastSpeakerAnswer()})
 		return
 
 	case "stop":
