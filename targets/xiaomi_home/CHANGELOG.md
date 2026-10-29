@@ -1,5 +1,23 @@
 # CHANGELOG — xiaomi_home
 
+## v0.15.0 (build 0031) - 2026-10-29
+
+### 💥 Breaking Changes
+
+- Nenhum.
+
+### ✨ Features
+
+- feat: entrega o trecho desde o ultimo quadro-chave a quem abre uma camera ja conectada (commit `0c05a07cfeb59e16a974900216bfef8dd654bb4e`)
+
+### 🐛 Fixes
+
+- Nenhum.
+
+### ⚡ Improvements
+
+- improve: registra a volta ao ao vivo em 7 s depois do replay SD na build 0057 (commit `bca61cb275cb79cfdace7881b2ebd5ef00349996`)
+
 ## v0.14.1 (build 0030) - 2026-10-29
 
 ### 💥 Breaking Changes

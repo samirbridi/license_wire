@@ -1,0 +1,28 @@
+{
+  "runId": "bridge-gop-cache-20261029",
+  "sourceCommit": "0c05a07cfeb59e16a974900216bfef8dd654bb4e",
+  "previous": "v0.14.1 (build 0030)",
+  "version": "v0.15.0 (build 0031)",
+  "build": 31,
+  "date": "2026-10-29",
+  "status": "built",
+  "commits": [
+    {
+      "sha": "0c05a07cfeb59e16a974900216bfef8dd654bb4e",
+      "subject": "feat: entrega o trecho desde o ultimo quadro-chave a quem abre uma camera ja conectada",
+      "body": "Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>",
+      "type": "feat",
+      "description": "entrega o trecho desde o ultimo quadro-chave a quem abre uma camera ja conectada",
+      "breaking": false
+    },
+    {
+      "sha": "bca61cb275cb79cfdace7881b2ebd5ef00349996",
+      "subject": "improve: registra a volta ao ao vivo em 7 s depois do replay SD na build 0057",
+      "body": "Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>",
+      "type": "improve",
+      "description": "registra a volta ao ao vivo em 7 s depois do replay SD na build 0057",
+      "breaking": false
+    }
+  ],
+  "artifact": "runtime/builds/build-0031"
+}

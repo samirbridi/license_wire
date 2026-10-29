@@ -3992,6 +3992,10 @@ function stopStreamElement(streamEl) {
 
 function stopHttpVideoElement(videoEl) {
   if (!videoEl) return;
+  if (videoEl._wsCleanup) {
+    videoEl._wsCleanup();
+    videoEl._wsCleanup = null;
+  }
   try {
     videoEl.onplaying = null;
     videoEl.onloadeddata = null;
@@ -4019,7 +4023,89 @@ function connectCameraPlayer(streamEl, fallbackVideoEl, feedImg, spinnerEl, stre
   }
 }
 
-function connectHttpStream(videoEl, feedImg, spinnerEl, streamAlias, isMuted, onReady) {
+// Live over the bridge's WebSocket (go2rtc MSE): no ffmpeg in the portal and the camera's original video.
+// The bridge hands a new viewer the frames since the last keyframe, so the image shows in about a second.
+// Measured on 2026-10-29 through homecams: first data in 0.2-0.8 s against 2.4-7 s over the HTTP stream.
+function mseCodecs() {
+  const list = ['avc1.640029', 'avc1.64002A', 'avc1.640033', 'hvc1.1.6.L153.B0', 'mp4a.40.2', 'mp4a.40.5', 'flac', 'opus'];
+  return list.filter(c => window.MediaSource?.isTypeSupported?.(`video/mp4; codecs="${c}"`)).join(',');
+}
+
+function connectWsStream(videoEl, streamAlias, isMuted, onReady, onFail) {
+  if (!window.MediaSource || !window.WebSocket) return false;
+  const ms = new MediaSource();
+  let ws = null, sb = null, queue = [], ready = false, finished = false, jumped = false;
+  const cleanup = () => {
+    finished = true;
+    clearTimeout(timer);
+    try { if (ws) { ws.onclose = null; ws.close(); } } catch (e) {}
+  };
+  const fail = () => {
+    if (finished) return;
+    cleanup();
+    onFail();
+  };
+  const timer = setTimeout(() => { if (!ready) fail(); }, 12000);
+  const pump = () => {
+    if (!sb || sb.updating || finished) return;
+    const ranges = sb.buffered;
+    if (ranges.length) {
+      const start = ranges.start(0), end = ranges.end(ranges.length - 1);
+      // Start at the live edge: the replayed GOP decodes in the background.
+      if (!jumped && end > 0) { jumped = true; videoEl.currentTime = Math.max(start, end - 0.3); }
+      else if (end - videoEl.currentTime > 4) videoEl.currentTime = end - 0.5;
+      if (end - start > 40) { try { sb.remove(start, end - 20); return; } catch (e) {} }
+    }
+    if (!queue.length) return;
+    const size = queue.reduce((n, b) => n + b.byteLength, 0);
+    const data = new Uint8Array(size);
+    let offset = 0;
+    for (const b of queue) { data.set(new Uint8Array(b), offset); offset += b.byteLength; }
+    queue = [];
+    try { sb.appendBuffer(data); } catch (e) { fail(); }
+  };
+  videoEl._wsCleanup = cleanup;
+  videoEl.muted = isMuted;
+  videoEl.playsInline = true;
+  videoEl.autoplay = true;
+  videoEl.src = URL.createObjectURL(ms);
+  ms.addEventListener('sourceopen', () => {
+    URL.revokeObjectURL(videoEl.src);
+    ws = new WebSocket(getCameraWsUrl(streamAlias));
+    ws.binaryType = 'arraybuffer';
+    ws.onopen = () => ws.send(JSON.stringify({ type: 'mse', value: mseCodecs() }));
+    ws.onmessage = ev => {
+      if (typeof ev.data === 'string') {
+        let msg = {};
+        try { msg = JSON.parse(ev.data); } catch (e) {}
+        if (msg.type === 'mse' && !sb) {
+          try {
+            sb = ms.addSourceBuffer(msg.value);
+            sb.mode = 'segments';
+            sb.addEventListener('updateend', pump);
+          } catch (e) { fail(); }
+        } else if (msg.type === 'error') fail();
+        return;
+      }
+      queue.push(ev.data);
+      pump();
+    };
+    ws.onerror = fail;
+    ws.onclose = () => { if (!ready) fail(); };
+  }, { once: true });
+  const readyHandler = () => {
+    if (ready || finished) return;
+    ready = true;
+    clearTimeout(timer);
+    onReady();
+  };
+  videoEl.onplaying = readyHandler;
+  videoEl.onloadeddata = () => { videoEl.play().catch(() => { videoEl.muted = true; videoEl.play().catch(() => {}); }); };
+  videoEl.onerror = fail;
+  return true;
+}
+
+function connectHttpStream(videoEl, feedImg, spinnerEl, streamAlias, isMuted, onReady, skipWs) {
   if (!videoEl) return;
   stopHttpVideoElement(videoEl);
   if (spinnerEl) spinnerEl.style.display = 'block';
@@ -4032,6 +4118,17 @@ function connectHttpStream(videoEl, feedImg, spinnerEl, streamAlias, isMuted, on
   }
 
   const quality = resolveEffectiveCameraQuality();
+  // Original quality goes over the WebSocket first; the HTTP stream stays as the fallback.
+  if (quality === 'original' && !skipWs) {
+    videoEl.style.display = 'block';
+    const started = connectWsStream(videoEl, streamAlias, isMuted, () => {
+      readyFired = true;
+      if (feedImg) feedImg.style.display = 'none';
+      if (spinnerEl) spinnerEl.style.display = 'none';
+      if (onReady) onReady();
+    }, () => connectHttpStream(videoEl, feedImg, spinnerEl, streamAlias, isMuted, onReady, true));
+    if (started) return;
+  }
   videoEl.muted = isMuted;
   videoEl.playsInline = true;
   videoEl.autoplay = true;
