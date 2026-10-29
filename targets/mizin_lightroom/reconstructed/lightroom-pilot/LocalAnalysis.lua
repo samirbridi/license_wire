@@ -1,4 +1,5 @@
 local LrApplication = import 'LrApplication'
+local LrBinding = import 'LrBinding'
 local LrDate = import 'LrDate'
 local LrDialogs = import 'LrDialogs'
 local LrFileUtils = import 'LrFileUtils'
@@ -68,6 +69,24 @@ function M.showResults(job)
             'Estilo experimental: ' .. tostring(report.styleName) .. '\nPasta: ' .. job, 'info')
         return
     end
+    if report.operation == 'collect' then
+        local f = LrView.osFactory()
+        local errors = {}
+        for _, row in ipairs(report.results or {}) do
+            if row.status ~= 'REFERENCE_COLLECTED' then errors[#errors + 1] = tostring(row.filename) .. ': ' .. tostring(row.error) end
+        end
+        local contents = f:column {
+            spacing = f:control_spacing(),
+            f:static_text { title = 'Trabalho: ' .. tostring((report.referenceBatch or {}).eventName), width_in_chars = 90 },
+            f:static_text { title = 'Referencias coletadas: ' .. tostring(report.collectedReferences) .. ' | falhas: ' .. tostring(report.failedPhotos), width_in_chars = 90 },
+            f:static_text { title = 'O arquivo references.jsonl contem atributos, ajustes aprovados e hashes.\nOs RAWs e JPEGs tecnicos ficam na maquina de edicao.\nEsta coleta prepara dados para treino; o modelo ativo ainda e o mesmo.', width_in_chars = 90, height_in_lines = 3 },
+            f:static_text { title = table.concat(errors, '\n'), width_in_chars = 90, height_in_lines = math.min(8, math.max(1, #errors)) },
+        }
+        local action = LrDialogs.presentModalDialog { title = 'Mizin Lightroom - referencias aprovadas', contents = contents,
+            actionVerb = 'Mostrar references.jsonl', cancelVerb = 'Fechar' }
+        if action == 'ok' then LrShell.revealInShell(child(job, 'references.jsonl')) end
+        return
+    end
     local f = LrView.osFactory()
     local rows = { spacing = f:control_spacing() }
     for _, row in ipairs(report.results or {}) do
@@ -95,7 +114,42 @@ function M.showResults(job)
     }
     local action = LrDialogs.presentModalDialog { title = 'Mizin Lightroom - sugestoes calculadas localmente',
         contents = content, actionVerb = 'Abrir pasta dos resultados', cancelVerb = 'Fechar' }
-    if action == 'ok' then LrShell.revealInShell(job) end
+    if action == 'ok' then LrShell.revealInShell(child(job, 'results.json')) end
+end
+
+function M.suggestEventName(path)
+    local parts = {}
+    for part in path:gsub('\\', '/'):gmatch('[^/]+') do parts[#parts + 1] = part end
+    local name = parts[#parts - 1] or ''
+    if name:upper() == 'RAW' or name:upper() == 'DCIM' or name:match('^%d%d%d%a') then name = parts[#parts - 2] or name end
+    return name
+end
+
+local function askReferenceApproval(defaultName)
+    local approvedName = nil
+    LrFunctionContext.callWithContext('MizinReferenceApproval', function(context)
+        local props = LrBinding.makePropertyTable(context)
+        props.eventName, props.approved = defaultName, false
+        local f = LrView.osFactory()
+        while true do
+            local contents = f:column {
+                bind_to_object = props, spacing = f:control_spacing(),
+                f:static_text { title = 'Colete fotos de um trabalho por vez. Use o mesmo nome em todas as coletas desse trabalho.\nPrefira 50 a 100 fotos variadas em cor, com sua revisao final concluida.', width_in_chars = 95, height_in_lines = 2 },
+                f:row { f:static_text { title = 'Trabalho (data e nome):' },
+                    f:edit_field { value = LrView.bind('eventName'), width_in_chars = 55 } },
+                f:checkbox { title = 'Estas fotos e seus ajustes atuais foram revisados e aprovados por mim.',
+                    value = LrView.bind('approved'), checked_value = true, unchecked_value = false },
+                f:static_text { title = 'A coleta registra os dez controles basicos e atributos dos RAWs para um treino posterior.\nOs ajustes das fotos e o modelo ativo sao preservados.', width_in_chars = 95, height_in_lines = 2 },
+            }
+            local result = LrDialogs.presentModalDialog { title = 'Mizin Lightroom - coletar referencias aprovadas',
+                contents = contents, actionVerb = 'Coletar referencias', cancelVerb = 'Cancelar' }
+            if result ~= 'ok' then return nil end
+            local name = tostring(props.eventName or ''):match('^%s*(.-)%s*$')
+            if #name > 0 and #name <= 160 and props.approved == true then approvedName = name; return end
+            LrDialogs.message('Mizin Lightroom', 'Informe o trabalho e confirme que a selecao ja foi revisada e aprovada.', 'info')
+        end
+    end)
+    return approvedName
 end
 
 local function makeRequest(operation)
@@ -111,13 +165,24 @@ local function makeRequest(operation)
     if #selection == 0 or #selection > 100 then error('Este piloto analisa de 1 a 100 fotos por tarefa. Selecione um lote menor.') end
     request.photos = {}
     for index, photo in ipairs(selection) do
+        local virtual = nil
+        if operation == 'collect' then
+            local metadataOK, value = LrTasks.pcall(function() return photo:getRawMetadata('isVirtualCopy') end)
+            if metadataOK and type(value) == 'boolean' then virtual = value end
+            if virtual ~= false then error('Para coletar referencias, selecione somente RAWs originais do catalogo.') end
+        end
         local ok, settings = LrTasks.pcall(function() return photo:getDevelopSettings() end)
         if not ok or type(settings) ~= 'table' then settings = {} end
         local current = {}
         for _, key in ipairs(targets) do if finite(settings[key]) then current[key] = settings[key] end end
         request.photos[#request.photos + 1] = { id = tostring(index), path = photo:getRawMetadata('path'), current = current,
-            treatment = settings.ConvertToGrayscale == true and 'monochrome' or 'color' }
+            treatment = settings.ConvertToGrayscale == true and 'monochrome' or 'color', isVirtualCopy = virtual }
         if index % 10 == 0 then LrTasks.yield() end
+    end
+    if operation == 'collect' then
+        local name = askReferenceApproval(M.suggestEventName(request.photos[1].path))
+        if not name then return nil end
+        request.eventName, request.referencesApproved = name, true
     end
     return request
 end
@@ -130,6 +195,7 @@ function M.run(operation)
         end
     end
     local request = makeRequest(operation)
+    if not request then return end
     local jobsRoot = child(root(), 'jobs')
     LrFileUtils.createAllDirectories(jobsRoot)
     local job = child(jobsRoot, request.jobId)
@@ -138,7 +204,10 @@ function M.run(operation)
     LrFileUtils.createAllDirectories(job)
     writeText(child(job, 'request.json'), Json.encode(request))
     local prefs = LrPrefs.prefsForPlugin()
-    if operation == 'analyze' then prefs.lastSelectionRun = job else prefs.lastDiagnosticRun = job end
+    if operation == 'analyze' then prefs.lastSelectionRun = job
+    elseif operation == 'collect' then prefs.lastReferenceRun = job
+    else prefs.lastDiagnosticRun = job end
+    if operation ~= 'diagnostic' then prefs.lastDataRun = job end
     LrFunctionContext.callWithContext('MizinLocalAnalysis', function(context)
         local progress = LrProgressScope { title = 'Mizin Lightroom - motor local', functionContext = context }
         local runnerDone, executionOK, exitCode = false, false, nil
@@ -159,7 +228,9 @@ function M.run(operation)
                 if type(status.total) == 'number' and status.total > 0 then progress:setPortionComplete(status.completed, status.total) end
             else progress:setCaption('Iniciando o motor local...') end
             if runnerDone and (not executionOK or exitCode ~= 0) then
-                error('O motor local retornou erro ' .. tostring(exitCode) .. '. Consulte bootstrap.log em:\n' .. job)
+                local failed = readJson(child(job, 'results.json'))
+                local detail = failed and failed.error or 'Consulte bootstrap.log e engine-error.txt.'
+                error('O motor local retornou erro ' .. tostring(exitCode) .. ': ' .. tostring(detail) .. '\nPasta: ' .. job)
             end
             if runnerDone and LrFileUtils.exists(child(job, 'results.json')) then break end
             if LrDate.currentTime() - started > 1800 then
@@ -174,7 +245,8 @@ function M.run(operation)
 end
 
 function M.lastResults()
-    local job = LrPrefs.prefsForPlugin().lastSelectionRun
+    local prefs = LrPrefs.prefsForPlugin()
+    local job = prefs.lastDataRun or prefs.lastSelectionRun
     if not job then error('Nenhuma analise foi iniciada. Use Mizin: analisar fotos selecionadas.') end
     local normalize = function(value) return value:gsub('\\', '/'):lower():gsub('/+$', '') end
     local expected = normalize(child(root(), 'jobs')) .. '/'

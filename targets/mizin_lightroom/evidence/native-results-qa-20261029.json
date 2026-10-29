@@ -1,0 +1,144 @@
+{
+  "schema": "mizin-lightroom.native-results-qa/1",
+  "date": "2026-10-29",
+  "version": "v0.4.0 (build 0008)",
+  "lightroomVersion": "15.6",
+  "jobId": "5F13B8F1-4A76-4CC7-936F-D1984168A9A9",
+  "computedPhotos": 5,
+  "failedPhotos": 0,
+  "elapsedSeconds": 5.31,
+  "referenceValuesMatchingSnapshot": 50,
+  "sourcePathsMatchSnapshotEventRoots": [
+    2072046
+  ],
+  "reportedRawHashesAbsentFromTrainingAndHoldout": 5,
+  "modelHashInReportMatchesDeliveredModel": true,
+  "sourceStabilityReported": true,
+  "missingInputFeaturesReported": 0,
+  "nativeReportCounters": {
+    "catalogWrites": 0,
+    "sourceWrites": 0,
+    "photosUploaded": 0
+  },
+  "metrics": {
+    "Exposure2012": {
+      "mae": 0.17350745231980796,
+      "maximumAbsoluteError": 0.35876459576277775,
+      "meanSignedError": -0.10426019998512888,
+      "trainingMedianBaselineMae": 0.184,
+      "referencesOutsideTrainingBounds": 0,
+      "trainingBounds": [
+        -1.12,
+        0.93
+      ]
+    },
+    "Temperature": {
+      "mae": 871.4755238134345,
+      "maximumAbsoluteError": 1665.1857202379706,
+      "meanSignedError": 871.4755238134345,
+      "trainingMedianBaselineMae": 1132.5,
+      "referencesOutsideTrainingBounds": 0,
+      "trainingBounds": [
+        3138.0,
+        18878.0
+      ]
+    },
+    "Tint": {
+      "mae": 10.85913269524722,
+      "maximumAbsoluteError": 15.501689425809126,
+      "meanSignedError": 10.85913269524722,
+      "trainingMedianBaselineMae": 2.8,
+      "referencesOutsideTrainingBounds": 0,
+      "trainingBounds": [
+        -24.0,
+        38.0
+      ]
+    },
+    "Contrast2012": {
+      "mae": 6.759199765727155,
+      "maximumAbsoluteError": 10.61180001201581,
+      "meanSignedError": -3.0939668618547422,
+      "trainingMedianBaselineMae": 7.4,
+      "referencesOutsideTrainingBounds": 0,
+      "trainingBounds": [
+        4.0,
+        40.0
+      ]
+    },
+    "Highlights2012": {
+      "mae": 3.627308543594573,
+      "maximumAbsoluteError": 5.664092814439421,
+      "meanSignedError": -3.627308543594573,
+      "trainingMedianBaselineMae": 0.8,
+      "referencesOutsideTrainingBounds": 0,
+      "trainingBounds": [
+        -72.0,
+        -24.0
+      ]
+    },
+    "Shadows2012": {
+      "mae": 1.9185506394685787,
+      "maximumAbsoluteError": 3.4082964630031185,
+      "meanSignedError": -1.9185506394685787,
+      "trainingMedianBaselineMae": 2.6,
+      "referencesOutsideTrainingBounds": 0,
+      "trainingBounds": [
+        17.0,
+        55.0
+      ]
+    },
+    "Whites2012": {
+      "mae": 1.6683038425715793,
+      "maximumAbsoluteError": 3.42564160812001,
+      "meanSignedError": 1.169714884682388,
+      "trainingMedianBaselineMae": 1.8,
+      "referencesOutsideTrainingBounds": 0,
+      "trainingBounds": [
+        -68.0,
+        -45.0
+      ]
+    },
+    "Blacks2012": {
+      "mae": 0.789669064786103,
+      "maximumAbsoluteError": 1.5457161768243464,
+      "meanSignedError": 0.6201413738798459,
+      "trainingMedianBaselineMae": 1.2,
+      "referencesOutsideTrainingBounds": 0,
+      "trainingBounds": [
+        -9.0,
+        10.0
+      ]
+    },
+    "Saturation": {
+      "mae": 0.693685017205776,
+      "maximumAbsoluteError": 1.1273383775551462,
+      "meanSignedError": -0.34208151403668835,
+      "trainingMedianBaselineMae": 0.6,
+      "referencesOutsideTrainingBounds": 0,
+      "trainingBounds": [
+        7.0,
+        12.0
+      ]
+    },
+    "Vibrance": {
+      "mae": 0.23545592459470335,
+      "maximumAbsoluteError": 1.0122330606167882,
+      "meanSignedError": -0.17515078295964664,
+      "trainingMedianBaselineMae": 0.2,
+      "referencesOutsideTrainingBounds": 0,
+      "trainingBounds": [
+        8.0,
+        12.0
+      ]
+    }
+  },
+  "independentFilesystemRehashOnEditingComputer": false,
+  "photographicQualityApproved": false,
+  "independentCrossEventBenchmark": false,
+  "privateEvidenceDirectory": "private/evidence/native-parsed-results-29a30adc",
+  "originalFilesAvailableAtFirstRead": true,
+  "originalFilesAvailableAtPreservationAttempt": false,
+  "originalFileSha256Available": false,
+  "parsedCohortPreserved": true,
+  "additionalScreenshotCommand": "SAVED_PILOT_COMPARISON_NOT_NEW_SELECTION_ANALYSIS"
+}

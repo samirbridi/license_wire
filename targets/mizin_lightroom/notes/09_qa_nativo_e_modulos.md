@@ -17,7 +17,7 @@ As sete opcoes abaixo foram observadas nos screenshots. Sua funcao foi conferida
 | Opcao observada | Modulo proposto | Funcao local e estado atual |
 | --- | --- | --- |
 | Start Culling (Beta) | Selecionar fotos | Agrupar sequencias, facilitar comparacao e registrar estrelas/bandeiras. Planejado; nunca inferir rejeicao pela simples ausencia de uma foto no treino. |
-| Create SmartPreset | Criar e gerenciar estilos | Escolher referencias aprovadas, treinar e avaliar revisoes do estilo. Existe um modelo numerico experimental por scripts; interface, varios estilos e treino na maquina de edicao pendentes. |
+| Create SmartPreset | Criar e gerenciar estilos | Coleta local de referencias aprovadas por trabalho implementada, com exportacao de atributos e dez parametros. Treino/avaliacao pelo menu, ativacao de revisoes e varios estilos ainda pendentes. |
 | Edit Photos | Editar fotos selecionadas | Analise nova da selecao e revisao numerica implementadas no pacote local, com um estilo experimental. Selecao de estilos, previa visual e escrita reversivel pendentes. |
 | Download Edits | Processamentos e resultados | Progresso, cancelamento entre fotos, erros por arquivo, JSON/CSV e consulta do ultimo resultado implementados. Retomada automatica e historico pela interface pendentes. |
 | Set Up Flows | Fluxos locais | Importacao e processamento a partir de pastas/cartoes, com revisao e tratamento de duplicatas. Planejado; integracao com camera/cartao exige teste real. |

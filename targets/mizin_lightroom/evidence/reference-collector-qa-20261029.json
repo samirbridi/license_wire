@@ -1,0 +1,15 @@
+{
+  "schema": "mizin-lightroom.reference-collector-qa/1",
+  "date": "2026-10-29",
+  "testsPassed": 45,
+  "realRawReferenceExported": 1,
+  "featureValuesMatchingTrainingDomainExactly": 40,
+  "approvedCurrentValuesPreserved": 10,
+  "sourceHashMatched": true,
+  "referenceFileBytes": 3034,
+  "rawOrJpegPixelsInReferenceFile": false,
+  "modelTrainedOrChanged": false,
+  "approvalFlagSimulatedForDevelopmentTest": true,
+  "nativeCollectorDialogValidated": false,
+  "privateEvidenceDirectory": "private/qa/reference-collector-79df6199"
+}

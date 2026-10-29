@@ -12,6 +12,7 @@ import subprocess
 import sys
 import time
 import traceback
+import unicodedata
 import uuid
 from pathlib import Path
 
@@ -114,6 +115,7 @@ def metadata_for(path, executable, argument_path):
         stream.write('--\n' + text + '\n')
     command = [str(executable), '-config', '', '-fast2', '-json', '-charset', 'filename=UTF8',
                '-FileName', '-FileType', '-EXIF:Model', '-ISO', '-ExposureTime#', '-FNumber', '-FocalLength#',
+               '-EXIF:DateTimeOriginal', '-SubSecDateTimeOriginal',
                '-@', str(argument_path)]
     result = subprocess.run(command, capture_output=True, encoding='utf-8', errors='strict', timeout=90,
                             creationflags=getattr(subprocess, 'CREATE_NO_WINDOW', 0), check=False)
@@ -159,11 +161,40 @@ def csv_report(path, rows):
                                  str(round(value, 4)).replace('.', ','), ''])
 
 
+def reference_batch(request):
+    if request.get('referencesApproved') is not True:
+        raise ValueError('A selecao precisa ser confirmada como revisada e aprovada pelo fotografo')
+    name = request.get('eventName')
+    if not isinstance(name, str) or not 1 <= len(name.strip()) <= 160 or any(ord(c) < 32 for c in name):
+        raise ValueError('Informe um nome de trabalho valido, preferencialmente com data')
+    name = ' '.join(unicodedata.normalize('NFKC', name).split())
+    # Grouping is explicit; the collector never guesses an event from a filename.
+    import hashlib
+    event_id = hashlib.sha256(name.casefold().encode('utf-8')).hexdigest()
+    return {'eventName': name, 'eventGroupId': event_id,
+            'approvalSource': 'USER_CONFIRMED_REVIEWED_SELECTION_IN_PLUGIN', 'approvedUtc': utc_now(),
+            'parameterScope': 'TEN_BASIC_GLOBAL_DEVELOP_CONTROLS', 'modelTrainingPerformed': False}
+
+
+def export_references(path, rows, batch, model, runtime):
+    with path.open('x', encoding='utf-8', newline='\n') as stream:
+        for row in rows:
+            if row['status'] != 'REFERENCE_COLLECTED':
+                continue
+            reference = {'schema': 'mizin-lightroom.approved-reference/1', **batch,
+                         'sourcePath': row['path'], 'rawSha256': row['sourceSha256'], 'cameraModel': row['cameraModel'],
+                         'captureTimeExif': row['captureTimeExif'], 'sourceMetadataStable': row['sourceMetadataStable'],
+                         'approvalStatus': 'REFERENCE_APPROVED_BY_PHOTOGRAPHER', 'styleVariant': 'color',
+                         'currentParameters': row['current'], 'features': row['features'], 'featureNames': model['featureNames'],
+                         'inputDomain': DOMAIN, 'rawpyVersion': runtime['rawpy'], 'librawVersion': runtime['libraw']}
+            stream.write(json.dumps(reference, ensure_ascii=False, allow_nan=False) + '\n')
+
+
 def run_job(job, bundle):
     job, bundle = Path(job).resolve(strict=True), Path(bundle).resolve(strict=True)
     if job.is_relative_to(bundle):
         raise ValueError('Resultados devem ficar fora da pasta do plugin')
-    if any((job / name).exists() for name in ('run.lock', 'status.json', 'results.json', 'results.csv')):
+    if any((job / name).exists() for name in ('run.lock', 'status.json', 'results.json', 'results.csv', 'references.jsonl')):
         raise ValueError('A tarefa ja foi executada; crie uma nova pasta')
     with (job / 'run.lock').open('x', encoding='ascii') as stream:
         stream.write(str(os.getpid()))
@@ -177,10 +208,15 @@ def run_job(job, bundle):
     try:
         progress('STARTING')
         request = read_json(job / 'request.json')
-        if request.get('schema') != 'mizin-lightroom.selection-request/1' or request.get('operation') not in ('analyze', 'diagnostic'):
+        if request.get('schema') != 'mizin-lightroom.selection-request/1' or request.get('operation') not in ('analyze', 'diagnostic', 'collect'):
             raise ValueError('Pedido incompativel')
+        collecting = request['operation'] == 'collect'
+        batch = reference_batch(request) if collecting else None
         report['jobId'] = request['jobId']
         info = read_json(bundle / 'BuildInfo.json')
+        if collecting:
+            batch.update({'collectorVersion': info['version'], 'jobId': request['jobId'],
+                          'lightroomVersion': request.get('lightroomVersion')})
         model_path = bundle / 'Models' / 'pilot-model.json'
         if sha256_file(model_path) != info['modelSha256']:
             raise ValueError('Modelo diferente do incluido no pacote')
@@ -206,6 +242,10 @@ def run_job(job, bundle):
         if not isinstance(photos, list) or not 1 <= len(photos) <= MAX_PHOTOS:
             raise ValueError('Selecione entre 1 e 100 fotos para este piloto')
         report['requestedPhotos'] = len(photos)
+        if collecting:
+            report['referenceBatch'] = batch
+            report['referenceFile'] = 'references.jsonl'
+        seen_hashes = set()
         ids = [row.get('id') for row in photos]
         if not all(isinstance(i, str) and 0 < len(i) <= 128 for i in ids) or len(set(ids)) != len(ids):
             raise ValueError('Identificadores de fotos invalidos')
@@ -225,12 +265,19 @@ def run_job(job, bundle):
                     raise ValueError('RAW CR3 original indisponivel neste caminho')
                 if photo.get('treatment') != 'color':
                     raise ValueError('Modelo experimental somente para fotos em cor')
+                if collecting and (photo.get('isVirtualCopy') is not False or any(k not in row['current'] for k in TARGETS)):
+                    raise ValueError('Referencia requer RAW original e os dez controles atuais disponiveis')
                 before = path.stat()
                 with source_reader(path):
                     digest = sha256_file(path)
                     meta = metadata_for(path, executable, job / f'metadata-{index:04}.args')
                     if meta.get('Model', '').strip() not in model['supportedCameraModels']:
                         raise ValueError('Camera nao suportada por este modelo: ' + meta.get('Model', 'desconhecida'))
+                    capture_time = meta.get('SubSecDateTimeOriginal') or meta.get('DateTimeOriginal')
+                    if collecting and (not isinstance(capture_time, str) or not capture_time.strip()):
+                        raise ValueError('Referencia sem data/hora de captura EXIF')
+                    if collecting and digest in seen_hashes:
+                        raise ValueError('RAW duplicado nesta coleta; mantenha somente uma referencia por arquivo')
                     image = job / f'input-{index:04}.jpg'
                     extracted = technical_render(path, image, meta)
                     if sha256_file(path) != digest:
@@ -238,19 +285,32 @@ def run_job(job, bundle):
                     after = path.stat()
                     if (before.st_size, before.st_mtime_ns) != (after.st_size, after.st_mtime_ns):
                         raise ValueError('Metadados do arquivo mudaram durante a analise')
-                predictions = predict_features(model, extracted['features'])
-                row.update({'status': 'COMPUTED', 'computedUtc': utc_now(), 'predictions': predictions,
+                missing = [k for k in model['featureNames'] if k not in extracted['features']]
+                if collecting and missing:
+                    raise ValueError('Referencia com atributos de entrada incompletos')
+                row.update({'status': 'REFERENCE_COLLECTED' if collecting else 'COMPUTED', 'computedUtc': utc_now(),
                             'sourceSha256': digest, 'sourceMetadataStable': True, 'cameraModel': meta['Model'],
                             'inputDomain': extracted['inputDomain'], 'technicalInputRelative': image.name,
                             'technicalInputSha256': extracted['jpegSha256'],
-                            'missingFeatures': [k for k in model['featureNames'] if k not in extracted['features']]})
+                            'missingFeatures': missing})
+                if collecting:
+                    row.update({'features': {k: extracted['features'][k] for k in model['featureNames']},
+                                'captureTimeExif': capture_time})
+                    seen_hashes.add(digest)
+                else:
+                    row['predictions'] = predict_features(model, extracted['features'])
             except Exception as error:
+                row['status'] = 'FAILED'
                 row['error'] = str(error)[:1500]
             progress('PROCESSING', index + 1, len(photos), row['filename'])
         else:
-            report['status'] = 'COMPLETED' if all(r['status'] == 'COMPUTED' for r in report['results']) else 'COMPLETED_WITH_ERRORS'
-        csv_report(job / 'results.csv', report['results'])
+            report['status'] = 'COMPLETED' if all(r['status'] in ('COMPUTED', 'REFERENCE_COLLECTED') for r in report['results']) else 'COMPLETED_WITH_ERRORS'
+        if collecting:
+            export_references(job / 'references.jsonl', report['results'], batch, model, runtime)
+        else:
+            csv_report(job / 'results.csv', report['results'])
     except Exception as error:
+        report['status'] = 'FAILED'
         report['error'] = str(error)[:2000]
         with (job / 'engine-error.txt').open('x', encoding='utf-8') as stream:
             traceback.print_exc(file=stream)
@@ -258,7 +318,8 @@ def run_job(job, bundle):
         report['finishedUtc'] = utc_now()
         report['elapsedSeconds'] = round(time.monotonic() - started, 3)
         report['computedPhotos'] = sum(r['status'] == 'COMPUTED' for r in report['results'])
-        report['failedPhotos'] = sum(r['status'] != 'COMPUTED' for r in report['results'])
+        report['collectedReferences'] = sum(r['status'] == 'REFERENCE_COLLECTED' for r in report['results'])
+        report['failedPhotos'] = sum(r['status'] not in ('COMPUTED', 'REFERENCE_COLLECTED') for r in report['results'])
         write_json(job / 'results.json', report)
         progress(report['status'], len(report['results']), len(report['results']))
     return report
