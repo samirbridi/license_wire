@@ -4035,8 +4035,11 @@ function connectWsStream(videoEl, streamAlias, isMuted, onReady, onFail) {
   if (!window.MediaSource || !window.WebSocket) return false;
   const ms = new MediaSource();
   let ws = null, sb = null, queue = [], ready = false, finished = false, jumped = false;
-  // Live delay: tight at home (same network as the NAS), roomier away; each stall adds a little margin.
-  let targetLag = isLocalAccess ? 0.15 : 0.6;
+  // Live delay. Measured on 2026-10-30: the player holds ~0.45 s behind live with the stream's cadence;
+  // aiming lower (0.15 or 0.3 s) only ran the buffer dry and stalled. So no squeezing: the player only
+  // recovers from drift (common on 4G) by playing 6% faster, and jumps back when ~2 s behind.
+  let targetLag = isLocalAccess ? 0.45 : 0.6;
+  const jumpAfter = 1.5;
   const cleanup = () => {
     finished = true;
     clearTimeout(timer);
@@ -4057,8 +4060,8 @@ function connectWsStream(videoEl, streamAlias, isMuted, onReady, onFail) {
       // faster (pitch preserved) instead of jumping; jump only when far behind.
       const lag = end - videoEl.currentTime;
       if (!jumped && end > 0) { jumped = true; videoEl.currentTime = Math.max(start, end - targetLag); }
-      else if (lag > targetLag + 2.5) videoEl.currentTime = end - targetLag;
-      else videoEl.playbackRate = lag > targetLag + 0.1 ? 1.06 : 1;
+      else if (lag > targetLag + jumpAfter) videoEl.currentTime = end - targetLag;
+      else videoEl.playbackRate = lag > targetLag + 0.35 ? 1.06 : 1;
       if (end - start > 40) { try { sb.remove(start, end - 20); return; } catch (e) {} }
     }
     if (!queue.length) return;

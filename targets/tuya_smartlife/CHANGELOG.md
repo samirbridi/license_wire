@@ -1,5 +1,25 @@
 # CHANGELOG — tuya_smartlife
 
+## v0.40.2 (build 0061) - 2026-10-29
+
+### 💥 Breaking Changes
+
+- Nenhum.
+
+### ✨ Features
+
+- Nenhum.
+
+### 🐛 Fixes
+
+- fix: corrige o registro do teste de microfone para a Mi 2K Sala (commit `024c78ad7c4f3a206a4bf3163966c06810bddc13`)
+
+### ⚡ Improvements
+
+- improve: deixa o ao vivo e a fala mais proximos do tempo real quando em casa (commit `f805218eaaa2eae73ab2a3f64f2880ef85f5347b`)
+- improve: registra a fala pela Outdoor confirmada limpa pelo proprietario (commit `bae8e111c8669a1ea14be244526ec828785c02c5`)
+- improve: registra a fala continua e as cameras de uma lente na build 0060 (commit `485183cd75a3ca8b7fcb011c083dc4799e6b5407`)
+
 ## v0.40.1 (build 0060) - 2026-10-29
 
 ### 💥 Breaking Changes

@@ -1,11 +1,44 @@
 {
-  "runId": "nas-speaker-answer-20261029",
-  "sourceCommit": "ab9ca308094416084c9dce3edb2bf40585fd9b26",
-  "previous": "v0.40.0 (build 0059)",
-  "version": "v0.40.1 (build 0060)",
-  "build": 60,
+  "runId": "nas-home-latency-20261030",
+  "sourceCommit": "f805218eaaa2eae73ab2a3f64f2880ef85f5347b",
+  "previous": "v0.40.1 (build 0060)",
+  "version": "v0.40.2 (build 0061)",
+  "build": 61,
   "date": "2026-10-29",
   "status": "built",
-  "commits": [],
-  "artifact": "runtime/builds/build-0060"
+  "commits": [
+    {
+      "sha": "f805218eaaa2eae73ab2a3f64f2880ef85f5347b",
+      "subject": "improve: deixa o ao vivo e a fala mais proximos do tempo real quando em casa",
+      "body": "Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>",
+      "type": "improve",
+      "description": "deixa o ao vivo e a fala mais proximos do tempo real quando em casa",
+      "breaking": false
+    },
+    {
+      "sha": "024c78ad7c4f3a206a4bf3163966c06810bddc13",
+      "subject": "fix: corrige o registro do teste de microfone para a Mi 2K Sala",
+      "body": "Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>",
+      "type": "fix",
+      "description": "corrige o registro do teste de microfone para a Mi 2K Sala",
+      "breaking": false
+    },
+    {
+      "sha": "bae8e111c8669a1ea14be244526ec828785c02c5",
+      "subject": "improve: registra a fala pela Outdoor confirmada limpa pelo proprietario",
+      "body": "Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>",
+      "type": "improve",
+      "description": "registra a fala pela Outdoor confirmada limpa pelo proprietario",
+      "breaking": false
+    },
+    {
+      "sha": "485183cd75a3ca8b7fcb011c083dc4799e6b5407",
+      "subject": "improve: registra a fala continua e as cameras de uma lente na build 0060",
+      "body": "Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>",
+      "type": "improve",
+      "description": "registra a fala continua e as cameras de uma lente na build 0060",
+      "breaking": false
+    }
+  ],
+  "artifact": "runtime/builds/build-0061"
 }
