@@ -124,3 +124,48 @@ Leitura:
 - Status do gravador: falha 1, "Tempo esgotado ao gravar.", 23:16:05Z.
 - Para fechar a causa faltam os logs da ponte e do gravador no NAS (só leitura) e a comparação com o horário das publicações. Qualquer correção mexe em produção e precisa do OK do proprietário.
 
+### Investigação (2026-10-30, 23:30–00:30 UTC, só leitura pelo DSM)
+
+**1. A câmera do Portão cai muito.**
+- O log da ponte (410 linhas desde a partida da 0062, 01:44 UTC) tem 209 erros de um único IP, `192.168.1.165` (modelo `mxiang.camera.mod11` = AW300). O AW300 da Garagem (`.196`) tem 15.
+- Os erros são `read media: cs2: i/o timeout` (TCP e UDP), `connection reset by peer` e `probe: miss` na reconexão. São 10–24 por hora, o dia inteiro.
+- A Outdoor (`.85`) tem 6. As Mi 2K são `.22`, `.126` e `.225` (`isa.camera.hlc7`).
+
+**2. A cada queda, a gravação perde tempo.**
+- O ffmpeg do gravador espera até 20 s (`-rw_timeout`) e o executor espera de 15 a 60 s antes de tentar de novo. A reconexão à câmera ainda pode falhar (`probe: miss`).
+- O AW300 Portão grava ~3,9 Mbps (o órfão abaixo tem 55 MB em 113 s). Com 157–409 MB por hora, sobram só ~5–15 min de vídeo por hora em boa parte de 30/10.
+- Em 29/10 eram ~2,1 Mbps e ~880 MB por hora: a hora quase inteira.
+
+**3. Segmentos gravados ficam fora do arquivo ("órfãos").** Em `Mizin-Cameras/_work` há segmentos que o ffmpeg terminou e listou no CSV, mas que o gravador não publicou:
+
+| Execução | Arquivo | Câmera | Fim (UTC) |
+|---|---|---|---|
+| `0e923448` | `-000001.partial.mkv`, 55 MB | **AW300 Portão** (o `-000000` virou `13-52-02.mkv`) | 17:07, **a campainha (14:00–14:07 local)** |
+| `0525f37f` | `-000001`, 46 MB | AW300 Portão (o `-000000` virou `17-34-24.mkv`) | 21:00 |
+| `d5cc244c` | `-000008` 220 MB, `-000009` 5 MB | AW300 Portão (o `-000007` virou `00-07-04.mkv`) | 04:45 |
+| `fe30529e` | `-000006` 36 MB, `-000007` 1 MB | Mi 2K Externa | 04:15 |
+
+- `publish()` passa por `inspectFile()`, um ffprobe com limite de **15 s**. O status do Portão mostra a causa "Tempo esgotado ao gravar.", a mensagem do `command()` quando esse limite estoura.
+- O órfão da campainha passaria na checagem (tem áudio; duração 775 s ≥ 112 s). O que falhou foi o tempo do ffprobe. O arquivo termina às 17:07 UTC, e o NAS travou por falta de memória às ~17:11 (espera de disco 88%, 1,2 GB de swap).
+- Quando a publicação falha, a execução inteira é derrubada (`failure` → `stop()`). O segmento fica em `_work` para sempre e a gravação reinicia: mais um buraco.
+- Os 6 arquivos órfãos (~380 MB) continuam intactos no NAS e podem ser recuperados. A cópia local do da campainha está em `runtime/vision/samples/aw300_portao_2026-10-30_orfao_0e923448-000001.mkv`.
+
+**4. O áudio sai do compasso depois das quedas.**
+- Em 30/10, os segmentos das câmeras de uma lente começam com o áudio **238–383 s à frente do vídeo**: Garagem 13-55-56, Mi 2K Externa 13-50-43 e o órfão do Portão, que tem 10.406 pacotes Opus em 113 s de vídeo.
+- Em 29/10, todos os arquivos estão alinhados, inclusive o do Portão às 21:00, já com a ponte 0034. A Outdoor (sessão dupla) está alinhada nos dois dias.
+- Causa provável:
+  - Em `Producer.Start` (ponte), o carimbo do áudio é contado por pacote (`audioTS += 40 ms`), enquanto o do vídeo vem do relógio da câmera.
+  - Quando o go2rtc reconecta o produtor sem fechar o consumidor do gravador, os dois relógios recomeçam de forma diferente.
+  - É isso que gera as durações absurdas no índice (145, 244 e 350 min numa hora) e o ffprobe mais lento (218 ms contra 62 ms no PC; no NAS travado, passa de 15 s).
+
+### Correção proposta (não aplicada; depende do OK do proprietário)
+
+1. **Gravador (portal, build 0063, baixo risco):**
+   - Nunca descartar um segmento. Se a checagem falhar ou estourar o tempo, ele é publicado assim mesmo, marcado como `incompleto`, com o motivo.
+   - A falha de publicação de um segmento não derruba a gravação em curso.
+   - ffprobe com limite de 60 s.
+   - A primeira nova tentativa depois de uma queda sai em ~3 s; a espera de 15–60 s só vale depois de falhas seguidas.
+   - Na partida, os órfãos de `_work` são recuperados e publicados, o que traz de volta a campainha das 14:00–14:07.
+2. **Ponte (depois, com teste):** carimbar o áudio pelo relógio da câmera, como o vídeo, para o áudio não adiantar depois de uma reconexão.
+3. **Câmera:** conferir o sinal Wi-Fi do AW300 Portão no app Mi Home. É a câmera que mais cai, de longe; se o sinal estiver fraco, aproximar o roteador ou usar um repetidor.
+
