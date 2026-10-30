@@ -104,6 +104,14 @@ Na publicação da 0048, o Pages subiu uma vez sem `_worker.js` (caminho errado)
 
 - Fala em casa (desde a 0061): blocos de 32 ms (antes 64 ms) e folga de 2 quadros na ponte (antes 3), ~70 ms a menos. Fora de casa não muda nada. Nenhuma das mudanças afeta a gravação no NAS.
 
+## Inventário de sobras no NAS (2026-10-30, só leitura)
+
+- Container Manager: um projeto só (`mizin-home`, Volume 4) e só a imagem atual (`mizin-home:build0062`, 835 MB), além de `cloudflared` e `debian:bookworm-slim`. Nenhuma imagem antiga sobrando.
+- A configuração ativa não referencia o Volume 1 nem a pasta `docker` (16 referências, todas ao Volume 4).
+- **Instalação antiga no Volume 1**, pasta compartilhada `docker`: `nas-portal-build-0036`, `-0038` e `-0039` (pastas e .zip, de 28/10). Elas têm cópias antigas de sessões e do `tunnel.token`, e nenhuma gravação. Tamanho estimado em 200–300 MB (o cálculo do DSM não terminou em 5 min).
+- Volume 4, `Mizin-Home`: 40 pastas e zips de builds antigas (0041–0061), ~0,97 GB. **Manter**: `data` (dados vivos), `nas-portal-build-0040` (pasta do projeto no Container Manager) e a build em uso. A pasta `Mizin-Cameras` guarda as gravações e também fica.
+- A exclusão é feita pelo proprietário no File Station; o Claude não apaga dados. Cada publicação nova deixa ~35 MB de pasta e zip em `Mizin-Home`.
+
 ## Pendências
 
 
