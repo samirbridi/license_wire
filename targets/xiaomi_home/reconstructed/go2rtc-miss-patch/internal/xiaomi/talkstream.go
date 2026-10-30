@@ -5,6 +5,7 @@ import (
 	"encoding/binary"
 	"io"
 	"net/http"
+	"strconv"
 	"strings"
 	"sync/atomic"
 	"time"
@@ -81,7 +82,12 @@ func apiXiaomiTalkStream(w http.ResponseWriter, r *http.Request) {
 	if codec == "pcma" {
 		codecID = 1027
 	}
-	stats := talkPace(frames, func(frame []byte) error { return client.WriteAudio(codecID, frame) }, 40*time.Millisecond, 3)
+	// Jitter margin in 40 ms frames: the portal asks for 2 at home (same network) and 3 away.
+	prebuffer, _ := strconv.Atoi(q.Get("prebuffer"))
+	if prebuffer < 1 || prebuffer > 8 {
+		prebuffer = 3
+	}
+	stats := talkPace(frames, func(frame []byte) error { return client.WriteAudio(codecID, frame) }, 40*time.Millisecond, prebuffer)
 	api.ResponseJSON(w, map[string]any{
 		"ok":            stats.err == nil,
 		"error":         errString(stats.err),
