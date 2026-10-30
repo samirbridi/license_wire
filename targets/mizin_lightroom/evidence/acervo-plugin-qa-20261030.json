@@ -1,0 +1,65 @@
+{
+  "schema": "mizin-lightroom.local-plugin-package/1",
+  "version": "v0.8.0 (build 0013)",
+  "styleName": "Meu estilo - piloto de formatura",
+  "modelSha256": "9f1cd19d844f269bbd6f932e82089df9deb87f8b7de9eda06c7959814a465422",
+  "experimental": true,
+  "catalogWritesImplemented": false,
+  "maximumPhotosPerJob": 100,
+  "referenceCollectionImplemented": true,
+  "automaticModelTrainingImplemented": true,
+  "automaticModelActivationImplemented": false,
+  "catalogCorpusCollectionImplemented": true,
+  "userFeedbackImplemented": true,
+  "referencePackageExportImplemented": true,
+  "nativeNewSelectionFlowValidated": false,
+  "archive": "D:\\REA - ENGENHARIA REVERSA\\targets\\mizin_lightroom\\private\\deliveries\\MizinLightroom-0.8.0-build0013-0f442ee0\\MizinLightroom-0.8.0-build0013-motor-local.zip",
+  "pluginDirectory": "D:\\REA - ENGENHARIA REVERSA\\targets\\mizin_lightroom\\private\\deliveries\\MizinLightroom-0.8.0-build0013-0f442ee0\\MizinLightroom.lrplugin",
+  "sha256": "5bc3b955240611c3a5e0bf62fa909a73f7aa4696f6b48c00f17935908dcf908d",
+  "bytes": 43700604,
+  "fileCount": 1635,
+  "newPhotoInferenceImplemented": true,
+  "portableRuntimeIncluded": true,
+  "savedComparisonReferences": 92,
+  "networkApisUsedByEngine": false,
+  "photographicQualityApproved": false,
+  "allManifestHashesVerified": 1635,
+  "lua51SyntaxFilesVerified": 18,
+  "unitTestsPassed": 68,
+  "finalArtifactOperations": {
+    "collect": {
+      "status": "COMPLETED_WITH_SKIPS",
+      "failedPhotos": 0
+    },
+    "analyze": {
+      "status": "COMPLETED",
+      "failedPhotos": 0
+    },
+    "learning-status": {
+      "status": "COMPLETED",
+      "failedPhotos": 0
+    },
+    "feedback": {
+      "status": "COMPLETED",
+      "failedPhotos": 0
+    },
+    "candidate": {
+      "status": "COMPLETED",
+      "failedPhotos": 0
+    }
+  },
+  "portableCandidateFitSmoke": {
+    "syntheticOnly": true,
+    "candidateFitSucceeded": true,
+    "featureCount": 40,
+    "approvedFixtures": 150,
+    "targetCount": 10,
+    "modelActivated": false,
+    "oldEvaluationNotReused": true
+  },
+  "candidateFitUsesSyntheticDataOnly": true,
+  "realRawUnchanged": true,
+  "baselineModelWeightsChanged": false,
+  "nativeAcervoInterfaceValidated": false,
+  "developmentSmokeDataImportedIntoUserDatabase": false
+}

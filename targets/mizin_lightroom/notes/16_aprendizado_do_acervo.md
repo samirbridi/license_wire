@@ -27,3 +27,7 @@ O menu registra gostei/precisou ajustar/nao gostei, uma observacao e a analise c
 68 testes passaram, incluindo importacao de 121 fotos em lotes sem escrita no catalogo, cancelamento parcial, journal truncado, isolamento por catalogo, alteracoes depois da aprovacao, opiniao sem coleta de ajustes, historico, deduplicacao/conflitos e separacao de eventos. Modificar somente os alvos do teste nao mudou os coeficientes ajustados. O runtime portatil confirmou SQLite 3.50.4. A interface nova e o desempenho do acervo completo ainda exigem QA no Lightroom real.
 
 Fontes: guia Adobe preservado em private/tools/local-engine-downloads/Lightroom-SDK-guide.pdf, paginas 23-24/32 para inicializacao/encerramento e 77-80 para filtro de ajustes. [SDK oficial](https://developer.adobe.com/lightroom-classic/). A busca e uma capacidade do SDK; a aprovacao do fotografo e um requisito do nosso fluxo, nao uma inferencia a partir de editCount.
+
+## Pacote final
+
+v0.8.0 (build 0013) foi calculada por commits e gerada com 1.635 arquivos hashados. 18 fontes Lua passaram na compilacao. O runtime isolado confirmou analise, coleta, resumo, opiniao e sugestoes de candidato com zero falhas. O treino do candidato portatil usou 150 registros sinteticos, 40 atributos e dez alvos em area exclusiva de QA, sem demonstrar qualidade fotografica; nada disso foi incluido na base do usuario ou nos pesos embarcados. O RAW real e o modelo anterior mantiveram seus hashes.

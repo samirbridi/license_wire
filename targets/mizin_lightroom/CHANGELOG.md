@@ -1,5 +1,23 @@
 # CHANGELOG - mizin_lightroom
 
+## v0.8.0 (build 0013) - 2026-10-30
+
+### 💥 Breaking Changes
+
+- Nenhum.
+
+### ✨ Features
+
+- feat: aprende com acervo local e aprofunda fronteiras do Neurapix (commit `4c9a6154b81ecb15d6f99fecf27df68dd9d8d35d`)
+
+### 🐛 Fixes
+
+- Nenhum.
+
+### ⚡ Improvements
+
+- Nenhum.
+
 ## v0.7.0 (build 0012) - 2026-10-29
 
 ### 💥 Breaking Changes

@@ -1,0 +1,21 @@
+{
+  "schema": "mizin-lightroom.acervo-delivery/1",
+  "version": "v0.8.0 (build 0013)",
+  "sha256": "5bc3b955240611c3a5e0bf62fa909a73f7aa4696f6b48c00f17935908dcf908d",
+  "bytes": 43700604,
+  "destinations": [
+    {
+      "directory": "C:\\Users\\Avell Mizin\\Downloads\\PLUGIN LIGHTROOM\\MizinLightroom-0.8.0-build0013-0f442ee0",
+      "archive": "C:\\Users\\Avell Mizin\\Downloads\\PLUGIN LIGHTROOM\\MizinLightroom-0.8.0-build0013-0f442ee0\\MizinLightroom-0.8.0-build0013-motor-local.zip",
+      "status": "DELIVERED_AND_HASH_VERIFIED"
+    },
+    {
+      "directory": "\\\\192.168.1.58\\Users\\Public\\Documents\\MizinLightroomPilot\\MizinLightroom-0.8.0-build0013-0f442ee0",
+      "archive": "\\\\192.168.1.58\\Users\\Public\\Documents\\MizinLightroomPilot\\MizinLightroom-0.8.0-build0013-0f442ee0\\MizinLightroom-0.8.0-build0013-motor-local.zip",
+      "status": "DELIVERED_AND_HASH_VERIFIED"
+    }
+  ],
+  "catalogWrites": 0,
+  "existingFilesDeleted": 0,
+  "originalModelWeightsChanged": false
+}

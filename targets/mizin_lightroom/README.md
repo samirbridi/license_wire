@@ -1,11 +1,13 @@
 # Mizin Lightroom - aquisicao local e perfil de referencia
 
-> **Versão da Análise**: `v0.7.0 (build 0012)`
+> **Versão da Análise**: `v0.8.0 (build 0013)`
 > Atualizado em: 2026-10-30, America/Sao_Paulo.
 
 Projeto independente para Lightroom Classic no Windows, inicialmente para uso pessoal. Treinamento e inferencia devem acontecer nos computadores do usuario. O Lightroom continua responsavel pela revelacao e renderizacao final.
 
 ## Estado Atual e Próximos Passos
+
+Entrega de aprendizado: **v0.8.0 (build 0013)**, validada com 1.635 hashes, 18 fontes Lua, RAW real e treino portatil de candidato com dados sinteticos isolados de QA. A base/candidatos de QA nao foram incluidos no ZIP. Os menus novos ainda nao tem confirmacao no Lightroom real. Recibos em `evidence/acervo-plugin-qa-20261030.json` e `evidence/acervo-delivery-20261030.json`.
 
 Implementado aprendizado local do acervo: busca de fotos com ajustes no catalogo aberto, confirmacao de edicoes finais e lotes automaticos de 25, com fila retomavel e base compartilhada entre catalogos. Novos menus registram evento concluido, opiniao e avaliacao do candidato. Tres eventos com 50 referencias cada permitem um treino local de candidato, sem ativar pesos automaticamente. O piloto continua limitado a dez controles e RAWs CR3 em cor da Canon EOS R6m2. 68 testes passaram; a nova interface e o acervo completo precisam de QA nativo. Detalhes em `notes/16_aprendizado_do_acervo.md`.
 
