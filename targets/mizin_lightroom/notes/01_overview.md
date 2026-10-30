@@ -15,6 +15,7 @@
 - No primeiro retorno nativo ainda faltava o JSON completo da tarefa; permanecem pendentes atributos de varios trabalhos, validacao independente entre eventos, aprovacao visual, gestao de estilos e aplicacao reversivel. A amostra exibida tem diferencas relevantes de temperatura. O modelo nao foi retreinado nesta etapa.
 - O JSON completo depois foi lido: cinco fotos em 5,31 s, 50 parametros atuais correspondentes ao snapshot, modelo entregue identificado pelo hash relatado e cinco hashes RAW fora do dataset original. Matiz e temperatura requerem melhoria de aprendizado; nao faltaram atributos na execucao.
 - Coleta local de referencias aprovadas implementada para reunir atributos/parametros de outros trabalhos sem mover RAWs pela rede. Treinamento/ativacao de uma nova revisao permanecem pendentes; a aprovacao da selecao e registrada pelo proprio fluxo do coletor.
+- O teste nativo posterior confirmou seis referencias coletadas no build 0010. Tres JSONs reais preservados e validados, com seis hashes unicos, 240 atributos e 60 parametros coerentes. Importador de dados implementado e seis referencias de um evento registradas; novo treino/ativacao ainda pendentes.
 
 Nao e necessario exportar o SmartPreset proprietario para tentar aprender com RAWs e parametros finais do usuario. A existencia desses pares e sua cobertura precisam ser verificadas.
 

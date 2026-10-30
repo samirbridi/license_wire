@@ -44,3 +44,10 @@ ae325995e7cfd74e6b1d378ccbce029f395ad9157b80fb0f6719a8f247ef5aa5 *../private/del
 
 # Pacote funcional com coletor de referencias aprovado no QA local e entregue.
 19351638061522823692f520cf077489f57b7b4caf3c5b488489ae272fa25f5e *../private/deliveries/MizinLightroom-0.5.0-build0010-dc7fe970/MizinLightroom-0.5.0-build0010-motor-local.zip
+
+# Exportacoes nativas recebidas e preservadas antes da validacao.
+c9ef5bbeea0ab00266605ac08b681bcb6933b2d260a502b64e99bad3ef71c1bc *../private/incoming/20261029-local-native-499d8258/references.jsonl
+4a7f5f7ed7e9fba75dfe0564edb56fdd47510dda3f01ddb6e21c466a4275ae1a *../private/incoming/20261029-local-native-499d8258/results (1).json
+cc01f0f2223942f8a181c73152bffa3030745ee0f4b87cf25e00e970f68f0f81 *../private/incoming/20261029-local-native-499d8258/results.json
+52aa3c1b76ce1b21b69f2f161513d0ca52242d4bfaaa30a529688cea3fd605a2 *../private/reference-datasets/import-20261030T013317-2afc82fb/references.jsonl
+52aa3c1b76ce1b21b69f2f161513d0ca52242d4bfaaa30a529688cea3fd605a2 *../private/reference-datasets/import-20261030T014210-72536c21/references.jsonl

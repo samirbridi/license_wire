@@ -16,7 +16,7 @@ Os resultados nao sobrescrevem tarefas anteriores. O coletor usa os mesmos leito
 
 45 testes Python/Lua 5.1 passaram. Um RAW real exportou os 40 atributos exatamente iguais aos do dataset anterior e preservou os dez alvos aprovados, sem previsoes no lugar dos alvos. O JSONL dessa referencia teve 3.034 bytes e nao contem pixels. A aprovacao foi simulada pelo driver de QA nessa fixture; esse arquivo nao e um novo exemplo aprovado pelo humano para treino. Recibo em `evidence/reference-collector-qa-20261029.json`.
 
-A nova janela usa bindings documentados no guia primario Adobe, pagina 100. Foi testada com Lua 5.1 e doubles; exige teste nativo no Lightroom 15.6. Diagnostico/inferencia do pacote anterior ja foram confirmados pelo usuario, mas isso nao valida automaticamente a nova coleta.
+A nova janela usa bindings documentados no guia primario Adobe, pagina 100. Depois dos testes Lua 5.1, o usuario mostrou a coleta de seis referencias concluida no Lightroom 15.6, build 0010, e forneceu os JSONs. A validacao cruzada confirmou os 240 atributos e 60 parametros atuais; os dados foram registrados em dataset privado. A inferencia/cancelamento e demais fluxos continuam com seus escopos de QA separados. Detalhes em `14_importacao_e_qa_do_coletor.md`.
 
 1. Instalar o novo pacote em pasta separada, preservando a anterior e usando o mesmo procedimento do Gerenciador de plug-ins.
 2. Testar a coleta com cinco RAWs originais em cor cujos ajustes estejam aprovados.

@@ -1,0 +1,81 @@
+{
+  "schema": "mizin-lightroom.native-reference-import-qa/1",
+  "date": "2026-10-29",
+  "version": "v0.5.0 (build 0010)",
+  "lightroomVersion": "15.6",
+  "status": "PASS_NATIVE_COLLECTION_AND_REFERENCE_VALIDATION",
+  "collectedReferences": 6,
+  "uniqueReferences": 6,
+  "featuresPerReference": 40,
+  "approvedParametersPerReference": 10,
+  "referenceValuesMatchingAnalysisAndCollection": 60,
+  "featuresMatchingCollectionReport": 240,
+  "referenceValuesMatchingSnapshot": 60,
+  "eventCount": 1,
+  "collectionTargetMet": false,
+  "modelTrainingPerformed": false,
+  "modelActivated": false,
+  "analysisElapsedSeconds": 6.792,
+  "collectionElapsedSeconds": 6.656,
+  "sourceStabilityReported": true,
+  "missingFeaturesReported": 0,
+  "metrics": {
+    "Exposure2012": {
+      "mae": 0.37247135964390776,
+      "maximumAbsoluteError": 0.573801327621748
+    },
+    "Temperature": {
+      "mae": 511.8196238472706,
+      "maximumAbsoluteError": 1381.1892876338898
+    },
+    "Tint": {
+      "mae": 15.883294733448123,
+      "maximumAbsoluteError": 36.740674591746554
+    },
+    "Contrast2012": {
+      "mae": 12.088402167802167,
+      "maximumAbsoluteError": 19.0
+    },
+    "Highlights2012": {
+      "mae": 3.419131545571055,
+      "maximumAbsoluteError": 7.231877948543897
+    },
+    "Shadows2012": {
+      "mae": 13.231102747718822,
+      "maximumAbsoluteError": 28.112700601582816
+    },
+    "Whites2012": {
+      "mae": 1.4060845646783402,
+      "maximumAbsoluteError": 2.9442476304153047
+    },
+    "Blacks2012": {
+      "mae": 3.1674654115993897,
+      "maximumAbsoluteError": 5.48476348749702
+    },
+    "Saturation": {
+      "mae": 0.5570960405669328,
+      "maximumAbsoluteError": 1.195734858236893
+    },
+    "Vibrance": {
+      "mae": 0.4071279803307946,
+      "maximumAbsoluteError": 1.0554359028117837
+    }
+  },
+  "rawBytesRehashedByImporter": false,
+  "nativeCollectorDialogShownByUser": true,
+  "privateIncomingDirectory": "private/incoming/20261029-local-native-499d8258",
+  "privateDatasetDirectory": "private/reference-datasets/import-20261030T014210-72536c21",
+  "inputHashes": {
+    "references.jsonl": "c9ef5bbeea0ab00266605ac08b681bcb6933b2d260a502b64e99bad3ef71c1bc",
+    "results (1).json": "4a7f5f7ed7e9fba75dfe0564edb56fdd47510dda3f01ddb6e21c466a4275ae1a",
+    "results.json": "cc01f0f2223942f8a181c73152bffa3030745ee0f4b87cf25e00e970f68f0f81"
+  },
+  "limits": [
+    "Six adjacent photos from one event are collection QA, not a cross-event photographic benchmark.",
+    "RAW SHA-256 values were reported by the collector and not independently rehashed on the development machine."
+  ],
+  "unitTestsPassed": 51,
+  "unitTestLog": "evidence/qa-reference-import-suite.txt",
+  "validationContractModelSha256": "9f1cd19d844f269bbd6f932e82089df9deb87f8b7de9eda06c7959814a465422",
+  "normalizedDataSha256": "52aa3c1b76ce1b21b69f2f161513d0ca52242d4bfaaa30a529688cea3fd605a2"
+}
