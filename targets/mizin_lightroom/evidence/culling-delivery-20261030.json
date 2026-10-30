@@ -1,0 +1,22 @@
+{
+  "schema": "mizin-lightroom.culling-delivery/1",
+  "version": "v0.10.0 (build 0015)",
+  "sha256": "2f36486735af15edc0174b0bcb5bdebd652896e20ba8537dadd75ef33875b2f4",
+  "bytes": 84003119,
+  "destinations": [
+    {
+      "directory": "C:\\Users\\Avell Mizin\\Downloads\\PLUGIN LIGHTROOM\\MizinLightroom-0.10.0-build0015-2fd3b2b0",
+      "archive": "C:\\Users\\Avell Mizin\\Downloads\\PLUGIN LIGHTROOM\\MizinLightroom-0.10.0-build0015-2fd3b2b0\\MizinLightroom-0.10.0-build0015-motor-local.zip",
+      "status": "DELIVERED_AND_HASH_VERIFIED"
+    },
+    {
+      "directory": "\\\\192.168.1.58\\Users\\Public\\Documents\\MizinLightroomPilot\\MizinLightroom-0.10.0-build0015-2fd3b2b0",
+      "archive": "\\\\192.168.1.58\\Users\\Public\\Documents\\MizinLightroomPilot\\MizinLightroom-0.10.0-build0015-2fd3b2b0\\MizinLightroom-0.10.0-build0015-motor-local.zip",
+      "status": "DELIVERED_AND_HASH_VERIFIED"
+    }
+  ],
+  "existingFilesDeleted": 0,
+  "developSettingsWritten": 0,
+  "activeCatalogOpened": false,
+  "nativeLightroomValidation": false
+}

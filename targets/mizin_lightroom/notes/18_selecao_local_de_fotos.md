@@ -53,6 +53,8 @@ Nao houve acesso ao catalogo ativo por SQLite/SMB. Os testes SDK sao doubles Lua
 
 O runtime portatil foi exercitado com RAWs reais do acervo e repeticoes exatas controladas. O detector encontrou rostos em retratos e grupos; a comparacao aberta/fechada de um grupo foi inspecionada durante o desenvolvimento. Repeticoes introduzidas para QA e imagens sinteticas nao sao rotulos humanos de selecao nem entram no treino. O recibo do pacote final registra os numeros/hashes da ultima execucao e distingue testes tecnicos de qualidade fotografica.
 
+Pacote final v0.10.0 (build 0015): 1.729 hashes e 21 fontes Lua conferidos, CRC aprovado. O runtime extraido do ZIP executou 17 entradas (12 RAWs distintos e cinco repeticoes exatas controladas), zero falhas, 12 escolhidas, cinco excedentes, uma revisao de qualidade e 11 grupos. O par real aberto/fechado ficou no mesmo grupo com ambas as variantes preservadas. Foram encontrados ate cinco rostos. Todos os hashes RAW permaneceram iguais. A rodada levou 195,428 s neste ambiente; nao e benchmark de capacidade ou garantia de duracao em outro computador. A tarefa tem limite de duas horas; lotes grandes devem ser dimensionados para o computador e o progresso aceita cancelamento. O piloto numerico anterior tambem calculou seus dez controles com os mesmos pesos. A suite completa registrou 89 testes aprovados. Novas colecoes/UI no Lightroom 15.6 e precisao fotografica continuam sem homologacao nativa.
+
     python -m unittest discover -s scripts -p test_*.py -v
     python scripts/prepare_culling_runtime.py
 

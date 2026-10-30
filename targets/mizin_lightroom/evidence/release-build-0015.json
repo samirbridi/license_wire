@@ -1,0 +1,17 @@
+{
+  "previous": "v0.9.0 (build 0014)",
+  "version": "v0.10.0 (build 0015)",
+  "date": "2026-10-30",
+  "timezone": "America/Sao_Paulo",
+  "baseline": "82baaf1194b44268759e8b7aee3ec9fee55d134e",
+  "sourceHead": "444f55d0f9061cf399dd2d7cc29d4966e04f8faf",
+  "increment": "feat",
+  "commits": [
+    {
+      "hash": "444f55d0f9061cf399dd2d7cc29d4966e04f8faf",
+      "subject": "feat: seleciona fotos localmente com variedade e revisao de qualidade",
+      "type": "feat",
+      "breaking": false
+    }
+  ]
+}

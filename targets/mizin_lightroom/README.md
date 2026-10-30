@@ -1,11 +1,13 @@
 # Mizin Lightroom - aquisicao local e perfil de referencia
 
-> **Versão da Análise**: `v0.9.0 (build 0014)`
+> **Versão da Análise**: `v0.10.0 (build 0015)`
 > Atualizado em: 2026-10-30, America/Sao_Paulo.
 
 Projeto independente para Lightroom Classic no Windows, inicialmente para uso pessoal. Treinamento e inferencia devem acontecer nos computadores do usuario. O Lightroom continua responsavel pela revelacao e renderizacao final.
 
 ## Estado Atual e Próximos Passos
+
+Entrega atual: **v0.10.0 (build 0015)**, ZIP de 84.003.119 bytes, SHA-256 `2f36486735af15edc0174b0bcb5bdebd652896e20ba8537dadd75ef33875b2f4`, com 1.729 hashes e 21 fontes Lua verificados. O pacote extraido executou diagnostico, selecao de 12 RAWs distintos mais cinco repeticoes exatas controladas e regressao do piloto numerico, com PATH restrito e caminhos com espacos/ampersand. A selecao encontrou rostos, reuniu um par real aberto/fechado e respeitou os limites dos grupos, sem mudar as fontes. Copias com hash igual em Downloads/PLUGIN LIGHTROOM e no compartilhamento Public/Documents, na subpasta `MizinLightroom-0.10.0-build0015-2fd3b2b0`. Recibos em `evidence/culling-plugin-qa-20261030.json` e `evidence/culling-delivery-20261030.json`. Isso valida o motor/pacote, sem homologar qualidade fotografica ou novas colecoes no host nativo.
 
 Implementada selecao local de ate 2.000 originais: no maximo quatro por grupo visual reconhecido, com prioridade para qualidade e variedade horizontal/vertical/aberta/fechada. Analisa rostos, risco de foco/movimento e sinal de exposicao RAW; permite criar colecoes para revisao, preservando arquivos, flags e ajustes. OpenCV CPU/YuNet publicos com hashes/licencas incluidos. A suite completa passou em 89 testes, com RAWs reais e correspondencia aberta/fechada exercitados no motor portatil. A nova UI e a criacao das colecoes ainda precisam de confirmacao no Lightroom real; heuristicas de qualidade nao estao homologadas fotograficamente. Detalhes em `notes/18_selecao_local_de_fotos.md`; recibo do pacote final e entrega em evidence/culling-plugin-qa-20261030.json e evidence/culling-delivery-20261030.json.
 

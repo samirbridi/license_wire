@@ -1,5 +1,23 @@
 # CHANGELOG - mizin_lightroom
 
+## v0.10.0 (build 0015) - 2026-10-30
+
+### 💥 Breaking Changes
+
+- Nenhum.
+
+### ✨ Features
+
+- feat: seleciona fotos localmente com variedade e revisao de qualidade (commit `444f55d0f9061cf399dd2d7cc29d4966e04f8faf`)
+
+### 🐛 Fixes
+
+- Nenhum.
+
+### ⚡ Improvements
+
+- Nenhum.
+
 ## v0.9.0 (build 0014) - 2026-10-30
 
 ### 💥 Breaking Changes

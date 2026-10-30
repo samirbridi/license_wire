@@ -71,3 +71,6 @@ aa0fdf674384f8bea68414a4efeddb2f41345880476a35bd88e7d0a5b8f3598e *../private/ref
 
 # Entrega de aprendizado do acervo, pacote portatil validado.
 5bc3b955240611c3a5e0bf62fa909a73f7aa4696f6b48c00f17935908dcf908d *../private/deliveries/MizinLightroom-0.8.0-build0013-0f442ee0/MizinLightroom-0.8.0-build0013-motor-local.zip
+
+# Culling release v0.10.0 (build 0015)
+2f36486735af15edc0174b0bcb5bdebd652896e20ba8537dadd75ef33875b2f4  private/deliveries/MizinLightroom-0.10.0-build0015-2fd3b2b0/MizinLightroom-0.10.0-build0015-motor-local.zip
