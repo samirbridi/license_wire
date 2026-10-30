@@ -1,5 +1,23 @@
 # CHANGELOG - mizin_lightroom
 
+## v0.9.0 (build 0014) - 2026-10-30
+
+### 💥 Breaking Changes
+
+- Nenhum.
+
+### ✨ Features
+
+- feat: analisa motor nativo e extrai base fixa do estilo aprovado (commit `569235b39ff82100ac518465cbef9c82d48dd7e4`)
+
+### 🐛 Fixes
+
+- Nenhum.
+
+### ⚡ Improvements
+
+- Nenhum.
+
 ## v0.8.0 (build 0013) - 2026-10-30
 
 ### 💥 Breaking Changes

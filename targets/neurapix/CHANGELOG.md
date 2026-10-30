@@ -1,5 +1,23 @@
 # CHANGELOG - neurapix
 
+## v0.3.0 (build 0003) - 2026-10-30
+
+### 💥 Breaking Changes
+
+- Nenhum.
+
+### ✨ Features
+
+- feat: analisa motor nativo e extrai base fixa do estilo aprovado (commit `569235b39ff82100ac518465cbef9c82d48dd7e4`)
+
+### 🐛 Fixes
+
+- Nenhum.
+
+### ⚡ Improvements
+
+- Nenhum.
+
 ## v0.2.0 (build 0002) - 2026-10-30
 
 ### 💥 Breaking Changes

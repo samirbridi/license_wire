@@ -1,0 +1,17 @@
+{
+  "previous": "v0.2.0 (build 0002)",
+  "version": "v0.3.0 (build 0003)",
+  "date": "2026-10-30",
+  "timezone": "America/Sao_Paulo",
+  "baseline": "26e534d1f27f73960fd4b53ef9929892e0eefc03",
+  "sourceHead": "569235b39ff82100ac518465cbef9c82d48dd7e4",
+  "increment": "feat",
+  "commits": [
+    {
+      "hash": "569235b39ff82100ac518465cbef9c82d48dd7e4",
+      "subject": "feat: analisa motor nativo e extrai base fixa do estilo aprovado",
+      "type": "feat",
+      "breaking": false
+    }
+  ]
+}

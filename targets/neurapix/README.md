@@ -1,6 +1,6 @@
 # Neurapix - referencia de fluxos e inspecao estatica
 
-> **Versão da Análise**: `v0.2.0 (build 0002)`
+> **Versão da Análise**: `v0.3.0 (build 0003)`
 > Data: 2026-10-30, America/Sao_Paulo.
 
 Pacote fornecido pelo usuario para orientar uma implementacao independente em targets/mizin_lightroom. Os originais do fornecedor ficam isolados e privados neste alvo. Nenhum codigo, recurso visual ou peso foi reutilizado no nosso produto.

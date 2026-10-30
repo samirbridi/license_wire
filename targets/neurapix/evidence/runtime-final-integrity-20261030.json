@@ -1,0 +1,24 @@
+{
+  "checks": [
+    {
+      "relative": "npx/npx.exe",
+      "sourceAndCopyStillMatch": true,
+      "sha256": "5ed2d67020b0b23044e17751218f0059e155768b8ad000c2dd83a538240f3be0"
+    },
+    {
+      "relative": "npx/_internal/npx.cp314-win_amd64.pyd",
+      "sourceAndCopyStillMatch": true,
+      "sha256": "e8a550ad797ea94c9a1338be557d3f5bf314f191cee02705aa6981fdfbfc27b9"
+    },
+    {
+      "relative": "culling/Neurapix Culling.exe",
+      "sourceAndCopyStillMatch": true,
+      "sha256": "b1acb94f2362eadacd5939cb5002154e7042f16287f7abc6f65955fa70c0c0af"
+    },
+    {
+      "styleBaseHashVerified": true,
+      "active": false
+    }
+  ],
+  "vendorExecution": false
+}
