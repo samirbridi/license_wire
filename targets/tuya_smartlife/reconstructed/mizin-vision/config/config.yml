@@ -1,0 +1,45 @@
+# Mizin Vision — local test configuration (Frigate 0.18.2).
+# Detector: the OpenVINO SSDLite model bundled in the image, on the PC CPU (no external model download).
+# Switching to an ONNX model on the GTX 1660 Ti is a later step.
+mqtt:
+  enabled: false
+
+database:
+  path: /media/frigate/frigate.db   # runtime/vision/media, outside the repository
+
+detectors:
+  ov:
+    type: openvino
+    device: CPU
+
+model:
+  width: 300
+  height: 300
+  input_tensor: nhwc
+  input_pixel_format: bgr
+  path: /openvino-model/ssdlite_mobilenet_v2.xml
+  labelmap_path: /openvino-model/coco_91cl_bkgr.txt
+
+record:
+  enabled: false
+snapshots:
+  enabled: true
+  retain:
+    default: 7
+
+objects:
+  track: [person, car, motorcycle, bicycle]   # the bundled SSDLite model has no "truck" class
+
+cameras:
+  # Sample recording of 2026-10-29 16:45 (local time), played in a loop as if it were live.
+  aw300_portao_dia:
+    ffmpeg:
+      input_args: -re -stream_loop -1 -fflags +genpts
+      inputs:
+        - path: /samples/aw300_portao_2026-10-29_16-45-00.mkv
+          roles: [detect]
+    detect:
+      width: 1280
+      height: 720
+      fps: 5
+version: 0.18-0

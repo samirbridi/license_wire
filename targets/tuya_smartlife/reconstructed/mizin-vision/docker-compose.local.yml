@@ -1,0 +1,22 @@
+# Mizin Vision — local test bench (PC). Not part of the NAS deployment.
+# Reads sample recordings in a loop; never connects to the cameras (the Outdoor accepts one session only).
+# UI only on 127.0.0.1. Media and samples live in runtime/vision (gitignored).
+services:
+  frigate:
+    image: ghcr.io/blakeblackshear/frigate:stable-tensorrt
+    container_name: mizin-vision
+    restart: "no"
+    shm_size: "512mb"
+    gpus: all
+    ports:
+      - "127.0.0.1:5005:5000"   # internal UI/API without login, loopback only
+    environment:
+      FRIGATE_RTSP_PASSWORD: "not-used"
+    volumes:
+      - ./config:/config
+      - ../../runtime/vision/media:/media/frigate
+      - ../../runtime/vision/samples:/samples:ro
+      - type: tmpfs
+        target: /tmp/cache
+        tmpfs:
+          size: 1000000000

@@ -1,0 +1,4 @@
+# Frigate writes caches, logs and backups here; only the configuration is versioned.
+*
+!.gitignore
+!config.yml
