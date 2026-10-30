@@ -1,5 +1,23 @@
 # CHANGELOG - mizin_lightroom
 
+## v0.6.0 (build 0011) - 2026-10-29
+
+### 💥 Breaking Changes
+
+- Nenhum.
+
+### ✨ Features
+
+- feat: importa referencias aprovadas com validacao e deduplicacao (commit `4d4bc5c5a623d00e5e3bde081325978dcdee2d6b`)
+
+### 🐛 Fixes
+
+- Nenhum.
+
+### ⚡ Improvements
+
+- Nenhum.
+
 ## v0.5.0 (build 0010) - 2026-10-29
 
 ### 💥 Breaking Changes

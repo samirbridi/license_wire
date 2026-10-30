@@ -1,0 +1,17 @@
+{
+  "previous": "v0.5.0 (build 0010)",
+  "version": "v0.6.0 (build 0011)",
+  "date": "2026-10-29",
+  "timezone": "America/Sao_Paulo",
+  "baseline": "3cc9a0b2887b7d46242e944e95e657feb1215d36",
+  "sourceHead": "4d4bc5c5a623d00e5e3bde081325978dcdee2d6b",
+  "increment": "feat",
+  "commits": [
+    {
+      "hash": "4d4bc5c5a623d00e5e3bde081325978dcdee2d6b",
+      "subject": "feat: importa referencias aprovadas com validacao e deduplicacao",
+      "type": "feat",
+      "breaking": false
+    }
+  ]
+}
