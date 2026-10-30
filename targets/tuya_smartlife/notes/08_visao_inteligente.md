@@ -46,6 +46,7 @@
 
 - `reconstructed/mizin-vision/docker-compose.local.yml`: Frigate 0.18.2 (`stable-tensorrt`, digest `sha256:1cafb6eb…`) com a interface só em `127.0.0.1:5005`. Gravações em `runtime/vision/samples`, banco e capturas em `runtime/vision/media`, tudo fora do git.
 - Detector: o modelo **OpenVINO SSDLite MobileNet v2 que já vem na imagem**, rodando na CPU (i7-9750H), a 10 ms por imagem. A exportação de um YOLO em ONNX para a GTX (pip de torch e ultralytics e download dos pesos) foi bloqueada pela política de segurança da ferramenta e só segue com autorização explícita do proprietário. Esse modelo não tem a classe "truck".
+- O Frigate 0.18 começa com a detecção **desligada** por câmera. Sem `detect.enabled: true`, a primeira passada de 15 min não analisou nada (`detection_enabled: False`, 0 eventos). Corrigido no `config.yml`.
 - Entrada: gravação lida em laço (`-re -stream_loop -1`), sem conexão com as câmeras. A AW300 Portão olha de dentro do portão para a rua; com a cena parada, o Frigate não roda o detector (só detecta quando há movimento).
 - Download das amostras pelo portal (permitido pelo proprietário), uma por vez para não pesar no NAS. Só a primeira (`aw300_portao_2026-10-29_16-45-00.mkv`, 224 MB) chegou ao disco: o Chrome bloqueou os downloads automáticos seguintes. Para as outras 6, é preciso liberar "downloads automáticos" para homecams.pages.dev no Chrome.
 

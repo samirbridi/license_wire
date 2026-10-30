@@ -39,6 +39,7 @@ cameras:
         - path: /samples/aw300_portao_2026-10-29_16-45-00.mkv
           roles: [detect]
     detect:
+      enabled: true   # Frigate 0.18 starts with detection off unless enabled here
       width: 1280
       height: 720
       fps: 5
