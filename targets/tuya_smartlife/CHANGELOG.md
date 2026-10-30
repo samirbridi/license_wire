@@ -1,5 +1,23 @@
 # CHANGELOG — tuya_smartlife
 
+## v0.40.3 (build 0062) - 2026-10-29
+
+### 💥 Breaking Changes
+
+- Nenhum.
+
+### ✨ Features
+
+- Nenhum.
+
+### 🐛 Fixes
+
+- fix: volta a folga do player ao valor estavel e mantem so a recuperacao de atraso (commit `43d97f003ef294f809405f199ca6b32c44c1709f`)
+
+### ⚡ Improvements
+
+- Nenhum.
+
 ## v0.40.2 (build 0061) - 2026-10-29
 
 ### 💥 Breaking Changes

@@ -91,6 +91,19 @@ Na publicação da 0048, o Pages subiu uma vez sem `_worker.js` (caminho errado)
 - Fala contínua (`camera-talk-stream.mjs`, `/api/camera/talk-ws`): uma WebSocket por fala, PCM 16 kHz a cada 64 ms, um ffmpeg por fala (Opus de 20 ms, uma página Ogg por pacote) e uma requisição em fluxo para `api/xiaomi/talkstream` da ponte, que entrega 40 ms a cada 40 ms. Como no app oficial, a câmera confirma o canal antes do áudio e o som da câmera fica mudo durante a fala. O envio antigo, um POST por bloco, continua como reserva. Teste: `test/talk.test.mjs`, com ffmpeg real: ~100 pacotes em 2 s, o primeiro em menos de 1 s.
 - Verificado (0060, 23:55 UTC): canal de fala da Outdoor confirmado pela câmera em 1,4 s (resposta binária 0), com 2 s de silêncio enviados. Som real confirmado pelo proprietário depois da 0060 na **Mi 2K Sala** (caminho A-law): a voz chegou limpa, segundo quem estava no cômodo. Outdoor e AW300 (caminho Opus) ainda não foram testadas com voz real.
 
+## Builds 0061 e 0062 — atraso em casa (2026-10-30)
+
+- Medição: o navegador entra no Cloudflare em São Paulo (GRU, ~30 ms) e o túnel do NAS também conecta em GRU (gru02/14/17–21, QUIC). A ida e volta navegador → NAS leva 0,12–0,17 s.
+- 0061: o player foi apertado em casa (alvo de 0,15 s), mas esvaziou o buffer e travou. Depois da trava, ficou 1,9 s atrás e demorou a recuperar. Com o stream nessa cadência, o player precisa de ~0,45 s de folga.
+- 0062: sem apertar. O alvo é ~0,45 s em casa e 0,6 s fora; o player recupera atraso tocando 6% mais rápido (a voz não muda de tom) e pula de volta quando fica ~2 s atrás. Medido pelo painel na mesma rede da casa:
+
+| | Lógica da 0060 | Lógica da 0062 |
+|---|---|---|
+| Outdoor | 2 travadas, até 1,56 s atrás | 1 travada no início, estável em ~0,5 s |
+| Mi 2K Sala | 1 travada, 0,44 s | sem travadas, 0,25 s |
+
+- Fala em casa (desde a 0061): blocos de 32 ms (antes 64 ms) e folga de 2 quadros na ponte (antes 3), ~70 ms a menos. Fora de casa não muda nada. Nenhuma das mudanças afeta a gravação no NAS.
+
 ## Pendências
 
 

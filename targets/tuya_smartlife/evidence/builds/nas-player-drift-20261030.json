@@ -1,0 +1,20 @@
+{
+  "runId": "nas-player-drift-20261030",
+  "sourceCommit": "43d97f003ef294f809405f199ca6b32c44c1709f",
+  "previous": "v0.40.2 (build 0061)",
+  "version": "v0.40.3 (build 0062)",
+  "build": 62,
+  "date": "2026-10-29",
+  "status": "built",
+  "commits": [
+    {
+      "sha": "43d97f003ef294f809405f199ca6b32c44c1709f",
+      "subject": "fix: volta a folga do player ao valor estavel e mantem so a recuperacao de atraso",
+      "body": "Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>",
+      "type": "fix",
+      "description": "volta a folga do player ao valor estavel e mantem so a recuperacao de atraso",
+      "breaking": false
+    }
+  ],
+  "artifact": "runtime/builds/build-0062"
+}
