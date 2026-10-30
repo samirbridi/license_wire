@@ -7,6 +7,8 @@ return {
     LrShutdownPlugin = 'LearningShutdown.lua', LrShutdownApp = 'LearningShutdown.lua',
     VERSION = { major = __MAJOR__, minor = __MINOR__, revision = __PATCH__, build = "__BUILD__", display = "__DISPLAY_VERSION__" },
     LrLibraryMenuItems = {
+        { title = "Mizin: selecionar fotos (repetidas e qualidade)", file = "SelectPhotos.lua", enabledWhen = "photosAvailable" },
+        { title = "Mizin: ver ultima selecao de fotos", file = "LastCulling.lua" },
         { title = "Mizin: analisar fotos selecionadas", file = "AnalyzeSelected.lua", enabledWhen = "photosAvailable" },
         { title = "Mizin: coletar referencias aprovadas", file = "CollectReferences.lua", enabledWhen = "photosAvailable" },
         { title = "Mizin: aprender com catalogo atual", file = "LearningMenu.lua" },

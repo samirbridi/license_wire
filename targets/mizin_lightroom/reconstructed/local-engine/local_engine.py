@@ -137,10 +137,11 @@ def runtime_info():
     import numpy
     import rawpy
     import PIL
+    import cv2
     return {'python': platform.python_version(), 'architecture': platform.machine(), 'os': platform.platform(),
             'cpuCount': os.cpu_count(), 'numpy': numpy.__version__, 'rawpy': rawpy.__version__,
             'libraw': '.'.join(map(str, rawpy.libraw_version)), 'pillow': PIL.__version__,
-            'isolatedPython': bool(sys.flags.isolated)}
+            'opencv':cv2.__version__,'isolatedPython': bool(sys.flags.isolated)}
 
 
 def csv_report(path, rows):
@@ -248,12 +249,16 @@ def run_job(job, bundle):
     try:
         progress('STARTING')
         request = read_json(job / 'request.json')
-        if request.get('schema') != 'mizin-lightroom.selection-request/1' or request.get('operation') not in ('analyze', 'diagnostic', 'collect', 'learning-status', 'learning-update', 'feedback'):
+        if request.get('schema') != 'mizin-lightroom.selection-request/1' or request.get('operation') not in ('analyze', 'diagnostic', 'collect', 'learning-status', 'learning-update', 'feedback', 'cull'):
             raise ValueError('Pedido incompativel')
         collecting = request['operation'] == 'collect'
         batch = reference_batch(request) if collecting else None
         report['jobId'] = request['jobId']
         info = read_json(bundle / 'BuildInfo.json')
+        if request['operation']=='cull':
+            from culling_engine import run_culling
+            report.update({'version':info['version'],'runtime':runtime_info(),'lightroomVersion':request.get('lightroomVersion'),'operation':'cull'})
+            return run_culling(request,job,bundle,info,report,progress)
         if collecting:
             batch.update({'collectorVersion': info['version'], 'jobId': request['jobId'],
                           'lightroomVersion': request.get('lightroomVersion')})
@@ -294,6 +299,10 @@ def run_job(job, bundle):
         if not executable.is_file():
             raise ValueError('ExifTool ausente; extraia o pacote completo')
         if request['operation'] == 'diagnostic':
+            if info.get('cullingImplemented'):
+                from culling_engine import create_detector
+                create_detector(bundle,info)
+                report['runtime']['cullingFaceDetector']='PUBLIC_YUNET_CPU_READY'
             result = subprocess.run([str(executable), '-config', '', '-ver'], capture_output=True, text=True,
                                     timeout=30, creationflags=getattr(subprocess, 'CREATE_NO_WINDOW', 0))
             if result.returncode:

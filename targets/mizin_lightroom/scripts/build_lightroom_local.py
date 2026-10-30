@@ -29,7 +29,7 @@ def populate_engine(plugin, runtime_base, model_folder, version):
         shutil.copytree(sources, plugin / 'ThirdPartySources')
     engine = plugin / 'Engine'
     engine.mkdir()
-    for name in ('local_engine.py', 'run_local.py', 'learning_store.py'):
+    for name in ('local_engine.py', 'run_local.py', 'learning_store.py','culling_engine.py'):
         shutil.copy2(ROOT / 'reconstructed/local-engine' / name, engine / name)
     for name in ('raw_features.py', 'train_numeric_pilot.py', 'import_approved_references.py'):
         shutil.copy2(ROOT / 'scripts' / name, engine / name)
@@ -39,23 +39,28 @@ def populate_engine(plugin, runtime_base, model_folder, version):
         shutil.copy2(model_folder / source, models / destination)
     info = {'schema': 'mizin-lightroom.local-bundle/1', 'version': version,
             'styleName': 'Meu estilo - piloto de formatura', 'modelSha256': sha(models / 'pilot-model.json'),
-            'experimental': True, 'catalogWritesImplemented': False, 'maximumPhotosPerJob': 100,
+            'experimental': True, 'catalogWritesImplemented': True, 'developSettingsWritesImplemented':False,'maximumPhotosPerJob': 100,
             'referenceCollectionImplemented': True, 'automaticModelTrainingImplemented': True,
             'automaticModelActivationImplemented': False, 'catalogCorpusCollectionImplemented': True,
             'userFeedbackImplemented': True,
             'referencePackageExportImplemented': True,
+            'cullingImplemented':True,'cullingMaximumPhotosPerJob':2000,'cullingMaximumPerSimilarGroup':4,
+            'cullingPhotographicQualityValidated':False,'cullingNativeCollectionsValidated':False,
+            'cullingFaceModelSha256':runtime.get('publicCullingModel',{}).get('model',{}).get('sha256'),
             'nativeNewSelectionFlowValidated': False}
+    if not info['cullingFaceModelSha256']:raise ValueError('Use the new culling runtime with the pinned public face model')
+    shutil.copytree(runtime_base/'PublicModels',plugin/'PublicModels')
     (plugin / 'BuildInfo.json').write_text(json.dumps(info, indent=2), encoding='utf-8')
     components = {'schema': 'mizin-lightroom.third-party/1', 'downloads': runtime['downloads'],
                   'wheels': runtime['wheels'], 'sources': runtime.get('sources', []),
-                  'runtimeCheck': runtime['runtimeCheck']}
+                  'runtimeCheck': runtime['runtimeCheck'],'publicCullingModel':runtime['publicCullingModel']}
     # Developer machine paths are intentionally omitted from the distributed metadata.
     (plugin / 'THIRD-PARTY.json').write_text(json.dumps(components, indent=2), encoding='utf-8')
     (plugin / 'THIRD-PARTY.md').write_text('''# Componentes de terceiros
 
-O runtime Windows inclui Python (PSF), NumPy e suas bibliotecas, Pillow, rawpy/LibRaw e ExifTool/Perl. Os avisos e licencas recebidos ficam junto aos respectivos componentes: Runtime/LICENSE.txt, Runtime/Lib/site-packages/*dist-info/ e Tools/ExifTool/. As copias fornecidas preservam esses avisos. URLs e SHA-256 dos arquivos de origem constam em THIRD-PARTY.json.
+O runtime Windows inclui Python (PSF), NumPy e suas bibliotecas, Pillow, rawpy/LibRaw, OpenCV headless (Apache 2.0 e avisos de terceiros) e ExifTool/Perl. O detector YuNet veio do repositorio publico OpenCV Zoo (MIT), com commit e hash verificados. Os avisos/licencas recebidos ficam junto aos respectivos componentes: Runtime/LICENSE.txt, Runtime/Lib/site-packages/*dist-info/, PublicModels/YuNet/ e Tools/ExifTool/. URLs e SHA-256 constam em THIRD-PARTY.json.
 
-O arquivo Python ._pth isola o runtime: ele usa somente a biblioteca padrao embarcada, os tres pacotes fixados e a pasta Engine. O plugin nao depende do Python do sistema. O modelo e proprio, experimental e privado; nao contem codigo ou pesos do Neurapix.
+O arquivo Python ._pth isola o runtime: ele usa somente a biblioteca padrao embarcada, os pacotes fixados e a pasta Engine. O plugin nao depende do Python do sistema. O modelo de estilo e proprio, experimental e privado; o detector de rostos e publico. Nenhum codigo ou peso do Neurapix foi incluido.
 ''', encoding='utf-8')
     return info
 
@@ -83,15 +88,26 @@ def build(runtime_base, model_folder, dataset, manifest):
 
 Versao: {version}
 
-Este pacote calcula sugestoes novas a partir dos RAWs selecionados, com Python, rawpy/LibRaw e ExifTool incluidos. O processamento e os resultados ficam na maquina de edicao. O modelo ainda e experimental, treinado em um unico trabalho, e este pacote apresenta valores para revisao; nao aplica ajustes no catalogo. Exposicao, temperatura e contraste aparecem na janela; o CSV inclui os dez controles experimentais.
+Este pacote oferece selecao local de fotos e sugestoes experimentais de edicao. Inclui Python, rawpy/LibRaw, OpenCV, detector publico de rostos e ExifTool. Processamento e resultados ficam na maquina de edicao. A selecao pode criar colecoes para revisao; os ajustes de revelacao permanecem como estao. O modelo de edicao continua o mesmo piloto de dez controles, treinado em um unico trabalho.
 
 ## Atualizar a instalacao
 
 1. Feche o Lightroom e extraia TODO o ZIP em uma pasta nova e permanente, por exemplo Documentos/MizinLightroom/{label}. Guarde a pasta anterior para recuperar o piloto antigo.
 2. Abra o Lightroom e entre em Arquivo > Gerenciador de plug-ins. Selecione o piloto antigo e remova seu cadastro com Remover; os arquivos recebidos e o acervo devem ser preservados. Adicione a NOVA pasta MizinLightroom.lrplugin. Os pacotes usam o mesmo identificador, portanto mantenha uma instalacao ativa.
-3. Execute Biblioteca > Extras de plug-in > Mizin: diagnosticar motor local. O resultado deve informar as versoes de Python, rawpy, LibRaw, NumPy, Pillow, ExifTool e Lightroom. Guarde o texto de qualquer erro e o bootstrap.log indicado.
+3. Execute Biblioteca > Extras de plug-in > Mizin: diagnosticar motor local. O resultado deve informar as versoes de Python, rawpy, LibRaw, NumPy, Pillow, OpenCV, ExifTool e Lightroom, com detector de selecao pronto. Guarde o texto de qualquer erro e o bootstrap.log indicado.
 4. Selecione inicialmente 1 a 5 RAWs CR3 em cor, da Canon EOS R6m2. Execute Mizin: analisar fotos selecionadas. O limite deste piloto e 100 fotos por tarefa.
 5. Revise os valores na janela. Abrir pasta dos resultados mostra results.json, results.csv e os logs. Mizin: ver ultimos resultados permite consultar novamente a ultima analise.
+
+## Selecao: repetidas, foco/movimento e exposicao
+
+1. Selecione as fotos de um trabalho no Lightroom (ate 2.000 originais por analise) e execute Mizin: selecionar fotos (repetidas e qualidade). O padrao e ate quatro escolhidas por grupo semelhante; pode reduzir para tres, duas ou uma.
+2. A comparacao considera tempo de captura, aparencia e geometria da cena. Em grupos com pessoas, normaliza a escala do conjunto para comparar aberta/fechada e exige correspondencia visual em varias regioes das pessoas. A variedade horizontal/vertical e aberta/fechada e preservada entre alternativas com qualidade; nao precisa preencher quatro vagas com arquivos identicos.
+3. Foco e movimento sao sinalizados para revisao, com prioridade a nitidez dos rostos avaliaveis. Fundo desfocado pode ser intencional. Rostos pequenos e superficies sem textura sao incertos. O detector nao identifica pessoas pelo nome nem avalia olhos fechados.
+4. Em RAWs, o motor examina sinal e saturacao do sensor, incluindo os canais da matriz. Escuridao de previa nao e prova de perda irrecuperavel. Em JPEG/TIFF/PNG, o resultado pede conferir o RAW original. Riscos de exposicao sao sugestoes, nao uma garantia de recuperacao.
+5. Ao terminar, Criar colecoes no Lightroom organiza Escolhidas, Repetidas excedentes, Revisar foco ou movimento, Revisar exposicao, Revisar textura ou rostos pequenos e Falhas de leitura, quando houver fotos em cada categoria. As colecoes de qualidade podem conter fotos escolhidas: sao dois criterios diferentes.
+6. Mizin: ver ultima selecao de fotos reabre a revisao. Cancelamento preserva a parte processada; somente essa parte pode ser organizada. results.json e culling.csv ficam na pasta do resultado. As pequenas previas tecnicas nao incluem a edicao/corte do Lightroom.
+
+O limite de quatro vale por grupo reconhecido nesta analise. Cenas/cameras/pastas diferentes ou sem horario comparavel podem ficar separadas; nao ha garantia de reconhecer todas as repeticoes. A analise utiliza o original sem os cortes/ajustes atuais do Lightroom. Os limiares de foco/exposicao sao conservadores e ainda nao tem homologacao fotografica. O menu e a criacao de colecoes precisam ser conferidos no Lightroom real. Nenhuma foto e apagada, movida ou rejeitada automaticamente; estrelas, cores e ajustes existentes sao preservados.
 
 ## Aprender com acervo, novos eventos e sua opiniao
 
@@ -117,7 +133,7 @@ A coleta nao retreina nem ativa um modelo. Registra somente os dez controles glo
 
 O progresso aceita cancelamento entre fotos; uma leitura/decodificacao em andamento pode precisar terminar. Falhas de arquivo, camera ou metadados aparecem por foto. Os resultados ficam na pasta MizinLightroomLocal/jobs dentro dos dados de aplicativo retornados pelo SDK. Nao e necessario manter este computador de desenvolvimento ligado.
 
-As imagens input-*.jpg sao entradas tecnicas LibRaw, sem o estilo aplicado. Nao representam uma previa visual da edicao Adobe. Este pacote nao cria copias virtuais nem modifica ajustes, RAWs ou sidecars. Essa aplicacao depende de uma etapa posterior com QA nativo e restauracao.
+As imagens input-*.jpg sao entradas tecnicas LibRaw, sem o estilo aplicado. Nao representam uma previa visual da edicao Adobe. Este pacote nao cria copias virtuais nem modifica ajustes, RAWs ou sidecars. A selecao cria apenas novas colecoes quando voce usa o botao de organizar. Aplicar revelacao depende de uma etapa posterior com QA nativo e restauracao.
 
 Mizin: comparar amostra salva do piloto conserva o teste anterior das {len(entries)} referencias. Ele e separado da analise nova e exige o catalogo de outubro. O pacote contem caminhos privados dessa amostra e seu modelo de estilo; mantenha no uso pessoal.
 
@@ -137,8 +153,8 @@ O motor foi preparado para teste no Lightroom da maquina de edicao. Testes locai
     receipt = {**info, 'schema': 'mizin-lightroom.local-plugin-package/1', 'archive': str(archive),
                'pluginDirectory': str(plugin), 'sha256': sha(archive), 'bytes': archive.stat().st_size,
                'fileCount': len(files), 'newPhotoInferenceImplemented': True, 'portableRuntimeIncluded': True,
-               'catalogWritesImplemented': False, 'savedComparisonReferences': len(entries),
-               'networkApisUsedByEngine': False, 'photographicQualityApproved': False}
+               'catalogWritesImplemented': True,'developSettingsWritesImplemented':False, 'savedComparisonReferences': len(entries),
+                'networkApisUsedByEngine': False, 'photographicQualityApproved': False}
     (delivery / 'package.json').write_text(json.dumps(receipt, indent=2), encoding='utf-8')
     return receipt
 

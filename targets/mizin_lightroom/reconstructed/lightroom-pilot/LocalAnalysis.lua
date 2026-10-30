@@ -57,6 +57,9 @@ function M.showResults(job)
     if not report then error('A tarefa ainda nao tem resultados. Pasta: ' .. job) end
     if report.schema ~= 'mizin-lightroom.selection-analysis/1' then error('Resultado incompativel') end
     if report.status == 'FAILED' then error(tostring(report.error) .. '\n\nPasta de diagnostico: ' .. job) end
+    if report.operation == 'cull' then
+        return dofile(child(_PLUGIN.path,'CullingReview.lua')).show(report,job)
+    end
     if report.operation == 'learning-status' or report.operation == 'learning-update' or report.operation == 'feedback' then
         local state = report.learning or {}
         LrDialogs.message('Mizin Lightroom - meu aprendizado',
@@ -77,7 +80,8 @@ function M.showResults(job)
             'Python: ' .. tostring(rt.python) .. ' | isolado: ' .. tostring(rt.isolatedPython) .. '\n' ..
             'rawpy: ' .. tostring(rt.rawpy) .. ' | LibRaw: ' .. tostring(rt.libraw) .. '\n' ..
             'NumPy: ' .. tostring(rt.numpy) .. ' | Pillow: ' .. tostring(rt.pillow) .. '\n' ..
-            'ExifTool: ' .. tostring(rt.exiftool) .. '\n\n' ..
+            'ExifTool: ' .. tostring(rt.exiftool) .. '\nOpenCV: '..tostring(rt.opencv)..
+            '\nSelecao: '..tostring(rt.cullingFaceDetector or 'nao verificada')..'\n\n' ..
             'Estilo experimental: ' .. tostring(report.styleName) .. '\nPasta: ' .. job, 'info')
         return
     end
@@ -182,22 +186,29 @@ local function makeRequest(operation)
     if operation == 'diagnostic' or operation == 'learning-status' or operation == 'learning-update' or operation == 'feedback' then return request end
     local catalog = LrApplication.activeCatalog()
     -- getTargetPhotos can return the filmstrip when no photo is selected.
-    if not catalog:getTargetPhoto() then error('Selecione explicitamente de 1 a 100 fotos RAW CR3 no Lightroom.') end
+    if not catalog:getTargetPhoto() then error('Selecione explicitamente as fotos no Lightroom.') end
     local selection = catalog:getTargetPhotos()
-    if #selection == 0 or #selection > 100 then error('Este piloto analisa de 1 a 100 fotos por tarefa. Selecione um lote menor.') end
+    local maximum = operation=='cull' and 2000 or 100
+    if #selection == 0 or #selection > maximum then error('Selecione de 1 a '..tostring(maximum)..' fotos por tarefa. Selecione um lote menor.') end
+    if operation=='cull' then
+        request.catalogIdentity=catalog:getPath()
+        local options=dofile(child(_PLUGIN.path,'CullingReview.lua')).options(#selection)
+        if not options then return nil end
+        request.cullingOptions=options
+    end
     request.photos = {}
     for index, photo in ipairs(selection) do
         local virtual = nil
-        if operation == 'collect' then
+        if operation == 'collect' or operation=='cull' then
             local metadataOK, value = LrTasks.pcall(function() return photo:getRawMetadata('isVirtualCopy') end)
             if metadataOK and type(value) == 'boolean' then virtual = value end
-            if virtual ~= false then error('Para coletar referencias, selecione somente RAWs originais do catalogo.') end
+            if virtual ~= false and operation=='collect' then error('Para coletar referencias, selecione somente RAWs originais do catalogo.') end
         end
         local ok, settings = LrTasks.pcall(function() return photo:getDevelopSettings() end)
         if not ok or type(settings) ~= 'table' then settings = {} end
         local current = {}
         for _, key in ipairs(targets) do if finite(settings[key]) then current[key] = settings[key] end end
-        request.photos[#request.photos + 1] = { id = tostring(index), path = photo:getRawMetadata('path'), current = current,
+        request.photos[#request.photos + 1] = { id = operation=='cull' and tostring(photo.localIdentifier) or tostring(index), path = photo:getRawMetadata('path'), current = current,
             treatment = settings.ConvertToGrayscale == true and 'monochrome' or 'color', isVirtualCopy = virtual }
         if index % 10 == 0 then LrTasks.yield() end
     end
@@ -230,6 +241,7 @@ local function executeRequest(operation, suppliedRequest, silent, modelVariant)
     local prefs = LrPrefs.prefsForPlugin()
     if operation == 'analyze' then prefs.lastSelectionRun = job
     elseif operation == 'collect' then prefs.lastReferenceRun = job
+    elseif operation == 'cull' then prefs.lastCullingRun = job
     else prefs.lastDiagnosticRun = job end
     if operation ~= 'diagnostic' then prefs.lastDataRun = job end
     LrFunctionContext.callWithContext('MizinLocalAnalysis', function(context)
@@ -257,7 +269,7 @@ local function executeRequest(operation, suppliedRequest, silent, modelVariant)
                 error('O motor local retornou erro ' .. tostring(exitCode) .. ': ' .. tostring(detail) .. '\nPasta: ' .. job)
             end
             if runnerDone and LrFileUtils.exists(child(job, 'results.json')) then break end
-            if LrDate.currentTime() - started > 1800 then
+            if LrDate.currentTime() - started > (operation=='cull' and 7200 or 1800) then
                 writeText(child(job, 'cancel.request'), 'timeout\n')
                 error('Tempo limite atingido. Cancelamento solicitado. Pasta: ' .. job)
             end
@@ -282,9 +294,10 @@ function M.run(operation, suppliedRequest, silent, modelVariant)
     return report, job
 end
 
-function M.lastResults()
+function M.lastResults(kind)
     local prefs = LrPrefs.prefsForPlugin()
     local job = prefs.lastDataRun or prefs.lastSelectionRun
+    if kind=='cull' then job=prefs.lastCullingRun end
     if not job then error('Nenhuma analise foi iniciada. Use Mizin: analisar fotos selecionadas.') end
     local normalize = function(value) return value:gsub('\\', '/'):lower():gsub('/+$', '') end
     local expected = normalize(child(root(), 'jobs')) .. '/'
