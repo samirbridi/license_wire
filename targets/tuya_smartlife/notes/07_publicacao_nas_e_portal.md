@@ -89,7 +89,7 @@ Na publicação da 0048, o Pages subiu uma vez sem `_worker.js` (caminho errado)
 
 - O proxy `/api/ws` usa o mesmo fluxo que o gravador mantém aberto (`recorderStreamAlias`: `aw300_garagem` → `aw300_garagem_quality3`, Mi 2K → `_quality4`). Antes, as câmeras de uma lente abriam uma sessão nova e fria a cada visualização. Medido às 23:48 UTC pelo player do painel, com os nomes base: 0,6–2,3 s.
 - Fala contínua (`camera-talk-stream.mjs`, `/api/camera/talk-ws`): uma WebSocket por fala, PCM 16 kHz a cada 64 ms, um ffmpeg por fala (Opus de 20 ms, uma página Ogg por pacote) e uma requisição em fluxo para `api/xiaomi/talkstream` da ponte, que entrega 40 ms a cada 40 ms. Como no app oficial, a câmera confirma o canal antes do áudio e o som da câmera fica mudo durante a fala. O envio antigo, um POST por bloco, continua como reserva. Teste: `test/talk.test.mjs`, com ffmpeg real: ~100 pacotes em 2 s, o primeiro em menos de 1 s.
-- Verificado (0060, 23:55 UTC): canal de fala da Outdoor confirmado pela câmera em 1,4 s (resposta binária 0), com 2 s de silêncio enviados. Som real confirmado pelo proprietário depois da 0060: a voz saiu limpa e sem cortes no alto-falante da Outdoor.
+- Verificado (0060, 23:55 UTC): canal de fala da Outdoor confirmado pela câmera em 1,4 s (resposta binária 0), com 2 s de silêncio enviados. Som real confirmado pelo proprietário depois da 0060 na **Mi 2K Sala** (caminho A-law): a voz chegou limpa, segundo quem estava no cômodo. Outdoor e AW300 (caminho Opus) ainda não foram testadas com voz real.
 
 ## Pendências
 
