@@ -31,6 +31,7 @@ def verify(package_path,unit_tests_passed):
         digest,name=line.split(' *',1);assert sha(deployment/name)==digest
     lua=LuaRuntime(unpack_returned_tuples=True)
     for path in plugin.glob('*.lua'):lua.execute('assert(loadstring(...))',path.read_text(encoding='utf-8'))
+    for source in (ROOT/'reconstructed/lightroom-pilot').glob('*.lua'):assert sha(source)==sha(plugin/source.name)
     info=json.loads((plugin/'BuildInfo.json').read_text())
     assert info['virtualCopyEditingImplemented'] and not info['editingOriginalsImplemented'] and not info['nativeEditingWorkflowValidated']
     assert sha(plugin/'StyleBase.lua')==info['styleBaseLuaSha256']

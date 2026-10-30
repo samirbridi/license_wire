@@ -25,6 +25,8 @@ Aprendizado, analise e edicao usam bloqueios para impedir sobreposicao entre tar
 
 ## Evidencias e limites
 
+Reforco anterior a entrega: catalogo, selecao exata e hashes dos ajustes sao conferidos novamente dentro dos callbacks de gravacao, apos a espera pelo write gate. Testes simulam mudanca de selecao e edicao manual nesse intervalo para verificar que a aplicacao/restauracao nao prossegue. O primeiro build interno foi preservado sem distribuicao; a correcao e a recompilacao recebem a proxima versao calculada pelos commits.
+
 Os testes Lua 5.1 usam doubles com contratos do SDK: bool de snapshot, snapshotID versus id_global, operacao sobre selecao, gates, identidade do master, journal anterior a revelacao, restauracao e alteracoes manuais. Nao sao execucao do Lightroom. O motor portatil e exercitado com RAW real no pacote final, mas o resultado visual e a aplicacao/restauracao no Lightroom 15.6 ainda precisam de confirmacao nativa.
 
 Comandos reproduziveis (PowerShell, raiz do repositorio):

@@ -154,13 +154,16 @@ local function sourceFor(catalog,record)
     if not photo or tostring(photo.localIdentifier)~=record.id or photo:getRawMetadata('isVirtualCopy')~=false then error('Identidade da foto de origem mudou') end
     return photo
 end
-local function selectOnly(catalog,photo,module)
-    View.switchToModule(module)
-    catalog:setSelectedPhotos(photo,{photo});Tasks.yield()
-    local selected=catalog:getTargetPhotos()
-    if View.getCurrentModuleName()~=module or #selected~=1 or tostring(selected[1].localIdentifier)~=tostring(photo.localIdentifier) then
+local function requireSelected(catalog,photo,module)
+    local selected=catalog:getTargetPhotos();local target=catalog:getTargetPhoto()
+    if View.getCurrentModuleName()~=module or #selected~=1 or not target or
+        tostring(target.localIdentifier)~=tostring(photo.localIdentifier) or tostring(selected[1].localIdentifier)~=tostring(photo.localIdentifier) then
         error('Nao foi possivel isolar a foto. Confira filtros e selecao no Lightroom.')
     end
+end
+local function selectOnly(catalog,photo,module)
+    View.switchToModule(module)
+    catalog:setSelectedPhotos(photo,{photo});Tasks.yield();requireSelected(catalog,photo,module)
 end
 local function verifiedCopy(copy,source,record)
     if not copy or copy:getRawMetadata('isVirtualCopy')~=true or tostring(copy.localIdentifier)==record.id or
@@ -177,7 +180,7 @@ local function copyFor(catalog,record,copyId)
 end
 local function gate(catalog,title,fn)
     local done=false
-    catalog:withWriteAccessDo(title,function()fn();done=true end,{timeout=20})
+    catalog:withWriteAccessDo(title,function()sameCatalog(catalog,catalog:getPath());fn();done=true end,{timeout=20})
     if not done then error('O Lightroom nao liberou a gravacao. A etapa ficou interrompida.') end
 end
 local function snapshotId(source,name)
@@ -253,6 +256,7 @@ function M.applyPlan(catalog,dir,manifest,progress)
         if M.fingerprint(source:getDevelopSettings())~=record.beforeHash then error('A origem mudou durante a selecao; edicao interrompida.') end
         local existing={};for _,old in ipairs(source:getRawMetadata('virtualCopies') or {}) do existing[tostring(old.localIdentifier)]=true end
         checkpoint(dir,index,'creating',{sourceId=record.id,name=record.copyName})
+        requireSelected(catalog,source,'library');sameCatalog(catalog,manifest.catalogPath)
         local created=catalog:createVirtualCopies(record.copyName)
         if type(created)~='table' or #created~=1 then error('Lightroom retornou quantidade inesperada de copias; revise a biblioteca.') end
         local copy=created[1];verifiedCopy(copy,source,record)
@@ -271,6 +275,8 @@ function M.applyPlan(catalog,dir,manifest,progress)
         local before=copy:getDevelopSettings();local beforeHash=M.fingerprint(before)
         local name='Mizin - Antes '..manifest.sessionId..' '..record.id
         gate(catalog,'Mizin: salvar estado anterior da copia',function()
+            requireSelected(catalog,copy,'develop')
+            if M.fingerprint(copy:getDevelopSettings())~=beforeHash or M.fingerprint(source:getDevelopSettings())~=record.beforeHash then error('Os ajustes mudaram durante a espera pelo snapshot') end
             if copy:createDevelopSnapshot(name,false)~=true then error('Snapshot nao foi criado') end
         end)
         Tasks.yield();local snapshot=snapshotId(source,name)
@@ -280,7 +286,11 @@ function M.applyPlan(catalog,dir,manifest,progress)
         local ok,err=Tasks.pcall(function()
             sameCatalog(catalog,manifest.catalogPath)
             if M.fingerprint(copy:getDevelopSettings())~=beforeHash then error('A copia mudou antes da aplicacao') end
-            gate(catalog,'Mizin: aplicar edicao na copia',function()copy:applyDevelopSettings(record.settings,'Mizin - edicao local',false) end)
+            gate(catalog,'Mizin: aplicar edicao na copia',function()
+                requireSelected(catalog,copy,'develop')
+                if M.fingerprint(copy:getDevelopSettings())~=beforeHash or M.fingerprint(source:getDevelopSettings())~=record.beforeHash then error('Os ajustes mudaram durante a espera pela gravacao') end
+                copy:applyDevelopSettings(record.settings,'Mizin - edicao local',false)
+            end)
             Tasks.yield();local actual=copy:getDevelopSettings();local verified,key=verifyApplied(actual,record.settings)
             if not verified then error('Lightroom nao confirmou o ajuste: '..tostring(key)) end
             if M.fingerprint(preserved(actual,record.settings))~=M.fingerprint(preserved(before,record.settings)) then error('Houve mudanca em perfil, corte, mascaras ou outros controles preservados; revise a copia e use Restaurar.') end
@@ -376,7 +386,11 @@ function M.restoreSession(dir)
                     if snapshotId(source,ready.snapshotName)~=ready.snapshotId then error('Snapshot anterior nao confere') end
                     selectOnly(catalog,copy,'develop');sameCatalog(catalog,manifest.catalogPath)
                     if M.fingerprint(copy:getDevelopSettings())~=currentHash then error('A copia mudou durante a restauracao') end
-                    gate(catalog,'Mizin: restaurar copia da ultima edicao',function()copy:applyDevelopSnapshot(ready.snapshotId) end)
+                    gate(catalog,'Mizin: restaurar copia da ultima edicao',function()
+                        requireSelected(catalog,copy,'develop')
+                        if M.fingerprint(copy:getDevelopSettings())~=currentHash or M.fingerprint(source:getDevelopSettings())~=sourceHash then error('Os ajustes mudaram durante a espera pela restauracao') end
+                        copy:applyDevelopSnapshot(ready.snapshotId)
+                    end)
                     Tasks.yield()
                     if M.fingerprint(copy:getDevelopSettings())~=ready.beforeHash then error('Lightroom nao confirmou a restauracao completa') end
                 end

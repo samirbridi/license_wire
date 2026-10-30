@@ -76,7 +76,13 @@ class PhotoEditorLuaTests(unittest.TestCase):
             catalog.getTargetPhotos=function() return selected end
             catalog.setSelectedPhotos=function(self,target,photos) selected=photos;if behavior=='selection-race' then selected={other} end end
             catalog.findPhotoByPath=function(self,path) for _,p in ipairs(masters) do if p.path==path then return p end end end
-            catalog.withWriteAccessDo=function(self,title,fn) assert(not inGate);catalogWrites=catalogWrites+1;inGate=true;local ok,err=pcall(fn);inGate=false;if not ok then error(err) end end
+            catalog.withWriteAccessDo=function(self,title,fn)
+                assert(not inGate);catalogWrites=catalogWrites+1
+                if gateRace and title==gateRaceTitle then
+                    if gateRace=='selection' then selected={source} else source.settings.CropTop=.3 end
+                end
+                inGate=true;local ok,err=pcall(fn);inGate=false;if not ok then error(err) end
+            end
             catalog.createCollectionSet=function() assert(inGate);return {} end
             catalog.createCollection=function()
                 assert(inGate);collection={photos={},addPhotos=function(self,photos) assert(inGate);for _,p in ipairs(photos) do self.photos[#self.photos+1]=p end end};return collection
@@ -252,6 +258,22 @@ class PhotoEditorLuaTests(unittest.TestCase):
                 if manual:runtime.execute('source.copies[1].settings.Temperature=5435')
                 result=runtime.globals().editor.restoreSession(directory.as_posix())
                 self.assertEqual(result[:2],(0,1) if manual else (1,0))
+
+
+    def test_selection_or_settings_change_while_waiting_for_write_gate_stops_before_apply(self):
+        for title,race in [('Mizin: salvar estado anterior da copia','selection'),('Mizin: aplicar edicao na copia','selection'),('Mizin: aplicar edicao na copia','settings')]:
+            with self.subTest(title=title,race=race),tempfile.TemporaryDirectory() as temp:
+                folder=Path(temp);runtime=self.setup_editor(folder);directory=self.plan(runtime,folder)
+                runtime.globals().gateRaceTitle=title;runtime.globals().gateRace=race
+                with self.assertRaises(Exception):self.apply(runtime,directory)
+                self.assertEqual(runtime.globals().applyCount,0)
+
+    def test_selection_change_while_waiting_for_restore_gate_preserves_copies(self):
+        with tempfile.TemporaryDirectory() as temp:
+            folder=Path(temp);runtime=self.setup_editor(folder);directory=self.plan(runtime,folder);self.apply(runtime,directory)
+            runtime.globals().gateRaceTitle='Mizin: restaurar copia da ultima edicao';runtime.globals().gateRace='selection'
+            self.assertEqual(runtime.globals().editor.restoreSession(directory.as_posix())[:2],(0,1))
+            self.assertEqual(runtime.globals().restoreCount,0)
 
 
 if __name__=='__main__':unittest.main(verbosity=2)
