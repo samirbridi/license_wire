@@ -132,7 +132,7 @@ function M.showResults(job)
         spacing = f:control_spacing(),
         f:static_text { title = 'Calculadas: ' .. tostring(report.computedPhotos) .. ' | falhas: ' .. tostring(report.failedPhotos) ..
             ' | estado: ' .. tostring(report.status), width_in_chars = 105 },
-        f:static_text { title = 'Estilo: ' .. tostring(report.styleName) .. '\nSugestoes experimentais. Revise os valores; esta versao nao aplica edicoes.',
+        f:static_text { title = 'Estilo: ' .. tostring(report.styleName) .. '\nEsta analise mostra sugestoes. Para aplica-las, use Mizin: editar fotos em copias virtuais.',
             width_in_chars = 105, height_in_lines = 2 },
         f:scrolled_view { width = 850, height = 420, horizontal_scroller = false, f:column(rows) },
         f:static_text { title = 'O CSV inclui os 10 controles calculados. As imagens input-*.jpg sao entradas tecnicas, sem o estilo aplicado.',
@@ -283,6 +283,7 @@ local function executeRequest(operation, suppliedRequest, silent, modelVariant)
 end
 
 function M.run(operation, suppliedRequest, silent, modelVariant)
+    if _G.MizinEditorBusy and not (type(_G.MizinEditorAnalysisJob)=='string' and suppliedRequest and suppliedRequest.jobId==_G.MizinEditorAnalysisJob) then error('Uma edicao ou restauracao esta em andamento. Aguarde sua conclusao.') end
     if _G.MizinEngineBusy then error('O motor esta ocupado com outra tarefa. Aguarde a etapa atual ou pause o aprendizado.') end
     _G.MizinEngineBusy = true
     local ok, report, job = LrTasks.pcall(function() return executeRequest(operation, suppliedRequest, silent, modelVariant) end)

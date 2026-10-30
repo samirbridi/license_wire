@@ -105,7 +105,7 @@ local function validQueuePath(path)
         not normal(path):find('/%.%./',1) and normal(path):match('/[%w%-]+%.json$')~=nil
 end
 function M.process(path,auto)
-    if _G.MizinAcervoBusy then return end
+    if _G.MizinAcervoBusy or _G.MizinEditorBusy then return end
     if not validQueuePath(path) then error('Fila de aprendizado invalida') end
     local queue=readQueue(path)
     if not queue or queue.schema~='mizin-lightroom.acervo-queue/1' then error('Fila de aprendizado incompativel') end
@@ -156,7 +156,7 @@ function M.process(path,auto)
     end
 end
 function M.import(scope)
-    if _G.MizinAcervoBusy then error('Ja existe uma importacao do acervo em andamento.') end
+    if _G.MizinAcervoBusy or _G.MizinEditorBusy then error('Ja existe uma tarefa do acervo ou edicao em andamento.') end
     local catalog=LrApplication.activeCatalog();local photos
     if scope=='catalog' then
         photos=catalog:findPhotos{searchDesc={criteria='hasAdjustments',operation='isTrue'}}
