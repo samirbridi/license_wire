@@ -1,0 +1,15 @@
+test_declared_unbounded_source_string_is_rejected_before_reading (test_chunk_reader.ChunkReaderTests.test_declared_unbounded_source_string_is_rejected_before_reading) ... ok
+test_reads_synthetic_dump_metadata_without_evaluating_the_dump (test_chunk_reader.ChunkReaderTests.test_reads_synthetic_dump_metadata_without_evaluating_the_dump) ... ok
+test_resolves_imported_sdk_calls_inside_closures_without_executing_them (test_chunk_reader.ChunkReaderTests.test_resolves_imported_sdk_calls_inside_closures_without_executing_them) ... ok
+test_truncated_or_trailing_data_and_wrong_abi_are_rejected (test_chunk_reader.ChunkReaderTests.test_truncated_or_trailing_data_and_wrong_abi_are_rejected) ... ok
+test_graph_nodes_and_opaque_weights_are_not_loaded (test_onnx_structure.OnnxStructureTests.test_graph_nodes_and_opaque_weights_are_not_loaded) ... ok
+test_truncation_and_invalid_wire_are_rejected (test_onnx_structure.OnnxStructureTests.test_truncation_and_invalid_wire_are_rejected) ... ok
+test_owned_fixture_names_nested_constants_and_offsets (test_pyc_metadata.PycMetadataTests.test_owned_fixture_names_nested_constants_and_offsets) ... ok
+test_size_and_reference_budgets (test_pyc_metadata.PycMetadataTests.test_size_and_reference_budgets) ... ok
+test_slice_v5_data_only (test_pyc_metadata.PycMetadataTests.test_slice_v5_data_only) ... ok
+test_truncation_trailing_and_version_fail_closed (test_pyc_metadata.PycMetadataTests.test_truncation_trailing_and_version_fail_closed) ... ok
+
+----------------------------------------------------------------------
+Ran 10 tests in 0.007s
+
+OK

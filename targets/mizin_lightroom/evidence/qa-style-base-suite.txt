@@ -1,0 +1,8 @@
+test_duplicate_conflict_and_nonfinite_settings_are_rejected (test_style_base.StyleBaseTests.test_duplicate_conflict_and_nonfinite_settings_are_rejected) ... ok
+test_only_unanimous_present_settings_are_fixed_missing_is_not_default (test_style_base.StyleBaseTests.test_only_unanimous_present_settings_are_fixed_missing_is_not_default) ... ok
+test_unapproved_and_other_treatment_cannot_teach_the_base (test_style_base.StyleBaseTests.test_unapproved_and_other_treatment_cannot_teach_the_base) ... ok
+
+----------------------------------------------------------------------
+Ran 3 tests in 0.002s
+
+OK

@@ -1,5 +1,7 @@
 # Analise de fronteiras com REA e bytecode Lua
 
+Atualizacao posterior em 30/10: a pasta do motor foi fornecida pelo usuario e analisada. A ausencia descrita nesta nota e historica; o resultado atual esta em `06_motor_recebido_e_arquitetura.md`.
+
 Em 30/10/2026, o usuario pediu estudo mais profundo do pacote para orientar seu produto local. A analise aprofunda a implementacao de integracao; nao afirma recuperar o motor ou a rede neural.
 
 ## Evidencias e ferramentas

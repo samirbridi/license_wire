@@ -1,0 +1,823 @@
+{
+  "schema": "neurapix.runtime-analysis/1",
+  "date": "2026-10-30",
+  "preserved": {
+    "files": 14699,
+    "bytes": 7381315093,
+    "manifestSha256": "16951a6ce681903b5ee02c367f58bab5180ced18067ae4c4fec8b0717e818189"
+  },
+  "vendorExecution": false,
+  "vendorCodeOrWeightsInOwnProduct": false,
+  "networkRequestsToVendor": false,
+  "primaryArtifacts": [
+    {
+      "relative": "npx/npx.exe",
+      "bytes": 60461496,
+      "sha256": "5ed2d67020b0b23044e17751218f0059e155768b8ad000c2dd83a538240f3be0"
+    },
+    {
+      "relative": "npx/_internal/npx.cp314-win_amd64.pyd",
+      "bytes": 2398648,
+      "sha256": "e8a550ad797ea94c9a1338be557d3f5bf314f191cee02705aa6981fdfbfc27b9"
+    },
+    {
+      "relative": "culling/Neurapix Culling.exe",
+      "bytes": 8707944,
+      "sha256": "b1acb94f2362eadacd5939cb5002154e7042f16287f7abc6f65955fa70c0c0af"
+    }
+  ],
+  "tooling": {
+    "rea": "6.8.0",
+    "node": "24.18.0 below REA declared range; bounded commands executed",
+    "ghidra": "12.0.4 direct CLI, isolated post-processing directories",
+    "java": "25.0.3",
+    "initialGhidraAttempt": "Project saved, post-script failed on settings permissions, launcher timed out at 420 s; two subsequent post-processes exited 0 with isolated settings/cache.",
+    "desktopCoverage": "PARTIAL: directory metadata reached REA 32 MiB representation budget. Full acquisition ledger is separate.",
+    "pycMetadata": "REA rejects Python 3.14; own data-only CPython-format reader parsed entry point including v5 slice."
+  },
+  "reaCommands": [
+    {
+      "label": "cull-bursts",
+      "command": [
+        "inspect-python-pyc",
+        "D:\\REA - ENGENHARIA REVERSA\\targets\\neurapix\\private\\runtime\\20261030T144652Z-92b57b95\\rea-tmp\\rea-extracted-de659d21-690f-4beb-8188-dde58054462b\\PYZ-00.pyz\\neurapix\\ai\\bursts\\infer\\core.pyc",
+        "--format",
+        "json"
+      ],
+      "exit": 0,
+      "elapsedSeconds": 3.235,
+      "outputSha256": "6f79ddf0dd1165fdc1e758c3caea148b79b953d9df764fe03189e1cbfb141989",
+      "bytes": 5002
+    },
+    {
+      "label": "cull-faces",
+      "command": [
+        "inspect-python-pyc",
+        "D:\\REA - ENGENHARIA REVERSA\\targets\\neurapix\\private\\runtime\\20261030T144652Z-92b57b95\\rea-tmp\\rea-extracted-de659d21-690f-4beb-8188-dde58054462b\\PYZ-00.pyz\\neurapix\\ai\\faces\\infer\\core.pyc",
+        "--format",
+        "json"
+      ],
+      "exit": 0,
+      "elapsedSeconds": 3.157,
+      "outputSha256": "db22fca0b6c3953a14bacc5010db52608f610cf81dd74a917b95cf08bf7a1739",
+      "bytes": 11397
+    },
+    {
+      "label": "cull-sharpness",
+      "command": [
+        "inspect-python-pyc",
+        "D:\\REA - ENGENHARIA REVERSA\\targets\\neurapix\\private\\runtime\\20261030T144652Z-92b57b95\\rea-tmp\\rea-extracted-de659d21-690f-4beb-8188-dde58054462b\\PYZ-00.pyz\\neurapix\\ai\\sharpness.pyc",
+        "--format",
+        "json"
+      ],
+      "exit": 0,
+      "elapsedSeconds": 3.938,
+      "outputSha256": "20d5fdfa12821299d7de514d5c794cb4e612651ca572f1638813eb37c5f1af01",
+      "bytes": 20004
+    },
+    {
+      "label": "cull-sockets",
+      "command": [
+        "inspect-python-pyc",
+        "D:\\REA - ENGENHARIA REVERSA\\targets\\neurapix\\private\\runtime\\20261030T144652Z-92b57b95\\rea-tmp\\rea-extracted-de659d21-690f-4beb-8188-dde58054462b\\PYZ-00.pyz\\neurapix\\app\\utils\\sockets.pyc",
+        "--format",
+        "json"
+      ],
+      "exit": 0,
+      "elapsedSeconds": 3.125,
+      "outputSha256": "0060a04ed10e85f4d77ed468892e668387f01ecd50d88278efade81aa08748e2",
+      "bytes": 9673
+    },
+    {
+      "label": "desktop-runtime",
+      "command": [
+        "inspect-desktop-application",
+        "D:\\REA - ENGENHARIA REVERSA\\targets\\neurapix\\private\\runtime\\20261030T144652Z-92b57b95\\npx",
+        "--format",
+        "json"
+      ],
+      "exit": 0,
+      "elapsedSeconds": 14.391,
+      "outputSha256": "c1f553a70cea1ed351b269e80d76d1b86bddafa78ff9fae65886ce99c0e06c04",
+      "bytes": 3226248
+    },
+    {
+      "label": "main-entry-pyc",
+      "command": [
+        "inspect-python-pyc",
+        "D:\\REA - ENGENHARIA REVERSA\\targets\\neurapix\\private\\runtime\\20261030T144652Z-92b57b95\\rea-tmp\\rea-extracted-61f5ba7f-f047-4553-b61f-6dfe9c552e30\\run",
+        "--format",
+        "json"
+      ],
+      "exit": 1,
+      "elapsedSeconds": 3.891,
+      "outputSha256": "dc9c859ece3996922f344b8c1a1cfd904cdd67a3011323da581affdc27e74fd1",
+      "bytes": 780
+    },
+    {
+      "label": "main-exports",
+      "command": [
+        "inspect-native-exports",
+        "D:\\REA - ENGENHARIA REVERSA\\targets\\neurapix\\private\\runtime\\20261030T144652Z-92b57b95\\npx\\npx\\_internal\\npx.cp314-win_amd64.pyd",
+        "--format",
+        "json"
+      ],
+      "exit": 0,
+      "elapsedSeconds": 2.734,
+      "outputSha256": "3f5cadd69fe356d477e1245a241c33f8f9ef55cffeab6ac06303eceb807d8375",
+      "bytes": 2249
+    },
+    {
+      "label": "main-imports",
+      "command": [
+        "inspect-pe-imports",
+        "D:\\REA - ENGENHARIA REVERSA\\targets\\neurapix\\private\\runtime\\20261030T144652Z-92b57b95\\npx\\npx\\_internal\\npx.cp314-win_amd64.pyd",
+        "--format",
+        "json"
+      ],
+      "exit": 0,
+      "elapsedSeconds": 2.797,
+      "outputSha256": "73e99c3e3858d553fd9a392e97e39ffececcefa2d7149f0afdfdb2aff3c60f32",
+      "bytes": 34042
+    },
+    {
+      "label": "npx-artifact",
+      "command": [
+        "inspect-artifact",
+        "D:\\REA - ENGENHARIA REVERSA\\targets\\neurapix\\private\\runtime\\20261030T144652Z-92b57b95\\npx\\npx\\npx.exe",
+        "--format",
+        "json"
+      ],
+      "exit": 0,
+      "elapsedSeconds": 27.031,
+      "outputSha256": "9557481696dbd7ec3e537a7aba9de5c001fadaddac3fc4d1e424cddaf3206959",
+      "bytes": 11876227
+    },
+    {
+      "label": "npx-extracted",
+      "command": [
+        "extract-artifact",
+        "D:\\REA - ENGENHARIA REVERSA\\targets\\neurapix\\private\\runtime\\20261030T144652Z-92b57b95\\npx\\npx\\npx.exe",
+        "--format",
+        "json"
+      ],
+      "exit": 0,
+      "elapsedSeconds": 113.11,
+      "outputSha256": "5fe44c7968ff19bd85f7614f159fdfa62e6ceb1cb6524b373f56446f292840fd",
+      "bytes": 5819171
+    },
+    {
+      "label": "culling-artifact-verified-name",
+      "command": [
+        "inspect-artifact",
+        "D:\\REA - ENGENHARIA REVERSA\\targets\\neurapix\\private\\runtime\\20261030T144652Z-92b57b95\\npx\\culling\\Neurapix Culling.exe",
+        "--format",
+        "json"
+      ],
+      "exit": 0,
+      "outputSha256": "90774863ae5166f33c94b02fc735e0334c9dfb684c690f556897a4dca88bcfe6",
+      "bytes": 1758082
+    },
+    {
+      "label": "culling-extracted",
+      "command": [
+        "extract-artifact",
+        "D:\\REA - ENGENHARIA REVERSA\\targets\\neurapix\\private\\runtime\\20261030T144652Z-92b57b95\\npx\\culling\\Neurapix Culling.exe",
+        "--format",
+        "json"
+      ],
+      "exit": 0,
+      "outputSha256": "c6932237bd3ad57f73d0ff10fb8b1a064701f15c6fc8c5edf7bb315f38bdff44",
+      "bytes": 843460
+    }
+  ],
+  "native": {
+    "sha256": "e8a550ad797ea94c9a1338be557d3f5bf314f191cee02705aa6981fdfbfc27b9",
+    "language": "x86:LE:64:default",
+    "recognizedFunctionCount": 1268,
+    "distinctSelectedFunctionsDecompiled": 14,
+    "selectedStringCount": 19,
+    "anchors": [
+      {
+        "symbol": "infer_path_sliders_",
+        "address": "3858667de",
+        "functionAddresses": [
+          "38569e40c"
+        ]
+      },
+      {
+        "symbol": "model_emb",
+        "address": "385866840",
+        "functionAddresses": [
+          "3856bf3b3"
+        ]
+      },
+      {
+        "symbol": "face_model_path",
+        "address": "385866d74",
+        "functionAddresses": [
+          "385770ef2"
+        ]
+      },
+      {
+        "symbol": "kp_model_path",
+        "address": "385866d84",
+        "functionAddresses": [
+          "385770ef2"
+        ]
+      },
+      {
+        "symbol": "seg_model_path",
+        "address": "385866d92",
+        "functionAddresses": [
+          "385770ef2"
+        ]
+      },
+      {
+        "symbol": "smart_crop",
+        "address": "385866dba",
+        "functionAddresses": [
+          "385770ef2"
+        ]
+      },
+      {
+        "symbol": "batch_sz",
+        "address": "385866dc5",
+        "functionAddresses": [
+          "385770ef2",
+          "3857a8ce6",
+          "3857a9faf"
+        ]
+      },
+      {
+        "symbol": "_run_infer_local",
+        "address": "385866fea",
+        "functionAddresses": [
+          "38579e989"
+        ]
+      },
+      {
+        "symbol": "predict",
+        "address": "385866ffb",
+        "functionAddresses": [
+          "38579ebf7"
+        ]
+      },
+      {
+        "symbol": "run_infer_local",
+        "address": "385867054",
+        "functionAddresses": [
+          "3857a73e2"
+        ]
+      },
+      {
+        "symbol": "_initialize_model",
+        "address": "3858670a0",
+        "functionAddresses": [
+          "3857ab947"
+        ]
+      }
+    ],
+    "entryPointNames": [
+      "sys",
+      "npx",
+      "__name__",
+      "run_infer_local",
+      "argv"
+    ],
+    "fullNeuralArchitectureRecovered": false,
+    "trainingAlgorithmRecovered": false,
+    "privateEvidenceDigests": [
+      {
+        "relative": "ghidra/main-boundaries/38569e40c.c",
+        "sha256": "0cd260915a8afc6122b7d9ae9b6696307033cfa096c511f8184d8d06148dd97a"
+      },
+      {
+        "relative": "ghidra/main-boundaries/3856bf3b3.c",
+        "sha256": "05ee90245cda8bd7ecaa781663bb83cdef6dcbb9f050bf01f9b485f96945b7d4"
+      },
+      {
+        "relative": "ghidra/main-boundaries/385715cb7.c",
+        "sha256": "485e35915df66b95df8ce37ac56b82b99a7cf6a35b0eb6132156780e37308a13"
+      },
+      {
+        "relative": "ghidra/main-boundaries/385721703.c",
+        "sha256": "78af19a1f92feb3989b3cf16e165d02903ee05e4fdfd7aedce94f8b39523cdd4"
+      },
+      {
+        "relative": "ghidra/main-boundaries/3857288db.c",
+        "sha256": "55928af2991aca8bb37ec37df5d9f49a6cf48546fe55db386990e170286d3f0f"
+      },
+      {
+        "relative": "ghidra/main-boundaries/385770ef2.c",
+        "sha256": "225af55dedf31ad338ba7c2fb621a99e3e3643acfc15bd0c57689fab98094db1"
+      },
+      {
+        "relative": "ghidra/main-boundaries/3857994c4.c",
+        "sha256": "65817e52d9eb86b5714b04a46e0fb82232868d78cb9b2e6d5b13954adce39645"
+      },
+      {
+        "relative": "ghidra/main-boundaries/38579e989.c",
+        "sha256": "be20f2302959f81a520bf8c2272ebb3784a07d89102430b2f4a697181abd6732"
+      },
+      {
+        "relative": "ghidra/main-boundaries/3857a73e2.c",
+        "sha256": "cce3bd9d377ce9738c052acc6bd35db3b7add882537ef5fef26d64102aaf374f"
+      },
+      {
+        "relative": "ghidra/main-boundaries/3857a8ce6.c",
+        "sha256": "05f44fa25d6846be09e62d5df0e4a7fda51bedc49400608363d55a99c30a53fb"
+      },
+      {
+        "relative": "ghidra/main-boundaries/3857a9faf.c",
+        "sha256": "2d1a931978b8ea36e7da9071cea0fc10e5160f51f8221d2dc169517b72f98ed6"
+      },
+      {
+        "relative": "ghidra/main-boundaries/boundaries.json",
+        "sha256": "cb065524ba62d0706c7f19c90ec68fead29e94c5cc516d5e76225859bba8313b"
+      },
+      {
+        "relative": "ghidra/selected-functions/38579ebf7.c",
+        "sha256": "f26a7e1039b0a8f56d2e875e214a4720d8e1761f2aacdd0fcaff7a645e49258a"
+      },
+      {
+        "relative": "ghidra/selected-functions/3857ab947.c",
+        "sha256": "2f3da122032e2e14b2ecfd12816a736952a01f420ebc41991252483200b9f663"
+      },
+      {
+        "relative": "ghidra/selected-functions/3857c48d8.c",
+        "sha256": "08a8f76004536382426b1ba432f5e5c7745acab26c7c5e844127a53c6e5c8667"
+      },
+      {
+        "relative": "ghidra/selected-functions/selected-functions.json",
+        "sha256": "77d45f77880c2e1b22b0a8b4735d1b6f06f7a9452a887cea6c1d920e7c22e525"
+      }
+    ]
+  },
+  "modelGraphs": [
+    {
+      "relative": "nets/smartcrop/face/retinaface_mv2.onnx",
+      "graphCount": 1,
+      "nodeCount": 350,
+      "initializerCount": 162,
+      "operators": {
+        "Add": 12,
+        "Cast": 2,
+        "Clip": 35,
+        "Concat": 19,
+        "Constant": 111,
+        "Conv": 84,
+        "Gather": 13,
+        "Identity": 6,
+        "LeakyRelu": 14,
+        "Relu": 3,
+        "Reshape": 9,
+        "Resize": 2,
+        "Shape": 15,
+        "Slice": 2,
+        "Softmax": 1,
+        "Transpose": 9,
+        "Unsqueeze": 13
+      },
+      "inputs": [
+        {
+          "name": "input",
+          "dimensions": [
+            "batch_size",
+            3,
+            "height",
+            "width"
+          ],
+          "elementType": [
+            1
+          ]
+        }
+      ],
+      "outputs": [
+        {
+          "name": "loc",
+          "dimensions": [
+            "batch_size",
+            "Concatloc_dim_1",
+            "Concatloc_dim_2"
+          ],
+          "elementType": [
+            1
+          ]
+        },
+        {
+          "name": "conf",
+          "dimensions": [
+            "batch_size",
+            "Softmaxconf_dim_1",
+            "Softmaxconf_dim_2"
+          ],
+          "elementType": [
+            1
+          ]
+        },
+        {
+          "name": "landmarks",
+          "dimensions": [
+            "batch_size",
+            "Concatlandmarks_dim_1",
+            "Concatlandmarks_dim_2"
+          ],
+          "elementType": [
+            1
+          ]
+        }
+      ],
+      "modelExecution": false,
+      "weightValuesRead": false,
+      "producer": "pytorch",
+      "producerVersion": "2.4.0"
+    },
+    {
+      "relative": "nets/smartcrop/kp/rtmo-s_8xb32-600e_body7-640x640-dac2bf74_20231211.onnx",
+      "graphCount": 1,
+      "nodeCount": 729,
+      "initializerCount": 200,
+      "operators": {
+        "Abs": 1,
+        "Add": 52,
+        "Cast": 4,
+        "Clip": 3,
+        "Concat": 53,
+        "Constant": 44,
+        "ConstantOfShape": 4,
+        "Conv": 80,
+        "Cos": 2,
+        "Div": 13,
+        "Equal": 1,
+        "Erf": 1,
+        "Exp": 3,
+        "Expand": 2,
+        "Flatten": 9,
+        "Gather": 49,
+        "Gemm": 1,
+        "Identity": 13,
+        "Less": 2,
+        "MatMul": 16,
+        "MaxPool": 3,
+        "Mul": 100,
+        "Neg": 1,
+        "NonMaxSuppression": 1,
+        "Pow": 4,
+        "Range": 3,
+        "ReduceMax": 3,
+        "ReduceMean": 4,
+        "ReduceSum": 5,
+        "Relu": 1,
+        "Reshape": 29,
+        "Resize": 2,
+        "Shape": 38,
+        "Sigmoid": 70,
+        "Sin": 2,
+        "Slice": 34,
+        "Softmax": 1,
+        "Split": 4,
+        "Sqrt": 2,
+        "Sub": 8,
+        "Tile": 2,
+        "TopK": 2,
+        "Transpose": 22,
+        "Unsqueeze": 31,
+        "Where": 4
+      },
+      "inputs": [
+        {
+          "name": "input",
+          "dimensions": [
+            "batch",
+            3,
+            640,
+            640
+          ],
+          "elementType": [
+            1
+          ]
+        }
+      ],
+      "outputs": [
+        {
+          "name": "dets",
+          "dimensions": [
+            "batch",
+            "Reshapedets_dim_1",
+            "Reshapedets_dim_2"
+          ],
+          "elementType": [
+            1
+          ]
+        },
+        {
+          "name": "keypoints",
+          "dimensions": [
+            "batch",
+            "Concatkeypoints_dim_1",
+            "Concatkeypoints_dim_2",
+            "Concatkeypoints_dim_3"
+          ],
+          "elementType": [
+            1
+          ]
+        }
+      ],
+      "modelExecution": false,
+      "weightValuesRead": false,
+      "producer": "pytorch",
+      "producerVersion": "1.12.1"
+    },
+    {
+      "relative": "nets/smartcrop/seg/yolact_resnet50.onnx",
+      "graphCount": 1,
+      "nodeCount": 244,
+      "initializerCount": 140,
+      "operators": {
+        "Add": 19,
+        "Concat": 5,
+        "Constant": 26,
+        "Conv": 86,
+        "MaxPool": 1,
+        "Relu": 63,
+        "Reshape": 15,
+        "Resize": 3,
+        "Shape": 2,
+        "Slice": 2,
+        "Softmax": 1,
+        "Tanh": 5,
+        "Transpose": 16
+      },
+      "inputs": [
+        {
+          "name": "input",
+          "dimensions": [
+            1,
+            3,
+            550,
+            550
+          ],
+          "elementType": [
+            1
+          ]
+        }
+      ],
+      "outputs": [
+        {
+          "name": "loc",
+          "dimensions": [
+            1,
+            19248,
+            4
+          ],
+          "elementType": [
+            1
+          ]
+        },
+        {
+          "name": "conf",
+          "dimensions": [
+            1,
+            19248,
+            81
+          ],
+          "elementType": [
+            1
+          ]
+        },
+        {
+          "name": "mask",
+          "dimensions": [
+            1,
+            19248,
+            32
+          ],
+          "elementType": [
+            1
+          ]
+        },
+        {
+          "name": "priors",
+          "dimensions": [
+            19248,
+            4
+          ],
+          "elementType": [
+            1
+          ]
+        },
+        {
+          "name": "proto",
+          "dimensions": [
+            1,
+            138,
+            138,
+            32
+          ],
+          "elementType": [
+            1
+          ]
+        }
+      ],
+      "modelExecution": false,
+      "weightValuesRead": false,
+      "producer": "pytorch",
+      "producerVersion": "2.3.1"
+    },
+    {
+      "relative": "culling/_internal/neurapix/ai/assets/models/yunet.onnx",
+      "graphCount": 1,
+      "nodeCount": 115,
+      "initializerCount": 124,
+      "operators": {
+        "Add": 2,
+        "Conv": 59,
+        "MaxPool": 4,
+        "Relu": 18,
+        "Reshape": 12,
+        "Resize": 2,
+        "Sigmoid": 6,
+        "Transpose": 12
+      },
+      "inputs": [
+        {
+          "name": "input",
+          "dimensions": [
+            1,
+            3,
+            640,
+            640
+          ],
+          "elementType": [
+            1
+          ]
+        }
+      ],
+      "outputs": [
+        {
+          "name": "cls_8",
+          "dimensions": [
+            1,
+            6400,
+            1
+          ],
+          "elementType": [
+            1
+          ]
+        },
+        {
+          "name": "cls_16",
+          "dimensions": [
+            1,
+            1600,
+            1
+          ],
+          "elementType": [
+            1
+          ]
+        },
+        {
+          "name": "cls_32",
+          "dimensions": [
+            1,
+            400,
+            1
+          ],
+          "elementType": [
+            1
+          ]
+        },
+        {
+          "name": "obj_8",
+          "dimensions": [
+            1,
+            6400,
+            1
+          ],
+          "elementType": [
+            1
+          ]
+        },
+        {
+          "name": "obj_16",
+          "dimensions": [
+            1,
+            1600,
+            1
+          ],
+          "elementType": [
+            1
+          ]
+        },
+        {
+          "name": "obj_32",
+          "dimensions": [
+            1,
+            400,
+            1
+          ],
+          "elementType": [
+            1
+          ]
+        },
+        {
+          "name": "bbox_8",
+          "dimensions": [
+            1,
+            6400,
+            4
+          ],
+          "elementType": [
+            1
+          ]
+        },
+        {
+          "name": "bbox_16",
+          "dimensions": [
+            1,
+            1600,
+            4
+          ],
+          "elementType": [
+            1
+          ]
+        },
+        {
+          "name": "bbox_32",
+          "dimensions": [
+            1,
+            400,
+            4
+          ],
+          "elementType": [
+            1
+          ]
+        },
+        {
+          "name": "kps_8",
+          "dimensions": [
+            1,
+            6400,
+            10
+          ],
+          "elementType": [
+            1
+          ]
+        },
+        {
+          "name": "kps_16",
+          "dimensions": [
+            1,
+            1600,
+            10
+          ],
+          "elementType": [
+            1
+          ]
+        },
+        {
+          "name": "kps_32",
+          "dimensions": [
+            1,
+            400,
+            10
+          ],
+          "elementType": [
+            1
+          ]
+        }
+      ],
+      "modelExecution": false,
+      "weightValuesRead": false,
+      "producer": "pytorch",
+      "producerVersion": "1.7"
+    }
+  ],
+  "opaqueEditingContainers": [
+    {
+      "bytes": 1091717639,
+      "sha256": "742ff1f9b895770c97f41132530c526edff876732f7a6eec3a2d2fd887d8b241"
+    },
+    {
+      "bytes": 1091718279,
+      "sha256": "60af7cc98e56d245bef12d288082187c0963b733c413814f5321fd6a5fb0649a"
+    }
+  ],
+  "verifiedPackageMetadata": {
+    "editingTorchVersion": "2.14.0+cpu",
+    "editingTorchCudaBuild": null,
+    "editingOnnxRuntimeVersion": "1.30.0",
+    "cullingContainsCudaLibraries": true
+  },
+  "limitations": [
+    "Native decompilation and named declarations do not prove dynamic reachability or correct model predictions.",
+    "Opaque editing containers were not deserialized, decrypted, converted or used in the independent product.",
+    "The native module contains Cython-generated/obfuscated implementation; 14 selected decompilations are not complete source recovery.",
+    "No vendor defects or performance comparisons have been established."
+  ],
+  "opaqueFaceFeatureModel": {
+    "relative": "culling/_internal/neurapix/ai/assets/models/model.onnx.crypt",
+    "bytes": 21405580
+  }
+}
