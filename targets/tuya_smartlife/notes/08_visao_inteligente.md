@@ -59,5 +59,68 @@
 
 - Com a detecção ligada, o detector chegou a 30 análises/s, mas o único "movimento" do trecho era o **relógio da câmera** (canto superior esquerdo). No 0.18 a máscara de movimento é um dicionário com nome (`motion.mask.relogio.coordinates`); a string simples é recusada com "Input should be a valid dictionary" e a câmera some.
 - Com o relógio mascarado, o que ainda aciona o detector são folhas balançando (planta à direita, vegetação atrás da concertina). O detector analisa e não acusa ninguém. **Nenhum falso positivo** em 15 min de cena parada com vento, mas também nenhum evento real: o trecho não tinha visita.
-- Próxima amostra: 30/10 por volta das 14:06 (horário local). A campainha tocou (log do portal "CAMPAINHA ACIONADA 17:06:31 UTC") e o AW300 Portão foi aberto várias vezes logo depois. Arquivos: `aw300_portao` 14-00-00, Outdoor 14-00-00 visão 1 e 2, `mi2k_externa` 14-00-00. Dependem da liberação de downloads automáticos no Chrome.
+- Próxima amostra: 30/10 por volta das 14:06 (horário local). A campainha tocou (log do portal "CAMPAINHA ACIONADA 17:06:31 UTC") e o AW300 Portão foi aberto várias vezes logo depois.
+
+## Amostras da campainha (30/10, 14:06 local)
+
+Downloads liberados pelo proprietário. Estão em `runtime/vision/samples/`, junto com as 6 amostras de 29/10 (aw300_portao 21h, mi2k_externa 15h e 20h, Outdoor 14h nas duas lentes e 20h na lente 1).
+
+| Câmera | Arquivo | O que mostra às 14:06 |
+|---|---|---|
+| Outdoor Pro lente 2 (rua) | `outdoor_pro_poste_channel2_2026-10-30_14-00-00_visao2.mkv` (2880x1620 HEVC, 11 min) | Visita a pé na calçada, em frente ao portão, a ~410–450 s do arquivo. Carro branco e moto passando a ~160 s; SUV escuro a ~350 s. |
+| Outdoor Pro lente 1 (calçada junto ao muro) | `..._14-00-00_visao1.mkv` | Sem a pessoa no quadro aos 390–400 s. |
+| AW300 Garagem (de dentro, olhando o portão) | `aw300_garagem_2026-10-30_13-55-56.mkv` (2304x1296) | Pessoa atrás do portão das 14:06:43 às 14:07:23, pelo relógio da câmera. |
+| Mi 2K Externa | `mi2k_externa_2026-10-30_13-50-43.mkv` | Não cobre a campainha. O formato do arquivo diz 1019 s, mas os pacotes de vídeo acabam em 617 s (~14:01). |
+| AW300 Portão | só `14-08-47.mkv` (43 s) | **Gravação perdida** entre 13:59:48 e 14:08:47. Ver "Falha de gravação" abaixo. |
+
+Cuidados de tempo:
+- O relógio impresso pela Outdoor está em horário da China (01:06 de 31/10 = 14:06 de 30/10 local). O nome do arquivo está certo.
+- O arquivo da Garagem chamado 13-55-56 começa às 14:00:02 pelo relógio da câmera. O nome do segmento não é confiável para achar o instante exato; vale o relógio da imagem.
+
+Recortes usados no Frigate, em `runtime/vision/samples/cuts/` (cópia sem recodificar, só vídeo):
+- `outdoor_v2_1403.mkv` e `outdoor_v1_1403.mkv`: 180–600 s, ~14:03–14:10.
+- `aw300_garagem_1403.mkv`: 300–540 s, 14:05:32–14:09:32 pelo relógio da câmera.
+
+As câmeras do teste no `config.yml` são `outdoor_rua`, `outdoor_calcada` e `garagem_portao`. Cada uma tem a máscara do relógio e decodifica na GTX (`hwaccel_args: preset-nvidia`, NVDEC ~9%). A `aw300_portao_dia` ficou desligada.
+
+### Resultado (uma volta de 7 min, 12 eventos)
+
+A visita é um homem com mochila e algo na mão, provavelmente entregador. Foi detectada nas três câmeras:
+
+| Câmera | Detecção | Relógio da imagem |
+|---|---|---|
+| `outdoor_calcada` | pessoa 98%, por 69 s, chegando junto ao muro | 01:06:27 China = 14:06:27 |
+| `outdoor_rua` | pessoa 99%, parada em frente ao portão, apontando | 14:07:15 |
+| `garagem_portao` | pessoa 93%, vista pela grade do portão | 14:07:23 |
+
+Veículos:
+- `outdoor_rua`: 3 carros reais passando (até 98%).
+- `garagem_portao`: um carro branco pela grade às 14:08:37 (90%). Isso já é "veículo no portão".
+
+Falsos positivos:
+- `garagem_portao`: 4 eventos "car" (73–75%) do **carro da casa estacionado** na garagem, a caixa grande no centro, sempre que algo se mexe perto dele.
+- Correção na fase 2: uma zona `portao` (faixa da grade) e alertas só em zona, ou o carro da casa como objeto fixo ignorado.
+
+Desempenho com 3 câmeras: inferência 36 ms na CPU (era 10 ms com 1 câmera), GPU 24%, decodificação 14%, temperatura 81 °C. Com mais câmeras, o detector precisa ir para a GTX (ONNX), o que depende da autorização para instalar pacotes.
+
+Próximo passo: zonas (calçada, frente do portão, rua, garagem) e tempo parado para "visita aguardando". Classificar entregador ou carteiro precisa de um segundo modelo (fase 4).
+
+## Falha de gravação do AW300 Portão (descoberta em 2026-10-30)
+
+Somente leitura, pelo índice do portal (`/api/camera/archive`). Por hora, no formato segmentos / MB / minutos declarados:
+
+| Câmera | 29/10 | 30/10 |
+|---|---|---|
+| AW300 Portão | 4–12 seg, **555–1078 MB**, ~60 min | 1–17 seg, **157–409 MB** na maioria das horas (exceções 02h, 04h, 18h, 19h). Durações declaradas absurdas (145, 163, 244 min numa hora). |
+| AW300 Garagem | 4–5 seg, 330–900 MB | bytes normais, mas durações de 71–81 min por hora |
+| Mi 2K Externa | normal | 05–07h com 68–71 MB e 25–28 min; o segmento 13-50-43 declara 1019 s e tem vídeo só até 617 s |
+| Outdoor Pro | normal | **perfeito**: 4 seg de 15 min, 300–420 MB por hora |
+
+Leitura:
+- Duração maior que o tempo real e poucos bytes indicam fluxo que para e volta com salto de carimbo de tempo. O ffmpeg do gravador continua o mesmo arquivo em vez de falhar.
+- No Portão, o buraco de 13:59:48 a 14:08:47 caiu justamente na campainha.
+- A piora começa na noite de 29/10 (23h: 10 segmentos, 350 min declarados), logo depois das publicações 0060–0062 (ponte com cache de GOP, ao vivo compartilhando o alias do gravador, fala). A Outdoor usa outro caminho (sessão dupla) e está limpa.
+- Também pesam os travamentos de memória do NAS (17:11 UTC e 11:30 UTC).
+- Status do gravador: falha 1, "Tempo esgotado ao gravar.", 23:16:05Z.
+- Para fechar a causa faltam os logs da ponte e do gravador no NAS (só leitura) e a comparação com o horário das publicações. Qualquer correção mexe em produção e precisa do OK do proprietário.
 

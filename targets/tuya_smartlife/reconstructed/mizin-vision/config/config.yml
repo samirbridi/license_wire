@@ -33,6 +33,7 @@ objects:
 cameras:
   # Sample recording of 2026-10-29 16:45 (local time), played in a loop as if it were live.
   aw300_portao_dia:
+    enabled: false   # quiet scene already tested; off to leave the CPU for the doorbell samples
     ffmpeg:
       input_args: -re -stream_loop -1 -fflags +genpts
       inputs:
@@ -50,4 +51,47 @@ cameras:
       width: 1280
       height: 720
       fps: 5
+
+  # Doorbell of 2026-10-30 (portal log 17:06:31 UTC = 14:06:31 local). 7-minute windows cut from the
+  # NAS recordings (runtime/vision/samples/cuts); the visitor is at the gate between ~14:06:40 and 14:07:30.
+  # The recordings are HEVC 2880x1620 / 2304x1296 at 20 fps: decoded on the GTX (NVDEC), not on the CPU.
+  outdoor_rua:   # Outdoor Pro, second lens (street and sidewalk in front of the gate)
+    ffmpeg:
+      hwaccel_args: preset-nvidia
+      input_args: -re -stream_loop -1 -fflags +genpts
+      inputs:
+        - path: /samples/cuts/outdoor_v2_1403.mkv
+          roles: [detect]
+    motion:
+      mask:
+        relogio:
+          friendly_name: Relógio da câmera
+          coordinates: 0,0,0.38,0,0.38,0.08,0,0.08
+    detect: {enabled: true, width: 1280, height: 720, fps: 5}
+  outdoor_calcada:   # Outdoor Pro, first lens (sidewalk close to the wall)
+    ffmpeg:
+      hwaccel_args: preset-nvidia
+      input_args: -re -stream_loop -1 -fflags +genpts
+      inputs:
+        - path: /samples/cuts/outdoor_v1_1403.mkv
+          roles: [detect]
+    motion:
+      mask:
+        relogio:
+          friendly_name: Relógio da câmera
+          coordinates: 0,0,0.38,0,0.38,0.08,0,0.08
+    detect: {enabled: true, width: 1280, height: 720, fps: 5}
+  garagem_portao:   # AW300 Garagem, looking from inside at the gate (window 14:05:32-14:09:32 by its clock)
+    ffmpeg:
+      hwaccel_args: preset-nvidia
+      input_args: -re -stream_loop -1 -fflags +genpts
+      inputs:
+        - path: /samples/cuts/aw300_garagem_1403.mkv
+          roles: [detect]
+    motion:
+      mask:
+        relogio:
+          friendly_name: Relógio da câmera
+          coordinates: 0,0,0.27,0,0.27,0.05,0,0.05
+    detect: {enabled: true, width: 1280, height: 720, fps: 5}
 version: 0.18-0
