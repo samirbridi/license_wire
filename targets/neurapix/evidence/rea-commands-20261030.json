@@ -1,0 +1,22 @@
+{
+  "schema": "neurapix.rea-command-receipt/1",
+  "reaVersion": "6.8.0",
+  "npmTarball": "https://registry.npmjs.org/rea-agents/-/rea-agents-6.8.0.tgz",
+  "npmIntegrity": "sha512-9QDeRnGqEDzABZyr04eLnBXBv/c6I9/TWu/6M0MD4pEfkySI/BIgwTODIbAReX3C1x6hjw9+Jlx4A2yUSPZ9ww==",
+  "commands": [
+    {
+      "command": "inspect-desktop-application <preserved-package> --max_entries 1500 --max_probe_bytes 1048576 --format json",
+      "outputSha256": "e00f1eec9e8a35db3170490598cd9a933a54f72c4a1db91630f8c6e7b3ae703c"
+    },
+    {
+      "command": "inspect-artifact <preserved-package>/NeurapixInstantProcessing.lua --format json",
+      "result": "UNSUPPORTED_TARGET"
+    },
+    {
+      "command": "providers --format json",
+      "outputSha256": "ab9ece0605ac571aedbde60ebb22f5ec8d4659c64c0b608e1073cfc4c4bd9910"
+    }
+  ],
+  "vendorExecution": false,
+  "agentConfigurationChanged": false
+}

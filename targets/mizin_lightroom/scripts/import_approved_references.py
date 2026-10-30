@@ -49,7 +49,9 @@ def normalized_event(name):
 def validate(row, model):
     if not isinstance(row, dict) or row.get('schema') != 'mizin-lightroom.approved-reference/1':
         raise ValueError('Unsupported reference schema')
-    if row.get('approvalStatus') != 'REFERENCE_APPROVED_BY_PHOTOGRAPHER' or row.get('approvalSource') != 'USER_CONFIRMED_REVIEWED_SELECTION_IN_PLUGIN':
+    if row.get('approvalStatus') != 'REFERENCE_APPROVED_BY_PHOTOGRAPHER' or row.get('approvalSource') not in (
+            'USER_CONFIRMED_REVIEWED_SELECTION_IN_PLUGIN','USER_CONFIRMED_APPROVED_CATALOG_IN_PLUGIN',
+            'USER_CONFIRMED_COMPLETED_EVENT_IN_PLUGIN'):
         raise ValueError('Explicit reference approval missing')
     if row.get('modelTrainingPerformed') is not False or row.get('sourceMetadataStable') is not True:
         raise ValueError('Invalid collection provenance')

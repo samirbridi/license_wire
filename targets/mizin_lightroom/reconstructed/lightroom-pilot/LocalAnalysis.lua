@@ -57,6 +57,18 @@ function M.showResults(job)
     if not report then error('A tarefa ainda nao tem resultados. Pasta: ' .. job) end
     if report.schema ~= 'mizin-lightroom.selection-analysis/1' then error('Resultado incompativel') end
     if report.status == 'FAILED' then error(tostring(report.error) .. '\n\nPasta de diagnostico: ' .. job) end
+    if report.operation == 'learning-status' or report.operation == 'learning-update' or report.operation == 'feedback' then
+        local state = report.learning or {}
+        LrDialogs.message('Mizin Lightroom - meu aprendizado',
+            'Referencias unicas aprovadas: ' .. tostring(state.uniqueApprovedReferences or 0) .. '\n' ..
+            'Trabalhos: ' .. tostring(state.eventCount or 0) .. '\n' ..
+            'Conflitos entre catalogos aguardando revisao: ' .. tostring(state.conflictingRawFilesExcluded or 0) .. '\n' ..
+            'Avaliacoes registradas: ' .. tostring(state.feedbackCount or 0) .. '\n\n' ..
+            (state.latestCandidate and 'Modelo candidato disponivel. Use Avaliar aprendizado do acervo.' or
+                'O treino automatico comeca com pelo menos tres trabalhos de 50 referencias em cor cada.') ..
+            '\nO modelo anterior permanece disponivel; candidatos sao avaliados separadamente.', 'info')
+        return
+    end
     if report.operation == 'diagnostic' then
         local rt = report.runtime or {}
         LrDialogs.message('Mizin Lightroom - diagnostico local',
@@ -167,7 +179,7 @@ local function makeRequest(operation)
         jobId = LrUUID.generateUUID(), lightroomVersion = 'indisponivel' }
     local versionOK, version = LrTasks.pcall(function() return LrApplication.versionString() end)
     if versionOK then request.lightroomVersion = tostring(version) end
-    if operation == 'diagnostic' then return request end
+    if operation == 'diagnostic' or operation == 'learning-status' or operation == 'learning-update' or operation == 'feedback' then return request end
     local catalog = LrApplication.activeCatalog()
     -- getTargetPhotos can return the filmstrip when no photo is selected.
     if not catalog:getTargetPhoto() then error('Selecione explicitamente de 1 a 100 fotos RAW CR3 no Lightroom.') end
@@ -197,21 +209,23 @@ local function makeRequest(operation)
     return request
 end
 
-function M.run(operation)
+local function executeRequest(operation, suppliedRequest, silent, modelVariant)
     for _, path in ipairs({ 'Runtime/pythonw.exe', 'Runtime/python313.dll', 'Engine/run_local.py',
         'BuildInfo.json', 'Models/pilot-model.json', 'Tools/ExifTool/exiftool.exe' }) do
         if not LrFileUtils.exists(child(_PLUGIN.path, path)) then
             error('Pacote incompleto: ' .. path .. '. Extraia TODO o ZIP em uma pasta nova e adicione essa pasta .lrplugin.')
         end
     end
-    local request = makeRequest(operation)
+    local request = suppliedRequest or makeRequest(operation)
     if not request then return end
+    if modelVariant then request.modelVariant = modelVariant end
     local jobsRoot = child(root(), 'jobs')
     LrFileUtils.createAllDirectories(jobsRoot)
     local job = child(jobsRoot, request.jobId)
     if LrFileUtils.exists(job) then error('Identificador de tarefa repetido; tente novamente.') end
     local command = M.command(_PLUGIN.path, job)
     LrFileUtils.createAllDirectories(job)
+    _G.MizinActiveEngineJob = job
     writeText(child(job, 'request.json'), Json.encode(request))
     local prefs = LrPrefs.prefsForPlugin()
     if operation == 'analyze' then prefs.lastSelectionRun = job
@@ -251,7 +265,21 @@ function M.run(operation)
         end
         progress:done()
     end)
-    M.showResults(job)
+    local report = readJson(child(job, 'results.json'))
+    if not silent then M.showResults(job) end
+    return report, job
+end
+
+function M.run(operation, suppliedRequest, silent, modelVariant)
+    if _G.MizinEngineBusy then error('O motor esta ocupado com outra tarefa. Aguarde a etapa atual ou pause o aprendizado.') end
+    _G.MizinEngineBusy = true
+    local ok, report, job = LrTasks.pcall(function() return executeRequest(operation, suppliedRequest, silent, modelVariant) end)
+    _G.MizinEngineBusy, _G.MizinActiveEngineJob = false, nil
+    if not ok then error(tostring(report)) end
+    if operation == 'analyze' and not silent and LrPrefs.prefsForPlugin().askLearningFeedback == true then
+        dofile(child(_PLUGIN.path, 'AcervoLearning.lua')).feedback()
+    end
+    return report, job
 end
 
 function M.lastResults()

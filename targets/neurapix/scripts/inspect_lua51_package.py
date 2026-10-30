@@ -17,8 +17,8 @@ class Chunk:
         if endian not in (0, 1) or self.int_size != 4 or self.size_t not in (4, 8) or self.instruction_size != 4 or self.number_size != 8 or integral != 0:
             raise ValueError('Unsupported Lua ABI')
         self.endian = '<' if endian else '>'
-        self.strings, self.numbers, self.prototypes = [], [], 0
-        self.prototype(0)
+        self.strings, self.numbers, self.prototypes, self.functions = [], [], 0, []
+        self.prototype(0, '0')
         if self.pos != len(data):
             raise ValueError('Trailing chunk bytes')
 
@@ -47,27 +47,36 @@ class Chunk:
             raise ValueError('Nonterminated Lua string')
         return value[:-1].decode('utf-8', errors='replace') if size else ''
 
-    def prototype(self, depth):
+    def prototype(self, depth, path):
         if depth > 64 or self.prototypes > 100000:
             raise ValueError('Lua prototype limit')
         self.prototypes += 1
+        prototype_offset=self.pos
         self.string()  # source/debug names are not published
-        self.take(8 + 4)  # line boundaries and function flags
-        self.take(self.count() * self.instruction_size)
+        self.take(8)
+        flags=self.take(4)
+        code_count=self.count();code_offset=self.pos
+        instructions=[self.integer(4) for _ in range(code_count)]
+        function={'path':path,'offset':prototype_offset,'codeOffset':code_offset,'upvalues':flags[0],
+                  'instructions':instructions,'constants':[],'children':[]}
+        self.functions.append(function)
         for _ in range(self.count()):
+            offset=self.pos
             kind = self.integer(1)
+            value=None
             if kind == 0:
                 pass
             elif kind == 1:
-                self.take(1)
+                value=self.integer(1)!=0
             elif kind == 3:
-                self.numbers.append(struct.unpack(self.endian+'d', self.take(8))[0])
+                value=struct.unpack(self.endian+'d', self.take(8))[0];self.numbers.append(value)
             elif kind == 4:
-                self.strings.append(self.string())
+                value=self.string();self.strings.append(value)
             else:
                 raise ValueError('Unsupported Lua constant tag')
-        for _ in range(self.count()):
-            self.prototype(depth+1)
+            function['constants'].append({'offset':offset,'value':value})
+        for i in range(self.count()):
+            child_path=path+'/'+str(i);function['children'].append(child_path);self.prototype(depth+1,child_path)
         self.take(self.count() * 4)
         for _ in range(self.count()):
             self.string()

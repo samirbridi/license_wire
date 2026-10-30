@@ -29,9 +29,9 @@ def populate_engine(plugin, runtime_base, model_folder, version):
         shutil.copytree(sources, plugin / 'ThirdPartySources')
     engine = plugin / 'Engine'
     engine.mkdir()
-    for name in ('local_engine.py', 'run_local.py'):
+    for name in ('local_engine.py', 'run_local.py', 'learning_store.py'):
         shutil.copy2(ROOT / 'reconstructed/local-engine' / name, engine / name)
-    for name in ('raw_features.py', 'train_numeric_pilot.py'):
+    for name in ('raw_features.py', 'train_numeric_pilot.py', 'import_approved_references.py'):
         shutil.copy2(ROOT / 'scripts' / name, engine / name)
     models = plugin / 'Models'
     models.mkdir()
@@ -40,7 +40,9 @@ def populate_engine(plugin, runtime_base, model_folder, version):
     info = {'schema': 'mizin-lightroom.local-bundle/1', 'version': version,
             'styleName': 'Meu estilo - piloto de formatura', 'modelSha256': sha(models / 'pilot-model.json'),
             'experimental': True, 'catalogWritesImplemented': False, 'maximumPhotosPerJob': 100,
-            'referenceCollectionImplemented': True, 'automaticModelTrainingImplemented': False,
+            'referenceCollectionImplemented': True, 'automaticModelTrainingImplemented': True,
+            'automaticModelActivationImplemented': False, 'catalogCorpusCollectionImplemented': True,
+            'userFeedbackImplemented': True,
             'referencePackageExportImplemented': True,
             'nativeNewSelectionFlowValidated': False}
     (plugin / 'BuildInfo.json').write_text(json.dumps(info, indent=2), encoding='utf-8')
@@ -91,7 +93,19 @@ Este pacote calcula sugestoes novas a partir dos RAWs selecionados, com Python, 
 4. Selecione inicialmente 1 a 5 RAWs CR3 em cor, da Canon EOS R6m2. Execute Mizin: analisar fotos selecionadas. O limite deste piloto e 100 fotos por tarefa.
 5. Revise os valores na janela. Abrir pasta dos resultados mostra results.json, results.csv e os logs. Mizin: ver ultimos resultados permite consultar novamente a ultima analise.
 
-## Coletar referencias para ampliar o treino
+## Aprender com acervo, novos eventos e sua opiniao
+
+1. Abra um catalogo e execute Mizin: aprender com catalogo atual. O plugin localiza fotos com ajustes, filtra originais CR3 em cor e pede uma confirmacao de que as edicoes estao finais. Nao e necessario selecionar grupos de 100. Nesta versao, ate 10.000 referencias entram em uma fila, processada automaticamente em lotes de 25.
+2. Abra os outros catalogos e repita uma vez em cada um. O SDK trabalha no catalogo aberto; a base de aprendizado e compartilhada entre os catalogos na mesma maquina. RAWs repetidos nao contam duas vezes. Rotulos conflitantes entre catalogos sao excluidos do treino ate revisao, e revisoes anteriores ficam preservadas.
+3. Nos trabalhos novos, selecione as fotos finais de um evento e use Mizin: registrar evento concluido. Fotos que mudarem depois da confirmacao ficam pendentes de nova aprovacao. Camera diferente da Canon EOS R6m2, P&B, copias virtuais e formatos diferentes de CR3 continuam fora deste piloto.
+4. Use Mizin: continuar aprendizado se pausar uma importacao. Filas aprovadas interrompidas sem pausa sao retomadas ao reabrir seu catalogo. O plugin nao varre catalogos fechados nem presume que fotos novas estejam aprovadas.
+5. Apos importar pelo menos tres trabalhos com 50 referencias unicas cada, o motor treina automaticamente um candidato local. Um evento separado e usado somente uma vez na avaliacao; novas rodadas aguardam um evento ainda nao utilizado. Quantidade e metricas numericas nao garantem qualidade fotografica.
+6. Mizin: meu aprendizado mostra referencias, trabalhos e conflitos. Mizin: avaliar aprendizado do acervo calcula sugestoes com o candidato. O modelo anterior continua disponivel no comando de analise original. Nao ha ativacao automatica nem aplicacao de ajustes no catalogo.
+7. Mizin: minha opiniao sobre as sugestoes registra gostei/precisei ajustar/nao gostei e uma observacao. Voce pode ativar a pergunta ao fim das analises. Opinioes e textos nao viram ajustes de treino; os ajustes finais aprovados entram pelo comando de evento concluido.
+
+Todos os dados, historicos e candidatos ficam na maquina de edicao, dentro de MizinLightroomLocal. A nova interface precisa de confirmacao no Lightroom real; o teste local com SDK doubles nao valida a interface do aplicativo.
+
+## Coleta manual e transferencia opcional
 
 1. Selecione inicialmente 5 RAWs originais, em cor, com os dez ajustes basicos ja revisados e aprovados. O piloto aceita de 1 a 100 fotos por coleta, da Canon EOS R6m2.
 2. Execute Mizin: coletar referencias aprovadas. Informe a data e o nome do trabalho e confirme a revisao final. Use exatamente o mesmo nome em coletas do mesmo trabalho.

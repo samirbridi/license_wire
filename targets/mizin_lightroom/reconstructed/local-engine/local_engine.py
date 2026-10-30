@@ -172,8 +172,11 @@ def reference_batch(request):
     # Grouping is explicit; the collector never guesses an event from a filename.
     import hashlib
     event_id = hashlib.sha256(name.casefold().encode('utf-8')).hexdigest()
+    approval = {'catalog':'USER_CONFIRMED_APPROVED_CATALOG_IN_PLUGIN',
+                'event':'USER_CONFIRMED_COMPLETED_EVENT_IN_PLUGIN'}.get(request.get('referenceApprovalScope'),
+                       'USER_CONFIRMED_REVIEWED_SELECTION_IN_PLUGIN')
     return {'eventName': name, 'eventGroupId': event_id,
-            'approvalSource': 'USER_CONFIRMED_REVIEWED_SELECTION_IN_PLUGIN', 'approvedUtc': utc_now(),
+            'approvalSource': approval, 'approvedUtc': utc_now(),
             'parameterScope': 'TEN_BASIC_GLOBAL_DEVELOP_CONTROLS', 'modelTrainingPerformed': False}
 
 
@@ -188,6 +191,8 @@ def export_references(path, rows, batch, model, runtime):
                          'approvalStatus': 'REFERENCE_APPROVED_BY_PHOTOGRAPHER', 'styleVariant': 'color',
                          'currentParameters': row['current'], 'features': row['features'], 'featureNames': model['featureNames'],
                          'inputDomain': DOMAIN, 'rawpyVersion': runtime['rawpy'], 'librawVersion': runtime['libraw']}
+            if batch.get('catalogIdentity'):
+                reference.update({'catalogIdentity':batch['catalogIdentity'],'catalogPhotoId':row['id']})
             stream.write(json.dumps(reference, ensure_ascii=False, allow_nan=False) + '\n')
 
 
@@ -243,7 +248,7 @@ def run_job(job, bundle):
     try:
         progress('STARTING')
         request = read_json(job / 'request.json')
-        if request.get('schema') != 'mizin-lightroom.selection-request/1' or request.get('operation') not in ('analyze', 'diagnostic', 'collect'):
+        if request.get('schema') != 'mizin-lightroom.selection-request/1' or request.get('operation') not in ('analyze', 'diagnostic', 'collect', 'learning-status', 'learning-update', 'feedback'):
             raise ValueError('Pedido incompativel')
         collecting = request['operation'] == 'collect'
         batch = reference_batch(request) if collecting else None
@@ -252,16 +257,39 @@ def run_job(job, bundle):
         if collecting:
             batch.update({'collectorVersion': info['version'], 'jobId': request['jobId'],
                           'lightroomVersion': request.get('lightroomVersion')})
+            if request.get('learnFromReferences') is True:
+                identity=request.get('catalogIdentity')
+                if not isinstance(identity,str) or not 1<=len(identity)<=2000:
+                    raise ValueError('Identidade do catalogo ausente no aprendizado')
+                batch['catalogIdentity']=identity
         model_path = bundle / 'Models' / 'pilot-model.json'
         if sha256_file(model_path) != info['modelSha256']:
             raise ValueError('Modelo diferente do incluido no pacote')
         model = validate_model(read_json(model_path))
+        learning_root=job.parent/'learning'
+        if request.get('modelVariant') == 'candidate':
+            if request['operation'] != 'analyze':raise ValueError('Modelo candidato e usado somente na avaliacao de sugestoes')
+            from learning_store import latest_candidate
+            model_path,candidate_sha=latest_candidate(learning_root)
+            model=validate_model(read_json(model_path))
         runtime = runtime_info()
         if runtime['rawpy'] not in model['rawpyVersions'] or runtime['libraw'] not in model['librawVersions']:
             raise ValueError('Decodificador diferente do dominio de treino')
         report.update({'version': info['version'], 'modelSha256': info['modelSha256'], 'modelStatus': model['status'],
                        'styleName': info['styleName'], 'runtime': runtime, 'lightroomVersion': request.get('lightroomVersion'),
                        'operation': request['operation'], 'displayTargets': list(DISPLAY_TARGETS)})
+        if request.get('modelVariant') == 'candidate':
+            report.update({'modelSha256':candidate_sha,'styleName':'Meu estilo - candidato do acervo','usingCandidateModel':True})
+        if request['operation'] in ('learning-status','learning-update','feedback'):
+            from learning_store import summary,record_feedback,train_candidate
+            if request['operation']=='feedback':
+                feedback=request.get('feedback',{})
+                report['learning']=record_feedback(learning_root,feedback.get('rating'),feedback.get('note',''),feedback.get('analysisJobId',''))
+            else:
+                if request['operation']=='learning-update':report['candidateTraining']=train_candidate(learning_root,model)
+                report['learning']=summary(learning_root)
+            report['status']='COMPLETED'
+            return report
         executable = bundle / 'Tools' / 'ExifTool' / 'exiftool.exe'
         if not executable.is_file():
             raise ValueError('ExifTool ausente; extraia o pacote completo')
@@ -348,6 +376,11 @@ def run_job(job, bundle):
                                 'COMPLETED_WITH_SKIPS' if any(r['status'] == 'SKIPPED' for r in report['results']) else 'COMPLETED')
         if collecting:
             export_references(job / 'references.jsonl', report['results'], batch, model, runtime)
+            if request.get('learnFromReferences') is True and any(r['status']=='REFERENCE_COLLECTED' for r in report['results']):
+                from learning_store import register,summary
+                references=[json.loads(line) for line in (job/'references.jsonl').read_text(encoding='utf-8').splitlines() if line.strip()]
+                report['learning']=register(learning_root,references,model,request['catalogIdentity'])
+                report['learning'].update(summary(learning_root))
         else:
             csv_report(job / 'results.csv', report['results'])
     except Exception as error:

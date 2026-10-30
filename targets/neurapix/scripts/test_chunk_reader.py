@@ -1,6 +1,7 @@
 import unittest
 from lupa.lua51 import LuaRuntime
 from inspect_lua51_package import Chunk
+from trace_lua51_boundaries import trace
 
 
 class ChunkReaderTests(unittest.TestCase):
@@ -22,6 +23,15 @@ class ChunkReaderTests(unittest.TestCase):
     def test_declared_unbounded_source_string_is_rejected_before_reading(self):
         data=bytearray(self.fixture());size=data[8];data[12:12+size]=(2**32).to_bytes(size,'little')
         with self.assertRaisesRegex(ValueError,'string limit'):Chunk(bytes(data))
+
+    def test_resolves_imported_sdk_calls_inside_closures_without_executing_them(self):
+        runtime=LuaRuntime(encoding=None)
+        data=runtime.eval(b'string.dump(function() local task=import("LrTasks"); local function child() task.sleep(2) end; return {run=child} end)')
+        calls,exports=trace(Chunk(data))
+        sleep=next(c for c in calls if c['target']=='LrTasks.sleep')
+        self.assertEqual(sleep['literalArguments'],[2])
+        self.assertIn('run',[e['name'] for e in exports])
+        self.assertGreater(sleep['fileOffset'],12)
 
 
 if __name__=='__main__':unittest.main(verbosity=2)

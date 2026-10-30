@@ -1,0 +1,33 @@
+{
+  "schema": "neurapix.rea-analysis-summary/1",
+  "reaVersion": "6.8.0",
+  "nodeVersion": "24.18.0",
+  "nodeEngineRangeWarning": "REA declares ^24.22.1; bounded inspection commands nevertheless completed; no native provider opened.",
+  "reaDesktopInspectionSucceeded": true,
+  "reaDesktopCoverage": {
+    "status": "complete-within-scan",
+    "entries_examined": 1093,
+    "files_probed": 40,
+    "bytes_read": 13308,
+    "symlinks_not_followed": 0,
+    "special_entries_omitted": 0,
+    "limits": {
+      "max_entries": 1500,
+      "max_probe_bytes": 1048576
+    }
+  },
+  "reaLuaInspectionSupported": false,
+  "vendorCodeExecuted": false,
+  "vendorNetworkRequestsMade": false,
+  "modules": 73,
+  "luaPrototypes": 1916,
+  "resolvedStaticCallSites": 7137,
+  "externalEngineFilename": "npx.exe",
+  "externalEngineIncludedInProvidedPackage": false,
+  "learningWeightsIdentifiedInProvidedPackage": false,
+  "personalStyleExported": false,
+  "logAnalysisScope": "Executable-path regex only; log payloads and credentials not disclosed.",
+  "nativeCoreAnalysisComplete": false,
+  "runtimeReadAttempt": "ACCESS_DENIED_ON_CONFIRMED_EXECUTABLE_PATH",
+  "staticTracerTestsPassed": 4
+}

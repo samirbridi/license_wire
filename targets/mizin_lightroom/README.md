@@ -1,11 +1,13 @@
 # Mizin Lightroom - aquisicao local e perfil de referencia
 
 > **Versão da Análise**: `v0.7.0 (build 0012)`
-> Atualizado em: 2026-10-29, America/Sao_Paulo.
+> Atualizado em: 2026-10-30, America/Sao_Paulo.
 
 Projeto independente para Lightroom Classic no Windows, inicialmente para uso pessoal. Treinamento e inferencia devem acontecer nos computadores do usuario. O Lightroom continua responsavel pela revelacao e renderizacao final.
 
 ## Estado Atual e Próximos Passos
+
+Implementado aprendizado local do acervo: busca de fotos com ajustes no catalogo aberto, confirmacao de edicoes finais e lotes automaticos de 25, com fila retomavel e base compartilhada entre catalogos. Novos menus registram evento concluido, opiniao e avaliacao do candidato. Tres eventos com 50 referencias cada permitem um treino local de candidato, sem ativar pesos automaticamente. O piloto continua limitado a dez controles e RAWs CR3 em cor da Canon EOS R6m2. 68 testes passaram; a nova interface e o acervo completo precisam de QA nativo. Detalhes em `notes/16_aprendizado_do_acervo.md`.
 
 Entrega atual: **v0.7.0 (build 0012)**, ZIP validado com 1.624 hashes, nove fontes Lua e execucao real do runtime isolado em analise/coleta. A coleta do pacote final gerou um ZIP de dados e ignorou um P&B, sem modificar o RAW. Copias entregues com SHA-256 igual na subpasta `MizinLightroom-0.7.0-build0012-b5d2e2af` de Downloads/PLUGIN LIGHTROOM e de `\\192.168.1.58\Users\Public\Documents\MizinLightroomPilot`. O novo botao ainda depende de confirmacao no Lightroom real. Recibos em `evidence/reference-package-plugin-20261029.json` e `evidence/reference-package-delivery-20261029.json`.
 
@@ -40,11 +42,11 @@ O coletor do build 0010 foi confirmado no Lightroom 15.6 com uma coleta de 100 f
 
 ## Motor local para fotos selecionadas
 
-O pacote inclui runtime Windows x64, dependencias, modelo privado e cinco comandos de Biblioteca > Extras de plug-in: analisar fotos selecionadas, coletar referencias aprovadas, ver ultimos resultados, diagnosticar motor local e comparar a amostra salva do piloto. A analise usa os caminhos da selecao atual, sem depender do catalogo de outubro ou da lista de 92 fotos.
+O pacote inclui runtime Windows x64, dependencias, modelo privado e comandos de Biblioteca > Extras de plug-in: analisar fotos selecionadas, coletar referencias aprovadas, ver ultimos resultados, diagnosticar motor local e comparar a amostra salva do piloto. A analise usa os caminhos da selecao atual, sem depender do catalogo de outubro ou da lista de 92 fotos.
 
 O piloto aceita de 1 a 100 RAWs CR3 em cor da Canon EOS R6m2. Exibe exposicao, temperatura e contraste; o CSV inclui os dez controles experimentais. Registra progresso, cancelamento, erros por foto e SHA-256 das fontes, preservando os originais. Os valores de referencia exibidos foram lidos no inicio da tarefa. As imagens tecnicas geradas sao entradas LibRaw, sem o estilo aplicado, e nao representam uma previa Adobe.
 
-Atualizacao: extrair o ZIP inteiro em uma pasta nova e permanente; guardar a instalacao anterior. No Gerenciador de plug-ins, remover o cadastro antigo e adicionar a nova pasta `.lrplugin`. Executar primeiro o diagnostico e depois analisar 1 a 5 fotos. O mesmo identificador de plugin e mantido. Passos completos e limites em `notes/10_motor_local_e_atualizacao.md`; o LEIA-ME acompanha o ZIP privado. Escrita no catalogo, copias virtuais, treino pelo menu, selecao automatica e fluxos de importacao continuam pendentes.
+Atualizacao: extrair o ZIP inteiro em uma pasta nova e permanente; guardar a instalacao anterior. No Gerenciador de plug-ins, remover o cadastro antigo e adicionar a nova pasta `.lrplugin`. Executar primeiro o diagnostico e depois analisar 1 a 5 fotos. O mesmo identificador de plugin e mantido. Passos completos e limites em `notes/10_motor_local_e_atualizacao.md`; o LEIA-ME acompanha o ZIP privado. Escrita no catalogo, copias virtuais, selecao automatica e automacao geral de importacao continuam pendentes. O aprendizado do acervo tem seus menus e candidatos locais separados, descritos na nota 16.
 
 Para preparar treino, selecionar inicialmente cinco RAWs originais em cor com ajustes finais aprovados e executar **Mizin: coletar referencias aprovadas**. Informar data/nome do trabalho e confirmar a aprovacao; o coletor produz `references.jsonl` sem pixels. Testar depois coletas de 50 a 100 referencias variadas por trabalho, mantendo trabalhos separados. A coleta suporta somente os dez controles basicos, sem reconstruir curvas, HSL, perfis ou mascaras.
 

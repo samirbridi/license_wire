@@ -1,0 +1,9 @@
+test_declared_unbounded_source_string_is_rejected_before_reading (test_chunk_reader.ChunkReaderTests.test_declared_unbounded_source_string_is_rejected_before_reading) ... ok
+test_reads_synthetic_dump_metadata_without_evaluating_the_dump (test_chunk_reader.ChunkReaderTests.test_reads_synthetic_dump_metadata_without_evaluating_the_dump) ... ok
+test_resolves_imported_sdk_calls_inside_closures_without_executing_them (test_chunk_reader.ChunkReaderTests.test_resolves_imported_sdk_calls_inside_closures_without_executing_them) ... ok
+test_truncated_or_trailing_data_and_wrong_abi_are_rejected (test_chunk_reader.ChunkReaderTests.test_truncated_or_trailing_data_and_wrong_abi_are_rejected) ... ok
+
+----------------------------------------------------------------------
+Ran 4 tests in 0.002s
+
+OK
