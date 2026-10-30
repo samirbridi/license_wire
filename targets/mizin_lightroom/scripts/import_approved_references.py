@@ -7,11 +7,13 @@ from __future__ import annotations
 import argparse
 import datetime as dt
 import hashlib
+import io
 import json
 import math
 import re
 import unicodedata
 import uuid
+import zipfile
 from pathlib import Path, PureWindowsPath
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -115,6 +117,41 @@ def equivalent(first, second):
                for field in ('features', 'currentParameters') for key in first[field])
 
 
+def package_payload(content):
+    """Read fixed ZIP members in memory; no filesystem extraction or code loading."""
+    names = {'manifest.json', 'references.jsonl', 'request.json', 'results.json'}
+    with zipfile.ZipFile(io.BytesIO(content)) as archive:
+        infos = archive.infolist()
+        if len(infos) != 4 or {info.filename for info in infos} != names:
+            raise ValueError('Reference package must contain exactly four data files')
+        if any(info.file_size > 8 * 1024 * 1024 or info.flag_bits & 1 for info in infos):
+            raise ValueError('Oversized or encrypted reference package')
+        payloads = {info.filename: archive.read(info) for info in infos}
+    manifest = strict_json(payloads.pop('manifest.json').decode('utf-8-sig'))
+    if manifest.get('schema') != 'mizin-lightroom.reference-package/1' or manifest.get('containsPixels') is not False:
+        raise ValueError('Unsupported reference package schema')
+    if not isinstance(manifest.get('files'), dict) or set(manifest['files']) != set(payloads):
+        raise ValueError('Reference package manifest incomplete')
+    for name, data in payloads.items():
+        item = manifest['files'][name]
+        if item.get('bytes') != len(data) or item.get('sha256') != hashlib.sha256(data).hexdigest():
+            raise ValueError('Reference package integrity mismatch')
+    request = strict_json(payloads['request.json'].decode('utf-8-sig'))
+    report = strict_json(payloads['results.json'].decode('utf-8-sig'))
+    rows = [strict_json(line) for line in payloads['references.jsonl'].decode('utf-8-sig').splitlines() if line.strip()]
+    if request.get('operation') != 'collect' or report.get('operation') != 'collect' or not rows:
+        raise ValueError('Reference package is not a completed collection export')
+    if report.get('status') not in ('COMPLETED', 'COMPLETED_WITH_ERRORS', 'COMPLETED_WITH_SKIPS', 'CANCELLED'):
+        raise ValueError('Reference package has unsuccessful collection state')
+    if (type(manifest.get('referenceCount')) is not int or len(rows) != manifest['referenceCount'] or
+            len(rows) != report.get('collectedReferences') or manifest.get('collectionStatus') != report.get('status')):
+        raise ValueError('Reference package counts/status disagree')
+    if (manifest.get('jobId') != request.get('jobId') or manifest.get('jobId') != report.get('jobId') or
+            any(row.get('jobId') != manifest.get('jobId') or row.get('collectorVersion') != manifest.get('collectorVersion') for row in rows)):
+        raise ValueError('Reference package job identities disagree')
+    return payloads['references.jsonl']
+
+
 def load_sources(paths, model):
     rows, duplicates, sources = {}, [], []
     count = 0
@@ -127,7 +164,8 @@ def load_sources(paths, model):
         if (before.st_size, before.st_mtime_ns) != (after.st_size, after.st_mtime_ns):
             raise ValueError('Reference export changed while reading')
         sources.append({'path': str(path.resolve()), 'sha256': hashlib.sha256(content).hexdigest(), 'bytes': len(content), 'content': content})
-        for number, line in enumerate(content.decode('utf-8-sig').splitlines(), 1):
+        data = package_payload(content) if path.suffix.lower() == '.zip' else content
+        for number, line in enumerate(data.decode('utf-8-sig').splitlines(), 1):
             if not line.strip():
                 continue
             if len(line.encode('utf-8')) > MAX_LINE_BYTES:

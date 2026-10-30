@@ -51,3 +51,17 @@ c9ef5bbeea0ab00266605ac08b681bcb6933b2d260a502b64e99bad3ef71c1bc *../private/inc
 cc01f0f2223942f8a181c73152bffa3030745ee0f4b87cf25e00e970f68f0f81 *../private/incoming/20261029-local-native-499d8258/results.json
 52aa3c1b76ce1b21b69f2f161513d0ca52242d4bfaaa30a529688cea3fd605a2 *../private/reference-datasets/import-20261030T013317-2afc82fb/references.jsonl
 52aa3c1b76ce1b21b69f2f161513d0ca52242d4bfaaa30a529688cea3fd605a2 *../private/reference-datasets/import-20261030T014210-72536c21/references.jsonl
+
+# Coleta de 100 fotos: recebimento completo, prints e pacote de dados sem pixels.
+949f23524eeda78f0f8ad8ba6c36a6c7a38cc21efde3265df040001f965f1e21 *../private/incoming/plugin-folder-20261030T020530-1de30ce9/D9373456-2DEB-437D-9C58-84881950BEB0/references.jsonl
+193a5bec70a34f778967bdcacc03b7a023610a885b780d283c48c70e003faec4 *../private/incoming/plugin-folder-20261030T020530-1de30ce9/D9373456-2DEB-437D-9C58-84881950BEB0/request.json
+bf52cc7757fb556133e9299d28da5c7c10d9c5c8d2775beafc83eb303fd79df3 *../private/incoming/plugin-folder-20261030T020530-1de30ce9/D9373456-2DEB-437D-9C58-84881950BEB0/results.json
+b18fb7c402524fefcbce3ef141f874e3e1477efebd77308cbb1f194cdd8131cc *../private/incoming/plugin-folder-20261030T020530-1de30ce9/D9373456-2DEB-437D-9C58-84881950BEB0/status.json
+e89d046468adae7f6db9c261e7a6e4454d5e33171942be77f12f079134baf44f *../private/incoming/plugin-folder-20261030T020530-1de30ce9/imagem-2026-10-30T01-56-25-861Z.png
+ff3f8e28ac961d1badb7962d52de06d7c19f6f221ac2a157b10fcce3c966774d *../private/incoming/plugin-folder-20261030T020530-1de30ce9/imagem-2026-10-30T01-56-35-503Z.png
+e66442be7b018e6bec533a7558d6fd82706c584c4c23eadde4996035c28413f3 *../private/incoming/plugin-folder-20261030T020530-1de30ce9/imagem-2026-10-30T01-56-56-011Z.png
+a0a8f393d21286516234e64be20bb350762ddf63021a9a1b727faa01a16d7384 *../private/incoming/plugin-folder-20261030T020530-1de30ce9/imagem-2026-10-30T01-57-07-999Z.png
+39546fd73db2b5621fd0c3efcf733798d53d83ee519dad27afbd8e078aa375c8 *../private/incoming/plugin-folder-20261030T020530-1de30ce9/imagem-2026-10-30T01-57-15-025Z.png
+cc2858e6d80df59918241b15da21202ab2d2accf3c992d92b178585bc52c1bbb *../private/incoming/plugin-folder-20261030T020530-1de30ce9/imagem-2026-10-30T01-57-30-896Z.png
+13ba428114cba06bf63de32d759aba14a3ac184627ea27362325ef8b9ebf10d1 *../private/incoming/plugin-folder-20261030T020530-1de30ce9/imagem-2026-10-30T01-59-35-724Z.png
+aa0fdf674384f8bea68414a4efeddb2f41345880476a35bd88e7d0a5b8f3598e *../private/reference-packages/references-D9373456-2DEB-437D-9C58-84881950BEB0.zip

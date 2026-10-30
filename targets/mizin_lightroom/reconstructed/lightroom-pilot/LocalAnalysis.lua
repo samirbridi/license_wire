@@ -73,18 +73,28 @@ function M.showResults(job)
         local f = LrView.osFactory()
         local errors = {}
         for _, row in ipairs(report.results or {}) do
-            if row.status ~= 'REFERENCE_COLLECTED' then errors[#errors + 1] = tostring(row.filename) .. ': ' .. tostring(row.error) end
+            if row.status == 'SKIPPED' then
+                errors[#errors + 1] = tostring(row.filename) .. ': ' .. tostring(row.message)
+            elseif row.status ~= 'REFERENCE_COLLECTED' then
+                errors[#errors + 1] = tostring(row.filename) .. ': ' .. tostring(row.error)
+            end
+        end
+        local bundleReady = report.referenceBundleFile == 'references-package.zip' and
+            LrFileUtils.exists(child(job, 'references-package.zip')) == 'file'
+        local transferName = bundleReady and 'references-package.zip' or 'references.jsonl'
+        if report.referenceBundleError then
+            errors[#errors + 1] = 'Pacote ZIP indisponivel; o JSONL continua disponivel: ' .. tostring(report.referenceBundleError)
         end
         local contents = f:column {
             spacing = f:control_spacing(),
             f:static_text { title = 'Trabalho: ' .. tostring((report.referenceBatch or {}).eventName), width_in_chars = 90 },
-            f:static_text { title = 'Referencias coletadas: ' .. tostring(report.collectedReferences) .. ' | falhas: ' .. tostring(report.failedPhotos), width_in_chars = 90 },
-            f:static_text { title = 'O arquivo references.jsonl contem atributos, ajustes aprovados e hashes.\nOs RAWs e JPEGs tecnicos ficam na maquina de edicao.\nEsta coleta prepara dados para treino; o modelo ativo ainda e o mesmo.', width_in_chars = 90, height_in_lines = 3 },
+            f:static_text { title = 'Referencias coletadas: ' .. tostring(report.collectedReferences) .. ' | ignoradas: ' .. tostring(report.skippedPhotos or 0) .. ' | falhas: ' .. tostring(report.failedPhotos), width_in_chars = 90 },
+            f:static_text { title = 'Para transferir esta coleta, copie apenas ' .. transferName .. '.\nO pacote inclui atributos, ajustes e relatorios; os RAWs e JPEGs tecnicos ficam nesta maquina.\nEsta coleta prepara dados para treino; o modelo ativo ainda e o mesmo.', width_in_chars = 90, height_in_lines = 3 },
             f:static_text { title = table.concat(errors, '\n'), width_in_chars = 90, height_in_lines = math.min(8, math.max(1, #errors)) },
         }
         local action = LrDialogs.presentModalDialog { title = 'Mizin Lightroom - referencias aprovadas', contents = contents,
-            actionVerb = 'Mostrar references.jsonl', cancelVerb = 'Fechar' }
-        if action == 'ok' then LrShell.revealInShell(child(job, 'references.jsonl')) end
+            actionVerb = bundleReady and 'Mostrar pacote de referencias' or 'Mostrar references.jsonl', cancelVerb = 'Fechar' }
+        if action == 'ok' then LrShell.revealInShell(child(job, transferName)) end
         return
     end
     local f = LrView.osFactory()

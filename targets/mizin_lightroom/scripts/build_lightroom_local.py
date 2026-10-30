@@ -41,6 +41,7 @@ def populate_engine(plugin, runtime_base, model_folder, version):
             'styleName': 'Meu estilo - piloto de formatura', 'modelSha256': sha(models / 'pilot-model.json'),
             'experimental': True, 'catalogWritesImplemented': False, 'maximumPhotosPerJob': 100,
             'referenceCollectionImplemented': True, 'automaticModelTrainingImplemented': False,
+            'referencePackageExportImplemented': True,
             'nativeNewSelectionFlowValidated': False}
     (plugin / 'BuildInfo.json').write_text(json.dumps(info, indent=2), encoding='utf-8')
     components = {'schema': 'mizin-lightroom.third-party/1', 'downloads': runtime['downloads'],
@@ -94,9 +95,9 @@ Este pacote calcula sugestoes novas a partir dos RAWs selecionados, com Python, 
 
 1. Selecione inicialmente 5 RAWs originais, em cor, com os dez ajustes basicos ja revisados e aprovados. O piloto aceita de 1 a 100 fotos por coleta, da Canon EOS R6m2.
 2. Execute Mizin: coletar referencias aprovadas. Informe a data e o nome do trabalho e confirme a revisao final. Use exatamente o mesmo nome em coletas do mesmo trabalho.
-3. Ao concluir, Mostrar references.jsonl abre a pasta com o arquivo selecionado. Esse JSONL contem atributos, ajustes, identidade do RAW e aprovacao; nao contem os pixels das fotos.
+3. Ao concluir, Mostrar pacote de referencias abre a pasta com references-package.zip selecionado. Esse ZIP inclui references.jsonl, request.json, results.json e um manifesto SHA-256, sem os pixels das fotos. Fotos em P&B sao contadas como ignoradas, separadamente de falhas; ainda nao ha treino em P&B.
 4. Depois desse primeiro teste, colete 50 a 100 fotos variadas de cada trabalho, cobrindo iluminacoes e situacoes diferentes. Para a proxima etapa, reunir pelo menos tres trabalhos separados permite reservar um para avaliacao. Manter o trabalho de 24/10 como observacao ja examinada, sem apresenta-lo como teste final intocado.
-5. Copie apenas references.jsonl para a pasta de transferencia indicada pelo desenvolvimento, usando uma subpasta para cada trabalho/coleta. Preserve os arquivos originais e o nome do trabalho dentro do JSONL.
+5. Copie apenas references-package.zip para a pasta de transferencia indicada pelo desenvolvimento, usando uma subpasta para cada trabalho/coleta. Preserve os arquivos originais e o nome do trabalho dentro do JSONL. Se o ZIP nao puder ser criado, a janela mantem o acesso ao JSONL e informa o erro do empacotamento.
 
 A coleta nao retreina nem ativa um modelo. Registra somente os dez controles globais basicos, com o mesmo dominio tecnico do piloto. Dados incompletos e RAWs duplicados dentro da coleta sao recusados; a deduplicacao entre varias coletas e a separacao treino/avaliacao sao tarefas da etapa de treinamento.
 

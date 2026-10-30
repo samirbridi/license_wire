@@ -1,0 +1,31 @@
+{
+  "schema": "mizin-lightroom.native-hundred-reference-qa/1",
+  "date": "2026-10-29",
+  "nativeCollectorVersion": "v0.5.0 (build 0010)",
+  "lightroomVersion": "15.6",
+  "requestedPhotos": 100,
+  "collectedReferences": 96,
+  "oldCollectorReportedFailures": 4,
+  "failureCause": "FOUR_MONOCHROME_PHOTOS_UNSUPPORTED_BY_COLOR_MODEL",
+  "elapsedSeconds": 102.27,
+  "approvedValuesMatchingReportAndSnapshot": 960,
+  "featuresMatchingReport": 3840,
+  "uniqueReferencesAfterCombiningPreviousBatch": 96,
+  "duplicatesFromPreviousBatchRemoved": 6,
+  "nativeEventCount": 1,
+  "modelTrainingPerformed": false,
+  "modelWeightsChanged": false,
+  "sourceWrites": 0,
+  "photosUploaded": 0,
+  "inputFileCount": 205,
+  "vendorFilesStoredInSeparateTarget": true,
+  "referencePackage": {
+    "file": "references-D9373456-2DEB-437D-9C58-84881950BEB0.zip",
+    "sha256": "aa0fdf674384f8bea68414a4efeddb2f41345880476a35bd88e7d0a5b8f3598e",
+    "bytes": 76660,
+    "referenceCount": 96,
+    "containsPixels": false
+  },
+  "normalizedDataSha256": "7bc027943bbcb552f6e9ade3bc09557cfd21a81668b1b569ef3b94bd79ff5006",
+  "rawHashesIndependentlyRecomputed": false
+}

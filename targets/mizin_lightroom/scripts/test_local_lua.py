@@ -152,5 +152,24 @@ class LocalLuaTests(unittest.TestCase):
             module = runtime.execute((LUA / 'LocalAnalysis.lua').read_text(encoding='utf-8'))
             self.assertEqual(module.suggestEventName('D:/2026-10-24 - Evento/100EOSR6/foto.CR3'), '2026-10-24 - Evento')
 
+    def test_collection_reveals_data_package_and_distinguishes_skipped_photos(self):
+        with tempfile.TemporaryDirectory() as temp:
+            folder=Path(temp);runtime=self.setup_native(folder)
+            report={'schema':'mizin-lightroom.selection-analysis/1','status':'COMPLETED_WITH_SKIPS',
+                    'operation':'collect','collectedReferences':1,'failedPhotos':0,'skippedPhotos':1,
+                    'referenceBatch':{'eventName':'Evento'},'referenceBundleFile':'references-package.zip',
+                    'results':[{'filename':'mono.CR3','status':'SKIPPED','message':'Foto em P&B ignorada'}]}
+            (folder/'results.json').write_text(json.dumps(report))
+            (folder/'references-package.zip').write_bytes(b'package existence fixture')
+            runtime.globals().exists=lambda path:'file' if Path(path).is_file() else False
+            revealed=[];runtime.globals().reveal=lambda path:revealed.append(path)
+            runtime.execute("modules.LrShell.revealInShell=function(path) reveal(path) end; modules.LrDialogs.presentModalDialog=function(props) dialogs[#dialogs+1]=props;return 'ok' end")
+            module=runtime.execute((LUA/'LocalAnalysis.lua').read_text())
+            module.showResults(folder.as_posix())
+            self.assertEqual(revealed,[(folder/'references-package.zip').as_posix()])
+            dialog=runtime.globals().dialogs[1]
+            self.assertEqual(dialog['actionVerb'],'Mostrar pacote de referencias')
+            self.assertIn('ignoradas: 1 | falhas: 0',dialog['contents'][2]['title'])
+
 
 if __name__ == '__main__': unittest.main(verbosity=2)

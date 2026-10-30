@@ -14,6 +14,7 @@ import time
 import traceback
 import unicodedata
 import uuid
+import zipfile
 from pathlib import Path
 
 os.environ['OMP_NUM_THREADS'] = '4'
@@ -190,6 +191,40 @@ def export_references(path, rows, batch, model, runtime):
             stream.write(json.dumps(reference, ensure_ascii=False, allow_nan=False) + '\n')
 
 
+def export_reference_package(job, destination):
+    """Package only approved data and provenance; never include technical images."""
+    payloads = {}
+    for name in ('references.jsonl', 'request.json', 'results.json'):
+        path = Path(job) / name
+        if path.stat().st_size > 8 * 1024 * 1024:
+            raise ValueError('Arquivo de referencias excede o limite do pacote')
+        payloads[name] = path.read_bytes()
+    report = json.loads(payloads['results.json'].decode('utf-8-sig'))
+    references = [json.loads(line) for line in payloads['references.jsonl'].decode('utf-8-sig').splitlines() if line.strip()]
+    if report.get('operation') != 'collect' or not references or len(references) != report.get('collectedReferences'):
+        raise ValueError('Contagem ou operacao incompativel com o pacote de referencias')
+    if any(row.get('schema') != 'mizin-lightroom.approved-reference/1' for row in references):
+        raise ValueError('Formato de referencia incompativel')
+    import hashlib
+    manifest = {'schema': 'mizin-lightroom.reference-package/1', 'jobId': report['jobId'],
+                'collectorVersion': report['version'], 'referenceCount': len(references),
+                'collectionStatus': report['status'], 'containsPixels': False,
+                'containsPrivatePaths': True, 'trainingPerformed': False, 'modelActivated': False,
+                'files': {name: {'bytes': len(content), 'sha256': hashlib.sha256(content).hexdigest()}
+                          for name, content in payloads.items()}}
+    destination = Path(destination)
+    with destination.open('xb') as output:
+        with zipfile.ZipFile(output, 'w', compression=zipfile.ZIP_DEFLATED) as archive:
+            for name, content in payloads.items():
+                archive.writestr(name, content)
+            archive.writestr('manifest.json', json.dumps(manifest, ensure_ascii=False, allow_nan=False, indent=2))
+    with zipfile.ZipFile(destination) as archive:
+        if archive.testzip() is not None:
+            raise ValueError('Pacote de referencias corrompido')
+    return {'file': destination.name, 'sha256': sha256_file(destination), 'bytes': destination.stat().st_size,
+            'referenceCount': len(references), 'containsPixels': False}
+
+
 def run_job(job, bundle):
     job, bundle = Path(job).resolve(strict=True), Path(bundle).resolve(strict=True)
     if job.is_relative_to(bundle):
@@ -259,6 +294,11 @@ def run_job(job, bundle):
                                                   if k in TARGETS and finite_number(v)}}
             report['results'].append(row)
             progress('PROCESSING', index, len(photos), row['filename'])
+            if collecting and photo.get('treatment') == 'monochrome':
+                row.update({'status': 'SKIPPED', 'skipReason': 'MONOCHROME_NOT_SUPPORTED',
+                            'message': 'Foto em preto e branco ignorada nesta coleta em cor'})
+                progress('PROCESSING', index + 1, len(photos), row['filename'])
+                continue
             try:
                 path = Path(path_text)
                 if not path.is_absolute() or path.suffix.lower() != '.cr3' or not path.is_file():
@@ -304,7 +344,8 @@ def run_job(job, bundle):
                 row['error'] = str(error)[:1500]
             progress('PROCESSING', index + 1, len(photos), row['filename'])
         else:
-            report['status'] = 'COMPLETED' if all(r['status'] in ('COMPUTED', 'REFERENCE_COLLECTED') for r in report['results']) else 'COMPLETED_WITH_ERRORS'
+            report['status'] = ('COMPLETED_WITH_ERRORS' if any(r['status'] == 'FAILED' for r in report['results']) else
+                                'COMPLETED_WITH_SKIPS' if any(r['status'] == 'SKIPPED' for r in report['results']) else 'COMPLETED')
         if collecting:
             export_references(job / 'references.jsonl', report['results'], batch, model, runtime)
         else:
@@ -319,8 +360,18 @@ def run_job(job, bundle):
         report['elapsedSeconds'] = round(time.monotonic() - started, 3)
         report['computedPhotos'] = sum(r['status'] == 'COMPUTED' for r in report['results'])
         report['collectedReferences'] = sum(r['status'] == 'REFERENCE_COLLECTED' for r in report['results'])
-        report['failedPhotos'] = sum(r['status'] not in ('COMPUTED', 'REFERENCE_COLLECTED') for r in report['results'])
+        report['failedPhotos'] = sum(r['status'] == 'FAILED' for r in report['results'])
+        report['skippedPhotos'] = sum(r['status'] == 'SKIPPED' for r in report['results'])
+        if report.get('operation') == 'collect' and report['collectedReferences'] and (job / 'references.jsonl').is_file():
+            report['referenceBundleFile'] = 'references-package.zip'
         write_json(job / 'results.json', report)
+        if report.get('referenceBundleFile'):
+            try:
+                export_reference_package(job, job / report['referenceBundleFile'])
+            except Exception as error:
+                del report['referenceBundleFile']
+                report['referenceBundleError'] = str(error)[:1500]
+                write_json(job / 'results.json', report)
         progress(report['status'], len(report['results']), len(report['results']))
     return report
 
