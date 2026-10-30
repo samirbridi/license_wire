@@ -111,6 +111,7 @@ Na publicação da 0048, o Pages subiu uma vez sem `_worker.js` (caminho errado)
 - **Instalação antiga no Volume 1**, pasta compartilhada `docker`: `nas-portal-build-0036`, `-0038` e `-0039` (pastas e .zip, de 28/10). Elas têm cópias antigas de sessões e do `tunnel.token`, e nenhuma gravação. Tamanho estimado em 200–300 MB (o cálculo do DSM não terminou em 5 min).
 - Volume 4, `Mizin-Home`: 40 pastas e zips de builds antigas (0041–0061), ~0,97 GB. **Manter**: `data` (dados vivos), `nas-portal-build-0040` (pasta do projeto no Container Manager) e a build em uso. A pasta `Mizin-Cameras` guarda as gravações e também fica.
 - A exclusão é feita pelo proprietário no File Station; o Claude não apaga dados. Cada publicação nova deixa ~35 MB de pasta e zip em `Mizin-Home`.
+- Conferido em 2026-10-30, 02:08 UTC, depois da limpeza feita pelo proprietário: a pasta `docker` está vazia, as builds 0041–0061 saíram de `Mizin-Home` e a lixeira do Volume 4 está vazia. Ficaram `data`, `nas-portal-build-0040`, `nas-portal-build-0062` e dois zips, mais uma cópia antiga `nas-portal-build-0036` (de 28/10, sem referência na configuração), que pode sair. Os seis serviços estão rodando e as sete visões gravando na 0062.
 
 ## Pendências
 
