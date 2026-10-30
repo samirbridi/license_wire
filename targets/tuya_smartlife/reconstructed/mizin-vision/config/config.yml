@@ -38,6 +38,13 @@ cameras:
       inputs:
         - path: /samples/aw300_portao_2026-10-29_16-45-00.mkv
           roles: [detect]
+    motion:
+      # The camera's own clock (top-left) changes every second and was the only "motion" in a quiet
+      # 15-minute sample: mask it so the detector is not woken up for nothing.
+      mask:
+        relogio:
+          friendly_name: Relógio da câmera
+          coordinates: 0,0,0.28,0,0.28,0.06,0,0.06
     detect:
       enabled: true   # Frigate 0.18 starts with detection off unless enabled here
       width: 1280

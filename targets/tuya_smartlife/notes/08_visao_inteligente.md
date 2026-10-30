@@ -55,3 +55,9 @@
 - O DSM e o túnel pararam de responder por ~3 min. Medido na volta: espera de disco 88%, carga 31 em 1 min, 1,2 GB de swap em uso, de 2 GB de RAM. O túnel do Cloudflare caiu por "no recent network activity" e reconectou sozinho às 17:13:50. Os containers não reiniciaram.
 - O gravador também tinha registrado falha em todas as câmeras às 11:30:51 do mesmo dia: provavelmente outro travamento por falta de memória. O pente de RAM extra já afeta o sistema atual, não só a IA.
 
+## Primeiro resultado (AW300 Portão, 29/10, 16:45–17:00)
+
+- Com a detecção ligada, o detector chegou a 30 análises/s, mas o único "movimento" do trecho era o **relógio da câmera** (canto superior esquerdo). No 0.18 a máscara de movimento é um dicionário com nome (`motion.mask.relogio.coordinates`); a string simples é recusada com "Input should be a valid dictionary" e a câmera some.
+- Com o relógio mascarado, o que ainda aciona o detector são folhas balançando (planta à direita, vegetação atrás da concertina). O detector analisa e não acusa ninguém. **Nenhum falso positivo** em 15 min de cena parada com vento, mas também nenhum evento real: o trecho não tinha visita.
+- Próxima amostra: 30/10 por volta das 14:06 (horário local). A campainha tocou (log do portal "CAMPAINHA ACIONADA 17:06:31 UTC") e o AW300 Portão foi aberto várias vezes logo depois. Arquivos: `aw300_portao` 14-00-00, Outdoor 14-00-00 visão 1 e 2, `mi2k_externa` 14-00-00. Dependem da liberação de downloads automáticos no Chrome.
+
