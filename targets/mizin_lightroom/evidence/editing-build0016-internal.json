@@ -1,0 +1,10 @@
+{
+  "schema": "mizin-lightroom.internal-build/1",
+  "version": "v0.11.0 (build 0016)",
+  "archiveSha256": "a082c50783892d32e7daf21290e68b0b3ecb74226eef299164a5d2e8be6cc5fb",
+  "bytes": 84013417,
+  "delivered": false,
+  "nativeEditingValidated": false,
+  "unitTestsPassed": 104,
+  "reason": "Build interno preservado; proxima compilacao reforca verificacoes dentro dos write gates antes da entrega."
+}

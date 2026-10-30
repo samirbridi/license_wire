@@ -1,5 +1,23 @@
 # CHANGELOG - mizin_lightroom
 
+## v0.11.0 (build 0016) - 2026-10-30
+
+### 💥 Breaking Changes
+
+- Nenhum.
+
+### ✨ Features
+
+- feat: aplica edicao local em novas copias virtuais com restauracao (commit `af65f81533fea3dd8e36b398e029209005f00a78`)
+
+### 🐛 Fixes
+
+- Nenhum.
+
+### ⚡ Improvements
+
+- Nenhum.
+
 ## v0.10.0 (build 0015) - 2026-10-30
 
 ### 💥 Breaking Changes

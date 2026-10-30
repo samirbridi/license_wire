@@ -1,0 +1,17 @@
+{
+  "previous": "v0.10.0 (build 0015)",
+  "version": "v0.11.0 (build 0016)",
+  "date": "2026-10-30",
+  "timezone": "America/Sao_Paulo",
+  "baseline": "4547cebada242c20f70daeb9d3ae8f0513c67a4d",
+  "sourceHead": "af65f81533fea3dd8e36b398e029209005f00a78",
+  "increment": "feat",
+  "commits": [
+    {
+      "hash": "af65f81533fea3dd8e36b398e029209005f00a78",
+      "subject": "feat: aplica edicao local em novas copias virtuais com restauracao",
+      "type": "feat",
+      "breaking": false
+    }
+  ]
+}

@@ -1,6 +1,6 @@
 # Mizin Lightroom - aquisicao local e perfil de referencia
 
-> **Versão da Análise**: `v0.10.0 (build 0015)`
+> **Versão da Análise**: `v0.11.0 (build 0016)`
 > Atualizado em: 2026-10-30, America/Sao_Paulo.
 
 Projeto independente para Lightroom Classic no Windows, inicialmente para uso pessoal. Treinamento e inferencia devem acontecer nos computadores do usuario. O Lightroom continua responsavel pela revelacao e renderizacao final.
