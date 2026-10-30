@@ -1,5 +1,24 @@
 # CHANGELOG — xiaomi_home
 
+## v0.16.2 (build 0034) - 2026-10-29
+
+### 💥 Breaking Changes
+
+- Nenhum.
+
+### ✨ Features
+
+- Nenhum.
+
+### 🐛 Fixes
+
+- fix: corrige o registro do teste de microfone para a Mi 2K Sala (commit `024c78ad7c4f3a206a4bf3163966c06810bddc13`)
+
+### ⚡ Improvements
+
+- improve: aceita folga menor na fala quando o portal esta na mesma rede (commit `03e172dab89aa610c7034d4704df354ec4be3914`)
+- improve: registra a fala pela Outdoor confirmada limpa pelo proprietario (commit `bae8e111c8669a1ea14be244526ec828785c02c5`)
+
 ## v0.16.1 (build 0033) - 2026-10-29
 
 ### 💥 Breaking Changes

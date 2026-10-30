@@ -1,20 +1,36 @@
 {
-  "runId": "bridge-speaker-answer-20261029",
-  "sourceCommit": "bca577953d50f067caf23f3390af8457b59c00ce",
-  "previous": "v0.16.0 (build 0032)",
-  "version": "v0.16.1 (build 0033)",
-  "build": 33,
+  "runId": "bridge-talk-prebuffer-20261030",
+  "sourceCommit": "03e172dab89aa610c7034d4704df354ec4be3914",
+  "previous": "v0.16.1 (build 0033)",
+  "version": "v0.16.2 (build 0034)",
+  "build": 34,
   "date": "2026-10-29",
   "status": "built",
   "commits": [
     {
-      "sha": "bca577953d50f067caf23f3390af8457b59c00ce",
-      "subject": "fix: le a resposta binaria da camera ao abrir o canal de fala",
+      "sha": "03e172dab89aa610c7034d4704df354ec4be3914",
+      "subject": "improve: aceita folga menor na fala quando o portal esta na mesma rede",
+      "body": "Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>",
+      "type": "improve",
+      "description": "aceita folga menor na fala quando o portal esta na mesma rede",
+      "breaking": false
+    },
+    {
+      "sha": "024c78ad7c4f3a206a4bf3163966c06810bddc13",
+      "subject": "fix: corrige o registro do teste de microfone para a Mi 2K Sala",
       "body": "Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>",
       "type": "fix",
-      "description": "le a resposta binaria da camera ao abrir o canal de fala",
+      "description": "corrige o registro do teste de microfone para a Mi 2K Sala",
+      "breaking": false
+    },
+    {
+      "sha": "bae8e111c8669a1ea14be244526ec828785c02c5",
+      "subject": "improve: registra a fala pela Outdoor confirmada limpa pelo proprietario",
+      "body": "Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>",
+      "type": "improve",
+      "description": "registra a fala pela Outdoor confirmada limpa pelo proprietario",
       "breaking": false
     }
   ],
-  "artifact": "runtime/builds/build-0033"
+  "artifact": "runtime/builds/build-0034"
 }

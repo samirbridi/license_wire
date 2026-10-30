@@ -4035,6 +4035,8 @@ function connectWsStream(videoEl, streamAlias, isMuted, onReady, onFail) {
   if (!window.MediaSource || !window.WebSocket) return false;
   const ms = new MediaSource();
   let ws = null, sb = null, queue = [], ready = false, finished = false, jumped = false;
+  // Live delay: tight at home (same network as the NAS), roomier away; each stall adds a little margin.
+  let targetLag = isLocalAccess ? 0.15 : 0.6;
   const cleanup = () => {
     finished = true;
     clearTimeout(timer);
@@ -4051,9 +4053,12 @@ function connectWsStream(videoEl, streamAlias, isMuted, onReady, onFail) {
     const ranges = sb.buffered;
     if (ranges.length) {
       const start = ranges.start(0), end = ranges.end(ranges.length - 1);
-      // Start at the live edge: the replayed GOP decodes in the background.
-      if (!jumped && end > 0) { jumped = true; videoEl.currentTime = Math.max(start, end - 0.3); }
-      else if (end - videoEl.currentTime > 4) videoEl.currentTime = end - 0.5;
+      // Start at the live edge: the replayed GOP decodes in the background. Then catch up by playing 6%
+      // faster (pitch preserved) instead of jumping; jump only when far behind.
+      const lag = end - videoEl.currentTime;
+      if (!jumped && end > 0) { jumped = true; videoEl.currentTime = Math.max(start, end - targetLag); }
+      else if (lag > targetLag + 2.5) videoEl.currentTime = end - targetLag;
+      else videoEl.playbackRate = lag > targetLag + 0.1 ? 1.06 : 1;
       if (end - start > 40) { try { sb.remove(start, end - 20); return; } catch (e) {} }
     }
     if (!queue.length) return;
@@ -4102,6 +4107,7 @@ function connectWsStream(videoEl, streamAlias, isMuted, onReady, onFail) {
   videoEl.onplaying = readyHandler;
   videoEl.onloadeddata = () => { videoEl.play().catch(() => { videoEl.muted = true; videoEl.play().catch(() => {}); }); };
   videoEl.onerror = fail;
+  videoEl.onwaiting = () => { if (ready) targetLag = Math.min(1.5, targetLag + 0.15); };
   return true;
 }
 
@@ -4566,7 +4572,8 @@ let talkMutedListen = false;
 // camera confirms the speaker channel (as the official app does). Resolves true, 'busy' or false (fallback).
 function talkSocketUrl(camId) {
   const base = BACKEND_API_BASE ? BACKEND_API_BASE.replace(/^http/, 'ws') : `${window.location.protocol === 'https:' ? 'wss:' : 'ws:'}//${window.location.host}`;
-  return `${base}/api/camera/talk-ws?id=${encodeURIComponent(camId)}`;
+  // At home the bridge keeps a smaller jitter margin (fast=1).
+  return `${base}/api/camera/talk-ws?id=${encodeURIComponent(camId)}${isLocalAccess ? '&fast=1' : ''}`;
 }
 
 function startTalkSocket(camId, generation) {
@@ -4609,8 +4616,8 @@ function beginTalkCapture(ws) {
   const actx = new AudioCtx({ sampleRate: 16000 });
   audioTalkCtx = actx;
   const micSource = actx.createMediaStreamSource(audioTalkStream);
-  // 1024 samples = 64 ms at 16 kHz: small blocks keep the voice close to real time.
-  const node = actx.createScriptProcessor(1024, 1, 1);
+  // 1024 samples = 64 ms at 16 kHz (512 = 32 ms at home): small blocks keep the voice close to real time.
+  const node = actx.createScriptProcessor(isLocalAccess ? 512 : 1024, 1, 1);
   audioTalkScriptNode = node;
   const ratio = actx.sampleRate / 16000;
   const silentGain = actx.createGain();

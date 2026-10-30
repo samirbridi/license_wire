@@ -3783,7 +3783,7 @@ server.on('upgrade', async (req, clientSocket, head) => {
   }
 
   if(pathname==='/api/dashboard/events'&&dashboardEvents){await dashboardEvents.upgrade(req,clientSocket,head);return;}
-  if(pathname==='/api/camera/talk-ws'){await talkStream.upgrade(req,clientSocket,head,new URL(req.url,`http://${host}`).searchParams.get('id'));return;}
+  if(pathname==='/api/camera/talk-ws'){const q=new URL(req.url,`http://${host}`).searchParams;await talkStream.upgrade(req,clientSocket,head,q.get('id'),{fast:q.get('fast')==='1'});return;}
   if (pathname==='/api/ws') {
     const requested=new URL(req.url,`http://${host}`).searchParams.get('src');const alias=recorderStreamAlias(requested);if(!loadGo2rtcStreamsMeta().has(alias)){clientSocket.destroy();return;}
     if(alias!==requested)req.url=`/api/ws?src=${encodeURIComponent(alias)}`;

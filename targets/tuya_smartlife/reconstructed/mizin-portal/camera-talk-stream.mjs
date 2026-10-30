@@ -51,13 +51,13 @@ export function talkEncoderArgs(opus) {
 export function createTalkStream({ffmpeg, resolveCamera, openSpeaker, bridgePort = 19843, spawnProcess = spawn, maxSeconds = 600}) {
  const wss = new WebSocketServer({noServer: true, maxPayload: 256 * 1024, perMessageDeflate: false});
 
- async function upgrade(req, socket, head, cameraId) {
+ async function upgrade(req, socket, head, cameraId, {fast = false} = {}) {
   const meta = resolveCamera(cameraId);
   if (!meta?.did) { socket.destroy(); return; }
-  wss.handleUpgrade(req, socket, head, ws => run(ws, meta).catch(() => { try { ws.close(); } catch {} }));
+  wss.handleUpgrade(req, socket, head, ws => run(ws, meta, fast).catch(() => { try { ws.close(); } catch {} }));
  }
 
- async function run(ws, meta) {
+ async function run(ws, meta, fast) {
   const tell = msg => { if (ws.readyState === 1) ws.send(JSON.stringify(msg)); };
   const target = {did: meta.did, model: meta.model, host: meta.host, user: meta.user, region: meta.region};
   // Like the official app: open the speaker channel and wait for the camera's answer before any audio.
@@ -67,7 +67,8 @@ export function createTalkStream({ffmpeg, resolveCamera, openSpeaker, bridgePort
   if (ws.readyState !== 1) return;
 
   const opus = opusModel(meta.model);
-  const query = new URLSearchParams({...target, codec: opus ? 'opus' : 'pcma'});
+  // At home (fast) the bridge waits for 2 frames of margin instead of 3: 40 ms less delay.
+  const query = new URLSearchParams({...target, codec: opus ? 'opus' : 'pcma', prebuffer: fast ? '2' : '3'});
   const bridge = http.request({host: '127.0.0.1', port: bridgePort, path: `/api/xiaomi/talkstream?${query}`, method: 'POST',
    headers: {'Content-Type': 'application/octet-stream', 'Transfer-Encoding': 'chunked'}});
   const encoder = spawnProcess(ffmpeg, talkEncoderArgs(opus), {windowsHide: true, stdio: ['pipe', 'pipe', 'pipe']});
