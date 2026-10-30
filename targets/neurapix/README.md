@@ -1,6 +1,6 @@
 # Neurapix - referencia de fluxos e inspecao estatica
 
-> **Versão da Análise**: `bootstrap - calculada pelos commits antes da entrega`
+> **Versão da Análise**: `v0.1.0 (build 0001)`
 > Data: 2026-10-29, America/Sao_Paulo.
 
 Pacote fornecido pelo usuario para orientar uma implementacao independente em targets/mizin_lightroom. Os originais do fornecedor ficam isolados e privados neste alvo. Nenhum codigo, recurso visual ou peso foi reutilizado no nosso produto.

@@ -28,3 +28,9 @@ O pacote dos dados reais de 96 fotos tem 76.660 bytes. A pasta recebida tinha 18
 Os prints mostram selecao por flags/cores/estrelas, cache configuravel, opcoes de GPU e automacoes. O inventario correspondente esta em `targets/neurapix/notes/01_overview.md`. Isso orienta fases reais: primeiro dados/precisao; depois previa e aplicacao reversivel; posteriormente ajustes de estilo, cor/curvas e selecao/automacoes com algoritmos proprios. Nenhum desses recursos passa a existir por acrescentar um botao.
 
 Para prosseguir na precisao, basta uma nova coleta de 50 a 100 fotos aprovadas, variadas e de um terceiro trabalho. Ela deve ser reservada antes de novo ajuste de modelo, conforme o desenho de avaliacao. O primeiro trabalho e o de 24/10 ja foram examinados; nao sao testes finais intocados.
+
+## Entrega
+
+v0.7.0 (build 0012) foi gerado automaticamente pelos commits. ZIP de 43682533 bytes, SHA-256 `7042347eca87a114ccd5cc0c36e4313988d2553d1c41e8502bd3e7051e46557f`. O pacote final teve 1.624 hashes conferidos, nove fontes Lua compiladas sem execucao e testes reais de analise e coleta com runtime isolado/PATH restrito. A coleta de QA usou aprovacao simulada marcada como desenvolvimento, e nao foi importada como dado humano. O RAW permaneceu com o mesmo hash.
+
+As duas copias de entrega foram conferidas por SHA-256: uma em Downloads/PLUGIN LIGHTROOM e outra no compartilhamento publico autorizado. Atualizar cadastrando a nova pasta .lrplugin, conforme LEIA-ME.md, e confirmar o botao Mostrar pacote de referencias no Lightroom 15.6.

@@ -65,3 +65,6 @@ a0a8f393d21286516234e64be20bb350762ddf63021a9a1b727faa01a16d7384 *../private/inc
 cc2858e6d80df59918241b15da21202ab2d2accf3c992d92b178585bc52c1bbb *../private/incoming/plugin-folder-20261030T020530-1de30ce9/imagem-2026-10-30T01-57-30-896Z.png
 13ba428114cba06bf63de32d759aba14a3ac184627ea27362325ef8b9ebf10d1 *../private/incoming/plugin-folder-20261030T020530-1de30ce9/imagem-2026-10-30T01-59-35-724Z.png
 aa0fdf674384f8bea68414a4efeddb2f41345880476a35bd88e7d0a5b8f3598e *../private/reference-packages/references-D9373456-2DEB-437D-9C58-84881950BEB0.zip
+
+# Plugin com export reduzido: pacote final verificado e entregue.
+7042347eca87a114ccd5cc0c36e4313988d2553d1c41e8502bd3e7051e46557f *../private/deliveries/MizinLightroom-0.7.0-build0012-b5d2e2af/MizinLightroom-0.7.0-build0012-motor-local.zip

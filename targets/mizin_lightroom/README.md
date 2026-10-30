@@ -1,11 +1,13 @@
 # Mizin Lightroom - aquisicao local e perfil de referencia
 
-> **Versão da Análise**: `v0.6.0 (build 0011)`
+> **Versão da Análise**: `v0.7.0 (build 0012)`
 > Atualizado em: 2026-10-29, America/Sao_Paulo.
 
 Projeto independente para Lightroom Classic no Windows, inicialmente para uso pessoal. Treinamento e inferencia devem acontecer nos computadores do usuario. O Lightroom continua responsavel pela revelacao e renderizacao final.
 
 ## Estado Atual e Próximos Passos
+
+Entrega atual: **v0.7.0 (build 0012)**, ZIP validado com 1.624 hashes, nove fontes Lua e execucao real do runtime isolado em analise/coleta. A coleta do pacote final gerou um ZIP de dados e ignorou um P&B, sem modificar o RAW. Copias entregues com SHA-256 igual na subpasta `MizinLightroom-0.7.0-build0012-b5d2e2af` de Downloads/PLUGIN LIGHTROOM e de `\\192.168.1.58\Users\Public\Documents\MizinLightroomPilot`. O novo botao ainda depende de confirmacao no Lightroom real. Recibos em `evidence/reference-package-plugin-20261029.json` e `evidence/reference-package-delivery-20261029.json`.
 
 O coletor do build 0010 foi confirmado no Lightroom 15.6 com uma coleta de 100 fotos: 96 referencias em cor e quatro exclusoes de P&B. As 96 referencias foram validadas e deduplicadas com a coleta anterior. A nova implementacao distingue exclusoes de falhas e exporta um pequeno ZIP com JSONL/relatorios/hashes, sem fotos. O importador aceita JSONL ou esse ZIP, sem extrair arquivos no disco. O modelo numerico continua experimental, sem novo treino ou ativacao. O pacote Neurapix recebido foi isolado em outro alvo; nenhum codigo, recurso ou modelo dele foi incorporado ao nosso.
 

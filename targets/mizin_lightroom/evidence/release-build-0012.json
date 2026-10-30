@@ -1,0 +1,17 @@
+{
+  "previous": "v0.6.0 (build 0011)",
+  "version": "v0.7.0 (build 0012)",
+  "date": "2026-10-29",
+  "timezone": "America/Sao_Paulo",
+  "baseline": "1303c9534301d55a6c37a485da19721c9e96d825",
+  "sourceHead": "48c497ec46bed3739bd546d1f5b0b449ae5fd010",
+  "increment": "feat",
+  "commits": [
+    {
+      "hash": "48c497ec46bed3739bd546d1f5b0b449ae5fd010",
+      "subject": "feat: exporta referencias sem fotos e distingue exclusoes de P&B",
+      "type": "feat",
+      "breaking": false
+    }
+  ]
+}

@@ -1,0 +1,23 @@
+{
+  "schema": "mizin-lightroom.plugin-delivery/1",
+  "version": "v0.7.0 (build 0012)",
+  "sha256": "7042347eca87a114ccd5cc0c36e4313988d2553d1c41e8502bd3e7051e46557f",
+  "bytes": 43682533,
+  "destinations": [
+    {
+      "directory": "C:\\Users\\Avell Mizin\\Downloads\\PLUGIN LIGHTROOM\\MizinLightroom-0.7.0-build0012-b5d2e2af",
+      "archive": "C:\\Users\\Avell Mizin\\Downloads\\PLUGIN LIGHTROOM\\MizinLightroom-0.7.0-build0012-b5d2e2af\\MizinLightroom-0.7.0-build0012-motor-local.zip",
+      "sha256": "7042347eca87a114ccd5cc0c36e4313988d2553d1c41e8502bd3e7051e46557f",
+      "status": "DELIVERED_AND_HASH_VERIFIED"
+    },
+    {
+      "directory": "\\\\192.168.1.58\\Users\\Public\\Documents\\MizinLightroomPilot\\MizinLightroom-0.7.0-build0012-b5d2e2af",
+      "archive": "\\\\192.168.1.58\\Users\\Public\\Documents\\MizinLightroomPilot\\MizinLightroom-0.7.0-build0012-b5d2e2af\\MizinLightroom-0.7.0-build0012-motor-local.zip",
+      "sha256": "7042347eca87a114ccd5cc0c36e4313988d2553d1c41e8502bd3e7051e46557f",
+      "status": "DELIVERED_AND_HASH_VERIFIED"
+    }
+  ],
+  "existingFilesDeleted": 0,
+  "catalogWrites": 0,
+  "sourcePhotosModified": 0
+}
