@@ -1,11 +1,13 @@
 # Mizin Lightroom - aquisicao local e perfil de referencia
 
-> **Versão da Análise**: `v0.11.0 (build 0016)`
+> **Versão da Análise**: `v0.11.1 (build 0017)`
 > Atualizado em: 2026-10-30, America/Sao_Paulo.
 
 Projeto independente para Lightroom Classic no Windows, inicialmente para uso pessoal. Treinamento e inferencia devem acontecer nos computadores do usuario. O Lightroom continua responsavel pela revelacao e renderizacao final.
 
 ## Estado Atual e Próximos Passos
+
+Entrega atual: **v0.11.1 (build 0017)**, ZIP de 84,013,558 bytes, SHA-256 `d24b9a3fe0e1e75b9395aa9487122b1e20f8fa5f2df0d956edcfeabea333cc16`. 1733 hashes, CRC e 25 fontes Lua verificados; 106 testes passaram. O motor isolado processou dois RAWs reais; a aplicacao/restauracao foi exercitada em SDK doubles, com fontes e ajustes das origens preservados. Nao houve execucao dos novos comandos no Lightroom nem homologacao fotografica. Pacote copiado para Downloads/PLUGIN LIGHTROOM e Public/Documents/MizinLightroomPilot, na nova subpasta `MizinLightroom-0.11.1-build0017-0cd2f5b8`, sem substituir arquivos anteriores. Recibos: `evidence/editing-plugin-package-20261030.json`, `evidence/editing-plugin-qa-20261030.json` e `evidence/editing-delivery-20261030.json`.
 
 Nova etapa: edicao em novas copias virtuais, com snapshot e registros de restauracao. Dez controles por foto, curvas/tonalidade constantes opcionais e escolha explicita de piloto ou candidato local. Maximo de 25 originais CR3 em cor da Canon EOS R6m2. Perfil/Look, HSL, cortes, mascaras e lentes sao herdados, sem aprendizado completo desses ajustes. A verificacao local usa contratos do SDK; aplicacao/restauracao no Lightroom e qualidade fotografica ainda precisam de confirmacao nativa. Detalhes em `notes/19_edicao_em_copias_virtuais.md`.
 

@@ -1,5 +1,23 @@
 # CHANGELOG - mizin_lightroom
 
+## v0.11.1 (build 0017) - 2026-10-30
+
+### 💥 Breaking Changes
+
+- Nenhum.
+
+### ✨ Features
+
+- Nenhum.
+
+### 🐛 Fixes
+
+- fix: confere selecao e ajustes apos espera pelo write gate (commit `3cbc1856969a1850693a1f7a7c9f2d9fee0b8f92`)
+
+### ⚡ Improvements
+
+- Nenhum.
+
 ## v0.11.0 (build 0016) - 2026-10-30
 
 ### 💥 Breaking Changes

@@ -1,0 +1,63 @@
+{
+  "schema": "mizin-lightroom.editing-delivery/1",
+  "version": "v0.11.1 (build 0017)",
+  "archiveSha256": "d24b9a3fe0e1e75b9395aa9487122b1e20f8fa5f2df0d956edcfeabea333cc16",
+  "bytes": 84013558,
+  "deliveredAtUtc": "2026-10-30T17:23:20.0068511Z",
+  "destinations": [
+    {
+      "directory": "C:\\Users\\Avell Mizin\\Downloads\\PLUGIN LIGHTROOM\\MizinLightroom-0.11.1-build0017-0cd2f5b8",
+      "files": [
+        {
+          "name": "MizinLightroom-0.11.1-build0017-motor-local.zip",
+          "sha256": "d24b9a3fe0e1e75b9395aa9487122b1e20f8fa5f2df0d956edcfeabea333cc16",
+          "bytes": 84013558
+        },
+        {
+          "name": "LEIA-ME.md",
+          "sha256": "0f69e63480f160b03c5adfec3070aff20bd16f25efc70b3d6ebd7ea19ad45ab1",
+          "bytes": 11341
+        },
+        {
+          "name": "SHA256SUMS.txt",
+          "sha256": "1b4837586725104e5a8716cd0f75c0b16e6046d1ddba1867100ac870c86bd472",
+          "bytes": 257154
+        },
+        {
+          "name": "package.json",
+          "sha256": "adccee8981459ca26f04c17f88daa7c37ae22ecbdd369c9e2a49e67f922d0553",
+          "bytes": 2046
+        }
+      ]
+    },
+    {
+      "directory": "\\\\192.168.1.58\\Users\\Public\\Documents\\MizinLightroomPilot\\MizinLightroom-0.11.1-build0017-0cd2f5b8",
+      "files": [
+        {
+          "name": "MizinLightroom-0.11.1-build0017-motor-local.zip",
+          "sha256": "d24b9a3fe0e1e75b9395aa9487122b1e20f8fa5f2df0d956edcfeabea333cc16",
+          "bytes": 84013558
+        },
+        {
+          "name": "LEIA-ME.md",
+          "sha256": "0f69e63480f160b03c5adfec3070aff20bd16f25efc70b3d6ebd7ea19ad45ab1",
+          "bytes": 11341
+        },
+        {
+          "name": "SHA256SUMS.txt",
+          "sha256": "1b4837586725104e5a8716cd0f75c0b16e6046d1ddba1867100ac870c86bd472",
+          "bytes": 257154
+        },
+        {
+          "name": "package.json",
+          "sha256": "adccee8981459ca26f04c17f88daa7c37ae22ecbdd369c9e2a49e67f922d0553",
+          "bytes": 2046
+        }
+      ]
+    }
+  ],
+  "existingFilesPreserved": true,
+  "nativeLightroomEditingValidated": false,
+  "nativeLightroomRestorationValidated": false,
+  "photographicQualityApproved": false
+}

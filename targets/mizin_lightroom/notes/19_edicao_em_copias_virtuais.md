@@ -39,3 +39,15 @@ node targets/mizin_lightroom/scripts/version-from-commits.mjs --write
 O segundo comando exige o alvo limpo e commits estruturados, e gera VERSION, changelog e recibo. O build usa exclusivamente essa versao calculada. Recibos de QA e entrega desta etapa ficam em evidence/editing-*.json.
 
 Referencias consultadas: [guia SDK Adobe](https://developer.adobe.com/lightroom-classic/), [createVirtualCopies e selecao](https://community.adobe.com/questions-675/some-thoughts-questions-on-createvirtualcopies-lr5-943141), [metodos de snapshot e modulo Revelacao](https://community.adobe.com/bug-reports-674/p-sdk-document-lrphoto-snapshot-methods-663151), [identidades distintas dos snapshots](https://community.adobe.com/questions-675/lr-5-functions-methods-and-properties-not-in-lr-4-docs-943164), [snapshots compartilhados](https://community.adobe.com/feature-requests-676/p-implement-clear-snapshots-option-665681). Guia Adobe local preservado em private/tools/local-engine-downloads/Lightroom-SDK-guide.pdf; referencia Adobe de API consultada em espelho lrc.mcor.dev.
+
+## Entrega verificada
+
+v0.11.1 (build 0017): 106 testes, 1733 hashes e 25 fontes Lua 5.1 verificados. ZIP SHA-256 `d24b9a3fe0e1e75b9395aa9487122b1e20f8fa5f2df0d956edcfeabea333cc16`. Dois RAWs reais passaram pelo motor isolado do ZIP extraido. As previsoes reais foram aplicadas e restauradas em duas copias de SDK doubles, inclusive apos recarregar o modulo Lua. Hashes RAW e ajustes das origens permaneceram iguais. Nao e prova de revelacao no Lightroom.
+
+Comando da verificacao final:
+
+```powershell
+& '.\targets\mizin_lightroom\private\runtime\raw-pipeline\Scripts\python.exe' 'targets/mizin_lightroom/scripts/verify_editing_release.py' --package 'targets/mizin_lightroom/private/deliveries/latest-editing.json' --unit-tests-passed 106
+```
+
+Limitacao do fluxo de aprendizado: o coletor atual continua aceitando originais em cor; ajustes finais feitos nas novas copias virtuais nao sao incorporados automaticamente ao treino. A coleta e o treino existentes do acervo original continuam disponiveis. A aplicacao em copias e uma etapa de avaliacao segura, sem afirmar o fluxo completo do Neurapix.

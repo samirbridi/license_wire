@@ -1,0 +1,17 @@
+{
+  "previous": "v0.11.0 (build 0016)",
+  "version": "v0.11.1 (build 0017)",
+  "date": "2026-10-30",
+  "timezone": "America/Sao_Paulo",
+  "baseline": "608afe4556b0186bd198ce0e25c8cc65fcc53fcd",
+  "sourceHead": "3cbc1856969a1850693a1f7a7c9f2d9fee0b8f92",
+  "increment": "fix",
+  "commits": [
+    {
+      "hash": "3cbc1856969a1850693a1f7a7c9f2d9fee0b8f92",
+      "subject": "fix: confere selecao e ajustes apos espera pelo write gate",
+      "type": "fix",
+      "breaking": false
+    }
+  ]
+}
