@@ -1,5 +1,23 @@
 # CHANGELOG — tuya_smartlife
 
+## v0.42.1 (build 0065) - 2026-11-01
+
+### 💥 Breaking Changes
+
+- Nenhum.
+
+### ✨ Features
+
+- Nenhum.
+
+### 🐛 Fixes
+
+- fix: remove teto de 100 do Logbook e amplia retencao para 5000 eventos (commit `c052fe1bff2e50c08e51d5b83226d7bb624578de`)
+
+### ⚡ Improvements
+
+- Nenhum.
+
 ## v0.42.0 (build 0064) - 2026-11-01
 
 ### 💥 Breaking Changes
