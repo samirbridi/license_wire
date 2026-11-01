@@ -22,14 +22,22 @@ export function createPortalGate({origin,gatewayToken,auth='http://127.0.0.1:198
    const reply=await fetcher(auth+pathname+new URL(req.url,origin).search,{method:req.method,headers:headers(req),body,signal:AbortSignal.timeout(5000)});
    res.writeHead(reply.status,Object.fromEntries(reply.headers));res.end(Buffer.from(await reply.arrayBuffer()));return false;
   }
+  // Ingestão de leitura de placa pela visão computacional (plate-watcher.mjs): roda como script no PC
+  // da GPU, sem navegador, sem cookie de sessão. Autenticada por um segredo fixo de máquina verificado
+  // pelo próprio handler da rota em server.mjs (ver vision-ingest-auth.mjs), não aqui — isto só troca a
+  // exigência de sessão humana por essa verificação alternativa, só para esta rota. trusted(req) acima
+  // continua obrigatório: a chamada ainda precisa ter vindo mesmo pelo Worker Cloudflare real.
+  if(pathname==='/api/vision/plate-event'&&req.method==='POST')return true;
   let data;try{data=await session(req);}catch{return fail(503,'Autenticação temporariamente indisponível.');}
   if(!data)return fail(401,'Entre com sua conta cadastrada.');
   if(data.user?.mustChangePassword)return fail(403,'Defina uma nova senha no painel da sua conta.');
   const role=data.user?.role;
   if(!['admin','member'].includes(role))return fail(401,'Entre com sua conta cadastrada.');
   if(role!=='admin'){
-   const read=/^\/api\/(?:health|devices|cameras|camera-frame|camera-stream|energy(?:\/history|\/trends|\/tariff)?|ev\/status|gate\/status|scenes|schedules|automations|logs|config\/(?:ui|shortcuts)|portal\/shell|camera\/(?:archive(?:\/file)?|recordings(?:\/stream|\/clip)?))$/.test(pathname)&&['GET','HEAD'].includes(req.method);
-   const use=req.method==='POST'&&(/^\/api\/(?:control|gate\/pulse|doorbell\/trigger|logs\/mark-read|ev\/command|camera\/(?:ptz|zoom|light|siren|talkback|recordings\/speed)|device\/[a-zA-Z0-9_-]+\/toggle|(?:scenes|automations)\/[a-zA-Z0-9_-]+\/execute|energy\/history\/month)$/.test(pathname));
+   const read=/^\/api\/(?:health|devices|cameras|camera-frame|camera-stream|energy(?:\/history|\/trends|\/tariff)?|ev\/status|gate\/status|gate\/plate-requests|scenes|schedules|automations|logs|config\/(?:ui|shortcuts)|portal\/shell|camera\/(?:archive(?:\/file)?|recordings(?:\/stream|\/clip)?))$/.test(pathname)&&['GET','HEAD'].includes(req.method);
+   // Confirmar/ignorar um pedido de placa tem a mesma confiança que o botão comum de abrir o portão
+   // (gate/pulse) logo abaixo: qualquer membro da família pode decidir, nunca só o administrador.
+   const use=req.method==='POST'&&(/^\/api\/(?:control|gate\/pulse|doorbell\/trigger|logs\/mark-read|ev\/command|camera\/(?:ptz|zoom|light|siren|talkback|recordings\/speed)|device\/[a-zA-Z0-9_-]+\/toggle|(?:scenes|automations)\/[a-zA-Z0-9_-]+\/execute|energy\/history\/month|gate\/plate-requests\/[a-zA-Z0-9_-]+\/(?:confirm|ignore)|vision\/push-(?:subscribe|unsubscribe))$/.test(pathname));
    if(!read&&!use)return fail(403,'Somente o administrador pode alterar configurações.');
   }
   const mutation=!['GET','HEAD'].includes(req.method)||/\/api\/(?:control|camera\/(?:ptz|zoom|patrol|preset))/.test(pathname);

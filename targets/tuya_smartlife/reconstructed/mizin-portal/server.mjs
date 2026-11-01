@@ -15,6 +15,10 @@ import { fileURLToPath, pathToFileURL } from 'node:url';
 import { createHash, createHmac, createCipheriv, createDecipheriv, randomUUID, randomInt } from 'node:crypto';
 import {createDashboardEvents} from './dashboard-live.mjs';
 import {appendActivityLog, resolveLogsLimit} from './activity-log.mjs';
+import {createVehicleRegistry, createPlateGateQueue, HOUSEHOLD_VEHICLES} from './plate-gate.mjs';
+import {createPlateNotifier} from './plate-notify.mjs';
+import {createPushSubscriptionStore, createTelegramChatStore} from './plate-notify-store.mjs';
+import {verifyIngestToken} from './vision-ingest-auth.mjs';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -40,6 +44,11 @@ const UI_CONFIG_PATH = path.join(WORKSPACE, 'targets/tuya_smartlife/runtime/ui_c
 const AUTOMATIONS_PATH = path.join(WORKSPACE, 'targets/tuya_smartlife/runtime/automations.json');
 const SCENES_PATH = path.join(WORKSPACE, 'targets/tuya_smartlife/runtime/scenes.json');
 const VERSION_PATH = path.join(WORKSPACE, 'targets/tuya_smartlife/VERSION');
+const PUSH_SUBSCRIPTIONS_PATH = path.join(WORKSPACE, 'targets/tuya_smartlife/runtime/push_subscriptions.json');
+const TELEGRAM_CHATS_PATH = path.join(WORKSPACE, 'targets/tuya_smartlife/runtime/telegram_chats.json');
+// Segredo compartilhado só entre plate-watcher.mjs (roda no PC com a GPU) e esta rota de ingestão;
+// nunca é uma sessão de usuário. Arquivo gitignored, gerado uma vez por scripts/generate-vision-token.mjs.
+const VISION_INGEST_TOKEN_PATH = path.join(WORKSPACE, 'targets/tuya_smartlife/runtime/vision-ingest-token.json');
 
 function getCurrentVersion() {
   try {
@@ -1716,6 +1725,42 @@ const transmitSpeech=createTalkback({resolveCamera:getXiaomiStreamMeta,send:body
 const gateConfig=process.env.MIZIN_GATEWAY_CONFIG?JSON.parse(fs.readFileSync(process.env.MIZIN_GATEWAY_CONFIG,'utf8')):null;
 const portalGate=gateConfig?createPortalGate(gateConfig):null;
 const archive=createArchive({root:process.env.MIZIN_ARCHIVE_ROOT,aliases:[...loadGo2rtcStreamsMeta().keys()],ffmpeg:FFMPEG_BIN,ffprobe:process.env.MIZIN_FFPROBE||'ffprobe'});
+
+// Confirmação de abertura por placa (REV: build 0066). plateGateQueue nunca aciona o portão por si só
+// (ver plate-gate.mjs); o único acionamento real está em POST /api/gate/plate-requests/:id/confirm
+// abaixo, chamando o mesmo executeGatePulse() usado por todo outro comando de portão.
+const plateVehicleRegistry=createVehicleRegistry(HOUSEHOLD_VEHICLES);
+const plateGateQueue=createPlateGateQueue({registry:plateVehicleRegistry});
+const visionIngestToken=(()=>{try{return JSON.parse(fs.readFileSync(VISION_INGEST_TOKEN_PATH,'utf8')).token||null;}catch{return null;}})();
+const pushSubscriptionStore=createPushSubscriptionStore({file:PUSH_SUBSCRIPTIONS_PATH});
+const telegramChatStore=createTelegramChatStore({file:TELEGRAM_CHATS_PATH});
+const TELEGRAM_BOT_TOKEN=process.env.MIZIN_TELEGRAM_BOT_TOKEN||null;
+async function telegramSendMessage({chatId,text,requestId}){
+  const resp=await fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`,{
+    method:'POST',headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({chat_id:chatId,text,reply_markup:{inline_keyboard:[[
+      {text:'✅ Abrir',callback_data:`plate:confirm:${requestId}`},
+      {text:'🚫 Ignorar',callback_data:`plate:ignore:${requestId}`},
+    ]]}}),
+  });
+  if(!resp.ok)throw new Error(`Telegram respondeu ${resp.status}`);
+}
+let webPushSend=null;
+if(process.env.MIZIN_VAPID_PUBLIC_KEY&&process.env.MIZIN_VAPID_PRIVATE_KEY){
+  const webpush=await import('web-push');
+  webpush.default.setVapidDetails('mailto:owner@mizin.local',process.env.MIZIN_VAPID_PUBLIC_KEY,process.env.MIZIN_VAPID_PRIVATE_KEY);
+  webPushSend=async(subscription,payload)=>{
+    try{await webpush.default.sendNotification(subscription,payload);}
+    catch(err){if(err?.statusCode===404||err?.statusCode===410)await pushSubscriptionStore.remove(subscription.endpoint).catch(()=>{});throw err;}
+  };
+}
+const plateNotifier=createPlateNotifier({
+  webPushSend,
+  telegramSend:TELEGRAM_BOT_TOKEN?telegramSendMessage:null,
+  listPushSubscriptions:()=>pushSubscriptionStore.list(),
+  listTelegramChats:()=>telegramChatStore.list(),
+  onDeliveryError:({channel,recipient,error})=>console.error(`[placa] Falha ao notificar via ${channel}:`,error?.message||error),
+});
 
 const server = http.createServer(async (req, res) => {
   const url = new URL(req.url, `http://${req.headers.host}`);
@@ -3398,6 +3443,138 @@ const server = http.createServer(async (req, res) => {
         res.end(JSON.stringify({ success: false, error: err.message }));
       }
     });
+    return;
+  }
+
+  // ---------------------------------------------------------------
+  // Confirmação de abertura por placa (REV: build 0066).
+  // Regra inegociável: nenhuma destas rotas aciona o portão sozinha. A única que pode é o POST .../confirm,
+  // e só porque ela mesma chama executeGatePulse() depois de validar sessão de administrador + CSRF,
+  // exatamente como /api/gate/pulse acima. A leitura da placa nunca é suficiente por si só.
+  //
+  // readJsonBody responde 413 explicitamente ao estourar o limite, em vez de só chamar req.destroy():
+  // sem resposta, o cliente (plate-watcher.mjs, o navegador) via só "socket hang up", sem como saber
+  // se foi recusado por tamanho ou se o portal caiu.
+  // ---------------------------------------------------------------
+  const readJsonBody = (req, res, maxBytes) => new Promise(resolveBody => {
+    let body = '', tooLarge = false;
+    req.on('data', chunk => {
+      body += chunk;
+      if (!tooLarge && body.length > maxBytes) {
+        tooLarge = true;
+        res.writeHead(413, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ error: 'Requisição muito grande.' }));
+        req.destroy();
+        resolveBody(null);
+      }
+    });
+    req.on('end', () => { if (!tooLarge) resolveBody(body); });
+    req.on('error', () => resolveBody(null));
+  });
+
+  if (url.pathname === '/api/vision/plate-event' && req.method === 'POST') {
+    const body = await readJsonBody(req, res, 65536);
+    if (body === null) return;
+    try {
+      if (!visionIngestToken || !verifyIngestToken(req.headers['x-vision-token'] ?? JSON.parse(body || '{}').token, visionIngestToken)) {
+        res.writeHead(401, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ error: 'Token de ingestão inválido.' }));
+        return;
+      }
+      const payload = JSON.parse(body);
+      const req_ = plateGateQueue.request({
+        plate: payload.plate, confidence: payload.confidence, camera: payload.camera,
+        snapshotPath: payload.snapshotPath || null, detectionId: payload.detectionId,
+      });
+      if (!req_.deduped) {
+        logActivity('vision_plate', req_.vehicle?.label || 'Placa não cadastrada', 'Leitura de Placa', `${req_.plateRaw || req_.plate} no portão (${req_.camera}), aguardando confirmação`, 'Mizin Vision', '🚗', req_.known ? 'info' : 'warning');
+        plateNotifier.requestCreated(req_).catch(err => console.error('[placa] Falha ao notificar pedido:', err.message));
+      }
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ success: true, id: req_.id, status: req_.status, deduped: req_.deduped }));
+    } catch (err) {
+      res.writeHead(400, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ success: false, error: err.message }));
+    }
+    return;
+  }
+
+  if (url.pathname === '/api/gate/plate-requests' && req.method === 'GET') {
+    res.writeHead(200, { 'Content-Type': 'application/json', 'Cache-Control': 'no-cache, no-store' });
+    res.end(JSON.stringify({ success: true, requests: plateGateQueue.listPending() }));
+    return;
+  }
+
+  if (url.pathname.startsWith('/api/gate/plate-requests/') && url.pathname.endsWith('/confirm') && req.method === 'POST') {
+    try {
+      const id = url.pathname.split('/')[4];
+      const session = portalGate ? await portalGate.session(req) : null;
+      if (!session?.user) { res.writeHead(401, { 'Content-Type': 'application/json' }); res.end(JSON.stringify({ error: 'Entre com sua conta cadastrada.' })); return; }
+      const decided = plateGateQueue.confirm(id, { by: session.user.email || session.user.name || session.user.id });
+      const pulse = await executeGatePulse('eb49c5d1977172327aqb1q', `Confirmação de placa (${decided.plateRaw || decided.plate})`);
+      logActivity('vision_plate', decided.vehicle?.label || 'Placa não cadastrada', 'Abertura Confirmada por Placa', `${decided.plateRaw || decided.plate} confirmado por ${session.user.name || session.user.email}`, 'Mizin Vision', '✅', 'success');
+      plateNotifier.requestDecided(decided).catch(() => {});
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ success: true, request: decided, pulse }));
+    } catch (err) {
+      res.writeHead(409, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ success: false, error: err.message }));
+    }
+    return;
+  }
+
+  if (url.pathname.startsWith('/api/gate/plate-requests/') && url.pathname.endsWith('/ignore') && req.method === 'POST') {
+    try {
+      const id = url.pathname.split('/')[4];
+      const session = portalGate ? await portalGate.session(req) : null;
+      if (!session?.user) { res.writeHead(401, { 'Content-Type': 'application/json' }); res.end(JSON.stringify({ error: 'Entre com sua conta cadastrada.' })); return; }
+      const decided = plateGateQueue.ignore(id, { by: session.user.email || session.user.name || session.user.id });
+      logActivity('vision_plate', decided.vehicle?.label || 'Placa não cadastrada', 'Abertura Ignorada', `${decided.plateRaw || decided.plate} ignorado por ${session.user.name || session.user.email}`, 'Mizin Vision', '🚫', 'info');
+      plateNotifier.requestDecided(decided).catch(() => {});
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ success: true, request: decided }));
+    } catch (err) {
+      res.writeHead(409, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ success: false, error: err.message }));
+    }
+    return;
+  }
+
+  // Um navegador assina/dessassina notificações push desta conta. GET /api/vision/push-public-key
+  // devolve só a chave pública VAPID (não é segredo); a privada nunca sai do servidor.
+  if (url.pathname === '/api/vision/push-public-key' && req.method === 'GET') {
+    res.writeHead(200, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({ publicKey: process.env.MIZIN_VAPID_PUBLIC_KEY || null }));
+    return;
+  }
+
+  if (url.pathname === '/api/vision/push-subscribe' && req.method === 'POST') {
+    const body = await readJsonBody(req, res, 16384);
+    if (body === null) return;
+    try {
+      const subscription = JSON.parse(body);
+      await pushSubscriptionStore.add(subscription);
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ success: true }));
+    } catch (err) {
+      res.writeHead(400, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ success: false, error: err.message }));
+    }
+    return;
+  }
+
+  if (url.pathname === '/api/vision/push-unsubscribe' && req.method === 'POST') {
+    const body = await readJsonBody(req, res, 4096);
+    if (body === null) return;
+    try {
+      const { endpoint } = JSON.parse(body);
+      await pushSubscriptionStore.remove(endpoint);
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ success: true }));
+    } catch (err) {
+      res.writeHead(400, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ success: false, error: err.message }));
+    }
     return;
   }
 

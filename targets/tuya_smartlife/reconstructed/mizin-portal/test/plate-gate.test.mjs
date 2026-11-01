@@ -91,3 +91,66 @@ test('listPending never returns confirmed, ignored or expired requests, and stay
  const left=queue.listPending();
  assert.deepEqual(left.map(r=>r.id),[c.id]);
 });
+
+test('a parked car reread every frame produces one pending request, not one per reading',()=>{
+ let clock=0;
+ const registry=createVehicleRegistry(HOUSEHOLD_VEHICLES);
+ const queue=createPlateGateQueue({registry,now:()=>clock});
+ const first=queue.request({plate:'TRL-4I59',confidence:0.9,camera:'outdoor_rua',snapshotPath:'/1.jpg',detectionId:'evt1'});
+ assert.equal(first.deduped,false);
+ for(let i=0;i<5;i++){
+  clock+=200;
+  const again=queue.request({plate:'trl4i59',confidence:0.93,camera:'outdoor_rua',snapshotPath:'/1.jpg',detectionId:'evt1'});
+  assert.equal(again.id,first.id);
+  assert.equal(again.deduped,true);
+ }
+ assert.equal(queue.listPending().length,1);
+});
+
+test('a second, different detectionId for the same still-pending plate is deduped too (different camera angle, same visit)',()=>{
+ const registry=createVehicleRegistry(HOUSEHOLD_VEHICLES);
+ const queue=createPlateGateQueue({registry});
+ const first=queue.request({plate:'IQL-8380',confidence:0.9,camera:'outdoor_rua',snapshotPath:'/a.jpg',detectionId:'evt1'});
+ const second=queue.request({plate:'IQL-8380',confidence:0.95,camera:'garagem_portao',snapshotPath:'/b.jpg',detectionId:'evt2'});
+ assert.equal(second.id,first.id);
+ assert.equal(second.deduped,true);
+ assert.equal(queue.listPending().length,1);
+});
+
+test('once decided, the same plate stays deduped for a short window, then a fresh request opens a new one',()=>{
+ let clock=0;
+ const registry=createVehicleRegistry(HOUSEHOLD_VEHICLES);
+ const queue=createPlateGateQueue({registry,dedupeMs:5000,now:()=>clock});
+ const first=queue.request({plate:'TQR-1A36',confidence:0.9,camera:'c',snapshotPath:null,detectionId:'evt1'});
+ queue.ignore(first.id,{by:'admin'});
+ clock+=1000;
+ const soon=queue.request({plate:'TQR-1A36',confidence:0.9,camera:'c',snapshotPath:null,detectionId:'evt2'});
+ assert.equal(soon.id,first.id);
+ assert.equal(soon.deduped,true);
+ clock+=5000;
+ const later=queue.request({plate:'TQR-1A36',confidence:0.9,camera:'c',snapshotPath:null,detectionId:'evt3'});
+ assert.notEqual(later.id,first.id);
+ assert.equal(later.deduped,false);
+});
+
+test('an expired (unanswered) request never blocks a brand new one for the same plate, even seconds later',()=>{
+ let clock=0;
+ const registry=createVehicleRegistry(HOUSEHOLD_VEHICLES);
+ const queue=createPlateGateQueue({registry,ttlMs:90_000,dedupeMs:5*60_000,now:()=>clock});
+ const first=queue.request({plate:'TRL-4I59',confidence:0.9,camera:'c',snapshotPath:null,detectionId:'evt1'});
+ clock+=90_001; // past ttlMs: nobody answered, it expires on its own
+ const again=queue.request({plate:'TRL-4I59',confidence:0.9,camera:'c',snapshotPath:null,detectionId:'evt2'});
+ assert.notEqual(again.id,first.id);
+ assert.equal(again.deduped,false);
+ assert.equal(queue.listPending().length,1);
+});
+
+test('different plates never dedupe against each other, even with the same detectionId',()=>{
+ const registry=createVehicleRegistry(HOUSEHOLD_VEHICLES);
+ const queue=createPlateGateQueue({registry});
+ const a=queue.request({plate:'TRL-4I59',confidence:0.9,camera:'c',snapshotPath:null,detectionId:'shared'});
+ const b=queue.request({plate:'TQR-1A36',confidence:0.9,camera:'c',snapshotPath:null,detectionId:'shared'});
+ assert.notEqual(a.id,b.id);
+ assert.equal(b.deduped,false);
+ assert.equal(queue.listPending().length,2);
+});

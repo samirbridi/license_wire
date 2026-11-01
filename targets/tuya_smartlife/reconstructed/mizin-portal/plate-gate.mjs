@@ -31,10 +31,13 @@ export const HOUSEHOLD_VEHICLES=[
 
 const DEFAULT_TTL_MS=90_000; // tempo para a pessoa responder antes do pedido expirar sozinho
 const DECIDED_RETENTION_MS=60*60*1000; // janela em que uma decisão continua consultável/auditável
+// Enquanto o carro está parado no quadro, o Frigate relê a mesma placa várias vezes por segundo.
+// Sem isso, cada carro geraria uma notificação "Abrir?" por leitura, não uma por visita.
+const DEFAULT_DEDUPE_MS=120_000;
 
 // Fila de pedidos de abertura pendentes de confirmação humana. Em memória: um reinício do processo
 // limpa qualquer pedido pendente, o que é o comportamento seguro (nunca reabrir um pedido antigo sozinho).
-export function createPlateGateQueue({registry, ttlMs=DEFAULT_TTL_MS, now=Date.now}={}){
+export function createPlateGateQueue({registry, ttlMs=DEFAULT_TTL_MS, dedupeMs=DEFAULT_DEDUPE_MS, now=Date.now}={}){
  const pending=new Map();
  function prune(){
   for(const [id,req] of pending){
@@ -48,15 +51,28 @@ export function createPlateGateQueue({registry, ttlMs=DEFAULT_TTL_MS, now=Date.n
  return{
   // Chamado quando a visão computacional lê uma placa com confiança suficiente. Nunca aciona o portão;
   // devolve o pedido para a notificação ser exibida e aguardar decisão humana.
+  //
+  // Dedupe: enquanto o carro está parado no quadro, o Frigate relê a mesma placa várias vezes por
+  // segundo (ou já existe um `detectionId` repetido). Sem isso cada leitura viraria uma notificação
+  // própria. A janela olha só pedidos AINDA pendentes ou decididos há pouco para a mesma placa — um
+  // pedido expirado (ninguém respondeu) nunca bloqueia uma nova tentativa, mesmo dentro da janela.
   request({plate, confidence, camera, snapshotPath, detectionId}){
    prune();
    if(!Number.isFinite(confidence)||confidence<0||confidence>1)throw new Error('Confiança de leitura inválida.');
+   const normalized=normalizePlate(plate),createdAt=now();
+   // deduped:true sinaliza ao chamador (a rota HTTP) que isto NÃO é um pedido novo, para ele nunca
+   // disparar uma segunda notificação para a mesma visita. É uma cópia; o registro guardado continua limpo.
+   for(const existing of pending.values()){
+    if(existing.plate!==normalized)continue;
+    if(existing.detectionId&&detectionId&&existing.detectionId===detectionId)return{...existing,deduped:true};
+    if(existing.status==='pending')return{...existing,deduped:true};
+    if(existing.status!=='expired'&&createdAt-existing.decidedAt<dedupeMs)return{...existing,deduped:true};
+   }
    const vehicle=registry.find(plate);
    const id='plate_'+randomUUID().replaceAll('-','');
-   const createdAt=now();
-   const entry={id,plate:normalizePlate(plate),plateRaw:String(plate||''),confidence,camera,snapshotPath,detectionId,
+   const entry={id,plate:normalized,plateRaw:String(plate||''),confidence,camera,snapshotPath,detectionId,
     vehicle:vehicle?{id:vehicle.id,label:vehicle.label,color:vehicle.color}:null,
-    known:!!vehicle,status:'pending',createdAt,expiresAt:createdAt+ttlMs,decidedAt:null,decidedBy:null};
+    known:!!vehicle,status:'pending',createdAt,expiresAt:createdAt+ttlMs,decidedAt:null,decidedBy:null,deduped:false};
    pending.set(id,entry);
    return entry;
   },
