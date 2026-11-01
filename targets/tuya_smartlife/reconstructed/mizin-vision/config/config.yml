@@ -1,6 +1,9 @@
 # Mizin Vision — local test configuration (Frigate 0.18.2).
-# Detector: the OpenVINO SSDLite model bundled in the image, on the PC CPU (no external model download).
-# Switching to an ONNX model on the GTX 1660 Ti is a later step.
+# Detector: ONNX Runtime with CUDA on the GTX 1660 Ti (owner decision, 2026-10-31). The -tensorrt image
+# ships CUDAExecutionProvider/TensorrtExecutionProvider and auto-selects the GPU for the `onnx` detector
+# type; no device needs picking by hand. Model: YOLOv9-s, 320x320, exported per the official Frigate
+# recipe into model_cache/. NOT yet confirmed running on GPU (not just NVDEC decode) — verify in
+# /api/stats -> detectors before trusting throughput numbers.
 mqtt:
   enabled: false
 
@@ -8,17 +11,17 @@ database:
   path: /media/frigate/frigate.db   # runtime/vision/media, outside the repository
 
 detectors:
-  ov:
-    type: openvino
-    device: CPU
+  onnx:
+    type: onnx
 
 model:
-  width: 300
-  height: 300
-  input_tensor: nhwc
-  input_pixel_format: bgr
-  path: /openvino-model/ssdlite_mobilenet_v2.xml
-  labelmap_path: /openvino-model/coco_91cl_bkgr.txt
+  model_type: yolo-generic
+  width: 320
+  height: 320
+  input_tensor: nchw
+  input_dtype: float
+  path: /config/model_cache/yolov9-s-320.onnx
+  labelmap_path: /labelmap/coco-80.txt   # official Frigate map: COCO bus/truck both report as "car", by design
 
 record:
   enabled: false
@@ -28,12 +31,36 @@ snapshots:
     default: 7
 
 objects:
-  track: [person, car, motorcycle, bicycle]   # the bundled SSDLite model has no "truck" class
+  track: [person, car, motorcycle, bicycle]   # coco-80.txt has no separate "truck"/"bus": both land on "car"
+
+# License plate recognition (owner decision, 2026-10-31): runs on the same GPU automatically (no device
+# picked by hand, same as the object detector). Models (PaddleOCR + YOLOv9 plate detector) download once
+# from GitHub into model_cache/ on first run, then work offline. A gate open is NEVER automatic from this:
+# LPR only writes sub_label/recognized_license_plate on the tracked object; the portal integration (not
+# yet built) reads that, still requires an authenticated human to confirm, same as every other gate pulse.
+lpr:
+  enabled: true
+  detection_threshold: 0.7
+  recognition_threshold: 0.9   # conservative starting point; validate against original plate images
+  min_area: 1000
+  min_plate_length: 7           # every Brazilian plate (old ABC1234 or Mercosul ABC1D23) is exactly 7 chars
+  model_size: small             # Latin characters only, single-line plates: matches Brazilian plates
+  # Old format (ABC1234) or Mercosul (ABC1D23); anything else is discarded before matching known_plates.
+  format: "^([A-Z]{3}[0-9]{4}|[A-Z]{3}[0-9][A-Z][0-9]{2})$"
+  match_distance: 0   # exact match only; similar plates must never identify a household vehicle
+  known_plates:
+    # sub_label on the tracked object when matched; the portal reads this, never this file directly.
+    GWM Ora 5 (Preto):
+      - "TRL4I59"
+    BYD Dolphin Mini (Preto):
+      - "TQR1A36"
+    Renault Scenic (Preta):
+      - "IQL8380"
 
 cameras:
   # Sample recording of 2026-10-29 16:45 (local time), played in a loop as if it were live.
   aw300_portao_dia:
-    enabled: false   # quiet scene already tested; off to leave the CPU for the doorbell samples
+    enabled: false   # quiet scene already tested, no real event; superseded below by the doorbell orphan
     ffmpeg:
       input_args: -re -stream_loop -1 -fflags +genpts
       inputs:
@@ -51,6 +78,23 @@ cameras:
       width: 1280
       height: 720
       fps: 5
+
+  # AW300 Portao: local copy of an orphan segment recovered during the investigation, not by a NAS deployment.
+  # Viewed frames show an empty gate at 14:00-14:03; presence of the 14:06 visitor is NOT verified.
+  # Negative/control sample until the full recording has been visually checked.
+  aw300_portao:
+    ffmpeg:
+      hwaccel_args: preset-nvidia
+      input_args: -re -stream_loop -1 -fflags +genpts
+      inputs:
+        - path: /samples/aw300_portao_2026-10-30_orfao_0e923448-000001.mkv
+          roles: [detect]
+    motion:
+      mask:
+        relogio:
+          friendly_name: Relógio da câmera
+          coordinates: 0,0,0.28,0,0.28,0.06,0,0.06
+    detect: {enabled: true, width: 1280, height: 720, fps: 5}
 
   # Doorbell of 2026-10-30 (portal log 17:06:31 UTC = 14:06:31 local). 7-minute windows cut from the
   # NAS recordings (runtime/vision/samples/cuts); the visitor is at the gate between ~14:06:40 and 14:07:30.

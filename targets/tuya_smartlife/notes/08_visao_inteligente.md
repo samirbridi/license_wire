@@ -19,6 +19,32 @@
 8. Leitura de placa para abrir o portão do veículo cadastrado. Começa só com aviso "Abrir/Ignorar", porque placa se clona.
 9. Tudo isso também com o portão aberto. O estado vem do Tuya "Portão - Interruptor" (EKAZA EKAC-T3099WB, categoria `ckmkzq`, online).
 
+## Continuação — migração CUDA (2026-10-31)
+
+- O proprietário confirmou inferência na GTX 1660 Ti deste PC; o NAS permanece com os serviços e gravações. Uma futura migração para Linux/AMD será avaliada separadamente.
+- Bancada local com quatro entradas de três câmeras físicas: AW300 Portão, AW300 Garagem e duas vistas da Outdoor. Nenhuma Mi 2K incluída na detecção ativa.
+- A AW300 Portão foi habilitada com a cópia local do órfão. Os frames inspecionados mostram o portão vazio entre 14:00 e 14:03; não comprovam presença da visita das 14:06. A API não retornou eventos desta entrada na janela observada. Não classificar isso como falha do detector nem como teste positivo aprovado.
+- Suíte do portal: `node --test "test/*.test.mjs"`, 35 testes, 32 aprovados, 0 falhas, 3 pulados ligados ao FFmpeg real. Isso não comprova funcionamento no NAS.
+- A imagem instalada oferece ONNX Runtime com CUDAExecutionProvider. O detector OpenVINO/CPU ainda não foi substituído: o modelo ONNX precisa terminar e ser validado primeiro.
+- Exportação de YOLOv9-s 320×320 iniciada em build Docker isolado, conforme receita oficial da documentação v0.18.2. Nesta etapa ainda sem resultado confirmado. Não iniciar outra exportação enquanto a primeira estiver em execução.
+- O labelmap oficial `/labelmap/coco-80.txt` agrega os índices COCO de ônibus e caminhão em `car`. Não anunciar classes separadas sem override e teste próprios; não usar um mapa de 91 classes em modelo COCO-80.
+- Próximas verificações: integridade e formato do ONNX, inferência com CUDA efetiva (não apenas GPU visível ou NVDEC ativo), desempenho sustentado das quatro entradas, precisão em amostras positivas/negativas, zonas e integração ao portal. Nenhuma publicação no NAS realizada nesta continuação.
+
+### Confirmação de veículos — módulo inicial local
+
+O proprietário autorizou instalação das dependências e publicação dos componentes após validação, e determinou que nenhuma leitura de placa acione automaticamente o portão. Veículos informados foram cadastrados no módulo local `reconstructed/mizin-portal/plate-gate.mjs`. O módulo cria pedidos com validade de 90 segundos e decisão de uso único; não importa nem chama o atuador. Testes: `node --test test/plate-gate.test.mjs`, 9 aprovados, 0 falhas.
+
+Este é somente um núcleo em memória, ainda NÃO integrado ao servidor, autenticação, notificações, OCR ou motor. O argumento `by` não autentica ninguém: a futura rota deve obter a identidade da sessão real, aplicar CSRF e autorização, nunca aceitá-la do corpo enviado pelo cliente. A rota de decisão deverá consumir o pedido atomicamente e validar placa cadastrada, atualidade do evento e estado físico conhecido do portão antes de qualquer pulso. O relé existente alterna abertura/parada/fechamento, portanto confirmar um pedido não equivale por si só a abrir com segurança. Não encaminhar decisões diretamente ao endpoint genérico de pulso sem essas verificações. O cadastro de produção deve ficar privado e configurável em runtime. Nenhum comando físico foi enviado nos testes.
+
+## Migração CUDA confirmada e LPR ativo (2026-10-31, build do modelo + troca de detector)
+
+- Exportação autorizada pelo proprietário do YOLOv9-s/320 via receita oficial Frigate (Dockerfile isolado, rede só para clonar `github.com/WongKinYiu/yolov9` e baixar os pesos oficiais `v0.1`). Aviso não-fatal de conversão de opset (12→18, operador Resize) durante o export; saída `yolov9-s-320.onnx`, 28 MB. Checagem estrutural (`onnx.checker`) e carregamento real com `onnxruntime` da própria imagem Frigate: ambos OK, `input images [1,3,320,320]`, `output output0 [1,84,2100]` (formato `yolo-generic` esperado).
+- **Prova direta de execução em CUDA**: `onnxruntime.InferenceSession(...).get_providers()` retornou `['CUDAExecutionProvider', 'CPUExecutionProvider']` nesta GTX 1660 Ti, não inferido por velocidade. Detector trocado de `openvino/CPU` para `onnx` (auto-detecta CUDA na imagem `-tensorrt`, sem campo de device manual) na bancada local; subiu com as 3 câmeras físicas (4 entradas) sem erro.
+- LPR ligado (`lpr.enabled: true`). Download automático (GitHub, primeira execução) de PaddleOCR (detecção/classificação/reconhecimento) e do detector de placas YOLOv9 confirmado. Primeira subida teve `InvalidProtobuf` ao carregar `recognition_v4.onnx` — condição de corrida com o download paralelo de 4 arquivos, não arquivo corrompido (`onnx.checker` e um load isolado com `onnxruntime` passaram OK no arquivo em cache). Reinício com os arquivos já em cache não repetiu o erro; `/api/config` confirma o YAML aceito (3 veículos, regex, `match_distance: 0`); `/api/stats` mostra `embeddings.plate_recognition` presente (processo vivo). **Ainda sem confirmação funcional positiva**: nenhuma amostra atual tem placa legível (grande angular distante ou vidro/teto sem chapa visível), então o OCR nunca rodou contra um caso real nesta sessão.
+- Correspondência de placa configurada **exata** (`match_distance: 0`, sem variantes), por decisão explícita do proprietário: uma leitura parecida não deve identificar outro carro como cadastrado.
+- Regra inalterada: mesmo com `sub_label` reconhecido pelo Frigate, nenhum código liga isso ao pulso do portão. A integração (portal + `plate-gate.mjs` + confirmação humana) continua não construída.
+- Pendente do proprietário: o Logbook local (`runtime/activity_logs.json`) só cobre 26–28/10 (pré-migração para o NAS); os 3 carros cadastrados e os pulsos reais de portão estão no NAS/`homecams.pages.dev`, sem acesso de leitura automatizado daqui. Proprietário indicou que vai cruzar pulsos de portão recentes com as gravações assim que estiver em casa, para validar o OCR contra um evento real.
+
 ## Ambiente local verificado
 
 - Docker Desktop 29.9.2 com WSL2. A GPU aparece dentro do container (`docker run --gpus all nvidia/cuda:12.4.1-base-ubuntu22.04 nvidia-smi`: GTX 1660 Ti, 6144 MiB).
