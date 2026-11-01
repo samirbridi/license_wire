@@ -19,6 +19,7 @@ import {createVehicleRegistry, createPlateGateQueue, HOUSEHOLD_VEHICLES} from '.
 import {createPlateNotifier} from './plate-notify.mjs';
 import {createPushSubscriptionStore, createTelegramChatStore} from './plate-notify-store.mjs';
 import {verifyIngestToken} from './vision-ingest-auth.mjs';
+import {createTelegramLinkCodes} from './telegram-link.mjs';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -1734,7 +1735,12 @@ const plateGateQueue=createPlateGateQueue({registry:plateVehicleRegistry});
 const visionIngestToken=(()=>{try{return JSON.parse(fs.readFileSync(VISION_INGEST_TOKEN_PATH,'utf8')).token||null;}catch{return null;}})();
 const pushSubscriptionStore=createPushSubscriptionStore({file:PUSH_SUBSCRIPTIONS_PATH});
 const telegramChatStore=createTelegramChatStore({file:TELEGRAM_CHATS_PATH});
+const telegramLinkCodes=createTelegramLinkCodes();
 const TELEGRAM_BOT_TOKEN=process.env.MIZIN_TELEGRAM_BOT_TOKEN||null;
+// Verificado contra o cabeçalho X-Telegram-Bot-Api-Secret-Token que o Telegram ecoa de volta em todo
+// webhook (configurado uma vez via setWebhook); sem isso qualquer um poderia forjar POSTs para esta
+// rota pública e confirmar/ignorar pedidos de portão como se fosse o bot real.
+const TELEGRAM_WEBHOOK_SECRET=process.env.MIZIN_TELEGRAM_WEBHOOK_SECRET||null;
 async function telegramSendMessage({chatId,text,requestId}){
   const resp=await fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`,{
     method:'POST',headers:{'Content-Type':'application/json'},
@@ -1744,6 +1750,11 @@ async function telegramSendMessage({chatId,text,requestId}){
     ]]}}),
   });
   if(!resp.ok)throw new Error(`Telegram respondeu ${resp.status}`);
+}
+async function telegramCall(method,payload){
+  const resp=await fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/${method}`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
+  if(!resp.ok)console.error(`[telegram] ${method} respondeu ${resp.status}`);
+  return resp;
 }
 let webPushSend=null;
 if(process.env.MIZIN_VAPID_PUBLIC_KEY&&process.env.MIZIN_VAPID_PRIVATE_KEY){
@@ -3574,6 +3585,93 @@ const server = http.createServer(async (req, res) => {
     } catch (err) {
       res.writeHead(400, { 'Content-Type': 'application/json' });
       res.end(JSON.stringify({ success: false, error: err.message }));
+    }
+    return;
+  }
+
+  // ---------------------------------------------------------------
+  // Vínculo e webhook do bot do Telegram (REV: build 0066).
+  // Gerar código exige sessão real (mesmo portalGate de toda outra rota autenticada); consumir o
+  // código (webhook) vem do Telegram mesmo, autenticado pelo secret_token, nunca por sessão de usuário
+  // -- o Telegram não tem como enviar um cookie do portal.
+  // ---------------------------------------------------------------
+  if (url.pathname === '/api/vision/telegram-link-code' && req.method === 'POST') {
+    try {
+      const session = portalGate ? await portalGate.session(req) : null;
+      if (!session?.user) { res.writeHead(401, { 'Content-Type': 'application/json' }); res.end(JSON.stringify({ error: 'Entre com sua conta cadastrada.' })); return; }
+      if (!TELEGRAM_BOT_TOKEN) { res.writeHead(503, { 'Content-Type': 'application/json' }); res.end(JSON.stringify({ error: 'Bot do Telegram não configurado nesta instalação.' })); return; }
+      const { code, expiresAt } = telegramLinkCodes.generate({ by: session.user.email || session.user.name || session.user.id });
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ success: true, code, expiresAt }));
+    } catch (err) {
+      res.writeHead(400, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ success: false, error: err.message }));
+    }
+    return;
+  }
+
+  if (url.pathname === '/api/vision/telegram-webhook' && req.method === 'POST') {
+    const body = await readJsonBody(req, res, 32768);
+    if (body === null) return;
+    // Comparação em tempo constante, mesmo padrão de vision-ingest-auth.mjs: a diferença de timing
+    // entre "cedo errado" e "quase certo" não pode vazar informação sobre o segredo configurado.
+    if (!TELEGRAM_WEBHOOK_SECRET || !verifyIngestToken(req.headers['x-telegram-bot-api-secret-token'], TELEGRAM_WEBHOOK_SECRET)) {
+      res.writeHead(401, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ error: 'Assinatura de webhook inválida.' }));
+      return;
+    }
+    res.writeHead(200, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({ ok: true })); // responde já: o Telegram reenvia update se demorar/der erro
+    try {
+      const update = JSON.parse(body);
+      if (update.message?.text?.startsWith('/start')) {
+        const code = update.message.text.split(/\s+/)[1];
+        const chatId = update.message.chat?.id;
+        if (code && Number.isInteger(chatId)) {
+          try {
+            const entry = telegramLinkCodes.consume(code);
+            await telegramChatStore.add(chatId, entry.by);
+            await telegramCall('sendMessage', { chat_id: chatId, text: `✅ Telegram vinculado a ${entry.by}. Você vai receber os avisos de leitura de placa aqui.` });
+            logActivity('vision_plate', 'Mizin Vision', 'Telegram Vinculado', `Conta ${entry.by} vinculou o Telegram para receber avisos de placa`, 'Mizin Vision', '🔗', 'success');
+          } catch (err) {
+            await telegramCall('sendMessage', { chat_id: chatId, text: `❌ ${err.message}` });
+          }
+        } else {
+          await telegramCall('sendMessage', { chat_id: chatId, text: 'Gere um código de vínculo no portal (Configurações → Notificações) e envie /start SEUCODIGO aqui.' });
+        }
+      } else if (update.callback_query) {
+        const cb = update.callback_query, chatId = cb.message?.chat?.id;
+        const match = /^plate:(confirm|ignore):(.+)$/.exec(cb.data || '');
+        if (match) {
+          const [, action, id] = match;
+          const chats = await telegramChatStore.list();
+          // Só chats vinculados podem decidir -- o chatId por si só não é identidade autenticada,
+          // mas precisa ao menos ter passado pelo /start CODE de alguém autorizado uma vez.
+          const by = chats.includes(chatId) ? `telegram:${chatId}` : null;
+          if (!by) {
+            await telegramCall('answerCallbackQuery', { callback_query_id: cb.id, text: 'Vincule sua conta primeiro: /start CODIGO', show_alert: true });
+          } else {
+            try {
+              const decided = action === 'confirm' ? plateGateQueue.confirm(id, { by }) : plateGateQueue.ignore(id, { by });
+              if (action === 'confirm') {
+                const pulse = await executeGatePulse('eb49c5d1977172327aqb1q', `Confirmação de placa via Telegram (${decided.plateRaw || decided.plate})`);
+                logActivity('vision_plate', decided.vehicle?.label || 'Placa não cadastrada', 'Abertura Confirmada por Placa', `${decided.plateRaw || decided.plate} confirmado via Telegram`, 'Mizin Vision', '✅', 'success');
+              } else {
+                logActivity('vision_plate', decided.vehicle?.label || 'Placa não cadastrada', 'Abertura Ignorada', `${decided.plateRaw || decided.plate} ignorado via Telegram`, 'Mizin Vision', '🚫', 'info');
+              }
+              plateNotifier.requestDecided(decided).catch(() => {});
+              await telegramCall('answerCallbackQuery', { callback_query_id: cb.id, text: action === 'confirm' ? '✅ Portão acionado.' : '🚫 Ignorado.' });
+              if (chatId) await telegramCall('editMessageReplyMarkup', { chat_id: chatId, message_id: cb.message.message_id, reply_markup: { inline_keyboard: [] } });
+            } catch (err) {
+              await telegramCall('answerCallbackQuery', { callback_query_id: cb.id, text: err.message, show_alert: true });
+            }
+          }
+        } else {
+          await telegramCall('answerCallbackQuery', { callback_query_id: cb.id });
+        }
+      }
+    } catch (err) {
+      console.error('[telegram] Falha ao processar webhook:', err.message);
     }
     return;
   }
