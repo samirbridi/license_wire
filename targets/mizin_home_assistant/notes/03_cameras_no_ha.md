@@ -32,15 +32,32 @@ lentes) entram pelo Frigate, já que precisam de detecção. As 3 Mi2K entram pe
 (RTSP genérico apontando para a ponte go2rtc do bridge Xiaomi), sem precisar de uma entrada extra no
 Frigate só para visualização.
 
-## O que falta para "ao vivo" valer de verdade
+## Vídeo ao vivo: resolvido do lado do código, falta a ação no NAS (atualizado 1/11/2026)
 
-Confirmado nesta sessão: o Frigate hoje só reprocessa gravações de amostra em loop (`-stream_loop -1`),
-nunca conectou na ponte ao vivo do NAS. A ponte (`go2rtc`, dentro do container `bridge`) escuta só em
-`127.0.0.1` dentro do NAS, por decisão de segurança já registrada em
-`targets/xiaomi_home/notes/08_autorizacao_qr.md` e `12_visao_dupla_gravacoes_rondas.md`. O proprietário
-já aprovou abrir essa porta só para este PC (GTX); a mesma decisão precisaria ser revisitada para a
-máquina nova, se o Frigate acabar rodando lá (ver `02_decisao_hardware.md` — recomendação atual é manter
-na GTX).
+Até a rodada anterior desta sessão, o Frigate só reprocessava gravações de amostra em loop
+(`-stream_loop -1`), nunca tinha se conectado à ponte ao vivo do NAS. Isso agora tem um caminho
+concreto e testado:
+
+- `targets/tuya_smartlife/reconstructed/mizin-vision/config/config-live.yml` +
+  `docker-compose.local-live.yml`: as 4 câmeras via RTSP na ponte go2rtc do NAS
+  (`rtsp://192.168.1.186:8554/<alias>`), com credencial dedicada. **Testado**: sobe `healthy`,
+  reconexão isolada por câmera sem crash.
+- A ponte (`go2rtc`, dentro do container `bridge` no NAS) escuta hoje só em `127.0.0.1`. Verifiquei
+  antes de propor a mudança: a decisão de segurança documentada em
+  `targets/xiaomi_home/notes/08_autorizacao_qr.md`/`12_visao_dupla_gravacoes_rondas.md` é sobre uma
+  instância **auxiliar** diferente (usada só no fluxo de QR Code), não a instância de produção que o
+  `bridge.yaml` real usa — não há contradição em abrir o RTSP dessa instância.
+- Risco de "a Outdoor Pro só aceita uma sessão por vez" verificado e descartado: o go2rtc multiplexa um
+  único produtor (a conexão real com a câmera) entre múltiplos consumidores — o portal e o Frigate
+  compartilham a mesma conexão já existente, nunca disputam sessão.
+- `artifacts/bridge-rtsp-enable.md` (3 linhas no `bridge.yaml`, reiniciar o container `bridge`) e
+  `artifacts/bridge-firewall-dsm.md` (regra de firewall no DSM, mesma decisão já aprovada pelo
+  proprietário de "abrir porta só para este PC") são as duas ações que **só o proprietário pode fazer**
+  — não foram aplicadas nesta sessão por falta de acesso ao NAS/DSM daqui.
+
+Se o Frigate acabar rodando na máquina nova em vez de aqui (mudança de `02_decisao_hardware.md` —
+recomendação atual é manter na GTX), a mesma liberação de firewall precisaria ser refeita para o IP
+dessa máquina; `docker-compose.frigate-opt-in.yml` já existe pronto para esse cenário.
 
 ## Gravação: a decisão em aberto do proprietário
 

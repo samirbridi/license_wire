@@ -2,7 +2,7 @@
 
 > **Descrição**: Plano e artefatos prontos para migrar o Mizin Home (Tuya local, câmeras Xiaomi, Visão
 > Inteligente) para o Home Assistant, numa máquina Linux dedicada que o proprietário vai montar.
-> **Versão**: `v0.1.0 (build 1)`
+> **Versão**: `v0.3.0 (build 3)`
 > **Criado em**: 2026-11-01
 
 Este alvo não é engenharia reversa de um binário de terceiro — é planejamento e artefatos de deploy
@@ -28,14 +28,24 @@ literalmente (ex: `ghidra/` fica vazio aqui, não há binário para decompilar).
 - [x] `frigate-config-homeassistant.yml`: variante do config local com MQTT ligado, validada como YAML.
 - [x] Bot do Telegram para a confirmação de abertura por placa (pedido separado do proprietário) — já
   construído e commitado em `targets/tuya_smartlife`, não depende desta migração.
+- [x] Vídeo ao vivo do Frigate: `config-live.yml` + `docker-compose.local-live.yml` (neste PC, GTX)
+  conectando a 4 câmeras via RTSP na ponte go2rtc do NAS, com `preset-rtsp-restream` e credencial
+  dedicada. **Testado de verdade**: subiu `healthy`, isolamento de falha por câmera confirmado (sem
+  crash do container com a porta do NAS ainda fechada). `bridge-rtsp-enable.md` (3 linhas no
+  `bridge.yaml`) e `bridge-firewall-dsm.md` (regra de firewall) documentam a parte que só o
+  proprietário pode aplicar no NAS — não testada ainda, porque exige acesso que esta sessão não tem.
+- [x] `docker-compose.frigate-opt-in.yml`: serviço Frigate opcional para a máquina nova, desligado por
+  padrão (a recomendação continua sendo a GTX) — pronto se a decisão de hardware mudar no futuro.
 
-### Pendente, depende da máquina física existir
+### Pendente, depende da máquina física ou de ação do proprietário no NAS
+- [ ] **Ação do proprietário, pode ser feita antes da máquina nova existir**: aplicar
+  `bridge-rtsp-enable.md` (editar `bridge.yaml`, reiniciar o container `bridge`) e
+  `bridge-firewall-dsm.md` (liberar a porta 8554 só para este PC) no NAS — depois disso, rodar
+  `docker-compose.local-live.yml` aqui conecta de verdade às câmeras reais.
 - [ ] Rodar `docker compose up` de verdade na máquina Linux nova (ver
   `notes/04_passo_a_passo_remoto.md` para o checklist completo, na ordem certa).
 - [ ] Decisão final de onde gravar as câmeras (NAS vs. HDDs/SSD da máquina nova) — números reais de
   referência em `notes/03_cameras_no_ha.md`, decisão em aberto do proprietário.
-- [ ] Ligar o Frigate ao vídeo ao vivo da ponte do NAS (hoje só lê gravação de amostra em loop) — passo
-  de rede já desenhado, falta executar.
 - [ ] Validar com um teste manual real (não só os testes automatizados) que a leitura de placa nunca
   abre o portão sozinha, antes de considerar isto "em produção".
 
@@ -51,8 +61,11 @@ literalmente (ex: `ghidra/` fica vazio aqui, não há binário para decompilar).
 
 - `artifacts/` — tudo pronto para colar/rodar na máquina nova:
   - `docker-compose.homeassistant.yml` — HA + Mosquitto + ponte MQTT.
+  - `docker-compose.frigate-opt-in.yml` — Frigate opcional para esta máquina, desligado por padrão.
   - `.env.example`, `bootstrap.sh`, `mosquitto/mosquitto.conf` — configuração da primeira subida.
-  - `frigate-config-homeassistant.yml` — variante do config do Frigate com MQTT ligado.
+  - `frigate-config-homeassistant.yml` — variante do config do Frigate com MQTT ligado e câmeras ao vivo.
+  - `bridge-rtsp-enable.md` / `bridge-firewall-dsm.md` — as duas mudanças no NAS para ligar o vídeo ao
+    vivo (ação do proprietário, pendente).
   - `mqtt-bridge-app/` — pacote empacotado (gerado, gitignored — reconstruir com
     `python targets/tuya_smartlife/scripts/prepare-mqtt-bridge-package.py`).
 - `notes/01_overview.md` — pedido do proprietário (verbatim) e visão geral.

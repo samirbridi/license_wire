@@ -5,6 +5,31 @@ Formato de versão obrigatório: `vX.Y.Z (build XXXX)`.
 
 ---
 
+## v0.3.0 (build 3) - 2026-11-01
+
+### ✨ Features
+- feat: vídeo ao vivo do Frigate ligado às 4 câmeras reais via RTSP da ponte go2rtc do NAS
+  (config-live.yml + docker-compose.local-live.yml), com credencial RTSP dedicada e
+  preset-rtsp-restream (feito especificamente para fonte go2rtc, não o preset genérico de câmera IP)
+- feat: bridge-rtsp-enable.md + bridge-firewall-dsm.md documentam as duas mudanças no bridge.yaml/
+  firewall do DSM que só o proprietário pode aplicar -- mudança mínima e cirúrgica (3 linhas), com
+  verificação de que a Outdoor Pro (uma sessão só) não é afetada: go2rtc multiplexa um único produtor
+  entre múltiplos consumidores, confirmado antes de propor a mudança
+- feat: docker-compose.frigate-opt-in.yml -- Frigate opcional para a máquina nova, desligado por padrão
+
+### 🐛 Fixes
+- fix: frigate-config-homeassistant.yml tinha ficado desatualizado desde a rodada anterior (ainda
+  apontava para arquivos de amostra, com comentário dizendo que isso ainda era pendência) -- alinhado
+  com config-live.yml agora que o caminho real foi resolvido
+
+### 🧪 Validação real, não assumida
+- Testado de ponta a ponta: container subiu `healthy` com as 4 câmeras tentando RTSP contra a porta
+  8554 do NAS (ainda fechada no momento do teste) -- reconexão isolada por câmera, sem crash,
+  comportamento correto confirmado por log e `/api/stats`. Container restaurado ao estado original
+  (amostras em loop) depois do teste.
+- `docker compose config` validado para os dois composes novos, isolado e combinado com o principal.
+- YAML de frigate-config-homeassistant.yml revalidado após a atualização das câmeras.
+
 ## v0.2.0 (build 2) - 2026-11-01
 
 ### ✨ Features

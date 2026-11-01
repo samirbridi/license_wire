@@ -53,9 +53,40 @@ Testar especificamente o portão (`cover`) com um clique de Abrir, e confirmar n
   go2rtc do NAS. Não depende do Frigate.
 - **AW300/Outdoor (escopo de segurança)**: via Frigate + integração oficial HACS. Decisão de onde o
   Frigate roda (GTX deste PC vs. a máquina nova) já tomada em `02_decisao_hardware.md` — recomendação é
-  manter na GTX por enquanto. Se isso mudar, usar `artifacts/frigate-config-homeassistant.yml` como
-  base, ajustando `hwaccel_args` para `preset-vaapi` e os `inputs.path` das câmeras para o RTSP real da
-  ponte (`rtsp://<ip>:8554/<alias>`), não mais os arquivos de amostra.
+  manter na GTX por enquanto.
+
+### 4a. Ligar o vídeo ao vivo do Frigate (independente da máquina nova — roda neste PC)
+
+Não depende de o Home Assistant existir ainda; pode ser feito a qualquer momento. Ordem exata, cada
+passo depende do anterior:
+
+1. **`artifacts/bridge-rtsp-enable.md`** — editar `bridge.yaml` no NAS (3 linhas: ligar RTSP, definir
+   usuário/senha) e reiniciar o container `bridge` no Container Manager.
+2. **`artifacts/bridge-firewall-dsm.md`** — liberar a porta 8554 só para este PC no firewall do DSM
+   (mesma decisão já aprovada por você: "abrir porta só para este PC").
+3. Neste PC, em `targets/tuya_smartlife/reconstructed/mizin-vision/`:
+   ```bash
+   cp .env.live.example .env.live
+   # editar .env.live: a MESMA senha definida no bridge.yaml (passo 1)
+   docker compose -f docker-compose.local.yml down        # para o banco de testes com amostras
+   docker compose -f docker-compose.local-live.yml --env-file .env.live up -d
+   ```
+4. Verificar: `curl http://127.0.0.1:5005/api/stats` deve mostrar `"connection_quality"` diferente de
+   `"unusable"` para as 4 câmeras, com `camera_fps` > 0 depois de alguns segundos. Se continuar
+   `"unusable"` com `reconnects_last_hour` subindo, os passos 1-2 não foram aplicados corretamente —
+   confira primeiro com `ffprobe` direto (comando no final de `bridge-rtsp-enable.md`) antes de suspeitar
+   do Frigate.
+
+**Testado nesta sessão** (1/11/2026): o config e o compose de "ao vivo" foram validados de ponta a ponta
+— suberam com `healthy`, as 4 câmeras tentando conectar na porta 8554 do NAS (ainda fechada no momento
+do teste) com reconexão automática isolada por câmera, sem crash do container. Container restaurado ao
+estado original (amostras em loop) depois do teste. **Não testado**: a conexão RTSP de fato funcionando
+contra o `bridge.yaml` real, porque os passos 1-2 (editar o NAS, liberar o firewall) ainda não foram
+aplicados — essa é a parte que só você pode fazer.
+
+Se Frigate acabar rodando na máquina nova em vez de aqui (mudança de `02_decisao_hardware.md`), usar
+`artifacts/frigate-config-homeassistant.yml` como base em vez de `config-live.yml`, trocando
+`hwaccel_args` para `preset-vaapi`.
 
 ## 5. Validar a regra de segurança da placa antes de qualquer coisa ao vivo
 

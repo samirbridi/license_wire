@@ -1,0 +1,38 @@
+# Mizin Vision — banco de testes AO VIVO (PC). Variante de docker-compose.local.yml que monta
+# config-live.yml em vez de config.yml -- conecta na ponte go2rtc real do NAS (rtsp://192.168.1.186:8554)
+# em vez de reprocessar amostras gravadas. NÃO use isto sem antes aplicar as duas mudanças descritas em
+# targets/mizin_home_assistant/artifacts/bridge-rtsp-enable.md e bridge-firewall-dsm.md -- sem elas, a
+# porta 8554 do NAS continua fechada e os containers aqui ficam em loop de reconexão (inofensivo, mas
+# inútil).
+#
+# Uso:
+#   1. Copiar .env.live.example para .env.live e preencher FRIGATE_RTSP_PASSWORD com a mesma senha
+#      definida em bridge.yaml no NAS.
+#   2. docker compose -f docker-compose.local-live.yml --env-file .env.live up -d
+#   3. Parar o banco de testes antigo primeiro se ainda estiver rodando (mesma porta 5005, mesmo nome de
+#      container "mizin-vision" -- os dois NÃO podem rodar ao mesmo tempo):
+#        docker compose -f docker-compose.local.yml down
+services:
+  frigate:
+    image: ghcr.io/blakeblackshear/frigate:stable-tensorrt
+    container_name: mizin-vision
+    restart: "no"
+    shm_size: "512mb"
+    gpus: all
+    ports:
+      - "127.0.0.1:5005:5000"   # internal UI/API without login, loopback only
+    environment:
+      # Nunca remover estas duas linhas mesmo que vazias: uma env var {FRIGATE_*} referenciada no YAML
+      # mas AUSENTE do ambiente (não apenas vazia) derruba o container inteiro com KeyError -- testado
+      # nesta sessão habilitando MQTT da mesma forma. String vazia resolve sem erro; variável ausente não.
+      FRIGATE_RTSP_USER: "${FRIGATE_RTSP_USER:-frigate}"
+      FRIGATE_RTSP_PASSWORD: "${FRIGATE_RTSP_PASSWORD:?defina em .env.live - ver bridge-rtsp-enable.md}"
+    volumes:
+      - ./config:/config
+      - ./config/config-live.yml:/config/config.yml:ro   # sobrepõe o config.yml padrão só dentro do container
+      - ../../runtime/vision/media:/media/frigate
+      - ../../runtime/vision/samples:/samples:ro
+      - type: tmpfs
+        target: /tmp/cache
+        tmpfs:
+          size: 1000000000

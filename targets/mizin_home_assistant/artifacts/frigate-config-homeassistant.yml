@@ -1,22 +1,20 @@
 # Variante "pronta para o Home Assistant" de
-# targets/tuya_smartlife/reconstructed/mizin-vision/config/config.yml -- MESMO conteúdo, só com o bloco
-# mqtt ligado (ver nota de TESTADO abaixo). NÃO copiar isto por cima do config local de testes: os dois
+# targets/tuya_smartlife/reconstructed/mizin-vision/config/config-live.yml (câmeras ao vivo via RTSP da
+# ponte go2rtc do NAS, já validado em bancada -- ver 04_passo_a_passo_remoto.md item 4a) -- MESMO
+# conteúdo, só com o bloco mqtt ligado. NÃO copiar isto por cima do config-live.yml local: os dois
 # arquivos precisam continuar divergindo neste único ponto até decidir onde o Frigate roda de fato.
 #
-# DUAS coisas ainda pendentes antes deste arquivo valer para uso real (não são bugs, são decisões que
-# dependem da máquina nova existir -- ver notes/02_decisao_hardware.md e notes/03_cameras_no_ha.md):
-#   1. As câmeras abaixo ainda apontam para os arquivos de amostra em /samples (gravação gravada, em
-#      loop) -- a ligação com o vídeo AO VIVO da ponte do NAS (go2rtc) depende da porta liberada só
-#      para a máquina que roda o Frigate, decisão já tomada para este PC (GTX) mas que precisa ser
-#      refeita para a máquina nova, se o Frigate for rodar lá.
-#   2. `detectors.onnx` assume uma GPU NVIDIA (CUDA). Na RX 580 isso não existe: ver decisão de hardware
-#      para rodar continuar na GTX deste PC (recomendado agora) ou trocar para `detectors.cpu` nesta
-#      máquina nova (mais lento, sem GPU dedicada -- ver notes/02_decisao_hardware.md para números).
+# UMA coisa ainda pendente antes deste arquivo valer para uso real (não é bug, é decisão que depende da
+# máquina nova existir -- ver notes/02_decisao_hardware.md):
+#   `detectors.onnx` assume uma GPU NVIDIA (CUDA). Na RX 580 isso não existe: a recomendação atual é
+#   continuar na GTX deste PC (ver notes/02_decisao_hardware.md para os números). Se isso mudar,
+#   trocar `hwaccel_args: preset-nvidia` por `preset-vaapi` em cada câmera abaixo.
 #
 # TESTADO (2026-11-01, banco de testes local): `mqtt.enabled: true` com `host: "{FRIGATE_MQTT_HOST}"` e
 # a env var ausente DERRUBA o container inteiro com `KeyError: 'FRIGATE_MQTT_HOST'` -- não degrada
 # graciosamente. As três env vars abaixo (FRIGATE_MQTT_HOST/USER/PASSWORD) são obrigatórias no ambiente
-# do container antes de subir com este arquivo, nunca opcionais.
+# do container antes de subir com este arquivo, nunca opcionais. O mesmo vale para
+# {FRIGATE_RTSP_USER}/{FRIGATE_RTSP_PASSWORD} usadas nas câmeras abaixo.
 mqtt:
   enabled: true
   host: "{FRIGATE_MQTT_HOST}"   # ex: mizin-mosquitto, se Frigate e o broker estiverem no mesmo compose
@@ -67,16 +65,16 @@ lpr:
     Renault Scenic (Preta):
       - "IQL8380"
 
-# Mesmas 3 câmeras de amostra do banco de testes local -- ver pendência (1) no topo deste arquivo antes
-# de considerar isto "ao vivo". Trocar os `inputs.path` por `rtsp://<ip-da-ponte>:8554/<alias>` (go2rtc
-# restream) é o único passo que falta, uma vez que a porta esteja liberada.
+# As 4 entradas (3 câmeras físicas, Outdoor com 2 lentes) via RTSP da ponte go2rtc do NAS, idêntico a
+# config-live.yml. preset-rtsp-restream: feito especificamente para consumir um restream go2rtc, não o
+# preset genérico de câmera IP.
 cameras:
   aw300_portao:
     ffmpeg:
       hwaccel_args: preset-nvidia   # trocar para preset-vaapi se a detecção rodar na RX 580, não na GTX
-      input_args: -re -stream_loop -1 -fflags +genpts
+      input_args: preset-rtsp-restream
       inputs:
-        - path: /samples/aw300_portao_2026-10-30_orfao_0e923448-000001.mkv
+        - path: rtsp://{FRIGATE_RTSP_USER}:{FRIGATE_RTSP_PASSWORD}@192.168.1.186:8554/aw300_portao_quality3
           roles: [detect]
     motion:
       mask:
@@ -84,12 +82,12 @@ cameras:
           friendly_name: Relógio da câmera
           coordinates: 0,0,0.28,0,0.28,0.06,0,0.06
     detect: {enabled: true, width: 1280, height: 720, fps: 5}
-  outdoor_rua:
+  outdoor_rua:   # Outdoor Pro, segunda lente (rua/calçada em frente ao portão)
     ffmpeg:
       hwaccel_args: preset-nvidia
-      input_args: -re -stream_loop -1 -fflags +genpts
+      input_args: preset-rtsp-restream
       inputs:
-        - path: /samples/cuts/outdoor_v2_1403.mkv
+        - path: rtsp://{FRIGATE_RTSP_USER}:{FRIGATE_RTSP_PASSWORD}@192.168.1.186:8554/outdoor_pro_poste_channel2_quality3
           roles: [detect]
     motion:
       mask:
@@ -97,12 +95,12 @@ cameras:
           friendly_name: Relógio da câmera
           coordinates: 0,0,0.38,0,0.38,0.08,0,0.08
     detect: {enabled: true, width: 1280, height: 720, fps: 5}
-  outdoor_calcada:
+  outdoor_calcada:   # Outdoor Pro, primeira lente (calçada junto ao muro)
     ffmpeg:
       hwaccel_args: preset-nvidia
-      input_args: -re -stream_loop -1 -fflags +genpts
+      input_args: preset-rtsp-restream
       inputs:
-        - path: /samples/cuts/outdoor_v1_1403.mkv
+        - path: rtsp://{FRIGATE_RTSP_USER}:{FRIGATE_RTSP_PASSWORD}@192.168.1.186:8554/outdoor_pro_poste_quality3
           roles: [detect]
     motion:
       mask:
@@ -110,12 +108,12 @@ cameras:
           friendly_name: Relógio da câmera
           coordinates: 0,0,0.38,0,0.38,0.08,0,0.08
     detect: {enabled: true, width: 1280, height: 720, fps: 5}
-  garagem_portao:
+  garagem_portao:   # AW300 Garagem, olhando de dentro para o portão
     ffmpeg:
       hwaccel_args: preset-nvidia
-      input_args: -re -stream_loop -1 -fflags +genpts
+      input_args: preset-rtsp-restream
       inputs:
-        - path: /samples/cuts/aw300_garagem_1403.mkv
+        - path: rtsp://{FRIGATE_RTSP_USER}:{FRIGATE_RTSP_PASSWORD}@192.168.1.186:8554/aw300_garagem_quality3
           roles: [detect]
     motion:
       mask:

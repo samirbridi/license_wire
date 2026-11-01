@@ -8,3 +8,5 @@ artifacts/mqtt-bridge-app/
 artifacts/ha-config/
 artifacts/.env
 artifacts/mosquitto/passwd
+# Dados do Frigate opcional (docker-compose.frigate-opt-in.yml), se esse serviço for ativado.
+artifacts/frigate-media/

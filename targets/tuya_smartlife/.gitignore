@@ -1,3 +1,5 @@
 runtime/
 evidence/private/
 bin/
+# Credencial RTSP real do banco de testes "ao vivo" do Mizin Vision (ver reconstructed/mizin-vision/).
+reconstructed/mizin-vision/.env.live

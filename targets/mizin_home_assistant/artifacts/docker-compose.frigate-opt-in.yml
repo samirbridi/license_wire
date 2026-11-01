@@ -1,0 +1,41 @@
+# Serviço Frigate OPCIONAL para esta máquina -- NÃO faz parte do compose principal de propósito (ver
+# docker-compose.homeassistant.yml e notes/02_decisao_hardware.md: a recomendação atual é manter a
+# detecção na GTX 1660 Ti do outro PC, não aqui). Só suba isto se essa decisão for revista.
+#
+# Uso (combinar com o compose principal via -f):
+#   docker compose -f docker-compose.homeassistant.yml -f docker-compose.frigate-opt-in.yml \
+#     --env-file .env up -d
+#
+# Pré-requisitos (nenhum aplicado por este arquivo):
+#   - As mesmas duas mudanças de bridge-rtsp-enable.md e bridge-firewall-dsm.md, mas liberando a porta
+#     8554 do NAS para o IP desta máquina (não mais só para o PC da GTX) -- regra de firewall adicional
+#     no DSM, não substitui a existente.
+#   - FRIGATE_RTSP_USER/PASSWORD no .env desta máquina, mesma credencial do bridge.yaml.
+#   - Troca manual de `hwaccel_args: preset-nvidia` por `preset-vaapi` em
+#     frigate-config-homeassistant.yml (a RX 580 não tem `--gpus all` nem driver NVIDIA; VAAPI usa
+#     /dev/dri, mapeado abaixo).
+services:
+  frigate:
+    container_name: mizin-vision-ha
+    image: ghcr.io/blakeblackshear/frigate:stable   # NÃO -tensorrt (sem GPU NVIDIA) nem -rocm (sem suporte oficial à RX 580, ver notes/02_decisao_hardware.md)
+    restart: unless-stopped
+    shm_size: "512mb"
+    devices:
+      - /dev/dri:/dev/dri   # VAAPI (decodificação de vídeo) -- não ajuda a inferência do detector em si
+    ports:
+      - "127.0.0.1:5005:5000"
+    environment:
+      FRIGATE_MQTT_HOST: mosquitto
+      FRIGATE_MQTT_USER: ${MIZIN_MQTT_USERNAME:-mizin}
+      FRIGATE_MQTT_PASSWORD: ${MIZIN_MQTT_PASSWORD:?mesma senha do mosquitto, ver .env}
+      FRIGATE_RTSP_USER: ${FRIGATE_RTSP_USER:-frigate}
+      FRIGATE_RTSP_PASSWORD: ${FRIGATE_RTSP_PASSWORD:?mesma senha definida em bridge.yaml no NAS}
+    volumes:
+      - ./frigate-config-homeassistant.yml:/config/config.yml:ro
+      - ./frigate-media:/media/frigate
+      - type: tmpfs
+        target: /tmp/cache
+        tmpfs:
+          size: 1000000000
+    depends_on:
+      mosquitto: {condition: service_started}
