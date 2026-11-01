@@ -50,6 +50,10 @@ const TELEGRAM_CHATS_PATH = path.join(WORKSPACE, 'targets/tuya_smartlife/runtime
 // Segredo compartilhado só entre plate-watcher.mjs (roda no PC com a GPU) e esta rota de ingestão;
 // nunca é uma sessão de usuário. Arquivo gitignored, gerado uma vez por scripts/generate-vision-token.mjs.
 const VISION_INGEST_TOKEN_PATH = path.join(WORKSPACE, 'targets/tuya_smartlife/runtime/vision-ingest-token.json');
+// Segredo próprio da ponte MQTT (mqtt-bridge-runner.mjs), gerado por scripts/generate-mqtt-bridge-token.mjs.
+// Nunca o mesmo arquivo/segredo da visão computacional: processos de confiança diferentes não devem
+// compartilhar credencial -- revogar o acesso de um nunca deve exigir trocar o segredo do outro.
+const MQTT_BRIDGE_TOKEN_PATH = path.join(WORKSPACE, 'targets/tuya_smartlife/runtime/mqtt-bridge-token.json');
 
 function getCurrentVersion() {
   try {
@@ -1733,6 +1737,25 @@ const archive=createArchive({root:process.env.MIZIN_ARCHIVE_ROOT,aliases:[...loa
 const plateVehicleRegistry=createVehicleRegistry(HOUSEHOLD_VEHICLES);
 const plateGateQueue=createPlateGateQueue({registry:plateVehicleRegistry});
 const visionIngestToken=(()=>{try{return JSON.parse(fs.readFileSync(VISION_INGEST_TOKEN_PATH,'utf8')).token||null;}catch{return null;}})();
+const mqttBridgeToken=(()=>{try{return JSON.parse(fs.readFileSync(MQTT_BRIDGE_TOKEN_PATH,'utf8')).token||null;}catch{return null;}})();
+// Responde 413 explicitamente ao estourar o limite, em vez de só chamar req.destroy(): sem resposta, o
+// cliente (plate-watcher.mjs, mqtt-bridge-runner.mjs, o navegador) via só "socket hang up", sem como
+// saber se foi recusado por tamanho ou se o portal caiu (achado testando a rota de visão ponta a ponta).
+const readJsonBody=(req,res,maxBytes)=>new Promise(resolveBody=>{
+  let body='',tooLarge=false;
+  req.on('data',chunk=>{
+    body+=chunk;
+    if(!tooLarge&&body.length>maxBytes){
+      tooLarge=true;
+      res.writeHead(413,{'Content-Type':'application/json'});
+      res.end(JSON.stringify({error:'Requisição muito grande.'}));
+      req.destroy();
+      resolveBody(null);
+    }
+  });
+  req.on('end',()=>{if(!tooLarge)resolveBody(body);});
+  req.on('error',()=>resolveBody(null));
+});
 const pushSubscriptionStore=createPushSubscriptionStore({file:PUSH_SUBSCRIPTIONS_PATH});
 const telegramChatStore=createTelegramChatStore({file:TELEGRAM_CHATS_PATH});
 const telegramLinkCodes=createTelegramLinkCodes();
@@ -1874,6 +1897,57 @@ const server = http.createServer(async (req, res) => {
     } else {
       res.writeHead(404, { 'Content-Type': 'application/json' });
       res.end(JSON.stringify({ error: 'Registry not found' }));
+    }
+    return;
+  }
+
+  // ---------------------------------------------------------------
+  // Ponte MQTT para o Home Assistant (REV: migração HA, 2026-11-01).
+  // mqtt-bridge-runner.mjs é um processo separado (sem sessão de navegador); autenticado pelo mesmo
+  // padrão de segredo fixo de máquina já usado para a visão computacional, mas com token próprio
+  // (nunca compartilhado -- ver mqtt-bridge-token.json / vision-ingest-token.json).
+  // ---------------------------------------------------------------
+  if (url.pathname === '/api/mqtt-bridge/devices' && req.method === 'GET') {
+    if (!mqttBridgeToken || !verifyIngestToken(req.headers['x-mqtt-bridge-token'], mqttBridgeToken)) {
+      res.writeHead(401, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ error: 'Token de ponte MQTT inválido.' }));
+      return;
+    }
+    if (!fs.existsSync(REGISTRY_PATH)) {
+      res.writeHead(404, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ error: 'Registry not found' }));
+      return;
+    }
+    const data = JSON.parse(fs.readFileSync(REGISTRY_PATH, 'utf-8'));
+    for (const dev of data) {
+      const liveDps = liveDeviceStatus.get(dev.id) || liveDeviceStatus.get(dev.local_ip);
+      if (liveDps) {
+        dev.live_dps = { ...liveDps };
+        const isGate = dev.category === 'ckmkzq' || dev.id === 'eb49c5d1977172327aqb1q' || (dev.name && dev.name.toLowerCase().includes('portão'));
+        if (isGate && Date.now() > gatePulseActiveUntil) dev.live_dps['1'] = false;
+      }
+    }
+    res.writeHead(200, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify(data, (key, value) => /^(local_?key|access_?token|refresh_?token|client_?secret|password)$/i.test(key) ? undefined : value));
+    return;
+  }
+
+  if (url.pathname === '/api/mqtt-bridge/command' && req.method === 'POST') {
+    const body = await readJsonBody(req, res, 4096);
+    if (body === null) return;
+    try {
+      if (!mqttBridgeToken || !verifyIngestToken(req.headers['x-mqtt-bridge-token'], mqttBridgeToken)) {
+        res.writeHead(401, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ error: 'Token de ponte MQTT inválido.' }));
+        return;
+      }
+      const payload = JSON.parse(body);
+      const result = await executeDeviceToggle(payload.devId, payload.dps, payload.value, 'Home Assistant');
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ success: true, result }));
+    } catch (err) {
+      res.writeHead(400, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ success: false, error: err.message }));
     }
     return;
   }
@@ -3456,32 +3530,6 @@ const server = http.createServer(async (req, res) => {
     });
     return;
   }
-
-  // ---------------------------------------------------------------
-  // Confirmação de abertura por placa (REV: build 0066).
-  // Regra inegociável: nenhuma destas rotas aciona o portão sozinha. A única que pode é o POST .../confirm,
-  // e só porque ela mesma chama executeGatePulse() depois de validar sessão de administrador + CSRF,
-  // exatamente como /api/gate/pulse acima. A leitura da placa nunca é suficiente por si só.
-  //
-  // readJsonBody responde 413 explicitamente ao estourar o limite, em vez de só chamar req.destroy():
-  // sem resposta, o cliente (plate-watcher.mjs, o navegador) via só "socket hang up", sem como saber
-  // se foi recusado por tamanho ou se o portal caiu.
-  // ---------------------------------------------------------------
-  const readJsonBody = (req, res, maxBytes) => new Promise(resolveBody => {
-    let body = '', tooLarge = false;
-    req.on('data', chunk => {
-      body += chunk;
-      if (!tooLarge && body.length > maxBytes) {
-        tooLarge = true;
-        res.writeHead(413, { 'Content-Type': 'application/json' });
-        res.end(JSON.stringify({ error: 'Requisição muito grande.' }));
-        req.destroy();
-        resolveBody(null);
-      }
-    });
-    req.on('end', () => { if (!tooLarge) resolveBody(body); });
-    req.on('error', () => resolveBody(null));
-  });
 
   if (url.pathname === '/api/vision/plate-event' && req.method === 'POST') {
     const body = await readJsonBody(req, res, 65536);

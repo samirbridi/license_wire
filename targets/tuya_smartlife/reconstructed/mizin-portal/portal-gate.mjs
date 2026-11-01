@@ -22,13 +22,15 @@ export function createPortalGate({origin,gatewayToken,auth='http://127.0.0.1:198
    const reply=await fetcher(auth+pathname+new URL(req.url,origin).search,{method:req.method,headers:headers(req),body,signal:AbortSignal.timeout(5000)});
    res.writeHead(reply.status,Object.fromEntries(reply.headers));res.end(Buffer.from(await reply.arrayBuffer()));return false;
   }
-  // Ingestão de leitura de placa (plate-watcher.mjs) e webhook do Telegram: nenhuma das duas tem uma
-  // sessão de navegador para apresentar (a primeira é um script no PC da GPU, a segunda é o próprio
-  // Telegram chamando de fora). Cada uma é autenticada por seu próprio segredo fixo, verificado pelo
-  // handler da rota em server.mjs (vision-ingest-auth.mjs / secret_token), não aqui — isto só troca a
-  // exigência de sessão humana por essa verificação alternativa, só para estas duas rotas. trusted(req)
-  // acima continua obrigatório: a chamada ainda precisa ter vindo mesmo pelo Worker Cloudflare real.
-  if((pathname==='/api/vision/plate-event'||pathname==='/api/vision/telegram-webhook')&&req.method==='POST')return true;
+  // Ingestão de leitura de placa (plate-watcher.mjs), webhook do Telegram e a ponte MQTT para o Home
+  // Assistant (mqtt-bridge-runner.mjs): nenhuma tem uma sessão de navegador para apresentar -- a
+  // primeira e a última são processos/scripts, a segunda é o próprio Telegram chamando de fora. Cada
+  // uma é autenticada por seu próprio segredo fixo, verificado pelo handler da rota em server.mjs
+  // (vision-ingest-auth.mjs / secret_token / mqtt-bridge-token), não aqui — isto só troca a exigência
+  // de sessão humana por essa verificação alternativa, só para estas rotas. trusted(req) acima continua
+  // obrigatório: a chamada ainda precisa ter vindo mesmo pelo Worker Cloudflare real.
+  if((pathname==='/api/vision/plate-event'||pathname==='/api/vision/telegram-webhook'||pathname==='/api/mqtt-bridge/command')&&req.method==='POST')return true;
+  if(pathname==='/api/mqtt-bridge/devices'&&req.method==='GET')return true;
   let data;try{data=await session(req);}catch{return fail(503,'Autenticação temporariamente indisponível.');}
   if(!data)return fail(401,'Entre com sua conta cadastrada.');
   if(data.user?.mustChangePassword)return fail(403,'Defina uma nova senha no painel da sua conta.');
