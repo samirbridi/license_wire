@@ -1,0 +1,10 @@
+# Pacote inteiro é gerado (reproduzível via scripts/prepare-mqtt-bridge-package.py no alvo
+# tuya_smartlife) -- inclusive os .mjs dentro de workspace/ são CÓPIAS do código-fonte real, que mora
+# em targets/tuya_smartlife/reconstructed/mizin-portal/. Versionar a cópia seria uma segunda fonte da
+# verdade que fica desatualizada silenciosamente a cada mudança no original.
+artifacts/mqtt-bridge-app/
+# Configuração do Home Assistant em si (segredos, tokens, banco de dados) nunca entra no repositório --
+# só os arquivos de exemplo/template (.yaml.example, .env.example) ficam versionados.
+artifacts/ha-config/
+artifacts/.env
+artifacts/mosquitto/passwd

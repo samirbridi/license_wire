@@ -1,0 +1,73 @@
+# Pacote de migração Mizin Home -> Home Assistant (máquina Linux dedicada, i5 6ª geração + 16GB RAM +
+# AMD Radeon RX 580). Sobe 3 serviços: Home Assistant, broker MQTT (Mosquitto) e a ponte do portal.
+#
+# NÃO sobe Frigate aqui -- ver decisão de GPU em README.md: a RX 580 (gfx803/Polaris) não tem suporte
+# oficial no ROCm atual (descontinuado desde a série 5.x; AMD fecha bugs específicos de Polaris como
+# "wont-fix"). Este compose assume que a detecção de objetos continua na GTX 1660 Ti (este PC) até uma
+# troca de GPU, e só liga o HA + MQTT + câmeras ao vivo (sem IA) nesta máquina nova. Se decidir tentar o
+# Frigate aqui mesmo assim (CPU puro ou ROCm não-oficial), ver notes/02_decisao_hardware.md antes.
+#
+# Antes de subir:
+#   1. Copiar .env.example para .env e preencher TZ, MIZIN_MQTT_PASSWORD, MIZIN_PORTAL_URL,
+#      MIZIN_MQTT_BRIDGE_TOKEN (o mesmo gerado por scripts/generate-mqtt-bridge-token.mjs no outro lado).
+#   2. mosquitto/mosquitto.conf já pronto (usuário/senha, sem allow_anonymous).
+#   3. docker compose -f docker-compose.homeassistant.yml up -d
+#   4. HA abre em http://<esta-maquina>:8123 na primeira vez; completar o assistente de boas-vindas.
+#   5. Settings -> Devices & Services -> a integração MQTT deve aparecer sozinha (auto-discovery), ou
+#      adicionar manualmente apontando para mosquitto:1883 com as credenciais do .env.
+#   6. mqtt-bridge (abaixo) começa a publicar os dispositivos Tuya sozinho; eles aparecem no HA em
+#      poucos segundos, sem precisar configurar nada a mais no lado do HA.
+services:
+  homeassistant:
+    container_name: homeassistant
+    image: ghcr.io/home-assistant/home-assistant:stable
+    volumes:
+      - ./ha-config:/config
+      - /etc/localtime:/etc/localtime:ro
+      # /run/dbus só é necessário para integrações Bluetooth; mantido por completude, remover se não usar.
+      - /run/dbus:/run/dbus:ro
+    restart: unless-stopped
+    stop_grace_period: 60s
+    privileged: true
+    network_mode: host # recomendação oficial: permite descoberta mDNS/SSDP de dispositivos na LAN
+    environment:
+      TZ: ${TZ:-America/Sao_Paulo}
+    depends_on:
+      mosquitto: {condition: service_started}
+
+  mosquitto:
+    container_name: mizin-mosquitto
+    image: eclipse-mosquitto:2
+    restart: unless-stopped
+    ports:
+      - "1883:1883" # só precisa estar acessível para HA e mqtt-bridge; ambos na mesma rede local
+    volumes:
+      - ./mosquitto/mosquitto.conf:/mosquitto/config/mosquitto.conf:ro
+      - ./mosquitto/passwd:/mosquitto/config/passwd:ro
+      - mosquitto-data:/mosquitto/data
+      - mosquitto-log:/mosquitto/log
+
+  # Ponte entre o portal Mizin Home (continua rodando no NAS, inalterado) e este broker MQTT. Processo
+  # Node simples, mesma imagem do portal mas rodando só mqtt-bridge-runner.mjs -- não precisa do resto
+  # do portal (câmeras, auth, etc.) nesta máquina.
+  mqtt-bridge:
+    container_name: mizin-mqtt-bridge
+    image: node:24-bookworm-slim
+    restart: unless-stopped
+    working_dir: /app
+    volumes:
+      - ./mqtt-bridge-app:/app:ro # ver README.md: como popular esta pasta a partir do repositório
+    environment:
+      MIZIN_WORKSPACE: /app/workspace
+      MIZIN_MQTT_URL: mqtt://mosquitto:1883
+      MIZIN_MQTT_USERNAME: ${MIZIN_MQTT_USERNAME:-mizin}
+      MIZIN_MQTT_PASSWORD: ${MIZIN_MQTT_PASSWORD:?defina no .env}
+      MIZIN_PORTAL_URL: ${MIZIN_PORTAL_URL:?URL do portal no NAS - ver .env.example}
+      MIZIN_MQTT_BRIDGE_TOKEN: ${MIZIN_MQTT_BRIDGE_TOKEN:?mesmo token gerado no lado do portal/NAS}
+    command: ["node", "workspace/targets/tuya_smartlife/reconstructed/mizin-portal/mqtt-bridge-runner.mjs"]
+    depends_on:
+      mosquitto: {condition: service_started}
+
+volumes:
+  mosquitto-data:
+  mosquitto-log:
