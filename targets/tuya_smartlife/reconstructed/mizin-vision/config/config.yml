@@ -4,6 +4,12 @@
 # type; no device needs picking by hand. Model: YOLOv9-s, 320x320, exported per the official Frigate
 # recipe into model_cache/. NOT yet confirmed running on GPU (not just NVDEC decode) — verify in
 # /api/stats -> detectors before trusting throughput numbers.
+# Desligado de propósito neste banco de testes local (PC, sem broker nenhum rodando aqui). TESTADO:
+# `host: "{FRIGATE_MQTT_HOST}"` com enabled:true e a env var ausente derruba o Frigate com
+# `KeyError: 'FRIGATE_MQTT_HOST'` -- não é "fica vazio e ignora", é crash total do container. A
+# integração oficial Frigate<->HA exige MQTT; o config pronto para ligar (enabled:true + env vars) fica
+# em targets/mizin_home_assistant/artifacts/frigate-config-homeassistant.yml, para a nova máquina Linux
+# que já vai subir com o broker. Não habilitar aqui sem garantir um broker real primeiro.
 mqtt:
   enabled: false
 

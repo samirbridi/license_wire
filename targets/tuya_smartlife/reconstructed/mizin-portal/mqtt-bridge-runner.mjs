@@ -15,6 +15,7 @@
 import mqttLib from 'mqtt';
 import {readFileSync} from 'node:fs';
 import {join} from 'node:path';
+import {pathToFileURL} from 'node:url';
 import {buildDiscovery, statePayload} from './mqtt-discovery.mjs';
 
 const PREFIX = 'homeassistant';
@@ -165,7 +166,11 @@ export async function run({
   };
 }
 
-if (process.argv[1] && import.meta.url === `file://${process.argv[1].replace(/\\/g, '/')}`) {
+// pathToFileURL (não um replace manual de barras) lida corretamente com espaços e outros caracteres
+// especiais no caminho -- achado testando o pacote empacotado de verdade (prepare-mqtt-bridge-package.py)
+// rodado como entrypoint direto: a comparação ingênua nunca batia e o processo saía sem fazer nada,
+// sem erro nenhum visível, porque argv[1] pode ser relativo enquanto import.meta.url é sempre absoluto.
+if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
   const bridge = await run();
   for (const signal of ['SIGINT', 'SIGTERM']) process.on(signal, () => { bridge.stop(); process.exit(0); });
 }
