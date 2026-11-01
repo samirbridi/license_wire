@@ -5,6 +5,40 @@ Formato de versão obrigatório: `vX.Y.Z (build XXXX)`.
 
 ---
 
+## v0.5.0 (build 5) - 2026-11-01
+
+### ✨ Features
+- feat: acesso SSH ao NAS confirmado funcionando de ponta a ponta -- autenticação por senha (não por
+  chave, a UI do DSM não ofereceu onde colá-la), usuário VSCode em administrators, `sudo` sem senha
+  ativo via `/etc/sudoers.d/vscode-nopasswd`, leitura confirmada em arquivo real dentro de HDD 1TB - V2
+- feat: nas-ssh-run.py (paramiko, não ssh.exe/PowerShell SSH_ASKPASS -- este sofria de problemas de
+  escape de aspas aninhadas e falhas de CreateProcessW invocando scripts PowerShell) com rede de
+  segurança que nunca deixa a senha aparecer no output do script
+- feat: regra de escopo de volume do proprietário documentada com destaque -- só docker e HDD 1TB - V2
+  podem ser lidos/escritos, os demais volumes do NAS nunca são tocados mesmo com acesso de administrador
+
+### 🐛 Fixes
+- fix: SFTP não disponível neste DSM (scp.exe e paramiko.open_sftp() falham) -- upload de arquivo usa
+  cat > arquivo via exec_command com stdin binário bruto
+- fix: arquivo remoto escrito via heredoc bash tinha BOM UTF-8, quebrando o shebang (`#!/bin/bash`
+  virava `﻿#!/bin/bash`, "No such file or directory") -- corrigido escrevendo o conteúdo como bytes
+  puros, confirmado via hexdump que o BOM não está mais presente nem na origem nem no destino
+- fix: script remoto dependia de `visudo`, ausente no PATH padrão do DSM -- removida a validação,
+  substituída por verificação direta de legibilidade/aplicação da regra
+
+### ⚠️ Incidente registrado
+- Uma tentativa inicial de `sudo -S` com PTY (`get_pty=True`) ecoou a senha de volta no output de uma
+  ferramenta -- avisado ao proprietário na hora; ele optou explicitamente por manter a mesma senha em
+  vez de trocá-la. Corrigido para `get_pty=False` em todo o fluxo de sudo, mais uma redação defensiva
+  que nunca deixa a senha aparecer no output do script mesmo que ela reapareça ali por outro motivo.
+
+### 📝 Limitação conhecida, não resolvida
+- A conexão SSH trava intermitentemente (~1 em 3 tentativas nesta sessão), antes mesmo do primeiro
+  print do script aparecer quando ocorre -- não identificado se é client.connect(), client.close(), ou
+  algo na camada de rede/socket. Quando conecta, é rápido e o resultado sempre veio correto. Mitigado
+  com timeout externo obrigatório em todo uso do script; não investigado a fundo por falta de tempo
+  nesta sessão.
+
 ## v0.4.0 (build 4) - 2026-11-01
 
 ### ✨ Features
