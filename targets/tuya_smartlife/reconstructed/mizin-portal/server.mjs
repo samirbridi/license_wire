@@ -14,6 +14,7 @@ import { spawn } from 'node:child_process';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import { createHash, createHmac, createCipheriv, createDecipheriv, randomUUID, randomInt } from 'node:crypto';
 import {createDashboardEvents} from './dashboard-live.mjs';
+import {appendActivityLog, resolveLogsLimit} from './activity-log.mjs';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -1304,8 +1305,7 @@ function logActivity(devId, devName, action, details, origin = 'Portal Web', ico
       level, // 'info', 'success', 'warning', 'alarm'
       read: false
     };
-    logs.unshift(entry);
-    if (logs.length > 500) logs.pop();
+    appendActivityLog(logs, entry);
     fs.writeFileSync(LOGS_PATH, JSON.stringify(logs, null, 2), 'utf-8');
     return entry;
   } catch (err) {
@@ -2984,7 +2984,9 @@ const server = http.createServer(async (req, res) => {
   if (url.pathname === '/api/logs') {
     if (req.method === 'GET') {
       const logs = loadActivityLogs();
-      const limit = parseInt(url.searchParams.get('limit') || '100');
+      // ?limit= explicito (ex: export/busca) pode pedir mais, inclusive tudo (limit=5000);
+      // sem o parametro, usa o default moderado acima para não pesar o polling de 4s do painel.
+      const limit = resolveLogsLimit(url.searchParams.get('limit'));
       const unreadCount = logs.filter(l => !l.read).length;
       res.writeHead(200, { 'Content-Type': 'application/json' });
       res.end(JSON.stringify({
