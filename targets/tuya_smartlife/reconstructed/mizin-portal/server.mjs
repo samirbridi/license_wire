@@ -26,6 +26,10 @@ const REGISTRY_PATH = path.join(WORKSPACE, 'targets/tuya_smartlife/runtime/devic
 const CAMERAS_PATH = path.join(WORKSPACE, 'targets/xiaomi_home/runtime/central/cameras.json');
 const R2_STATE_DIR = path.join(WORKSPACE, 'targets/xiaomi_home/runtime/central/identity/cloud-state');
 const localDayOf = at => new Date(at).toLocaleDateString('en-CA', { timeZone: 'America/Sao_Paulo' });
+// The container has no TZ set (and no /etc/localtime mount), so a bare toLocaleTimeString('pt-BR')
+// renders in UTC — 3h ahead of Brasília. Every displayed timestamp must pass through these.
+const localTimeOf = at => new Date(at).toLocaleTimeString('pt-BR', { timeZone: 'America/Sao_Paulo' });
+const localDateOf = at => new Date(at).toLocaleDateString('pt-BR', { timeZone: 'America/Sao_Paulo' });
 const TOKEN_PATH = path.join(WORKSPACE, 'targets/tuya_smartlife/runtime/tuya_token.json');
 const SCHEDULES_PATH = path.join(WORKSPACE, 'targets/tuya_smartlife/runtime/schedules.json');
 const LOGS_PATH = path.join(WORKSPACE, 'targets/tuya_smartlife/runtime/activity_logs.json');
@@ -1074,7 +1078,7 @@ function checkGateWatchdog(gateDps) {
     if (!gateOpenedAt) {
       gateOpenedAt = now;
       gateAlertFired = false;
-      console.log(`[🚪 SENSOR PORTÃO] Portão aberto detectado às ${new Date().toLocaleTimeString('pt-BR')}`);
+      console.log(`[🚪 SENSOR PORTÃO] Portão aberto detectado às ${localTimeOf(now)}`);
       logActivity('eb49c5d1977172327aqb1q', 'Portão da Garagem', 'Portão Aberto', 'Sensor magnético detectou abertura do portão da garagem', 'Sensor Magnético', '🚪', 'warning');
     } else if (!gateAlertFired && (now - gateOpenedAt >= 60000)) {
       gateAlertFired = true;
@@ -1116,7 +1120,7 @@ function triggerDoorbellAlert(info = {}) {
   const now = Date.now();
   if (now - lastDoorbellTrigger < 6000) return;
   lastDoorbellTrigger = now;
-  console.log(`[🔔 CAMPAINHA ACIONADA] Notificação em tempo real às ${new Date().toLocaleTimeString('pt-BR')} (Origem: ${info.source || 'sensor'})`);
+  console.log(`[🔔 CAMPAINHA ACIONADA] Notificação em tempo real às ${localTimeOf(now)} (Origem: ${info.source || 'sensor'})`);
   logActivity(
     'eb7f7b175bf04774f0qnwh',
     'Campainha',
@@ -1289,8 +1293,8 @@ function logActivity(devId, devName, action, details, origin = 'Portal Web', ico
     const entry = {
       id: 'log_' + Date.now() + '_' + Math.random().toString(36).slice(2, 6),
       timestamp: Date.now(),
-      timeFormatted: now.toLocaleTimeString('pt-BR'),
-      dateFormatted: now.toLocaleDateString('pt-BR'),
+      timeFormatted: localTimeOf(now),
+      dateFormatted: localDateOf(now),
       devId,
       devName,
       action,
