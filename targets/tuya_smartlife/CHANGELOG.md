@@ -1,5 +1,49 @@
 # CHANGELOG — tuya_smartlife
 
+## v0.42.0 (build 0064) - 2026-11-01
+
+### 💥 Breaking Changes
+
+- Nenhum.
+
+### ✨ Features
+
+- feat: troca o detector para ONNX/CUDA na GTX e liga a leitura de placas (commit `b403e6e2897846f30b10da6400dc542c76e2d2e6`)
+- feat: cria o nucleo de confirmacao de placa para abertura do portao (commit `4abdb04ad33db57ab2bcdccfae29ec2886448439`)
+
+### 🐛 Fixes
+
+- fix: aplica America/Sao_Paulo ao horario do Logbook e dos logs do portao/campainha (commit `e8a3ade616bd69cd932043033442d204153e953c`)
+
+### ⚡ Improvements
+
+- Nenhum.
+
+## v0.41.0 (build 0063) - 2026-10-30
+
+### 💥 Breaking Changes
+
+- Nenhum.
+
+### ✨ Features
+
+- feat: testa a IA local na campainha de 30/10 e registra a falha de gravacao do AW300 Portao (commit `2734bf535548493e1569de511794fe4af4734757`)
+- feat: cria a bancada local de visao inteligente com Frigate lendo gravacoes do NAS (commit `8780422653ff0f135db533583f60b668f7632aa3`)
+
+### 🐛 Fixes
+
+- fix: nunca deixa um segmento gravado fora do arquivo e reconecta o gravador em 3 s (commit `b52a88a0d05ca72bcb13242f320eaf18a7b87de0`)
+- fix: mascara o relogio da camera na deteccao de movimento local (commit `7adb0f8efec4817e11346bfcbb83e4b0a575d59f`)
+- fix: liga a deteccao da camera de teste no Frigate local (commit `a8cc42b5f09e6ff5bf1035d2099e5b1ec1a0fc5b`)
+
+### ⚡ Improvements
+
+- improve: registra a causa da perda de gravacao do AW300 Portao e a correcao proposta (commit `52315e1c6ff23489005f6f770c23a4d1982466f4`)
+- improve: registra o plano da visao inteligente com IA local no PC (commit `2567c2610352cb7019f41f1765a698f3decbfe2e`)
+- improve: registra a conferencia da limpeza do NAS (commit `3c8de137bc9166cf0231fb71e2a6dce21a9a04cc`)
+- improve: registra o inventario de sobras no NAS para limpeza pelo proprietario (commit `2ed5374e1e42e013f61e58b26b57d29534be4d28`)
+- improve: registra as medicoes de atraso e a build 0062 com as sete visoes gravando (commit `4c781e17591b185a3b33ea02d6ed20ffbc3a095b`)
+
 ## v0.40.3 (build 0062) - 2026-10-29
 
 ### 💥 Breaking Changes

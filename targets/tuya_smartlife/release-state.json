@@ -1,20 +1,36 @@
 {
-  "runId": "nas-player-drift-20261030",
-  "sourceCommit": "43d97f003ef294f809405f199ca6b32c44c1709f",
-  "previous": "v0.40.2 (build 0061)",
-  "version": "v0.40.3 (build 0062)",
-  "build": 62,
-  "date": "2026-10-29",
+  "runId": "nas-recorder-timezone-0064",
+  "sourceCommit": "b403e6e2897846f30b10da6400dc542c76e2d2e6",
+  "previous": "v0.41.0 (build 0063)",
+  "version": "v0.42.0 (build 0064)",
+  "build": 64,
+  "date": "2026-11-01",
   "status": "built",
   "commits": [
     {
-      "sha": "43d97f003ef294f809405f199ca6b32c44c1709f",
-      "subject": "fix: volta a folga do player ao valor estavel e mantem so a recuperacao de atraso",
-      "body": "Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>",
+      "sha": "b403e6e2897846f30b10da6400dc542c76e2d2e6",
+      "subject": "feat: troca o detector para ONNX/CUDA na GTX e liga a leitura de placas",
+      "body": "Detector trocado de openvino/CPU para onnx (imagem -tensorrt auto-detecta CUDA, sem campo\nde device manual). Modelo YOLOv9-s 320x320 exportado pela receita oficial do Frigate\n0.18.2, model_type yolo-generic, labelmap coco-80 (onibus/caminhao caem em 'car' por\nlimitacao do mapa, decisao conhecida, nao anunciar classe separada sem teste proprio).\nonnxruntime.InferenceSession(...).get_providers() confirmou CUDAExecutionProvider nesta\nGTX 1660 Ti, nao so GPU visivel/NVDEC.\n\nlpr.enabled:true com os 3 veiculos cadastrados (match_distance 0, exato) e o formato de\nplaca brasileiro (antiga ou Mercosul). Regra inalteravel: isto so escreve sub_label no\nobjeto rastreado do Frigate; nenhum codigo liga a leitura ao pulso do portao — essa\nintegracao (portal + plate-gate.mjs + confirmacao humana) continua nao construida.\n\nTambem habilita aw300_portao com a copia local do orfao recuperado (amostra de controle;\npresenca da visita das 14:06 ainda nao verificada nela).\n\nCo-Authored-By: Claude Opus 5 <noreply@anthropic.com>",
+      "type": "feat",
+      "description": "troca o detector para ONNX/CUDA na GTX e liga a leitura de placas",
+      "breaking": false
+    },
+    {
+      "sha": "4abdb04ad33db57ab2bcdccfae29ec2886448439",
+      "subject": "feat: cria o nucleo de confirmacao de placa para abertura do portao",
+      "body": "Normaliza placa antiga e Mercosul, cadastra os 3 veiculos do proprietario (GWM Ora 5,\nBYD Dolphin Mini, Renault Scenic) e mantem uma fila de pedidos pendentes em memoria com\nvalidade de 90 s e decisao de uso unico. Regra inegociavel: nenhuma funcao aqui aciona o\nportao. request() so cria o pedido para notificacao; confirm()/ignore() exigem usuario\nautenticado e devolvem o pedido para o chamador decidir, sempre pela rota HTTP normal do\nportao (sessao de admin, CSRF). Ainda sem integracao ao servidor, autenticacao, OCR ou\nnotificacoes reais — ver notes/08_visao_inteligente.md.\n\nTestes: node --test test/plate-gate.test.mjs, 9 aprovados, 0 falhas.\n\nCo-Authored-By: Claude Opus 5 <noreply@anthropic.com>",
+      "type": "feat",
+      "description": "cria o nucleo de confirmacao de placa para abertura do portao",
+      "breaking": false
+    },
+    {
+      "sha": "e8a3ade616bd69cd932043033442d204153e953c",
+      "subject": "fix: aplica America/Sao_Paulo ao horario do Logbook e dos logs do portao/campainha",
+      "body": "O container do portal no NAS nao tem TZ nem /etc/localtime; toLocaleTimeString('pt-BR')\nsem fuso explicito renderizava em UTC, 3h a frente do horario real (confirmado contra os\neventos reais do sensor do portao de 31/10: 18:11:32 e 18:31:41 Brasilia apareciam como\n21:11:32 e 21:31:41 no Logbook). timeFormatted/dateFormatted do logActivity() e as duas\nlinhas de console (sensor do portao, campainha) agora passam por localTimeOf/localDateOf,\nque fixam timeZone: 'America/Sao_Paulo' como ja fazia localDayOf.\n\nCo-Authored-By: Claude Opus 5 <noreply@anthropic.com>",
       "type": "fix",
-      "description": "volta a folga do player ao valor estavel e mantem so a recuperacao de atraso",
+      "description": "aplica America/Sao_Paulo ao horario do Logbook e dos logs do portao/campainha",
       "breaking": false
     }
   ],
-  "artifact": "runtime/builds/build-0062"
+  "artifact": "runtime/builds/build-0064"
 }
