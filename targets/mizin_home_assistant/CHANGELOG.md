@@ -5,6 +5,15 @@ Formato de versão obrigatório: `vX.Y.Z (build XXXX)`.
 
 ---
 
+## v0.4.0 (build 4) - 2026-11-01
+
+### ✨ Features
+- feat: chave SSH dedicada (ed25519) gerada para acesso ao NAS, gitignored, nunca reaproveita
+  credencial existente do proprietário
+- feat: nas-ssh-setup.md documenta o procedimento do lado do DSM (habilitar SSH, criar usuário
+  dedicado, colar a chave pública, regra de firewall) e a regra combinada com o proprietário: acesso
+  técnico não dispensa confirmação antes de mudar configuração de produção, só leitura é livre
+
 ## v0.3.0 (build 3) - 2026-11-01
 
 ### ✨ Features
