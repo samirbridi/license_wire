@@ -3,6 +3,7 @@ return {
     LrSdkMinimumVersion = 6.0,
     LrToolkitIdentifier = "com.mizin.lightroom.pilot",
     LrPluginName = "CRISPIX",
+    LrPluginInfoProvider = 'PluginInfoProvider.lua',
     LrInitPlugin = 'LearningInit.lua', LrForceInitPlugin = true,
     LrShutdownPlugin = 'LearningShutdown.lua', LrShutdownApp = 'LearningShutdown.lua',
     VERSION = { major = __MAJOR__, minor = __MINOR__, revision = __PATCH__, build = "__BUILD__", display = "__DISPLAY_VERSION__" },
@@ -11,5 +12,6 @@ return {
         { title = "SELECIONAR FOTOS...", file = "SelectPhotos.lua", enabledWhen = "photosAvailable" },
         { title = "RESTAURAR ÚLTIMA SESSÃO...", file = "RestoreEdits.lua" },
         { title = "FERRAMENTAS E APRENDIZADO...", file = "ToolsMenu.lua" },
+        { title = "VERIFICAR ATUALIZACOES...", file = "CheckUpdates.lua" },
     },
 }

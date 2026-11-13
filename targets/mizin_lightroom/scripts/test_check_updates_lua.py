@@ -17,6 +17,52 @@ REAL_NETWORK_CHANNEL = r"\\\\192.168.1.58\\Users\\Public\\Documents\\MizinLightr
 
 
 class CheckUpdatesLuaTests(unittest.TestCase):
+    def test_busy_editor_blocks_updating_without_network_or_launch(self):
+        with tempfile.TemporaryDirectory() as temp:
+            runtime = self.setup(Path(temp) / 'plugin', 'v0.24.1 (build 0038)')
+            runtime.globals().MizinEditorBusy = True
+            self.patch_network_channel(runtime, Path(temp) / 'unused')
+            self.assertEqual(len(runtime.globals().httpCalls), 0)
+            self.assertEqual(len(runtime.globals().revealed), 0)
+            self.assertIn('Aguarde', runtime.globals().messages[1]['body'])
+
+    def test_launcher_failure_is_reported_in_lightroom(self):
+        with tempfile.TemporaryDirectory() as temp:
+            runtime = self.setup(Path(temp) / 'plugin', 'v0.24.1 (build 0038)')
+            runtime.globals().http_response = json.dumps({'version': 'v0.25.0 (build 0039)', 'build': 39})
+            runtime.globals().confirm_answer = 'ok'
+            runtime.globals().launchCode = 1
+            self.patch_network_channel(runtime, Path(temp) / 'unused')
+            self.assertIn('Nao foi possivel iniciar', runtime.globals().messages[1]['body'])
+
+    def test_http_get_can_yield_across_sdk_pcall(self):
+        with tempfile.TemporaryDirectory() as temp:
+            runtime = self.setup(Path(temp) / 'plugin', 'v0.24.1 (build 0038)')
+            runtime.execute('''
+                -- Emulate Lightroom's yield-aware pcall, unlike stock Lua 5.1 pcall.
+                modules.LrTasks.pcall=function(fn)
+                    local thread=coroutine.create(fn)
+                    local ok,value=coroutine.resume(thread)
+                    while ok and coroutine.status(thread)~='dead' do
+                        coroutine.yield(value);ok,value=coroutine.resume(thread)
+                    end
+                    return ok,value
+                end
+                modules.LrTasks.startAsyncTask=function(fn)
+                    task=coroutine.create(fn)
+                    local ok,err=coroutine.resume(task);assert(ok,err)
+                end
+                modules.LrHttp.get=function()
+                    coroutine.yield('network')
+                    return '{"version":"v0.25.0 (build 0039)","build":39}'
+                end
+            ''')
+            self.patch_network_channel(runtime, Path(temp) / 'unused')
+            self.assertEqual(len(runtime.globals().messages), 0)
+            self.assertEqual(runtime.eval('coroutine.status(task)'), 'suspended')
+            runtime.execute('local ok,err=coroutine.resume(task);assert(ok,err)')
+            self.assertEqual(len(runtime.globals().confirms), 1)
+
     def setup(self, plugin_dir, local_version=None):
         plugin_dir.mkdir(parents=True, exist_ok=True)
         # CheckUpdates.lua does `dofile(child(_PLUGIN.path,'Json.lua'))`; use the real module,
@@ -47,7 +93,8 @@ class CheckUpdatesLuaTests(unittest.TestCase):
                 },
                 LrPathUtils = { child = function(p, n) return p .. '/' .. n end },
                 LrShell = { revealInShell = function(path) revealed[#revealed+1] = path end },
-                LrTasks = { startAsyncTask = function(fn) fn() end },
+                LrTasks = { pcall=pcall, startAsyncTask = function(fn) fn() end,
+                    execute=function(command) revealed[#revealed+1]=command;return launchCode or 0 end },
             }
             import = function(name) assert(modules[name], name); return modules[name] end
             _PLUGIN = { path = plugin_path }
@@ -91,7 +138,7 @@ class CheckUpdatesLuaTests(unittest.TestCase):
             self.assertIn('mantidos', body.replace('ã', 'a'))
             self.assertIn('internet', body)
             self.assertEqual(len(runtime.globals().revealed), 1)
-            self.assertIn('Atualizar-CRISPIX.cmd', runtime.globals().revealed[1])
+            self.assertIn('Launch-CrispixUpdate.py', runtime.globals().revealed[1])
 
     def test_internet_manifest_with_utf8_bom_is_still_read(self):
         # Regression (build 0037 publication): the live manifest was served with a UTF-8 BOM,

@@ -1,4 +1,5 @@
 private/
+.wrangler/
 __pycache__/
 *.pyc
 evidence/qa-fixtures/

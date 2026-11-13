@@ -1,11 +1,13 @@
 # Mizin Lightroom - aquisicao local e perfil de referencia
 
 > **Versão da Análise**: `v0.23.0 (build 0036)`
-> Atualizado em: 2026-11-12, America/Sao_Paulo.
+> Atualizado em: 2026-11-13, America/Sao_Paulo.
 
 Projeto independente para Lightroom Classic no Windows, inicialmente para uso pessoal. Treinamento e inferencia devem acontecer nos computadores do usuario. O Lightroom continua responsavel pela revelacao e renderizacao final.
 
 ## Estado Atual e Próximos Passos
+
+Entrega desta sessao: correcao da falha `HasCrop` e da interrupcao de lotes por falha de aplicacao, contagens reais de edicoes/horizontes confirmados e restauracao preservada. Atualizacao tem comando direto no menu e botao no Gerenciador de plug-ins; `Atualizar agora` inicia instalador independente, com politica de scripts limitada ao processo, destino igual ao plugin em uso, transcript e backup. HTTP usa `LrTasks.pcall` para suportar espera assincrona. Detalhes, evidencias e comandos em `notes/39_correcao_lotes_e_atualizador.md`. Pacote desta sessao e local; QA visual no Lightroom e publicacao do novo canal ainda pendentes. A versao no cabecalho e gerada pelos commits; as entradas abaixo descrevem entregas anteriores.
 
 Versao de teste mais recente: **v0.23.0 (build 0036)**, ZIP SHA-256 `7e4986a67dc5cdfe59262941ba070891aacce1641ad135e38f99a0c66510a6bc` em `private/deliveries/CRISPIX-0.23.0-build0036-617064d3/`. Responde a "o plugin consegue se atualizar pelo site?": "Verificar atualizações" agora tenta primeiro a internet (`https://crispixlr.pages.dev/latest.json`) e so cai para a pasta de rede local se a internet estiver indisponivel — funciona de qualquer lugar, nao so na mesma rede da maquina de publicacao. O pacote (~84MB) excede o limite de 25MB por arquivo do Cloudflare Pages (confirmado por erro real, nao suposto); hospedado num bucket Cloudflare R2 publico (`crispix-updates`) em vez disso, com o site guardando so o manifesto pequeno. `Publish-CrispixBuild.ps1` agora publica nos dois canais com 1 comando, validando hash em cada um. Publicado de verdade nesta sessao (nao so simulado): manifesto, site e download do R2 todos conferidos reais por hash apos a publicacao. 184 testes; pacote verificado; o fluxo completo dentro do Lightroom real (abrir o dialogo, clicar no atualizador) ainda nao foi exercitado ao vivo. Detalhes em `notes/36_atualizacao_pela_internet_0036.md`.
 

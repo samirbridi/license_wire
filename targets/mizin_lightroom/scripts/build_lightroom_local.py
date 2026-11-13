@@ -98,12 +98,27 @@ def build(runtime_base, model_folder, dataset, manifest):
     shutil.copytree(ROOT / 'reconstructed/branding/plugin-assets', plugin / 'Branding')
     # Copy the updater scripts directly into the plugin root, so CheckUpdates.lua can reveal
     # them via LrShell and the user can run them directly from inside the plugin folder.
-    for name in ('Atualizar-CRISPIX.cmd', 'Update-CrispixPlugin.ps1'):
+    for name in ('Atualizar-CRISPIX.cmd', 'Update-CrispixPlugin.ps1', 'Launch-CrispixUpdate.py'):
         shutil.copy2(ROOT / 'scripts' / name, plugin / name)
     entries = saved_entries(dataset, manifest, model_folder)
     (plugin / 'PilotData.lua').write_text('return ' + lua_literal({
         'schema': 'mizin-lightroom.saved-pilot/1', 'version': version, 'automaticEditing': False, 'entries': entries}) + '\n', encoding='utf-8')
     readme = f'''# CRISPIX - motor local experimental
+
+## {version}: atualizacao dentro do Lightroom e lotes resistentes a falhas
+
+No menu Arquivo > Extras de plug-in > CRISPIX, use VERIFICAR ATUALIZACOES.
+O Gerenciador de plug-ins tambem tem um botao. Ao encontrar uma versao nova,
+Atualizar agora baixa e valida o pacote, fecha o Lightroom de forma limpa e o reabre.
+Conclua a janela de backup do catalogo quando ela aparecer. A politica de scripts
+e ajustada somente para o processo do atualizador, sem alterar a configuracao do Windows.
+
+Uma falha de aplicacao numa foto fica registrada e o lote segue para as demais.
+O resumo distingue edicoes confirmadas, falhas e horizontes realmente aplicados.
+HasCrop deixou de ser exigido na leitura do SDK; os cinco controles numericos
+do corte continuam conferidos. Fotos sem linhas confiaveis conservam o corte.
+Confira fotos com falhas (podem ter ajustes parciais); RESTAURAR ULTIMA SESSAO
+continua disponivel e preserva alteracoes posteriores feitas pelo fotografo.
 
 ## Build 0038: atualizacao pela internet funcionando de verdade
 

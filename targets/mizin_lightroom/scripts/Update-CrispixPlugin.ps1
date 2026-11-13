@@ -41,11 +41,29 @@ param(
     [string]$ChannelPath = '\\192.168.1.58\Users\Public\Documents\MizinLightroomPilot',
     [string]$InstallDirectory = "$env:USERPROFILE\Documents\CRISPIX.lrplugin",
     [switch]$Force,
-    [switch]$NonInteractive
+    [switch]$NonInteractive,
+    [switch]$Reopen
 )
 
 Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
+$backupPath = $null
+$backupCreated = $false
+$mutex = $null
+$ownsMutex = $false
+$downloadDir = $null
+$tempExtract = $null
+
+function Remove-UpdaterTemp([string]$path) {
+    if (-not $path -or -not (Test-Path -LiteralPath $path)) { return }
+    $full = [IO.Path]::GetFullPath($path).TrimEnd('\','/')
+    $tempRoot = [IO.Path]::GetFullPath($env:TEMP).TrimEnd('\','/')
+    if ([IO.Path]::GetDirectoryName($full) -ne $tempRoot -or
+        [IO.Path]::GetFileName($full) -notmatch '^crispix-(download|update)-[a-f0-9]{32}$') {
+        throw 'Pasta temporaria fora do escopo do atualizador.'
+    }
+    Remove-Item -LiteralPath $full -Recurse -Force -ErrorAction SilentlyContinue
+}
 
 function Write-Step([string]$msg) {
     Write-Host "[CRISPIX] $msg" -ForegroundColor Cyan
@@ -64,6 +82,17 @@ function Write-Err([string]$msg) {
 }
 
 try {
+    $InstallDirectory = [IO.Path]::GetFullPath($InstallDirectory).TrimEnd('\','/')
+    if ([IO.Path]::GetExtension($InstallDirectory) -ne '.lrplugin') {
+        throw 'O destino precisa ser uma pasta .lrplugin; nenhuma pasta foi alterada.'
+    }
+    if ((Test-Path -LiteralPath $InstallDirectory) -and
+        ((Get-Item -LiteralPath $InstallDirectory).Attributes -band [IO.FileAttributes]::ReparsePoint)) {
+        throw 'A instalacao nao pode ser um link ou junction.'
+    }
+    $mutex = New-Object Threading.Mutex($false, 'Local\CRISPIX.PluginUpdater')
+    $ownsMutex = $mutex.WaitOne(0)
+    if (-not $ownsMutex) { throw 'Ja existe uma atualizacao em andamento.' }
     Write-Step "Consultando canal de atualizacao pela internet ($ManifestUrl) ..."
     $manifest = $null
     $usingInternet = $false
@@ -97,7 +126,11 @@ try {
     $archiveName   = $manifest.archiveName
     $archiveSha256 = $manifest.archiveSha256
     $deliveryFolder = $manifest.deliveryFolder
-    $downloadUrl   = $manifest.downloadUrl
+    $downloadUrl   = if ($manifest.PSObject.Properties['downloadUrl']) { $manifest.downloadUrl } else { $null }
+    if ($remoteBuild -le 0 -or $archiveSha256 -notmatch '^[a-fA-F0-9]{64}$' -or
+        $archiveName -notmatch '^[\w.-]+\.zip$' -or $deliveryFolder -notmatch '^[\w.-]+$' -or
+        $deliveryFolder -in @('.', '..')) { throw 'Manifesto de atualizacao invalido.' }
+    if ($usingInternet -and ([string]$downloadUrl -notmatch '^https://')) { throw 'Download HTTPS ausente no manifesto.' }
 
     Write-Step "Versao mais recente disponivel: $remoteVersion (build $remoteBuild) via $(if ($usingInternet) {'internet'} else {'rede local'})"
 
@@ -203,20 +236,23 @@ try {
         Write-Step "Extraindo $archiveName para pasta temporaria..."
         Expand-Archive -LiteralPath $archivePath -DestinationPath $tempExtract -Force
 
-        # Localizar a pasta .lrplugin dentro do ZIP extraido
-        $extractedPlugin = Get-ChildItem -LiteralPath $tempExtract -Directory -Filter '*.lrplugin' | Select-Object -First 1
-        if (-not $extractedPlugin) {
+        # Exact extraction root, never a computed arbitrary folder.
+        $plugins = @(Get-ChildItem -LiteralPath $tempExtract -Directory -Filter '*.lrplugin')
+        if ($plugins.Count -ne 1) {
             throw "O pacote nao contem uma pasta *.lrplugin valida!"
+        }
+        $extractedPlugin = $plugins[0]
+        $newInfo = Get-Content -LiteralPath (Join-Path $extractedPlugin.FullName 'BuildInfo.json') -Raw -Encoding UTF8 | ConvertFrom-Json
+        if ($newInfo.version -ne $remoteVersion -or -not (Test-Path -LiteralPath (Join-Path $extractedPlugin.FullName 'Info.lua'))) {
+            throw 'A versao do pacote nao corresponde ao manifesto.'
         }
 
         # Backup da instalacao anterior
         if (Test-Path -LiteralPath $InstallDirectory) {
-            $backupPath = "$InstallDirectory.bak"
-            if (Test-Path -LiteralPath $backupPath) {
-                Remove-Item -LiteralPath $backupPath -Recurse -Force
-            }
+            $backupPath = "$InstallDirectory.bak-$([Guid]::NewGuid().ToString('n'))"
             Write-Step "Criando backup da versao anterior em $backupPath ..."
             Move-Item -LiteralPath $InstallDirectory -Destination $backupPath -Force
+            $backupCreated = $true
         }
 
         # Mover a nova versao para a pasta fixa de instalacao
@@ -224,17 +260,10 @@ try {
         Move-Item -LiteralPath $extractedPlugin.FullName -Destination $InstallDirectory -Force
         Write-Success "Nova versao instalada com sucesso!"
 
-        # Limpar backup antigo se der tudo certo
-        if (Test-Path -LiteralPath "$InstallDirectory.bak") {
-            Remove-Item -LiteralPath "$InstallDirectory.bak" -Recurse -Force -ErrorAction SilentlyContinue
-        }
+        if ($backupCreated) { Write-Step "Backup anterior preservado em $backupPath" }
     } finally {
-        if (Test-Path -LiteralPath $tempExtract) {
-            Remove-Item -LiteralPath $tempExtract -Recurse -Force -ErrorAction SilentlyContinue
-        }
-        if (Test-Path -LiteralPath $downloadDir) {
-            Remove-Item -LiteralPath $downloadDir -Recurse -Force -ErrorAction SilentlyContinue
-        }
+        Remove-UpdaterTemp $tempExtract
+        Remove-UpdaterTemp $downloadDir
     }
 
     Write-Host ""
@@ -243,9 +272,9 @@ try {
     Write-Host ""
 
     # Perguntar se quer reabrir o Lightroom
-    if (-not $NonInteractive) {
-        $reopen = Read-Host "Deseja reabrir o Lightroom Classic agora? (S/N)"
-        if ($reopen -match '^[sSyY]') {
+    if ($Reopen -or -not $NonInteractive) {
+        $reopenAnswer = if ($Reopen) { 'S' } else { Read-Host "Deseja reabrir o Lightroom Classic agora? (S/N)" }
+        if ($reopenAnswer -match '^[sSyY]') {
             $lrExe = "C:\Program Files\Adobe\Adobe Lightroom Classic\Lightroom.exe"
             if (Test-Path -LiteralPath $lrExe) {
                 Start-Process -FilePath $lrExe
@@ -258,10 +287,15 @@ try {
 } catch {
     Write-Err "Falha na atualizacao: $_"
     # Tentar restaurar o backup se a instalacao nova falhou
-    if ((-not (Test-Path -LiteralPath $InstallDirectory)) -and (Test-Path -LiteralPath "$InstallDirectory.bak")) {
+    if ($backupCreated -and (-not (Test-Path -LiteralPath $InstallDirectory)) -and (Test-Path -LiteralPath $backupPath)) {
         Write-Warn "Restaurando backup da versao anterior..."
-        Move-Item -LiteralPath "$InstallDirectory.bak" -Destination $InstallDirectory -Force
+        Move-Item -LiteralPath $backupPath -Destination $InstallDirectory -Force
         Write-Warn "Backup restaurado. O Lightroom continua na versao anterior."
     }
-    exit 1
+    throw
+} finally {
+    if ($ownsMutex) { $mutex.ReleaseMutex() }
+    if ($mutex) { $mutex.Dispose() }
+    Remove-UpdaterTemp $tempExtract
+    Remove-UpdaterTemp $downloadDir
 }
