@@ -38,4 +38,8 @@ Regressoes: lotes de 105 fotos, erro na primeira/no meio, em edicao direta e nov
 
 Suite completa: **202 testes aprovados em 243.303 s**, registro `evidence/qa-batch-updater.txt`. Revalidacoes focadas apos endurecer manifesto/limpeza: 11 testes do checker e 3 testes do instalador aprovados (o teste de integracao cobre cinco cenarios, incluindo internet com BOM).
 
+Versao calculada pelo script: **v0.25.0 (build 0039)**, derivada dos commits `e0bce06433a24038869fdf5cef1e46e77a23a5b3` (fix) e `a8e87973577f309a8bd1ffb17ee859dfeb202311` (feat). Recibo `evidence/release-build-0039.json`; changelog gerado com rastreabilidade.
+
+Pacote: `private/deliveries/CRISPIX-0.25.0-build0039-2731bcbb/CRISPIX-0.25.0-build0039-motor-local.zip`, 84.048.199 bytes, SHA-256 `43584a46a6f754016f0c6cab2bd645350fdcb45df7ee4b48f622936e7b1ae8c1`. Comando final: `python scripts/verify_editing_release.py --package private/deliveries/CRISPIX-0.25.0-build0039-2731bcbb/package.json --unit-tests-passed 202`. Aprovado: CRC, 1.748 hashes, 34 fontes Lua compiladas, runtime isolado, dois RAWs reais, escrita/restauracao no duplo SDK e hashes dos originais preservados. Recibo `evidence/editing-plugin-qa-0039.json`. Modelo numerico permanece o mesmo.
+
 Nao havia Lightroom aberto no computador de desenvolvimento. Testes de SDK usam doubles Lua 5.1; nao substituem QA nativo: conferir nova interface, atualizar uma instalacao de teste, endireitar foto de angulo conhecido e restaurar. O detector pode manter o corte em fotos sem linhas confiaveis. Esta sessao prepara um pacote local; publicacao nos canais online/rede nao faz parte desta validacao.

@@ -1,5 +1,23 @@
 # CHANGELOG - mizin_lightroom
 
+## v0.25.0 (build 0039) - 2026-11-13
+
+### 💥 Breaking Changes
+
+- Nenhum.
+
+### ✨ Features
+
+- feat: instala atualizacoes pelo Lightroom com backup e corrige bloqueio do Windows (commit `a8e87973577f309a8bd1ffb17ee859dfeb202311`)
+
+### 🐛 Fixes
+
+- fix: corrige verificacao de corte e continua lotes apos falhas por foto (commit `e0bce06433a24038869fdf5cef1e46e77a23a5b3`)
+
+### ⚡ Improvements
+
+- Nenhum.
+
 ## v0.24.1 (build 0038) - 2026-11-13
 
 ### Fixes

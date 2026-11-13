@@ -1,0 +1,23 @@
+{
+  "previous": "v0.24.1 (build 0038)",
+  "version": "v0.25.0 (build 0039)",
+  "date": "2026-11-13",
+  "timezone": "America/Sao_Paulo",
+  "baseline": "bd7b37edff67b8f5d5e301b64c67f1f5675f01e1",
+  "sourceHead": "a8e87973577f309a8bd1ffb17ee859dfeb202311",
+  "increment": "feat",
+  "commits": [
+    {
+      "hash": "e0bce06433a24038869fdf5cef1e46e77a23a5b3",
+      "subject": "fix: corrige verificacao de corte e continua lotes apos falhas por foto",
+      "type": "fix",
+      "breaking": false
+    },
+    {
+      "hash": "a8e87973577f309a8bd1ffb17ee859dfeb202311",
+      "subject": "feat: instala atualizacoes pelo Lightroom com backup e corrige bloqueio do Windows",
+      "type": "feat",
+      "breaking": false
+    }
+  ]
+}
