@@ -59,8 +59,8 @@ class PhotoEditorLuaTests(unittest.TestCase):
                 runtime.execute("manifest.mode='IN_PLACE';source.applyDevelopSettings=function(self,settings) self.settings.Exposure2012=settings.Exposure2012;error('partial write') end")
                 (directory/'session.json').write_text(runtime.globals().codec.encode(runtime.globals().manifest))
                 before=runtime.globals().editor.fingerprint(runtime.globals().source.settings)
-                with self.assertRaises(Exception):
-                    runtime.globals().editor.applyInPlace(runtime.globals().catalog,directory.as_posix(),runtime.globals().manifest,runtime.globals().progress)
+                status,_,_=runtime.globals().editor.applyInPlace(runtime.globals().catalog,directory.as_posix(),runtime.globals().manifest,runtime.globals().progress)
+                self.assertEqual(status,'COMPLETED_WITH_ERRORS')
                 self.assertTrue((directory/'001-failed.json').exists())
                 runtime.execute("source.applyDevelopSettings=function(self,settings) for k,v in pairs(settings) do self.settings[k]=clone(v) end end")
                 if manual_change: runtime.execute('source.settings.Exposure2012=1.57')
@@ -190,7 +190,7 @@ class PhotoEditorLuaTests(unittest.TestCase):
                 return {copy}
             end
             catalog.setActiveSources=function() end
-            progress={isCanceled=function() return cancelNow==true end,setPortionComplete=function(self,part) if cancelAt==part then cancelNow=true end end}
+            progress={setCaption=function() end,isCanceled=function() return cancelNow==true end,setPortionComplete=function(self,part) if cancelAt==part then cancelNow=true end end}
             editor=dofile(plugin_path..'/PhotoEditor.lua')
         ''')
         def execute(job):
@@ -271,7 +271,7 @@ class PhotoEditorLuaTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as temp:
             folder=Path(temp);runtime=self.setup_editor(folder);directory=self.plan(runtime,folder)
             runtime.globals().applyBehavior='partial'
-            with self.assertRaises(Exception):self.apply(runtime,directory)
+            self.assertEqual(self.apply(runtime,directory)[0],'COMPLETED_WITH_ERRORS')
             self.assertTrue((directory/'001-ready.json').exists());self.assertTrue((directory/'001-failed.json').exists())
             self.assertEqual(runtime.globals().editor.restoreSession(directory.as_posix())[:2],(1,0))
 
@@ -477,7 +477,7 @@ class PhotoEditorLuaTests(unittest.TestCase):
             import math
             planned=runtime.globals().planned
             self.assertEqual(runtime.globals().angle,3)
-            self.assertTrue(planned.HasCrop)
+            self.assertIsNone(planned.HasCrop)  # Not part of the readable SDK develop controls.
             # Lightroom stores the TOP-LEFT and BOTTOM-RIGHT corners of the rotated crop
             # rectangle. Rebuild that rectangle and require all four corners inside the image
             # and the original aspect ratio (the old equal-margin crop failed both).

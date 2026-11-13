@@ -111,18 +111,19 @@ function M.tick()
     end
     if result.status=='CANCELLED' then state.paused=true end
     local edited={}
+    local finished=result.status=='COMPLETED' or result.status=='COMPLETED_WITH_ERRORS'
     for _,record in ipairs(result.records or {}) do edited[record.id]=true end
     for _,photo in ipairs(ready) do
         local id=tostring(photo.localIdentifier)
-        if result.status=='COMPLETED' and edited[id] then state.processed[id]=true
-        elseif result.status=='COMPLETED' then state.skipped[id]='NOT_COMPUTED' end
+        if edited[id] then state.processed[id]=true
+        elseif finished then state.skipped[id]='NOT_CONFIRMED' end
         if state.processed[id] or state.skipped[id] then state.sightings[id]=nil end
     end
     remember(state,{time=Date.currentTime(),status=tostring(result.status),edited=#(result.records or {}),
         notComputed=#(result.failures or {}),session=result.dir,collection=label})
     state.lastError=nil
     M.save(state)
-    if result.status=='COMPLETED' then
+    if finished then
         pcall(function() Dialogs.showBezel('CRISPIX: '..#(result.records or {})..' fotos novas editadas automaticamente') end)
     end
     return tostring(result.status)
@@ -163,7 +164,7 @@ function M.menu()
     local action=Dialogs.presentModalDialog{title='CRISPIX - edicao automatica',contents=f:column{
         spacing=f:control_spacing(),
         f:static_text{title=M.describe(state),width=520,height_in_lines=7},
-        f:static_text{title='Fotos novas importadas na pasta vigiada sao editadas DIRETAMENTE com as opcoes salvas da janela EDITAR FOTOS\n(estilo, intensidade, ajuste fino, preset). Horizonte e mascaras ficam fora: exigem novas copias.\nFotos alteradas por voce antes da edicao automatica sao preservadas. Use RESTAURAR para desfazer a ultima sessao.',width=520,height_in_lines=4}},
+        f:static_text{title='Fotos novas importadas na pasta vigiada sao editadas DIRETAMENTE com as opcoes salvas da janela EDITAR FOTOS\n(estilo, intensidade, ajuste fino, preset e horizonte). Mascaras exigem novas copias.\nFotos alteradas por voce antes da edicao automatica sao preservadas. Use RESTAURAR para desfazer a ultima sessao.',width=520,height_in_lines=4}},
         actionVerb=state and state.enabled and (state.paused and 'Retomar' or 'Pausar') or 'Vigiar pasta da foto selecionada',
         otherVerb=state and state.enabled and 'Desligar' or nil,cancelVerb='Fechar'}
     if action=='ok' then

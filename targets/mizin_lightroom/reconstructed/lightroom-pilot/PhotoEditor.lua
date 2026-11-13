@@ -291,7 +291,8 @@ function M.horizon(settings,before,proposal)
     end
     settings.CropAngle=HORIZON_SIGN*math.floor(angle*100+.5)/100
     settings.CropTop,settings.CropLeft,settings.CropBottom,settings.CropRight=M.cropFor(settings.CropAngle,sensorWidth,sensorHeight)
-    settings.HasCrop=true
+    -- HasCrop belongs to XMP, not the SDK's readable develop-settings contract.
+    -- Lightroom can omit it even after applying the five numeric crop controls.
     return settings.CropAngle
 end
 local function presetChoices()
@@ -312,10 +313,11 @@ end
 local function verifyApplied(actual,expected,skip)
     -- Preset values may be normalized by Lightroom; afterHash still records the observed state.
     for key,value in pairs(expected) do
-        if not (skip and skip[key]) then
+        if key~='HasCrop' and not (skip and skip[key]) then
             local got=actual[key]
             if type(value)=='number' then
-                local tolerance=key=='Temperature' and 1 or key=='Exposure2012' and .011 or .01
+                local tolerance=key=='Temperature' and 1 or key=='Exposure2012' and .011 or
+                    (key:match('^Crop') and key~='CropAngle') and .0001 or .01
                 if not finite(got) or math.abs(got-value)>tolerance then return false,key end
             elseif M.canonical(got)~=M.canonical(value) then return false,key end
         end
@@ -324,9 +326,32 @@ local function verifyApplied(actual,expected,skip)
 end
 local function exactlyPlanned(actual,expected,skip)
     for key,value in pairs(expected) do
-        if not (skip and skip[key]) and M.canonical(actual[key])~=M.canonical(value) then return false end
+        if key~='HasCrop' and not (skip and skip[key]) and M.canonical(actual[key])~=M.canonical(value) then return false end
     end
     return true
+end
+-- Give the host a bounded opportunity to commit its readback. Never re-apply settings.
+local function readApplied(photo,record)
+    local actual,verified,key
+    for attempt=1,6 do
+        actual=photo:getDevelopSettings()
+        verified,key=verifyApplied(actual,record.settings,skipSet(record.presetKeys))
+        if verified then return actual end
+        if attempt<6 then Tasks.sleep(.2) end
+    end
+    error('Ajuste nao confirmado: '..tostring(key))
+end
+local function application(manifest)
+    local result={completed=0,failed=0,straightened=0,issues={},completedIds={}}
+    manifest.application=result;return result
+end
+local function appliedPhoto(result,record)
+    result.completed=result.completed+1;result.completedIds[record.id]=true
+    if record.horizon and record.horizon.cropAngle then result.straightened=result.straightened+1 end
+end
+local function failedPhoto(result,record,err)
+    result.failed=result.failed+1
+    result.issues[#result.issues+1]={sourceId=record.id,path=record.path,error=tostring(err)}
 end
 local function sameCatalog(catalog,path)
     if App.activeCatalog():getPath()~=path or catalog:getPath()~=path then error('O catalogo ativo mudou; edicao interrompida.') end
@@ -525,6 +550,7 @@ function M.capturePhotos(selected,progress)
 end
 
 function M.applyInPlace(catalog,dir,manifest,progress)
+    local result=application(manifest)
     for index,record in ipairs(manifest.photos) do
         if progress:isCanceled() then return 'CANCELLED',{},nil end
         sameCatalog(catalog,manifest.catalogPath)
@@ -532,40 +558,38 @@ function M.applyInPlace(catalog,dir,manifest,progress)
         local before=photo:getDevelopSettings()
         if M.fingerprint(before)~=record.beforeHash then error('A foto mudou apos a analise; nenhuma sobrescrita permitida.') end
         checkpoint(dir,index,'ready',{before=before,beforeHash=record.beforeHash})
-        local attempted=false
+        local attempted=false;local actual
         local ok,err=Tasks.pcall(function()
             gate(catalog,'Mizin: editar selecao sem duplicar',function()
                 if M.fingerprint(photo:getDevelopSettings())~=record.beforeHash then error('Foto alterada durante espera pela gravacao') end
                 attempted=true
                 photo:applyDevelopSettings(record.settings,'Mizin - edicao na grade',false)
             end)
+            actual=readApplied(photo,record)
+            if M.fingerprint(preserved(actual,record.settings))~=M.fingerprint(preserved(before,record.settings)) then
+                error('Controles preservados mudaram; confira e restaure esta foto.')
+            end
         end)
         if not ok then
+            if not attempted then error(tostring(err)) end
             if attempted then
                 local readable,hash=Tasks.pcall(function()return M.fingerprint(photo:getDevelopSettings()) end)
                 checkpoint(dir,index,'failed',{observedHash=readable and hash or nil,error=tostring(err)})
             end
-            error(tostring(err)..'\nRegistro de recuperacao: '..dir)
+            failedPhoto(result,record,err)
+        else
+            checkpoint(dir,index,'applied',{afterHash=M.fingerprint(actual)})
+            appliedPhoto(result,record)
         end
-        local actual=photo:getDevelopSettings()
-        local verified,key=verifyApplied(actual,record.settings,skipSet(record.presetKeys))
-        if not verified then
-            checkpoint(dir,index,'failed',{observedHash=M.fingerprint(actual),error='Ajuste nao confirmado: '..tostring(key)})
-            error('Ajuste nao confirmado: '..tostring(key)..'\nRegistro: '..dir)
-        end
-        if M.fingerprint(preserved(actual,record.settings))~=M.fingerprint(preserved(before,record.settings)) then
-            checkpoint(dir,index,'failed',{observedHash=M.fingerprint(actual),error='Controles preservados mudaram'})
-            error('Controles preservados mudaram; confira e restaure a sessao.\nRegistro: '..dir)
-        end
-        checkpoint(dir,index,'applied',{afterHash=M.fingerprint(actual)})
         progress:setCaption('Aplicando '..index..' de '..#manifest.photos)
         progress:setPortionComplete(index,#manifest.photos)
         Tasks.yield()
     end
-    return 'COMPLETED',{},nil
+    return result.failed>0 and 'COMPLETED_WITH_ERRORS' or 'COMPLETED',{},nil
 end
 
 function M.applyPlan(catalog,dir,manifest,progress)
+    local result=application(manifest)
     sameCatalog(catalog,manifest.catalogPath)
     for _,record in ipairs(manifest.photos) do
         if M.fingerprint(sourceFor(catalog,record):getDevelopSettings())~=record.beforeHash then error('Uma origem mudou depois da analise; calcule novamente.') end
@@ -618,32 +642,38 @@ function M.applyPlan(catalog,dir,manifest,progress)
         checkpoint(dir,index,'ready',{copyId=tostring(copy.localIdentifier),snapshotId=snapshot,beforeHash=beforeHash,
             untouchedHash=M.fingerprint(without(before,affected(record.settings))),snapshotName=name})
         -- Durable checkpoint exists before this copy receives any develop changes.
+        local attempted=false
         local ok,err=Tasks.pcall(function()
             sameCatalog(catalog,manifest.catalogPath)
             if M.fingerprint(copy:getDevelopSettings())~=beforeHash then error('A copia mudou antes da aplicacao') end
             gate(catalog,'Mizin: aplicar edicao na copia',function()
                 requireSelected(catalog,copy,'develop')
                 if M.fingerprint(copy:getDevelopSettings())~=beforeHash or M.fingerprint(source:getDevelopSettings())~=record.beforeHash then error('Os ajustes mudaram durante a espera pela gravacao') end
+                attempted=true
                 copy:applyDevelopSettings(record.settings,'Mizin - edicao local',false)
                 -- Lightroom's own adaptive preset builds the person/sky masks on this copy.
                 if maskPreset then copy:applyDevelopPreset(maskPreset,_PLUGIN.id) end
             end)
-            Tasks.yield();local actual=copy:getDevelopSettings();local verified,key=verifyApplied(actual,record.settings,skipSet(record.presetKeys))
-            if not verified then error('Lightroom nao confirmou o ajuste: '..tostring(key)) end
+            Tasks.yield();local actual=readApplied(copy,record)
             if M.fingerprint(preserved(actual,record.settings,maskPreset~=nil))~=M.fingerprint(preserved(before,record.settings,maskPreset~=nil)) then error('Houve mudanca em perfil, corte, mascaras ou outros controles preservados; revise a copia e use Restaurar.') end
             -- Recorded, not fatal: whether the SDK path triggers mask creation needs native QA.
             local masksChanged=maskPreset and M.canonical(actual.MaskGroupBasedCorrections)~=M.canonical(before.MaskGroupBasedCorrections) or nil
             if M.fingerprint(source:getDevelopSettings())~=record.beforeHash then error('Os ajustes da origem mudaram externamente; edicao interrompida.') end
-            checkpoint(dir,index,'applied',{copyId=tostring(copy.localIdentifier),afterHash=M.fingerprint(actual),masksChanged=masksChanged})
+            return {copyId=tostring(copy.localIdentifier),afterHash=M.fingerprint(actual),masksChanged=masksChanged}
         end)
         if not ok then
             local readOK,observed=Tasks.pcall(function()return M.fingerprint(copy:getDevelopSettings()) end)
             checkpoint(dir,index,'failed',{copyId=tostring(copy.localIdentifier),error=tostring(err),observedHash=readOK and observed or nil})
-            error(tostring(err))
+            if not attempted then error(tostring(err)) end
+            failedPhoto(result,record,err)
+        else
+            -- Journal failures are session-fatal: never continue without durable recovery.
+            checkpoint(dir,index,'applied',err)
+            appliedPhoto(result,record)
         end
         progress:setPortionComplete(#manifest.photos+index,#manifest.photos*2)
     end
-    return 'COMPLETED',copies,collection
+    return result.failed>0 and 'COMPLETED_WITH_ERRORS' or 'COMPLETED',copies,collection
 end
 
 local function guarded(fn)
@@ -746,11 +776,13 @@ local function process(catalog,path,records,photos,ignored,choice,inPlace,auto)
             return M.applyPlan(catalog,dir,manifest,progress)
         end)
         progress:done()
-        if not ok then writeNew(child(dir,'outcome.json'),{status='FAILED',error=tostring(status)});error(tostring(status)..'\nAs copias criadas ficam na colecao da edicao. Use Restaurar ultima edicao se necessario.') end
-        writeNew(child(dir,'outcome.json'),{status=status,createdCopies=#copies});result=status
+        if not ok then writeNew(child(dir,'outcome.json'),{status='FAILED',error=tostring(status),application=manifest.application});error(tostring(status)..'\nUse Restaurar ultima sessao se necessario. Registros: '..dir) end
+        writeNew(child(dir,'outcome.json'),{status=status,createdCopies=#copies,application=manifest.application});result=status
         if not auto and collection and #copies>0 then catalog:setActiveSources({collection});catalog:setSelectedPhotos(copies[1],copies) end
     end)
-    return {dir=dir,status=result,records=records,failures=failures,straightened=straightened,skipReasons=skipReasons,useHorizon=useHorizon,maskName=maskName}
+    local applied=manifest.application
+    return {dir=dir,status=result,records=records,failures=failures,application=applied,
+        straightened=applied.straightened,skipReasons=skipReasons,useHorizon=useHorizon,maskName=maskName}
 end
 
 function M.edit(inPlace)
@@ -785,9 +817,18 @@ function M.edit(inPlace)
         if done.status=='COMPLETED' then
             message=inPlace and 'Edicao concluida nos itens selecionados, sem novas copias. Restauracao disponivel no menu.' or
                 'Edicao aplicada nas novas copias virtuais. Compare-as com as origens na colecao Mizin - Edicoes.'
+        elseif done.status=='COMPLETED_WITH_ERRORS' then
+            message='Lote finalizado com falhas em algumas fotos. As demais foram processadas.'
         else
             message=inPlace and 'Edicao cancelada. Os itens ja editados podem voltar ao estado anterior com Restaurar ultima sessao.' or
                 'Edicao cancelada. As copias ja criadas ficaram na colecao para revisao.'
+        end
+        message=message..'\nEdicoes confirmadas: '..done.application.completed..'. Falhas: '..done.application.failed..'.'
+        if done.application.failed>0 then
+            message=message..'\nAs fotos com falha podem ter ajustes parciais. Confira-as ou use RESTAURAR ULTIMA SESSAO.\nRegistros: '..done.dir
+            for i,issue in ipairs(done.application.issues) do
+                if i<=5 then message=message..'\n'..tostring(issue.path)..': '..issue.error end
+            end
         end
         if done.useHorizon then
             message=message..'\nHorizonte endireitado em '..done.straightened..' de '..#done.records..' fotos.'
@@ -828,8 +869,13 @@ function M.autoEdit(list,label,expected)
         local choice=M.autoChoice();choice.project=tostring(label or choice.project):sub(1,200)
         local done=process(catalog,path,records,photos,ignored,choice,true,true)
         local edited={}
-        for _,record in ipairs(done.records) do edited[#edited+1]=sourceFor(catalog,record) end
-        if done.status=='COMPLETED' and #edited>0 then
+        local completed={}
+        for _,record in ipairs(done.records) do
+            if done.application.completedIds[record.id] then
+                edited[#edited+1]=sourceFor(catalog,record);completed[#completed+1]=record
+            else done.failures[#done.failures+1]=record.path..': aplicacao nao confirmada' end
+        end
+        if #edited>0 then
             -- Review collection only: never changes the user's selection or active sources.
             gate(catalog,'CRISPIX: reunir edicao automatica',function()
                 local parent=catalog:createCollectionSet('CRISPIX - Edicao automatica',nil,true)
@@ -837,7 +883,7 @@ function M.autoEdit(list,label,expected)
                 if collection then collection:addPhotos(edited) end
             end)
         end
-        return {status=done.status,dir=done.dir,records=done.records,failures=done.failures,ignoredUnsupported=ignored.unsupported}
+        return {status=done.status,dir=done.dir,records=completed,failures=done.failures,ignoredUnsupported=ignored.unsupported}
     end)
 end
 

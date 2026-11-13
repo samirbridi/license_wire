@@ -8,6 +8,24 @@ import test_photo_editor_lua as editor_tests
 
 
 class AutoEditLuaTests(unittest.TestCase):
+    def test_partial_application_records_successes_and_never_retries_failed_photo(self):
+        with tempfile.TemporaryDirectory() as temp:
+            runtime = self.setup(Path(temp))
+            runtime.execute('''
+                broken=newImport(10);good=newImport(11)
+                broken.applyDevelopSettings=function(self,s)
+                    applyCount=applyCount+1;self.settings.Exposure2012=s.Exposure2012;error('SDK fixture failure')
+                end
+            ''')
+            self.assertEqual(self.ticks(runtime, 3)[-1], 'COMPLETED_WITH_ERRORS')
+            state = runtime.globals().auto.load()
+            self.assertTrue(state.processed['11'])
+            self.assertIsNone(state.processed['10'])
+            self.assertEqual(state.skipped['10'], 'NOT_CONFIRMED')
+            self.assertEqual(runtime.globals().applyCount, 2)
+            self.assertEqual(self.ticks(runtime, 3), ['WAITING'] * 3)
+            self.assertEqual(runtime.globals().applyCount, 2)
+
     def setup(self, folder):
         helper = editor_tests.PhotoEditorLuaTests()
         runtime = helper.setup_editor(folder)
