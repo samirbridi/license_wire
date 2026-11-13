@@ -21,7 +21,7 @@ class ReferenceCollectionTests(unittest.TestCase):
         return bundle, job, raw, request
 
     def run_collection(self, bundle, job, render=None):
-        def fake_render(path, destination, metadata):
+        def fake_render(path, destination, metadata, face_detector=None):
             destination.write_bytes(b'technical input')
             return {'features': {'redMean': .2, 'captureISO': 100}, 'inputDomain': engine.DOMAIN,
                     'jpegSha256': engine.sha256_file(destination)}

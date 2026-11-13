@@ -1,0 +1,7 @@
+# v0.13.0 build 0020 — edicao direta experimental
+
+Menu novo EditInPlace.lua chama edit(true). Mantem modo antigo separado. Aplica ajustes diretamente nos objetos selecionados sob write gate, sem selecao individual, troca de modulo, criacao de colecao ou copias. Confirmacao explicita antes da escrita. Registro ready com tabela anterior completa em disco antes de cada apply. Restauracao usa tabela anterior quando hash atual coincide com aplicado; alteracoes posteriores e aplicacao parcial sem hash confirmado sao preservadas para recuperacao manual. Nao promete snapshot Adobe nem rollback automatico de falha parcial. Atalho historico de restauracao das copias tambem atende IN_PLACE. Restauracao exata ainda depende de retorno nativo do SDK.
+
+112 testes passaram, incluindo contrato de edicao/restauracao na biblioteca sem createVirtualCopies. QA do ZIP verifica hashes, sintaxe Lua e dois RAWs reais pelo caminho antigo; nao e QA nativo do novo caminho. Evidencias qa-0020.txt, package-0020.json, release-0020.txt. Entrega em Downloads/PLUGIN LIGHTROOM/MizinLightroom-0.13.0-build0020-1070851a com hash igual a origem.
+
+Sem novo treino, Smart Preview ou suporte P&B. Previsoes continuam absolutas, possivel tendencia de exposicao alta e temperatura fria nao corrigida por este build. Entrada ainda CR3 Canon EOS R6m2. Coleta/treino de virtuais e P&B pendentes. Testar cinco itens descartaveis ou copias de teste primeiro, inclusive restauracao. Nao executar direto em lote final antes da homologacao. Sem commits automaticos; incremento manual de VERSION.

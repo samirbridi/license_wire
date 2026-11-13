@@ -1,0 +1,16 @@
+﻿{
+    "schema":  "mizin-lightroom.delivery/1",
+    "version":  "v0.19.0 (build 0031)",
+    "destination":  "Downloads/PLUGIN LIGHTROOM/CRISPIX-0.19.0-build0031-2525d1a3",
+    "files":  [
+                  "CRISPIX-0.19.0-build0031-motor-local.zip",
+                  "LEIA-ME.md",
+                  "SHA256SUMS.txt"
+              ],
+    "archiveSha256":  "ee93c2291c823ad2f0f29e8ed3f5d72230edbabe1e370e15f2959a601b09082a",
+    "sourceAndDestinationHashEqual":  true,
+    "bytes":  84023846,
+    "networkShareCopy":  false,
+    "installedInProduction":  false,
+    "deliveredAt":  "2026-11-07T07:37:32.0401285-03:00"
+}

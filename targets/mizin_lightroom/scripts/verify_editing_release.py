@@ -25,13 +25,15 @@ def verify(package_path,unit_tests_passed):
     archive=Path(package['archive']);assert sha(archive)==package['sha256']
     with zipfile.ZipFile(archive) as z:assert z.testzip() is None
     deployment=qa/'Instalacao & edicao local';extract(archive,deployment)
-    plugin=deployment/'MizinLightroom.lrplugin'
+    plugin=deployment/Path(package['pluginDirectory']).name
     lines=(deployment/'SHA256SUMS.txt').read_text().splitlines()
     for line in lines:
         digest,name=line.split(' *',1);assert sha(deployment/name)==digest
     lua=LuaRuntime(unpack_returned_tuples=True)
     for path in plugin.glob('*.lua'):lua.execute('assert(loadstring(...))',path.read_text(encoding='utf-8'))
-    for source in (ROOT/'reconstructed/lightroom-pilot').glob('*.lua'):assert sha(source)==sha(plugin/source.name)
+    for source in (ROOT/'reconstructed/lightroom-pilot').glob('*.lua'):
+        expected=source.read_text(encoding='utf-8').replace('Mizin Lightroom','CRISPIX').replace('Mizin:','CRISPIX:').replace('Mizin -','CRISPIX -')
+        assert expected==(plugin/source.name).read_text(encoding='utf-8')
     info=json.loads((plugin/'BuildInfo.json').read_text())
     assert info['virtualCopyEditingImplemented'] and not info['editingOriginalsImplemented'] and not info['nativeEditingWorkflowValidated']
     assert sha(plugin/'StyleBase.lua')==info['styleBaseLuaSha256']
@@ -82,9 +84,15 @@ def verify(package_path,unit_tests_passed):
         sdkDoubleNewCopiesEdited=2,sdkDoubleCopiesRestoredAfterModuleReload=restored,sdkDoubleOriginalSettingsUnchanged=True,
         allRawHashesStillEqual=True,styleBaseLuaHashVerified=True,isolatedCommandWithSpacesAndAmpersandPassed=True,
         nativeLightroomEditingValidated=False,nativeLightroomRestorationValidated=False,photographicQualityApproved=False,
-        vendorNeurapixArtifactsIncluded=False,photosUploaded=0,numericPilotUnchanged=sha(plugin/'Models/pilot-model.json')=='9f1cd19d844f269bbd6f932e82089df9deb87f8b7de9eda06c7959814a465422')
+        vendorNeurapixArtifactsIncluded=False,photosUploaded=0,
+        # This pin is a deliberate guard against an UNINTENDED model change riding along with
+        # an unrelated release (e.g. a UI-only build). Update it only when a build is meant to
+        # ship a retrained model, and say why in the same commit/changelog entry.
+        # build 0032: retrained with the widened alpha search grid (.3,1,3,10,30,100,300 instead
+        # of 1,10,100); see train_numeric_pilot.py/learning_store.py comments for the evidence.
+        numericPilotUnchanged=sha(plugin/'Models/pilot-model.json')=='83ecd6e0c9ab84c4f93945e5f831e43d4375bdfdf49c3df93af1be4ebb93dff2')
     assert receipt['numericPilotUnchanged']
-    (ROOT/'evidence/editing-plugin-qa-20261030.json').write_text(json.dumps(receipt,indent=2)+'\n')
+    (ROOT/('evidence/editing-plugin-qa-'+package['version'].split('build ')[1].rstrip(')')+'.json')).write_text(json.dumps(receipt,indent=2)+'\n')
     (ROOT/'private/qa/latest-editing-release.json').write_text(json.dumps(dict(directory=str(qa),plugin=str(plugin),session=str(session),commands=commands),indent=2)+'\n')
     return receipt
 

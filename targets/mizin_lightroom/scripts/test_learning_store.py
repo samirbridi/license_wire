@@ -28,6 +28,33 @@ def event_rows(group,count=50):
 
 
 class LearningStoreTests(unittest.TestCase):
+    def test_extended_controls_fit_only_with_complete_split_coverage(self):
+        with tempfile.TemporaryDirectory() as directory:
+            for group in (1,2,3):
+                rows=event_rows(group)
+                for i,row in enumerate(rows):
+                    row['extendedParameters']={'Texture':float(i),'HueAdjustmentOrange':float(i-25)}
+                    if group!=3:row['extendedParameters']['Dehaze']=10.0
+                store.register(directory,rows,contract(),str(group))
+            report=store.train_candidate(directory,contract())
+            path,_=store.latest_candidate(directory)
+            model=json.loads(path.read_text())
+            self.assertEqual(set(model['extendedTargets']),{'Texture','HueAdjustmentOrange'})
+            self.assertEqual(report['extendedMetrics']['Dehaze']['status'],'INSUFFICIENT_SPLIT_COVERAGE')
+            self.assertFalse(report['modelActivated'])
+
+    def test_extended_human_correction_creates_revision(self):
+        with tempfile.TemporaryDirectory() as directory:
+            row=event_rows(1,1)[0];row['extendedParameters']={'Texture':10}
+            store.register(directory,[row],contract(),'catalog')
+            changed=copy.deepcopy(row);changed['extendedParameters']['Texture']=20
+            changed['approvedUtc']='2026-10-31T02:00:00+00:00'
+            store.register(directory,[changed],contract(),'catalog')
+            with store.connect(directory) as db:
+                active,_=store.active_rows(db)
+                self.assertEqual(active[0]['extendedParameters']['Texture'],20)
+                self.assertEqual(db.execute('SELECT COUNT(*) FROM revisions').fetchone()[0],2)
+
     def test_unapproved_batch_cannot_partially_enter_registry(self):
         with tempfile.TemporaryDirectory() as directory:
             root=Path(directory)/'store';rows=event_rows(1,2);rows[1]['approvalStatus']='UNKNOWN'
@@ -76,6 +103,40 @@ class LearningStoreTests(unittest.TestCase):
             store.register(directory,event_rows(4),contract(),'4')
             second=store.train_candidate(directory,contract());self.assertTrue(second['candidateCreated'])
             self.assertNotEqual(second['evaluationEvent'],result['evaluationEvent'])
+
+    def test_monochrome_learns_separately_from_color_with_gray_mixer(self):
+        with tempfile.TemporaryDirectory() as directory:
+            for group in (1,2,3):store.register(directory,event_rows(group),contract(),str(group))
+            for group in (5,6):
+                rows=event_rows(group)
+                for i,row in enumerate(rows):
+                    row['styleVariant']='monochrome';row['extendedParameters']={'GrayMixerRed':float(i-20)}
+                store.register(directory,rows,contract(),'mono'+str(group))
+            summary=store.summary(directory)
+            self.assertEqual((summary['uniqueApprovedReferences'],summary['monochromeReferences'],summary['monochromeEventsWith50']),(150,100,2))
+            self.assertFalse(store.train_candidate(directory,contract(),'monochrome')['candidateCreated'])
+            color=store.train_candidate(directory,contract())
+            self.assertEqual((color['styleVariant'],color['trainingReferences']+color['evaluationReferences']),('color',150))
+            with self.assertRaisesRegex(ValueError,'P&B'):store.latest_candidate(directory,'monochrome')
+            rows=event_rows(7)
+            for i,row in enumerate(rows):
+                row['styleVariant']='monochrome';row['extendedParameters']={'GrayMixerRed':float(i-20)}
+            store.register(directory,rows,contract(),'mono7')
+            mono=store.train_candidate(directory,contract(),'monochrome')
+            self.assertTrue(mono['candidateCreated']);self.assertEqual(mono['styleVariant'],'monochrome')
+            path,_=store.latest_candidate(directory,'monochrome')
+            model=json.loads(path.read_text())
+            self.assertEqual(model['supportedTreatment'],'monochrome');self.assertIn('GrayMixerRed',model['extendedTargets'])
+            color_path,_=store.latest_candidate(directory)
+            self.assertEqual(json.loads(color_path.read_text())['supportedTreatment'],'color')
+            self.assertEqual(Path(store.summary(directory)['latestMonochromeCandidate']).resolve(),path.parent.resolve())
+            # A new monochrome evaluation never consumes or blocks the color event history.
+            self.assertFalse(store.train_candidate(directory,contract())['candidateCreated'])
+
+    def test_color_reference_cannot_carry_gray_mixer_labels(self):
+        with tempfile.TemporaryDirectory() as directory:
+            row=event_rows(1,1)[0];row['extendedParameters']={'GrayMixerRed':5}
+            with self.assertRaises(ValueError):store.register(directory,[row],contract(),'catalog')
 
     def test_held_out_targets_do_not_change_fitted_weights_and_tampered_candidate_is_rejected(self):
         regressions=[]

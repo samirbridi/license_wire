@@ -1,0 +1,19 @@
+﻿{
+    "schema":  "mizin-lightroom.geometry-monochrome-qa/1",
+    "version":  "v0.18.0 (build 0030)",
+    "archiveSha256":  "91f90d749fad984444a31cd862ad0401ef978724c43021052f9f1c713c6232b1",
+    "packagedIsolatedRuntime":  true,
+    "realRawPhotos":  2,
+    "horizonAnalysisRanInPackage":  true,
+    "horizonOrientedRender":  "684x1024",
+    "horizonResult":  "KEEP_EXISTING/INSUFFICIENT_AGREEMENT",
+    "horizonProposalOnRealRaw":  false,
+    "monochromeWithoutModel":  "FAILED_ONLY_THAT_PHOTO_WITH_MESSAGE",
+    "otherPhotoComputed":  true,
+    "cropAngleSignNativelyValidated":  false,
+    "adaptiveMaskSdkPathNativelyValidated":  false,
+    "monochromeModelTrained":  false,
+    "unitTestsPassed":  153,
+    "nativeLightroomValidated":  false,
+    "vendorNeurapixArtifactsIncluded":  false
+}

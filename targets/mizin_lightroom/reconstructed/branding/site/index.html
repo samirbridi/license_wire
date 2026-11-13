@@ -1,0 +1,552 @@
+<title>CRISPIX</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  /* Layout concept: a dark, editorial product page. Full-bleed hero with the mark large and
+     off-center; a horizon-line motif (the real feature) runs faintly through section dividers;
+     stat rows use tabular numbers like camera EXIF data; the comparison is a direct two-column
+     table, not a marketing grid, because the claim is "look at what's actually true." */
+  :root {
+    --bg: #F3F7F8;
+    --bg-raised: #FFFFFF;
+    --fg: #1D2C35;
+    --fg-dim: #4A5C66;
+    --fg-faint: #7C8D96;
+    --accent: #0E8FA0;
+    --accent-strong: #0B7684;
+    --line: #D7E1E3;
+    --good: #0E8FA0;
+    --warn: #B8732E;
+    color-scheme: light;
+    padding-top: env(safe-area-inset-top, 0px);
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #10191F;
+      --bg-raised: #16222A;
+      --fg: #EEF6F8;
+      --fg-dim: #AFC2C9;
+      --fg-faint: #76898F;
+      --accent: #42D9E8;
+      --accent-strong: #6FE4EF;
+      --line: #22323B;
+      --good: #42D9E8;
+      --warn: #E3A15C;
+      color-scheme: dark;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #10191F;
+    --bg-raised: #16222A;
+    --fg: #EEF6F8;
+    --fg-dim: #AFC2C9;
+    --fg-faint: #76898F;
+    --accent: #42D9E8;
+    --accent-strong: #6FE4EF;
+    --line: #22323B;
+    --good: #42D9E8;
+    --warn: #E3A15C;
+    color-scheme: dark;
+  }
+
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--fg);
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap {
+    padding-left: max(20px, env(safe-area-inset-left, 0px));
+    padding-right: max(20px, env(safe-area-inset-right, 0px));
+  }
+  h1, h2, h3, .display {
+    font-family: 'Space Grotesk', 'Inter', sans-serif;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    text-wrap: balance;
+    margin: 0;
+  }
+  .mono { font-family: 'JetBrains Mono', 'Consolas', monospace; font-variant-numeric: tabular-nums; }
+  a { color: inherit; }
+  img, svg { max-width: 100%; }
+
+  /* ---------- Nav ---------- */
+  nav {
+    position: sticky; top: env(safe-area-inset-top, 0px); z-index: 10;
+    display: flex; align-items: center; justify-content: space-between;
+    padding-block: 16px;
+    background: color-mix(in srgb, var(--bg) 88%, transparent);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--line);
+  }
+  .brand { display: flex; align-items: center; gap: 10px; font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: 19px; letter-spacing: 0.01em; }
+  .brand svg { width: 30px; height: 30px; flex-shrink: 0; }
+  .navlinks { display: flex; gap: 28px; font-size: 14px; color: var(--fg-dim); }
+  .navlinks a { text-decoration: none; }
+  .navlinks a:hover { color: var(--accent); }
+  @media (max-width: 560px) { .navlinks { display: none; } }
+
+  /* ---------- Hero ---------- */
+  .hero { padding-top: 72px; padding-bottom: 56px; position: relative; overflow: hidden; }
+  .hero-grid { display: grid; grid-template-columns: 1.3fr 1fr; gap: 48px; align-items: center; max-width: 1140px; margin: 0 auto; }
+  @media (max-width: 860px) { .hero-grid { grid-template-columns: 1fr; } }
+  .eyebrow {
+    display: inline-flex; align-items: center; gap: 8px;
+    font-size: 12px; letter-spacing: 0.12em; text-transform: uppercase;
+    color: var(--accent); font-weight: 600; margin-bottom: 18px;
+  }
+  .eyebrow::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: var(--accent); }
+  h1.title { font-size: clamp(38px, 6vw, 64px); line-height: 1.04; }
+  .sub { margin-top: 20px; font-size: 18px; color: var(--fg-dim); max-width: 46ch; }
+  .cta-row { margin-top: 32px; display: flex; gap: 14px; flex-wrap: wrap; align-items: center; }
+  .btn {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 13px 22px; border-radius: 10px; font-weight: 600; font-size: 15px;
+    text-decoration: none; border: 1px solid transparent; cursor: pointer;
+  }
+  .btn-primary { background: var(--accent); color: #0A1316; }
+  .btn-primary:hover { background: var(--accent-strong); }
+  .btn-ghost { border-color: var(--line); color: var(--fg); }
+  .btn-ghost:hover { border-color: var(--accent); color: var(--accent); }
+  .hero-note { margin-top: 14px; font-size: 13px; color: var(--fg-faint); }
+
+  .mark-stage {
+    position: relative; aspect-ratio: 1; max-width: 340px; margin: 0 auto;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .mark-stage svg { width: 72%; height: 72%; filter: drop-shadow(0 20px 50px color-mix(in srgb, var(--accent) 35%, transparent)); }
+  .mark-ring {
+    position: absolute; inset: 0; border-radius: 50%;
+    border: 1px dashed var(--line);
+  }
+  .mark-ring.r2 { inset: 10%; opacity: 0.6; }
+
+  /* horizon line motif, used as a section divider */
+  .horizon { position: relative; height: 1px; background: var(--line); margin-block: 0; }
+  .horizon::after {
+    content: ''; position: absolute; left: 50%; top: 50%; translate: -50% -50%;
+    width: 34px; height: 34px; border-radius: 50%; background: var(--bg);
+    border: 1px solid var(--line);
+  }
+
+  section { padding-block: 64px; }
+  .section-head { max-width: 640px; margin: 0 auto 40px; text-align: center; }
+  .section-head .eyebrow { justify-content: center; display: flex; }
+  .section-head h2 { font-size: clamp(26px, 4vw, 36px); }
+  .section-head p { margin-top: 14px; color: var(--fg-dim); font-size: 16px; }
+
+  .container { max-width: 1140px; margin: 0 auto; }
+
+  /* ---------- Feature grid ---------- */
+  .features { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; background: var(--line); border: 1px solid var(--line); border-radius: 16px; overflow: hidden; }
+  @media (max-width: 760px) { .features { grid-template-columns: 1fr; } }
+  .feature {
+    background: var(--bg-raised); padding: 28px 26px; display: flex; flex-direction: column; gap: 10px;
+  }
+  .feature .num { font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--fg-faint); }
+  .feature h3 { font-size: 17px; }
+  .feature p { margin: 0; font-size: 14px; color: var(--fg-dim); }
+  .tag {
+    display: inline-flex; align-self: flex-start; align-items: center; gap: 6px;
+    font-size: 11px; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase;
+    padding: 4px 9px; border-radius: 999px; margin-top: 4px;
+  }
+  .tag-live { background: color-mix(in srgb, var(--good) 16%, transparent); color: var(--good); }
+  .tag-beta { background: color-mix(in srgb, var(--warn) 16%, transparent); color: var(--warn); }
+
+  /* ---------- Stat strip ---------- */
+  .stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1px; background: var(--line); border: 1px solid var(--line); border-radius: 16px; overflow: hidden; }
+  @media (max-width: 760px) { .stats { grid-template-columns: repeat(2, 1fr); } }
+  .stat { background: var(--bg-raised); padding: 24px 20px; text-align: center; }
+  .stat .big { font-family: 'Space Grotesk', monospace; font-size: 30px; font-weight: 700; font-variant-numeric: tabular-nums; }
+  .stat .lbl { margin-top: 6px; font-size: 12.5px; color: var(--fg-faint); line-height: 1.3; }
+
+  /* ---------- Comparison table ---------- */
+  .compare-wrap { overflow-x: auto; border: 1px solid var(--line); border-radius: 16px; background: var(--bg-raised); }
+  table.compare { width: 100%; border-collapse: collapse; min-width: 640px; font-size: 14.5px; }
+  table.compare th, table.compare td { padding: 15px 20px; text-align: left; border-bottom: 1px solid var(--line); }
+  table.compare thead th { font-family: 'Space Grotesk', sans-serif; font-size: 13px; color: var(--fg-faint); font-weight: 600; letter-spacing: 0.03em; text-transform: uppercase; border-bottom: 1px solid var(--line); }
+  table.compare tbody tr:last-child td { border-bottom: none; }
+  table.compare td:first-child { color: var(--fg-dim); font-size: 14px; }
+  table.compare td.yes { color: var(--good); font-weight: 600; }
+  table.compare td.no { color: var(--fg-faint); }
+  table.compare td.mid { color: var(--warn); }
+  .col-crispix { background: color-mix(in srgb, var(--accent) 6%, transparent); }
+  .pip { display: inline-block; width: 7px; height: 7px; border-radius: 50%; margin-right: 7px; vertical-align: middle; }
+  .pip.on { background: var(--good); } .pip.off { background: var(--fg-faint); } .pip.mid { background: var(--warn); }
+  .compare-note { margin-top: 16px; font-size: 13px; color: var(--fg-faint); max-width: 70ch; }
+
+  /* ---------- How it works ---------- */
+  .steps { display: flex; flex-direction: column; gap: 0; counter-reset: step; }
+  .step { display: grid; grid-template-columns: 56px 1fr; gap: 20px; padding-block: 26px; border-top: 1px solid var(--line); }
+  .step:first-child { border-top: none; }
+  .step .idx { font-family: 'Space Grotesk', monospace; font-size: 22px; font-weight: 700; color: var(--accent); }
+  .step h3 { font-size: 17px; margin-bottom: 6px; }
+  .step p { margin: 0; color: var(--fg-dim); font-size: 14.5px; max-width: 62ch; }
+
+  /* ---------- Changelog ---------- */
+  .log { display: flex; flex-direction: column; gap: 0; }
+  .log-row { display: grid; grid-template-columns: 110px 1fr; gap: 18px; padding-block: 18px; border-top: 1px solid var(--line); }
+  .log-row:first-child { border-top: none; }
+  .log-ver { font-family: 'JetBrains Mono', monospace; font-size: 13px; color: var(--accent); white-space: nowrap; }
+  .log-body h4 { font-family: 'Inter', sans-serif; font-weight: 600; font-size: 14.5px; margin: 0 0 4px; }
+  .log-body p { margin: 0; font-size: 13.5px; color: var(--fg-dim); }
+
+  /* ---------- Honesty panel ---------- */
+  .honest {
+    border: 1px solid var(--line); border-radius: 16px; padding: 28px 28px;
+    background: var(--bg-raised);
+    display: grid; grid-template-columns: 1fr 1fr; gap: 28px;
+  }
+  @media (max-width: 760px) { .honest { grid-template-columns: 1fr; } }
+  .honest ul { margin: 10px 0 0; padding-left: 18px; color: var(--fg-dim); font-size: 14px; }
+  .honest li { margin-bottom: 7px; }
+  .honest h3 { font-size: 15px; display: flex; align-items: center; gap: 8px; }
+
+  /* ---------- Footer / CTA ---------- */
+  footer { padding-block: 56px 48px; border-top: 1px solid var(--line); }
+  .foot-grid { display: flex; justify-content: space-between; align-items: flex-start; gap: 24px; flex-wrap: wrap; }
+  .foot-brand { display: flex; align-items: center; gap: 10px; font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: 17px; }
+  .foot-brand svg { width: 24px; height: 24px; }
+  .foot-meta { font-size: 13px; color: var(--fg-faint); margin-top: 10px; max-width: 46ch; }
+  .copy-box {
+    display: flex; align-items: center; gap: 10px; padding: 10px 14px;
+    border: 1px solid var(--line); border-radius: 10px; background: var(--bg);
+    font-family: 'JetBrains Mono', monospace; font-size: 13px; color: var(--fg-dim);
+  }
+  .copy-box button { background: none; border: none; color: var(--accent); font-weight: 600; cursor: pointer; font-size: 13px; font-family: inherit; }
+</style>
+
+<nav class="wrap">
+  <div class="brand">
+    <svg viewBox="0 0 86 86"><rect width="86" height="86" rx="20" fill="#1D2C35"/><path d="M60 23 A26 26 0 1 0 62 62" fill="none" stroke="#EEF6F8" stroke-width="8"/><path d="M61 31 L68 38 L61 45 L54 38 Z" fill="#42D9E8"/></svg>
+    CRISPIX
+  </div>
+  <div class="navlinks">
+    <a href="#recursos">Recursos</a>
+    <a href="#comparativo">Comparativo</a>
+    <a href="#como-funciona">Como funciona</a>
+    <a href="#transparencia">Transparência</a>
+    <a href="#novidades">Novidades</a>
+  </div>
+</nav>
+
+<header class="hero wrap">
+  <div class="hero-grid">
+    <div>
+      <div class="eyebrow">Plugin para Lightroom Classic</div>
+      <h1 class="title">Seu olhar.<br>Sua edição.</h1>
+      <p class="sub">Um motor de edição que aprende o seu estilo a partir das suas próprias fotos aprovadas e trabalha inteiro na sua máquina — RAW nunca sai do computador, não existe mensalidade e os controles usados se ajustam foto a foto, sem presets fixos.</p>
+      <div class="cta-row">
+        <a class="btn btn-primary" href="#comparativo">Ver o comparativo</a>
+        <a class="btn btn-ghost" href="#transparencia">O que ainda é experimental</a>
+      </div>
+      <p class="hero-note">Em desenvolvimento ativo — versão mais recente: <span class="mono" id="verAtual">v0.22.0 (build 0035)</span></p>
+    </div>
+    <div class="mark-stage">
+      <div class="mark-ring"></div>
+      <div class="mark-ring r2"></div>
+      <svg viewBox="0 0 86 86"><rect width="86" height="86" rx="20" fill="#1D2C35"/><path d="M60 23 A26 26 0 1 0 62 62" fill="none" stroke="#EEF6F8" stroke-width="8"/><path d="M61 31 L68 38 L61 45 L54 38 Z" fill="#42D9E8"/></svg>
+    </div>
+  </div>
+</header>
+
+<div class="horizon"></div>
+
+<section id="recursos" class="wrap">
+  <div class="container">
+    <div class="section-head">
+      <div class="eyebrow">Recursos</div>
+      <h2>O que o CRISPIX já faz</h2>
+      <p>Cada item aqui corresponde a um recurso implementado e testado no motor — não a uma promessa de roteiro.</p>
+    </div>
+    <div class="features">
+      <div class="feature">
+        <span class="num">01</span>
+        <h3>Edição aprendida do seu estilo</h3>
+        <p>Regressão treinada com as suas próprias fotos aprovadas: exposição, temperatura, contraste, realces, sombras, brancos, pretos, saturação e vibratilidade — sem presets universais.</p>
+        <span class="tag tag-live">Em produção</span>
+      </div>
+      <div class="feature">
+        <span class="num">02</span>
+        <h3>Três formas de ensinar</h3>
+        <p>Aprenda com o catálogo inteiro, com a seleção atual de um trabalho, ou com uma coleção específica — útil quando você já separa manualmente o que foi realmente editado.</p>
+        <span class="tag tag-live">Em produção</span>
+      </div>
+      <div class="feature">
+        <span class="num">03</span>
+        <h3>Ajuste fino por lote</h3>
+        <p>Intensidade e deslocamentos opcionais somados depois da previsão automática — para calibrar o estilo sem precisar reaprender do zero.</p>
+        <span class="tag tag-live">Em produção</span>
+      </div>
+      <div class="feature">
+        <span class="num">04</span>
+        <h3>Correção de horizonte</h3>
+        <p>Detecta linhas de horizonte confiáveis e endireita com corte seguro, preservando a proporção original. Tolera pequenas margens já existentes na foto.</p>
+        <span class="tag tag-beta">Experimental</span>
+      </div>
+      <div class="feature">
+        <span class="num">05</span>
+        <h3>Edição automática por pasta</h3>
+        <p>Vigie uma pasta de importação: fotos novas são editadas sozinhas com o seu estilo salvo, sem tocar na sua seleção ou módulo atual.</p>
+        <span class="tag tag-live">Em produção</span>
+      </div>
+      <div class="feature">
+        <span class="num">06</span>
+        <h3>Restauração garantida</h3>
+        <p>Toda edição gera um registro de recuperação local. Reverter uma sessão inteira é um clique, mesmo após reiniciar o Lightroom.</p>
+        <span class="tag tag-live">Em produção</span>
+      </div>
+      <div class="feature">
+        <span class="num">07</span>
+        <h3>Tom de pele como sinal de cor</h3>
+        <p>O mesmo detector de rosto da seleção agora também amostra o tom de pele para alimentar o aprendizado de temperatura e matiz mais natural.</p>
+        <span class="tag tag-beta">Coletando dados</span>
+      </div>
+      <div class="feature">
+        <span class="num">08</span>
+        <h3>Seleção inteligente de fotos</h3>
+        <p>Agrupa repetidas por semelhança visual e tempo, sinaliza foco/movimento e risco de exposição a partir do próprio sensor RAW — sem apagar nada sozinho.</p>
+        <span class="tag tag-live">Em produção</span>
+      </div>
+      <div class="feature">
+        <span class="num">09</span>
+        <h3>Atualização em um clique</h3>
+        <p>O plugin avisa quando existe uma versão nova e instala sozinho no mesmo lugar — sem remover e recadastrar nada no Gerenciador de plug-ins.</p>
+        <span class="tag tag-live">Em produção</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="horizon"></div>
+
+<section class="wrap">
+  <div class="container">
+    <div class="stats">
+      <div class="stat"><div class="big mono">100%</div><div class="lbl">Processamento local — nenhum RAW enviado à internet</div></div>
+      <div class="stat"><div class="big mono">R$ 0</div><div class="lbl">Mensalidade ou taxa por foto</div></div>
+      <div class="stat"><div class="big mono">182</div><div class="lbl">Testes automatizados cobrindo o motor</div></div>
+      <div class="stat"><div class="big mono">31+</div><div class="lbl">Controles de edição aprendidos além dos básicos</div></div>
+    </div>
+  </div>
+</section>
+
+<div class="horizon"></div>
+
+<section id="comparativo" class="wrap">
+  <div class="container">
+    <div class="section-head">
+      <div class="eyebrow">Comparativo</div>
+      <h2>CRISPIX vs. Neurapix</h2>
+      <p>Comparação direta de onde cada ferramenta processa seus dados, como cobra e o que você pode inspecionar.</p>
+    </div>
+    <div class="compare-wrap">
+      <table class="compare">
+        <thead>
+          <tr>
+            <th>Característica</th>
+            <th class="col-crispix">CRISPIX</th>
+            <th>Neurapix</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Onde o RAW é processado</td>
+            <td class="col-crispix yes"><span class="pip on"></span>100% na sua máquina</td>
+            <td class="mid"><span class="pip mid"></span>Motor local, modelo proprietário fechado</td>
+          </tr>
+          <tr>
+            <td>Modelo de cobrança</td>
+            <td class="col-crispix yes"><span class="pip on"></span>Sem mensalidade</td>
+            <td class="no"><span class="pip off"></span>Assinatura / plano pago</td>
+          </tr>
+          <tr>
+            <td>Estilo aprendido de quem</td>
+            <td class="col-crispix yes"><span class="pip on"></span>Só das suas próprias edições aprovadas</td>
+            <td class="mid"><span class="pip mid"></span>Modelo da empresa, ajustável por preset</td>
+          </tr>
+          <tr>
+            <td>Fonte da coleta de aprendizado</td>
+            <td class="col-crispix yes"><span class="pip on"></span>Catálogo inteiro, evento ou coleção à escolha</td>
+            <td class="no"><span class="pip off"></span>Não documentado publicamente</td>
+          </tr>
+          <tr>
+            <td>Seleção de fotos repetidas/foco</td>
+            <td class="col-crispix yes"><span class="pip on"></span>Incluída, local e auditável</td>
+            <td class="mid"><span class="pip mid"></span>Incluída (SmartPreset), motor fechado</td>
+          </tr>
+          <tr>
+            <td>Correção de horizonte e recorte</td>
+            <td class="col-crispix mid"><span class="pip mid"></span>Em fase experimental</td>
+            <td class="yes"><span class="pip on"></span>Recurso maduro no produto</td>
+          </tr>
+          <tr>
+            <td>Máscaras de pessoa/céu geradas por IA própria</td>
+            <td class="col-crispix no"><span class="pip off"></span>Ainda não — usa preset adaptativo nativo do Lightroom</td>
+            <td class="yes"><span class="pip on"></span>Recurso maduro no produto</td>
+          </tr>
+          <tr>
+            <td>Qualidade fotográfica homologada</td>
+            <td class="col-crispix no"><span class="pip off"></span>Ainda em validação (ver transparência)</td>
+            <td class="yes"><span class="pip on"></span>Produto comercial estabelecido</td>
+          </tr>
+          <tr>
+            <td>Atualização do software</td>
+            <td class="col-crispix yes"><span class="pip on"></span>Um clique, no mesmo lugar</td>
+            <td class="yes"><span class="pip on"></span>Automática (SaaS)</td>
+          </tr>
+          <tr>
+            <td>Código e lógica de edição</td>
+            <td class="col-crispix yes"><span class="pip on"></span>Desenvolvido e auditável pelo dono</td>
+            <td class="no"><span class="pip off"></span>Fechado</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="compare-note">Esta tabela compara características verificáveis dos dois produtos, não qualidade final de imagem — isso ainda não foi medido lado a lado de forma independente. O CRISPIX é mais novo e mais estreito em recursos maduros de geometria e máscaras; seu diferencial real hoje é processar tudo localmente, aprender exclusivamente do seu próprio estilo e não cobrar por isso.</p>
+  </div>
+</section>
+
+<div class="horizon"></div>
+
+<section id="como-funciona" class="wrap">
+  <div class="container">
+    <div class="section-head">
+      <div class="eyebrow">Como funciona</div>
+      <h2>Do catálogo ao estilo aprendido</h2>
+    </div>
+    <div class="steps">
+      <div class="step">
+        <div class="idx">01</div>
+        <div><h3>Você aprova suas edições como sempre</h3><p>Edita no Lightroom do seu jeito. O CRISPIX nunca decide sozinho o que está "pronto" — essa confirmação é sempre explicitamente sua.</p></div>
+      </div>
+      <div class="step">
+        <div class="idx">02</div>
+        <div><h3>Escolhe a fonte de aprendizado</h3><p>Catálogo inteiro, um trabalho específico ou uma coleção já separada por você. O motor lê os ajustes finais aprovados dessas fotos.</p></div>
+      </div>
+      <div class="step">
+        <div class="idx">03</div>
+        <div><h3>O motor treina localmente</h3><p>Uma regressão roda na sua própria máquina sobre as características técnicas de cada RAW — sem enviar nada para servidores externos.</p></div>
+      </div>
+      <div class="step">
+        <div class="idx">04</div>
+        <div><h3>Fotos novas recebem o seu estilo</h3><p>Exposição, cor e tonalidade calculadas foto a foto, com restauração garantida caso algo não fique do seu jeito.</p></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="horizon"></div>
+
+<section id="transparencia" class="wrap">
+  <div class="container">
+    <div class="section-head">
+      <div class="eyebrow">Transparência</div>
+      <h2>O que já funciona e o que ainda não</h2>
+      <p>Um produto em desenvolvimento ativo deve dizer exatamente onde está. Esta seção é atualizada a cada versão.</p>
+    </div>
+    <div class="honest">
+      <div>
+        <h3><span class="pip on"></span>Já validado</h3>
+        <ul>
+          <li>Motor de edição treina e aplica os controles aprendidos em cópias ou diretamente na seleção, com restauração testada.</li>
+          <li>182 testes automatizados cobrindo captura, treino, aplicação e restauração.</li>
+          <li>Pacote final verificado por hash em RAWs reais antes de cada entrega.</li>
+          <li>Aprendizado e configurações isolados da pasta do plugin — sobrevivem a qualquer atualização.</li>
+        </ul>
+      </div>
+      <div>
+        <h3><span class="pip mid"></span>Ainda em validação</h3>
+        <ul>
+          <li>Qualidade fotográfica final não foi homologada de forma independente.</li>
+          <li>Correção de horizonte funciona em testes com fotos reais, mas não foi exercitada dentro do Lightroom ao vivo.</li>
+          <li>Tom de pele já é coletado e medido (correlação forte com a temperatura aprovada), mas nenhum modelo ainda foi treinado usando esse dado.</li>
+          <li>Em fotos muito escuras ou muito amareladas, o modelo ainda sub-corrige — sabemos a causa e ela depende de mais referências variadas para treino.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="horizon"></div>
+
+<section id="novidades" class="wrap">
+  <div class="container">
+    <div class="section-head">
+      <div class="eyebrow">Novidades</div>
+      <h2>Últimas versões</h2>
+    </div>
+    <div class="log">
+      <div class="log-row">
+        <div class="log-ver">v0.22.0</div>
+        <div class="log-body">
+          <h4>Atualização automática</h4>
+          <p>O plugin agora avisa sozinho quando há versão nova e instala em um clique, sem precisar remover e recadastrar nada no Lightroom.</p>
+        </div>
+      </div>
+      <div class="log-row">
+        <div class="log-ver">v0.21.0</div>
+        <div class="log-body">
+          <h4>Aprender com coleção</h4>
+          <p>Terceiro modo de aprendizado: ensine o motor a partir de uma coleção específica, útil quando você já separa manualmente só o que foi realmente editado.</p>
+        </div>
+      </div>
+      <div class="log-row">
+        <div class="log-ver">v0.20.0</div>
+        <div class="log-body">
+          <h4>Treino sob demanda e início do tom de pele</h4>
+          <p>Treine o modelo imediatamente com o que já foi aprovado, sem esperar o catálogo inteiro processar. Começou a coleta de tom de pele via detecção de rosto.</p>
+        </div>
+      </div>
+      <div class="log-row">
+        <div class="log-ver">v0.19.1</div>
+        <div class="log-body">
+          <h4>Janela compacta e horizonte corrigido</h4>
+          <p>Janela de edição adaptada para telas menores; correção de horizonte recalibrada contra fotos reais e liberada também para edição direta.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer class="wrap">
+  <div class="container foot-grid">
+    <div>
+      <div class="foot-brand">
+        <svg viewBox="0 0 86 86"><rect width="86" height="86" rx="20" fill="#1D2C35"/><path d="M60 23 A26 26 0 1 0 62 62" fill="none" stroke="#EEF6F8" stroke-width="8"/><path d="M61 31 L68 38 L61 45 L54 38 Z" fill="#42D9E8"/></svg>
+        CRISPIX
+      </div>
+      <p class="foot-meta">Plugin de edição local para Lightroom Classic. Em desenvolvimento ativo — recursos marcados como experimentais podem mudar entre versões.</p>
+    </div>
+    <div>
+      <div class="copy-box">
+        <span id="pageUrl">crispix.pages.dev</span>
+        <button type="button" onclick="copyUrl(this)">Copiar link</button>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<script>
+  function copyUrl(btn) {
+    var text = location.hostname ? location.href : 'https://crispix.pages.dev';
+    var original = btn.textContent;
+    function done(ok) {
+      btn.textContent = ok ? 'Copiado!' : 'Copiar link';
+      setTimeout(function () { btn.textContent = original; }, 1600);
+    }
+    try {
+      navigator.clipboard.writeText(text).then(function () { done(true); }, function () { done(false); });
+    } catch (e) { done(false); }
+  }
+  try {
+    document.getElementById('pageUrl').textContent = location.hostname ? location.host + location.pathname : 'crispix.pages.dev';
+  } catch (e) {}
+</script>

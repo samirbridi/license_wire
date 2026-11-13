@@ -1,0 +1,42 @@
+# v0.20.0 build 0033 — treino sob demanda, tolerancia de corte e inicio do tom de pele
+
+Pedido do usuario: ainda ha erros de coloracao/exposicao; "colocar para aprender" gera erro de nada aprendido quando se usa o aprendizado; como fazer o motor comecar a aprender de fato; enquadramento/horizonte continua sem efeito mesmo em fotos NOVAS sem edicao previa; se apagar o plugin para atualizar, o aprendizado se perde ou mantem; pedido para nao precisar reinstalar do zero a cada vez; sempre ajustar o tom de pele das pessoas para o mais natural possivel.
+
+## Onde ficam os dados (resposta a duvida do usuario)
+
+Confirmado por leitura direta do codigo: `LocalAnalysis.lua` (`root()`), `PhotoEditor.lua` (`editingRoot()`) e `AcervoLearning.lua` (`queueRoot()`) resolvem todos para subpastas de `LrPathUtils.getStandardFilePath('appData')/'MizinLightroomLocal'` — ou seja, `%AppData%\MizinLightroomLocal\`, fora da pasta `.lrplugin` em qualquer local. Apagar a pasta antiga do plugin e instalar uma nova NUNCA apaga referencias aprovadas, fila do acervo, candidatos treinados ou registros de edicao/restauracao. So seria apagado se o usuario apagar essa pasta de AppData manualmente. Isso resolve a pergunta "perde ou mantem" e a duvida sobre atualizacao: trocar a pasta do plugin e seguro e e o fluxo normal de atualizacao, sem perda de aprendizado.
+
+## Diagnostico: por que "aprender" nao produzia nada usavel
+
+Medido com o catalogo real ja extraido (3.601 fotos, `candidate-settings.jsonl`): o agrupamento por `suggestEventName()` ja produz 8 trabalhos reais, todos com 100+ fotos em cor (ex.: 15 Anos Aline 681, Julia e Miguel 684, Formatura Victoria 524) — bem acima do minimo de 3 trabalhos x 50 fotos exigido por `learning_store.train_candidate()`. O gargalo real nao e falta de dados: e que o UNICO disparo automatico do treino (`AcervoLearning.lua:175`, `if queue.finished then Engine.run('learning-update')`) so acontece quando a fila INTEIRA de "Aprender com catalogo" termina de processar todas as milhares de fotos em lotes de 25. Se a fila foi interrompida, pausada ou ainda esta rodando, o candidato nunca e treinado, mesmo com dados mais que suficientes ja persistidos no SQLite (que e escrito incrementalmente por `register()`, a cada lote).
+
+## Implementado
+
+**Comando de treino sob demanda.** Novo arquivo `TrainCandidateNow.lua` (`engine.run('learning-update')` direto, sem fila) e novo item em `ToolsMenu.lua`: "Treinar candidato agora com o que ja foi aprendido". `local_engine.py` ja suportava a operacao `learning-update` isoladamente; nao foi necessaria nenhuma mudanca no motor. Teste novo em `test_local_lua.py` confirma que o comando chama a operacao certa sem nenhuma fila/catalogWrites envolvidos e que o resultado (`latestCandidate`) aparece na mensagem ja existente de `LocalAnalysis.showResults`.
+
+**Tolerancia de corte no horizonte (causa adicional, alem da calibracao do detector corrigida no build anterior).** Medido no catalogo real: 0 de 2.201 fotos com os 5 campos de corte presentes tinham corte EXATAMENTE padrao (CropAngle=0, CropTop/Left=0, CropBottom/Right=1) — toda foto carrega alguma margem residual, mesmo fotos recem-importadas sem edicao do fotografo (correcao de lente/perfil da camera ja grava algo). `defaultCrop()` exigia essa igualdade exata, bloqueando 100% das fotos reais independentemente da deteccao de linhas funcionar. Renomeada para `withinCropTolerance()`: tolera ate 5% de margem de posicao e 0.5 grau de angulo residual — valores escolhidos pela distribuicao real medida (percentil 75 de margem fica acima de 5%; o historico de CropAngle so fica "significativo" a partir de ~0.5-1 grau). Faz ~26% do catalogo real elegivel, contra 0% antes. Cobertura combinada de margem+angulo medida por grade antes de escolher os valores finais.
+
+Tambem foi adicionado um vocabulario fixo de razoes de rejeicao (`'sem linhas de horizonte confiaveis nesta foto'`, `'esta foto ja esta nivelada'`, `'corte existente alem da tolerancia foi preservado'`, etc.) propagado e AGREGADO por foto na mensagem final mostrada ao usuario (antes so aparecia "X de Y fotos endireitadas", sem nenhum detalhe do motivo das demais).
+
+Testes novos em `test_photo_editor_lua.py`: `test_horizon_tolerates_small_preexisting_crop_residual` (dentro da tolerancia aplica; alem dela continua preservando) e `test_horizon_skip_reasons_are_specific_not_generic`. O teste existente de seguranca do corte grande (`test_horizon_crop_is_rotation_safe_and_respects_existing_crop`) continua passando sem alteracao da garantia core.
+
+**Inicio da correcao por tom de pele.** Nova funcao `skin_tone_sample()` em `scripts/raw_features.py`, reaproveitando o MESMO detector de rosto publico YuNet ja usado na selecao (`culling_engine.create_detector`), sem adicionar peso/modelo novo. Classifica pixels de pele dentro da regiao central do rosto detectado usando a regra RGB classica e amplamente citada (Peer et al.: R>95, G>40, B>20, max-min canal>15, R>G, R>B, |R-G|>15), evitando cabelo/olhos/fundo dentro da caixa do detector. Retorna `None` (nunca um valor inventado) quando nao ha rosto confiavel ou poucos pixels classificam como pele.
+
+Medido contra 186 fotos reais aprovadas (amostra aleatoria do dataset de 524 referencias, deteccao de rosto em 90% das fotos testadas): a razao vermelho/azul da pele tem correlacao de -0.73 com a Temperatura aprovada pelo fotografo — um sinal bem mais forte que qualquer estatistica de frame inteiro ja coletada. Isso confirma, com evidencia real (nao suposicao), que o pedido do usuario tem fundamento fisico solido.
+
+`technical_render()` ganhou um parametro opcional `face_detector=None` (compatibilidade retroativa total: chamadores existentes continuam funcionando identicos). `local_engine.py` cria o detector uma unica vez por job (reaproveitando `culling_engine.create_detector`, mesmo padrao ja usado no diagnostico) e o repassa; falha na criacao (pacote antigo sem o modelo publico) nunca bloqueia uma foto, so deixa as novas colunas de pele ausentes nela.
+
+**Decisao deliberada: nenhum modelo foi retreinado com a feature de pele nesta entrega.** A amostra de 186/546 fotos medida foi aleatoria, nao distribuida por split de treino; o criterio de seguranca ja em uso no projeto para qualquer coluna nova (minimo 50 linhas em CADA split: inner/validation/train/test, igual ao ja aplicado aos 31 controles estendidos) exige processar o catalogo completo antes de adicionar a coluna ao `featureNames` de um modelo. Esta build apenas COLETA e MEDE; o proximo passo real e processar as 546 fotos completas (ou a nova leva que o usuario esta preparando) e entao decidir, com a cobertura por split verificada, se a feature entra no proximo candidato treinado.
+
+## Verificacao
+
+- 173 testes OK (10 novos em `test_skin_tone.py` — testes sinteticos sem precisar de foto real, incluindo um de integracao real com `technical_render` mockando so `rawpy.imread`; 1 novo em `test_local_lua.py` para o comando de treino sob demanda; 2 novos de tolerancia/razao de horizonte). Fixtures de mock de `technical_render` em `test_local_engine.py`/`test_reference_collection.py` atualizadas para aceitar o novo parametro opcional.
+- Pacote `private/deliveries/CRISPIX-0.20.0-build0033-f47f6632/`, ZIP `CRISPIX-0.20.0-build0033-motor-local.zip` 84.030.740 bytes, SHA-256 `f2bec7f204cb0964b23e7db905958dd30f80316c3168583ac24dc9af5291df42`, 1.742 arquivos, 31 fontes Lua (+1: TrainCandidateNow.lua).
+- `verify_editing_release.py --unit-tests-passed 173` OK: 1.742 hashes conferidos, CRC OK, 31 fontes Lua identicas ao `reconstructed/`, 2 RAWs reais processados com handoff real motor->SDK, `numericPilotUnchanged` true (modelo reutilizado sem alteracao, build 0032). Recibo `evidence/editing-plugin-qa-0033.json`.
+
+## Pendente / limites
+
+- Fotos escuras/azuladas: a causa (regressao-a-media por treino em evento unico) ja diagnosticada no build 0032 permanece sem solucao de codigo; depende da nova leva de referencias variadas.
+- Tom de pele: coletado e medido, mas AINDA NAO usado por nenhum modelo treinado. Proximo passo real: processar o catalogo completo com o detector, verificar cobertura por split, retreinar incluindo a coluna se a cobertura for suficiente.
+- Enquadramento: a tolerancia nova foi validada contra o catalogo real e os testes sinteticos, mas nao foi testada no Lightroom real ainda; `HORIZON_SIGN=1` continua pendente de confirmacao com foto real inclinada (nota 30).
+- Nada copiado para Downloads/compartilhamento; sem commits; VERSION manual.

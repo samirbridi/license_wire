@@ -1,3 +1,4 @@
+import hashlib
 import json
 import tempfile
 import unittest
@@ -31,6 +32,7 @@ class LocalLuaTests(unittest.TestCase):
         runtime.globals().app_data = folder.as_posix()
         runtime.globals().has_selection = selected
         runtime.globals().selection_count = count
+        runtime.globals().sha256_hex = lambda text: hashlib.sha256(text.encode('utf-8', 'surrogateescape')).hexdigest()
         runtime.execute('''
             launches, catalogWrites, messages, dialogs = 0, 0, {}, {}
             prefs={}
@@ -46,6 +48,7 @@ class LocalLuaTests(unittest.TestCase):
                 LrApplication={activeCatalog=function() return catalog end,versionString=function() return 'SDK_DOUBLE' end},
                 LrBinding={makePropertyTable=function() referenceProps={};return referenceProps end},
                 LrDate={currentTime=function() return 1 end},
+                LrDigest={SHA256={digest=function(text) return sha256_hex(text) end}},
                 LrDialogs={message=function(title,body,kind) messages[#messages+1]={title=title,body=body,kind=kind} end,
                     presentModalDialog=function(props)
                         dialogs[#dialogs+1]=props
@@ -97,6 +100,15 @@ class LocalLuaTests(unittest.TestCase):
             self.assertNotIn('Fotografias', runtime.globals().launchedCommand)
             self.assertEqual(len(runtime.globals().messages), 0)
 
+    def test_runner_that_exits_without_results_fails_fast(self):
+        with tempfile.TemporaryDirectory() as temp:
+            runtime = self.setup_native(Path(temp))
+            runtime.globals().mock_execute = lambda job: None
+            runtime.execute("clock=0;modules.LrDate.currentTime=function() clock=clock+1;return clock end;modules.LrTasks.sleep=function() end")
+            runtime.execute((LUA / 'AnalyzeSelected.lua').read_text(encoding='utf-8'))
+            self.assertIn('terminou sem gravar resultados', runtime.globals().messages[1]['body'])
+            self.assertLess(runtime.globals().clock, 30)
+
     def test_no_selection_does_not_process_the_filmstrip(self):
         with tempfile.TemporaryDirectory() as temp:
             runtime = self.setup_native(Path(temp), selected=False, count=5000)
@@ -104,12 +116,12 @@ class LocalLuaTests(unittest.TestCase):
             self.assertEqual(runtime.globals().launches, 0)
             self.assertIn('Selecione explicitamente', runtime.globals().messages[1]['body'])
 
-    def test_oversized_selection_is_not_started(self):
+    def test_full_selection_above_old_limit_is_started(self):
         with tempfile.TemporaryDirectory() as temp:
-            runtime = self.setup_native(Path(temp), count=101)
+            runtime = self.setup_native(Path(temp), count=280)
             runtime.execute((LUA / 'AnalyzeSelected.lua').read_text(encoding='utf-8'))
-            self.assertEqual(runtime.globals().launches, 0)
-            self.assertIn('lote menor', runtime.globals().messages[1]['body'])
+            self.assertEqual(runtime.globals().launches, 1)
+            self.assertEqual(len(self.request['photos']), 280)
 
     def test_command_rejects_shell_expansion_paths(self):
         with tempfile.TemporaryDirectory() as temp:
@@ -170,6 +182,29 @@ class LocalLuaTests(unittest.TestCase):
             dialog=runtime.globals().dialogs[1]
             self.assertEqual(dialog['actionVerb'],'Mostrar pacote de referencias')
             self.assertIn('ignoradas: 1 | falhas: 0',dialog['contents'][2]['title'])
+
+
+    def test_train_candidate_now_runs_learning_update_independent_of_any_queue(self):
+        # The automatic trigger only fires when an entire catalog-wide queue finishes
+        # (AcervoLearning.lua: `if queue.finished then Engine.run('learning-update')`).
+        # This command must reach the same operation directly, with no queue at all.
+        with tempfile.TemporaryDirectory() as temp:
+            runtime = self.setup_native(Path(temp))
+            def execute(job):
+                self.request = json.loads((Path(job) / 'request.json').read_text(encoding='utf-8'))
+                self.assertEqual(self.request['operation'], 'learning-update')
+                result = {'schema': 'mizin-lightroom.selection-analysis/1', 'status': 'COMPLETED',
+                          'operation': 'learning-update',
+                          'learning': {'uniqueApprovedReferences': 150, 'eventCount': 3,
+                                       'latestCandidate': '/fixture/candidate-folder'}}
+                (Path(job) / 'results.json').write_text(json.dumps(result), encoding='utf-8')
+            runtime.globals().mock_execute = execute
+            runtime.execute((LUA / 'TrainCandidateNow.lua').read_text(encoding='utf-8'))
+            self.assertEqual(runtime.globals().launches, 1)
+            self.assertEqual(runtime.globals().catalogWrites, 0)
+            self.assertEqual(self.request['operation'], 'learning-update')
+            self.assertIn('Modelo candidato disponivel',
+                           runtime.globals().messages[1]['body'].replace('á', 'a').replace('í', 'i'))
 
 
 if __name__ == '__main__': unittest.main(verbosity=2)

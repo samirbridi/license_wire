@@ -1,0 +1,9 @@
+CRISPIX — kit visual aprovado
+
+Referencia: C aberto branco, losango ciano e base grafite arredondada.
+SVG e o mestre vetorial. PNG/ICO sao rasterizacoes aproximadas da mesma geometria; conferir antes de uso final.
+Logotipos usam Segoe UI com fallback Arial, nao curvas vetoriais.
+Icone: SVG e PNG 32/64/128/256/512/1024. ICO multirresolucao.
+Paleta: #1D2C35, #42D9E8, #EEF6F8; fundo #10191F.
+Assinatura opcional: Seu olhar. Sua edicao.
+Nao aplicado ao plugin. Nao implica verificacao de disponibilidade de marca.

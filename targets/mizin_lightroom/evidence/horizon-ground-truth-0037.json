@@ -1,0 +1,76 @@
+{
+ "photos": 546,
+ "centeredStraightens": {
+  "tightenedByHand": 16,
+  "matches": 111
+ },
+ "withCropAngle": 544,
+ "straightenedByPhotographer": 425,
+ "proposals": 11,
+ "closerToPhotographer": 8,
+ "fartherFromPhotographer": 2,
+ "levelFalsePositives": 2,
+ "keepReasons": {
+  "INSUFFICIENT_AGREEMENT": 522,
+  "ALREADY_LEVEL": 10,
+  "LIKELY_INTENTIONAL_TILT": 1
+ },
+ "pairs": [
+  {
+   "photographer": 0.761353,
+   "detector": 1.11,
+   "evidence": "HORIZONTAL_NOT_CONTRADICTED"
+  },
+  {
+   "photographer": 1.16,
+   "detector": 2.5,
+   "evidence": "HORIZONTAL_NOT_CONTRADICTED"
+  },
+  {
+   "photographer": 0.92,
+   "detector": 0.43,
+   "evidence": "HORIZONTAL_NOT_CONTRADICTED"
+  },
+  {
+   "photographer": 2.28,
+   "detector": 1.14,
+   "evidence": "HORIZONTAL_AND_VERTICAL_AGREE"
+  },
+  {
+   "photographer": 0.87682,
+   "detector": 0.87,
+   "evidence": "HORIZONTAL_AND_VERTICAL_AGREE"
+  },
+  {
+   "photographer": 0.24,
+   "detector": -0.32,
+   "evidence": "HORIZONTAL_NOT_CONTRADICTED"
+  },
+  {
+   "photographer": -0.19,
+   "detector": 0.34,
+   "evidence": "HORIZONTAL_NOT_CONTRADICTED"
+  },
+  {
+   "photographer": 0.481305,
+   "detector": 0.4,
+   "evidence": "HORIZONTAL_AND_VERTICAL_AGREE"
+  },
+  {
+   "photographer": -0.453106,
+   "detector": -0.63,
+   "evidence": "HORIZONTAL_AND_VERTICAL_AGREE"
+  },
+  {
+   "photographer": 1.13453,
+   "detector": 1.58,
+   "evidence": "HORIZONTAL_NOT_CONTRADICTED"
+  },
+  {
+   "photographer": 1.0065,
+   "detector": 1.15,
+   "evidence": "HORIZONTAL_NOT_CONTRADICTED"
+  }
+ ],
+ "secondsPerPhoto": 0.768
+}

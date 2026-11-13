@@ -11,7 +11,15 @@ local LrView = import 'LrView'
 local Json = dofile(LrPathUtils.child(_PLUGIN.path, 'Json.lua'))
 local Engine = dofile(LrPathUtils.child(_PLUGIN.path, 'LocalAnalysis.lua'))
 local M = {}
+local Digest = import 'LrDigest'
 local targets = {'Exposure2012','Temperature','Tint','Contrast2012','Highlights2012','Shadows2012','Whites2012','Blacks2012','Saturation','Vibrance'}
+local extendedKeys = {'Texture','Clarity2012','Dehaze','ParametricShadows','ParametricDarks','ParametricLights','ParametricHighlights'}
+for _,channel in ipairs({'Red','Orange','Yellow','Green','Aqua','Blue','Purple','Magenta'}) do
+    for _,prefix in ipairs({'HueAdjustment','SaturationAdjustment','LuminanceAdjustment'}) do extendedKeys[#extendedKeys+1]=prefix..channel end
+end
+local monochromeKeys={}
+for _,key in ipairs(extendedKeys) do monochromeKeys[#monochromeKeys+1]=key end
+for _,channel in ipairs({'Red','Orange','Yellow','Green','Aqua','Blue','Purple','Magenta'}) do monochromeKeys[#monochromeKeys+1]='GrayMixer'..channel end
 local function child(p,n) return LrPathUtils.child(p,n) end
 local function queueRoot() return child(child(LrPathUtils.getStandardFilePath('appData'),'MizinLightroomLocal'),'acervo') end
 local function catalogPath(catalog) return catalog:getPath() end
@@ -58,22 +66,44 @@ function M.snapshot(photo)
     if photo:getRawMetadata('isVirtualCopy')~=false then return nil,'Copia virtual' end
     if photo:getRawMetadata('pickStatus')==-1 then return nil,'Foto rejeitada' end
     local settings=photo:getDevelopSettings()
-    if settings.ConvertToGrayscale==true then return nil,'Foto P&B' end
+    local treatment=settings.ConvertToGrayscale==true and 'monochrome' or 'color'
     local current={}
     for _,key in ipairs(targets) do
         local n=settings[key]
         if type(n)~='number' or n~=n or math.abs(n)==math.huge then return nil,'Ajustes incompletos' end
         current[key]=n
     end
+    -- Additional labels travel with the batch, but the queue keeps only their digest
+    -- so catalog-wide queues stay below the 8 MiB JSON limit.
+    local extended,parts={},{}
+    for _,key in ipairs(treatment=='monochrome' and monochromeKeys or extendedKeys) do
+        local n=settings[key]
+        if type(n)=='number' and n==n and math.abs(n)~=math.huge then
+            extended[key]=n;parts[#parts+1]=key..'='..string.format('%.17g',n)
+        end
+    end
     local event=Engine.suggestEventName(path)
     if not event or event=='' then return nil,'Trabalho nao identificado' end
-    return {id=tostring(photo.localIdentifier),path=path,current=current,treatment='color',isVirtualCopy=false,eventName=event}
+    return {id=tostring(photo.localIdentifier),path=path,current=current,treatment=treatment,isVirtualCopy=false,eventName=event,
+        extended=extended,extendedSignature=Digest.SHA256.digest(table.concat(parts,'|'))}
 end
-function M.signature(row)
+function M.signature(row,legacy)
     local values={row.path,row.treatment}
     for _,key in ipairs(targets) do values[#values+1]=key..'='..string.format('%.17g',row.current[key]) end
+    -- Queues created before extended capture compare only the ten basic controls.
+    if not legacy then values[#values+1]='extended='..tostring(row.extendedSignature) end
     return table.concat(values,'|')
 end
+local function queued(row)
+    return {id=row.id,path=row.path,current=row.current,treatment=row.treatment,isVirtualCopy=false,
+        eventName=row.eventName,extendedSignature=row.extendedSignature}
+end
+local function batchRow(approved,current)
+    local values={};for key,value in pairs(current.current) do values[key]=value end
+    for key,value in pairs(current.extended or {}) do values[key]=value end
+    return {id=approved.id,path=approved.path,current=values,treatment=approved.treatment,isVirtualCopy=false,eventName=approved.eventName}
+end
+local SCOPE_ACTION_VERBS={catalog='Aprender com este catalogo',collection='Aprender com esta colecao'}
 local function approve(rows,scope)
     local approved=false
     LrFunctionContext.callWithContext('MizinApproveAcervo',function(context)
@@ -81,15 +111,57 @@ local function approve(rows,scope)
         local f=LrView.osFactory()
         local action=LrDialogs.presentModalDialog{title='Mizin Lightroom - aprender com edicoes prontas',
             contents=f:column{bind_to_object=props,spacing=f:control_spacing(),
-                f:static_text{title=tostring(#rows)..' fotos em cor serao processadas em lotes automaticos.\n'..
+                f:static_text{title=tostring(#rows)..' fotos (cor e P&B, aprendidas separadamente) serao processadas em lotes automaticos.\n'..
                     'Os ajustes atuais precisam estar finais e aprovados. RAWs, catalogo e modelo anterior sao preservados.',width_in_chars=95,height_in_lines=2},
                 f:checkbox{title='Confirmo que estas edicoes ja estao prontas para ensinar meu estilo.',value=LrView.bind('approved'),checked_value=true,unchecked_value=false},
                 f:static_text{title='Fotos alteradas depois desta confirmacao ficam para uma nova revisao.\n'..
                     'O aprendizado e local e compartilhado entre os catalogos importados.',width_in_chars=95,height_in_lines=2}},
-            actionVerb=scope=='catalog' and 'Aprender com este catalogo' or 'Registrar evento concluido',cancelVerb='Cancelar'}
+            actionVerb=SCOPE_ACTION_VERBS[scope] or 'Registrar evento concluido',cancelVerb='Cancelar'}
         approved=action=='ok' and props.approved==true
     end)
     return approved
+end
+-- Lists every collection in the catalog (including inside collection sets), named with
+-- its full parent path for disambiguation (e.g. "CRISPIX - Edicao automatica / Auto ...").
+-- Recurses through LrCollectionSet explicitly rather than relying on LrCatalog:getCollections()
+-- being flat or nested, so the listing is correct either way.
+local function collectionChoices(catalog)
+    local items={}
+    local function path(collection)
+        local parts={tostring(collection:getName())};local parent=collection:getParent()
+        while parent do parts[#parts+1]=tostring(parent:getName());parent=parent:getParent() end
+        local reversed={};for i=#parts,1,-1 do reversed[#reversed+1]=parts[i] end
+        return table.concat(reversed,' / ')
+    end
+    local ok=LrTasks.pcall(function()
+        for _,collection in ipairs(catalog:getCollections() or {}) do
+            if #items>=600 then return end
+            items[#items+1]={title=path(collection),value=tostring(collection.localIdentifier)}
+        end
+    end)
+    table.sort(items,function(a,b) return a.title<b.title end)
+    return items
+end
+-- Opens the collection picker and returns its photos, or nil if the user cancels/none exist.
+local function chooseCollection(catalog)
+    local choices=collectionChoices(catalog)
+    if #choices==0 then error('Nenhuma colecao encontrada neste catalogo.') end
+    local chosenId=nil
+    LrFunctionContext.callWithContext('MizinChooseAcervoCollection',function(context)
+        local props=LrBinding.makePropertyTable(context);props.collection=choices[1].value
+        local f=LrView.osFactory()
+        local action=LrDialogs.presentModalDialog{title='Mizin Lightroom - escolher colecao para aprender',
+            contents=f:column{bind_to_object=props,spacing=f:control_spacing(),
+                f:static_text{title='Escolha a colecao com suas edicoes finais e aprovadas.\nRepita este comando para aprender com outra colecao depois.',width_in_chars=90,height_in_lines=2},
+                f:popup_menu{value=LrView.bind('collection'),items=choices,width_in_chars=70}},
+            actionVerb='Continuar',cancelVerb='Cancelar'}
+        if action=='ok' then chosenId=props.collection end
+    end)
+    if not chosenId then return nil end
+    for _,collection in ipairs(catalog:getCollections() or {}) do
+        if tostring(collection.localIdentifier)==chosenId then return collection:getPhotos() or {} end
+    end
+    error('A colecao escolhida nao foi encontrada; o catalogo pode ter mudado.')
 end
 local function remember(path,catalog)
     local prefs=LrPrefs.prefsForPlugin();local queues=prefs.learningQueues or {}
@@ -122,8 +194,9 @@ function M.process(path,auto)
                 local approved=queue.photos[cursor]
                 local photo=catalog:findPhotoByPath(approved.path)
                 local success,current=LrTasks.pcall(function() return photo and M.snapshot(photo) end)
-                if success and current and M.signature(current)==M.signature(approved) then
-                    batch[#batch+1]=approved;positions[#positions+1]=cursor
+                local legacy=approved.extendedSignature==nil
+                if success and current and M.signature(current,legacy)==M.signature(approved,legacy) then
+                    batch[#batch+1]=batchRow(approved,current);positions[#positions+1]=cursor
                 else queue.changedAfterApproval=queue.changedAfterApproval+1 end
                 cursor=cursor+1
             end
@@ -160,6 +233,10 @@ function M.import(scope)
     local catalog=LrApplication.activeCatalog();local photos
     if scope=='catalog' then
         photos=catalog:findPhotos{searchDesc={criteria='hasAdjustments',operation='isTrue'}}
+    elseif scope=='collection' then
+        photos=chooseCollection(catalog)
+        if not photos then return end
+        if #photos==0 then error('A colecao escolhida nao tem fotos.') end
     else
         if not catalog:getTargetPhoto() then error('Selecione as fotos finais do evento, usando Ctrl+A na pasta se necessario.') end
         photos=catalog:getTargetPhotos()
@@ -167,13 +244,13 @@ function M.import(scope)
     local rows,events={},{}
     for i,photo in ipairs(photos) do
         local ok,row=LrTasks.pcall(function() return M.snapshot(photo) end)
-        if ok and row then rows[#rows+1]=row;events[row.eventName]=true end
+        if ok and row then rows[#rows+1]=queued(row);events[row.eventName]=true end
         if #rows>10000 then error('Mais de 10.000 referencias: importe eventos selecionados separadamente nesta versao.') end
         if i%25==0 then LrTasks.yield() end
     end
-    if #rows==0 then error('Nao encontrei RAWs CR3 originais em cor com os dez ajustes disponiveis.') end
+    if #rows==0 then error('Nao encontrei RAWs CR3 originais (cor ou P&B) com os dez ajustes disponiveis.') end
     local count=0;for _ in pairs(events) do count=count+1 end
-    if scope=='event' and count~=1 then error('A selecao contem varios trabalhos. Use Aprender com catalogo para importar varios eventos.') end
+    if scope=='event' and count~=1 then error('A selecao contem varios trabalhos. Use Aprender com catalogo ou Aprender com colecao para importar varios eventos de uma vez.') end
     if not approve(rows,scope) then return end
     table.sort(rows,function(a,b) if a.eventName~=b.eventName then return a.eventName<b.eventName end return a.path<b.path end)
     local identity=catalogPath(catalog)

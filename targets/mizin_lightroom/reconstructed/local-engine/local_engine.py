@@ -8,8 +8,10 @@ import json
 import math
 import os
 import platform
+import re
 import subprocess
 import sys
+import threading
 import time
 import traceback
 import unicodedata
@@ -17,14 +19,16 @@ import uuid
 import zipfile
 from pathlib import Path
 
-os.environ['OMP_NUM_THREADS'] = '4'
+# Leave capacity for Lightroom's previews and foreground interaction.
+os.environ['OMP_NUM_THREADS'] = '2'
 os.environ['OPENBLAS_NUM_THREADS'] = '1'
+
+import numpy as np
 
 from raw_features import sha256_file, source_reader, technical_render
 from train_numeric_pilot import TARGETS, build_matrix, native_predictions
 
 DOMAIN = 'LIBRAW_CAMERA_WB_SRGB_HALF_SIZE_NO_AUTO_BRIGHT_V1'
-MAX_PHOTOS = 100
 DISPLAY_TARGETS = ('Exposure2012', 'Temperature', 'Contrast2012')
 
 
@@ -39,7 +43,14 @@ def read_json(path, limit=8 * 1024 * 1024):
         raise ValueError('JSON excede o limite de tamanho')
     def reject(value):
         raise ValueError('Numero JSON invalido: ' + value)
-    return json.loads(content.decode('utf-8-sig'), parse_constant=reject)
+    def unique_object(pairs):
+        result = {}
+        for key, value in pairs:
+            if key in result:
+                raise ValueError('Chave JSON duplicada: ' + key)
+            result[key] = value
+        return result
+    return json.loads(content.decode('utf-8-sig'), parse_constant=reject, object_pairs_hook=unique_object)
 
 
 def write_json(path, value):
@@ -64,11 +75,11 @@ def finite_number(value):
     return type(value) in (int, float) and math.isfinite(value)
 
 
-def validate_model(model):
+def validate_model(model, treatment='color'):
     if model.get('schema') != 'mizin-lightroom.numeric-pilot/1' or model.get('inputDomain') != DOMAIN:
         raise ValueError('Modelo ou dominio de entrada incompativel')
-    if model.get('supportedTreatment') != 'color':
-        raise ValueError('Este motor espera um modelo em cor')
+    if model.get('supportedTreatment') != treatment:
+        raise ValueError('Modelo de tratamento incompativel (esperado: ' + treatment + ')')
     keys = model.get('featureNames', [])
     if not keys or len(keys) > 256 or len(set(keys)) != len(keys) or not all(isinstance(k, str) for k in keys):
         raise ValueError('Schema de atributos invalido')
@@ -77,7 +88,12 @@ def validate_model(model):
     targets = model.get('targets', {})
     if not set(DISPLAY_TARGETS).issubset(targets) or not set(targets).issubset(TARGETS):
         raise ValueError('Controles do modelo incompativeis')
-    for name, target in targets.items():
+    from develop_targets import bounds_for
+    extended = model.get('extendedTargets', {})
+    allowed = set(bounds_for(treatment))
+    if not isinstance(extended, dict) or not set(extended).issubset(allowed):
+        raise ValueError('Controles adicionais do modelo incompativeis')
+    for name, target in {**targets, **extended}.items():
         regression = target['regression']
         for key, size in (('featureCenters', len(keys)), ('featureScales', len(keys)), ('weights', len(keys) + 1)):
             values = regression[key]
@@ -90,6 +106,8 @@ def validate_model(model):
         bounds = target['nativeBoundsFromTrainingOnly']
         if len(bounds) != 2 or not all(finite_number(v) for v in bounds) or bounds[0] > bounds[1]:
             raise ValueError('Limites do controle invalidos')
+        if name in extended and (bounds[0] < -100 or bounds[1] > 100):
+            raise ValueError('Limites do controle adicional invalidos')
         if target['logTarget'] != (name == 'Temperature') or (name == 'Temperature' and bounds[0] <= 0):
             raise ValueError('Transformacao do controle invalida')
     return model
@@ -100,7 +118,7 @@ def predict_features(model, features):
         raise ValueError('Atributos nao finitos')
     matrix = build_matrix([{'features': features}], model['featureNames'])
     output = {}
-    for name, target in model['targets'].items():
+    for name, target in {**model['targets'], **model.get('extendedTargets', {})}.items():
         value = float(native_predictions(target['regression'], matrix, target['nativeBoundsFromTrainingOnly'], target['logTarget'])[0])
         if not math.isfinite(value):
             raise ValueError('Previsao nao finita')
@@ -108,22 +126,200 @@ def predict_features(model, features):
     return output
 
 
-def metadata_for(path, executable, argument_path):
+CAPTURE_PATTERN = re.compile(r'^(\d{4}):(\d{2}):(\d{2}) (\d{2}):(\d{2}):(\d{2})(\.\d+)?')
+# Within a sequence, predictions inside these bands are treated as noise around one light.
+SCENE_TEMPERATURE_RELATIVE_BAND = 0.12
+SCENE_TINT_BAND = 8.0
+
+
+def capture_seconds(text):
+    """Seconds of an ExifTool capture time; time zones are ignored (same camera clock)."""
+    if not isinstance(text, str):
+        return None
+    match = CAPTURE_PATTERN.match(text.strip())
+    if not match:
+        return None
+    try:
+        moment = dt.datetime(*(int(match.group(i)) for i in range(1, 7)))
+    except ValueError:
+        return None
+    fraction = float(match.group(7)) if match.group(7) else 0.0
+    return (moment - dt.datetime(1970, 1, 1)).total_seconds() + fraction
+
+
+def scene_consistency(rows, max_gap_seconds=30):
+    """Equalize white balance inside short capture sequences; exposure stays per photo.
+
+    Photos whose prediction is far from the sequence (a flash frame, a new room) keep
+    their own values, so this never forces one light onto a real scene change.
+    """
+    if not finite_number(max_gap_seconds) or not 1 <= max_gap_seconds <= 600:
+        raise ValueError('Intervalo de cena invalido')
+    timed = []
+    for index, row in enumerate(rows):
+        seconds = capture_seconds(row.get('captureTimeExif'))
+        predictions = row.get('predictions') or {}
+        if row.get('status') == 'COMPUTED' and seconds is not None and finite_number(predictions.get('Temperature')):
+            timed.append((seconds, index))
+    timed.sort()
+    groups, current, last = [], [], None
+    for seconds, index in timed:
+        if current and seconds - last > max_gap_seconds:
+            groups.append(current)
+            current = []
+        current.append(index)
+        last = seconds
+    if current:
+        groups.append(current)
+    summary = {'enabled': True, 'maxGapSeconds': max_gap_seconds, 'sequences': 0, 'adjustedPhotos': 0,
+               'photosWithoutCaptureTime': sum(r.get('status') == 'COMPUTED' for r in rows) - len(timed),
+               'controls': ['Temperature', 'Tint']}
+    for number, group in enumerate(groups, start=1):
+        if len(group) < 2:
+            continue
+        summary['sequences'] += 1
+        changes = {index: {} for index in group}
+        for key, inside in (('Temperature', lambda v, m: abs(v - m) <= SCENE_TEMPERATURE_RELATIVE_BAND * m),
+                            ('Tint', lambda v, m: abs(v - m) <= SCENE_TINT_BAND)):
+            values = {i: rows[i]['predictions'][key] for i in group if finite_number(rows[i]['predictions'].get(key))}
+            if len(values) < 2:
+                continue
+            center = float(np.median(list(values.values())))
+            inliers = {i: v for i, v in values.items() if inside(v, center)}
+            if len(inliers) < 2:
+                continue
+            center = float(np.median(list(inliers.values())))
+            for i, value in inliers.items():
+                if value != center:
+                    changes[i][key] = value
+                    rows[i]['predictions'][key] = center
+        for index, original in changes.items():
+            if original:
+                rows[index]['sceneConsistency'] = {'sequence': number, 'size': len(group), 'originalPredictions': original}
+                summary['adjustedPhotos'] += 1
+    return summary
+
+
+def sensor_swapped(extracted):
+    """True when the oriented render is rotated 90 degrees from the sensor frame.
+
+    Lightroom stores the crop in the unoriented sensor frame, so a portrait photo from a
+    landscape sensor needs its axes swapped back. None when the render did not report it.
+    """
+    if not isinstance(extracted, dict) or not isinstance(extracted.get('rawSize'), dict):
+        return None
+    width, height = extracted.get('renderWidth'), extracted.get('renderHeight')
+    raw_w, raw_h = extracted['rawSize'].get('rawWidth'), extracted['rawSize'].get('rawHeight')
+    if not all(isinstance(v, int) and v > 0 for v in (width, height, raw_w, raw_h)) or raw_w == raw_h or width == height:
+        return None
+    return (raw_w > raw_h) != (width > height)
+
+
+def horizon_for(image, swapped=None):
+    """Horizon proposal on the oriented technical render; failures never block the photo."""
+    try:
+        from horizon_analysis import analyze_image
+        result = analyze_image(image)
+        if isinstance(swapped, bool):
+            result['sensorSwapped'] = swapped
+        return result
+    except Exception as error:
+        return {'status': 'KEEP_EXISTING', 'reason': 'ANALYSIS_FAILED', 'error': str(error)[:300],
+                'applyAutomatically': False}
+
+
+METADATA_OPTIONS = ['-fast2', '-json', '-charset', 'filename=UTF8',
+                    '-FileName', '-FileType', '-EXIF:Model', '-ISO', '-ExposureTime#', '-FNumber', '-FocalLength#',
+                    '-EXIF:DateTimeOriginal', '-SubSecDateTimeOriginal']
+
+
+class ExifToolSession:
+    """One persistent ExifTool (-stay_open) per job.
+
+    Measured on the packaged exiftool.exe: ~1.6 s per photo when a new process starts for
+    each RAW, ~0.3 s per photo once Perl is already running. On a 500-photo job that is
+    roughly 11 minutes of pure start-up. The session is only an accelerator: any answer it
+    cannot give cleanly returns None and the caller repeats the original one-shot call, so
+    accepted photos, rejected photos and error messages stay exactly as before.
+    """
+
+    def __init__(self, executable, work_dir, timeout=90):
+        self.executable, self.work_dir, self.timeout = executable, work_dir, timeout
+        self.process = None
+        self.broken = False
+        self.counter = 0
+
+    def _start(self):
+        self.process = subprocess.Popen(
+            [str(self.executable), '-config', '', '-stay_open', 'True', '-@', '-'],
+            stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.DEVNULL,
+            creationflags=getattr(subprocess, 'CREATE_NO_WINDOW', 0))
+
+    def query(self, text):
+        if self.broken or text.startswith('-'):
+            return None
+        try:
+            if self.process is None:
+                self._start()
+            self.counter += 1
+            marker = f'{{ready{self.counter}}}'
+            lines = METADATA_OPTIONS + [text, f'-execute{self.counter}']
+            self.process.stdin.write(('\n'.join(lines) + '\n').encode('utf-8'))
+            self.process.stdin.flush()
+            # A stuck Perl must not hang the job: the watchdog kills it, readline gets EOF.
+            watchdog = threading.Timer(self.timeout, self.process.kill)
+            watchdog.start()
+            try:
+                output = []
+                while True:
+                    line = self.process.stdout.readline()
+                    if not line:
+                        raise RuntimeError('ExifTool session ended')
+                    line = line.decode('utf-8').rstrip('\r\n')
+                    if line == marker:
+                        break
+                    output.append(line)
+            finally:
+                watchdog.cancel()
+        except Exception:
+            self.broken = True
+            self.close()
+            return None
+        text_output = '\n'.join(output).strip()
+        if not text_output:
+            return None  # per-file problem: the one-shot call reports it with ExifTool's own message
+        try:
+            return json.loads(text_output)
+        except ValueError:
+            return None
+
+    def close(self):
+        process, self.process = self.process, None
+        if process is None:
+            return
+        try:
+            process.stdin.write(b'-stay_open\nFalse\n')
+            process.stdin.flush()
+            process.wait(timeout=10)
+        except Exception:
+            process.kill()
+
+
+def metadata_for(path, executable, argument_path, session=None):
     text = str(path).replace('\\', '/')
     if any(ord(c) < 32 for c in text):
         raise ValueError('Caminho com caracteres de controle')
-    with argument_path.open('x', encoding='utf-8', newline='\n') as stream:
-        stream.write('--\n' + text + '\n')
-    command = [str(executable), '-config', '', '-fast2', '-json', '-charset', 'filename=UTF8',
-               '-FileName', '-FileType', '-EXIF:Model', '-ISO', '-ExposureTime#', '-FNumber', '-FocalLength#',
-               '-EXIF:DateTimeOriginal', '-SubSecDateTimeOriginal',
-               '-@', str(argument_path)]
-    result = subprocess.run(command, capture_output=True, encoding='utf-8', errors='strict', timeout=90,
-                            creationflags=getattr(subprocess, 'CREATE_NO_WINDOW', 0), check=False)
-    if result.returncode:
-        raise RuntimeError('Leitura de metadados falhou: ' + result.stderr[:600])
-    rows = json.loads(result.stdout)
-    if len(rows) != 1 or rows[0].get('Error'):
+    rows = session.query(text) if session is not None else None
+    if rows is None:
+        with argument_path.open('x', encoding='utf-8', newline='\n') as stream:
+            stream.write('--\n' + text + '\n')
+        command = [str(executable), '-config', ''] + METADATA_OPTIONS + ['-@', str(argument_path)]
+        result = subprocess.run(command, capture_output=True, encoding='utf-8', errors='strict', timeout=90,
+                                creationflags=getattr(subprocess, 'CREATE_NO_WINDOW', 0), check=False)
+        if result.returncode:
+            raise RuntimeError('Leitura de metadados falhou: ' + result.stderr[:600])
+        rows = json.loads(result.stdout)
+    if not isinstance(rows, list) or len(rows) != 1 or not isinstance(rows[0], dict) or rows[0].get('Error'):
         raise ValueError('Metadados indisponiveis')
     row = rows[0]
     if os.path.normcase(os.path.abspath(row['SourceFile'])) != os.path.normcase(str(path)):
@@ -189,9 +385,11 @@ def export_references(path, rows, batch, model, runtime):
             reference = {'schema': 'mizin-lightroom.approved-reference/1', **batch,
                          'sourcePath': row['path'], 'rawSha256': row['sourceSha256'], 'cameraModel': row['cameraModel'],
                          'captureTimeExif': row['captureTimeExif'], 'sourceMetadataStable': row['sourceMetadataStable'],
-                         'approvalStatus': 'REFERENCE_APPROVED_BY_PHOTOGRAPHER', 'styleVariant': 'color',
+                         'approvalStatus': 'REFERENCE_APPROVED_BY_PHOTOGRAPHER', 'styleVariant': row.get('styleVariant', 'color'),
                          'currentParameters': row['current'], 'features': row['features'], 'featureNames': model['featureNames'],
                          'inputDomain': DOMAIN, 'rawpyVersion': runtime['rawpy'], 'librawVersion': runtime['libraw']}
+            if row.get('extendedParameters'):
+                reference['extendedParameters'] = row['extendedParameters']
             if batch.get('catalogIdentity'):
                 reference.update({'catalogIdentity':batch['catalogIdentity'],'catalogPhotoId':row['id']})
             stream.write(json.dumps(reference, ensure_ascii=False, allow_nan=False) + '\n')
@@ -243,6 +441,7 @@ def run_job(job, bundle):
               'results': [], 'catalogWrites': 0, 'sourceWrites': 0, 'photosUploaded': 0,
               'photographicQualityApproved': False, 'crossEventGeneralizationValidated': False}
     started = time.monotonic()
+    exif_session = None
     def progress(phase, completed=0, total=0, filename=''):
         write_json(job / 'status.json', {'phase': phase, 'completed': completed, 'total': total,
                                          'filename': filename, 'updatedUtc': utc_now()})
@@ -291,7 +490,9 @@ def run_job(job, bundle):
                 feedback=request.get('feedback',{})
                 report['learning']=record_feedback(learning_root,feedback.get('rating'),feedback.get('note',''),feedback.get('analysisJobId',''))
             else:
-                if request['operation']=='learning-update':report['candidateTraining']=train_candidate(learning_root,model)
+                if request['operation']=='learning-update':
+                    report['candidateTraining']=train_candidate(learning_root,model)
+                    report['monochromeCandidateTraining']=train_candidate(learning_root,model,'monochrome')
                 report['learning']=summary(learning_root)
             report['status']='COMPLETED'
             return report
@@ -311,13 +512,42 @@ def run_job(job, bundle):
             report['status'] = 'DIAGNOSTIC_OK'
             return report
         photos = request.get('photos')
-        if not isinstance(photos, list) or not 1 <= len(photos) <= MAX_PHOTOS:
-            raise ValueError('Selecione entre 1 e 100 fotos para este piloto')
+        if not isinstance(photos, list) or not photos:
+            raise ValueError('Selecione pelo menos uma foto')
         report['requestedPhotos'] = len(photos)
+        exif_session = ExifToolSession(executable, job)
         if collecting:
             report['referenceBatch'] = batch
             report['referenceFile'] = 'references.jsonl'
         seen_hashes = set()
+        monochrome = {}
+        # Optional, additive: a missing/old-package detector never fails a photo, it only
+        # means the new skin-tone features stay absent for it (never fabricated as zero).
+        face_detector = None
+        if info.get('cullingImplemented'):
+            try:
+                from culling_engine import create_detector
+                face_detector = create_detector(bundle, info)
+            except Exception:
+                face_detector = None
+        def monochrome_model():
+            # Loaded once and only when a P&B photo is analyzed; absence fails that photo only.
+            if 'error' in monochrome:
+                raise ValueError(monochrome['error'])
+            if 'model' not in monochrome:
+                try:
+                    from learning_store import latest_candidate
+                    path, digest = latest_candidate(learning_root, 'monochrome')
+                    candidate = validate_model(read_json(path), 'monochrome')
+                    if runtime['rawpy'] not in candidate['rawpyVersions'] or runtime['libraw'] not in candidate['librawVersions']:
+                        raise ValueError('Decodificador diferente do dominio de treino P&B')
+                except Exception as error:
+                    monochrome['error'] = str(error)
+                    raise
+                monochrome['model'] = candidate
+                report['monochromeModelSha256'] = digest
+            return monochrome['model']
+        geometry = request.get('geometry') if isinstance(request.get('geometry'), dict) else {}
         ids = [row.get('id') for row in photos]
         if not all(isinstance(i, str) and 0 < len(i) <= 128 for i in ids) or len(set(ids)) != len(ids):
             raise ValueError('Identificadores de fotos invalidos')
@@ -331,24 +561,22 @@ def run_job(job, bundle):
                                                   if k in TARGETS and finite_number(v)}}
             report['results'].append(row)
             progress('PROCESSING', index, len(photos), row['filename'])
-            if collecting and photo.get('treatment') == 'monochrome':
-                row.update({'status': 'SKIPPED', 'skipReason': 'MONOCHROME_NOT_SUPPORTED',
-                            'message': 'Foto em preto e branco ignorada nesta coleta em cor'})
-                progress('PROCESSING', index + 1, len(photos), row['filename'])
-                continue
             try:
                 path = Path(path_text)
                 if not path.is_absolute() or path.suffix.lower() != '.cr3' or not path.is_file():
                     raise ValueError('RAW CR3 original indisponivel neste caminho')
-                if photo.get('treatment') != 'color':
-                    raise ValueError('Modelo experimental somente para fotos em cor')
+                treatment = photo.get('treatment')
+                if treatment not in ('color', 'monochrome'):
+                    raise ValueError('Tratamento da foto desconhecido')
+                row['styleVariant'] = treatment
+                active = monochrome_model() if treatment == 'monochrome' and not collecting else model
                 if collecting and (photo.get('isVirtualCopy') is not False or any(k not in row['current'] for k in TARGETS)):
                     raise ValueError('Referencia requer RAW original e os dez controles atuais disponiveis')
                 before = path.stat()
                 with source_reader(path):
                     digest = sha256_file(path)
-                    meta = metadata_for(path, executable, job / f'metadata-{index:04}.args')
-                    if meta.get('Model', '').strip() not in model['supportedCameraModels']:
+                    meta = metadata_for(path, executable, job / f'metadata-{index:04}.args', exif_session)
+                    if meta.get('Model', '').strip() not in active['supportedCameraModels']:
                         raise ValueError('Camera nao suportada por este modelo: ' + meta.get('Model', 'desconhecida'))
                     capture_time = meta.get('SubSecDateTimeOriginal') or meta.get('DateTimeOriginal')
                     if collecting and (not isinstance(capture_time, str) or not capture_time.strip()):
@@ -356,13 +584,13 @@ def run_job(job, bundle):
                     if collecting and digest in seen_hashes:
                         raise ValueError('RAW duplicado nesta coleta; mantenha somente uma referencia por arquivo')
                     image = job / f'input-{index:04}.jpg'
-                    extracted = technical_render(path, image, meta)
+                    extracted = technical_render(path, image, meta, face_detector)
                     if sha256_file(path) != digest:
                         raise ValueError('Arquivo original alterado durante a analise')
                     after = path.stat()
                     if (before.st_size, before.st_mtime_ns) != (after.st_size, after.st_mtime_ns):
                         raise ValueError('Metadados do arquivo mudaram durante a analise')
-                missing = [k for k in model['featureNames'] if k not in extracted['features']]
+                missing = [k for k in active['featureNames'] if k not in extracted['features']]
                 if collecting and missing:
                     raise ValueError('Referencia com atributos de entrada incompletos')
                 row.update({'status': 'REFERENCE_COLLECTED' if collecting else 'COMPUTED', 'computedUtc': utc_now(),
@@ -371,11 +599,16 @@ def run_job(job, bundle):
                             'technicalInputSha256': extracted['jpegSha256'],
                             'missingFeatures': missing})
                 if collecting:
+                    from develop_targets import extended_labels
+                    row['extendedParameters'] = extended_labels(photo.get('current', {}), treatment)
                     row.update({'features': {k: extracted['features'][k] for k in model['featureNames']},
                                 'captureTimeExif': capture_time})
                     seen_hashes.add(digest)
                 else:
-                    row['predictions'] = predict_features(model, extracted['features'])
+                    row['predictions'] = predict_features(active, extracted['features'])
+                    row['captureTimeExif'] = capture_time
+                    if geometry.get('horizon') is True:
+                        row['geometry'] = horizon_for(image, sensor_swapped(extracted))
             except Exception as error:
                 row['status'] = 'FAILED'
                 row['error'] = str(error)[:1500]
@@ -391,6 +624,9 @@ def run_job(job, bundle):
                 report['learning']=register(learning_root,references,model,request['catalogIdentity'])
                 report['learning'].update(summary(learning_root))
         else:
+            scene = request.get('sceneConsistency')
+            if isinstance(scene, dict) and scene.get('enabled') is True and report['status'] != 'CANCELLED':
+                report['sceneConsistency'] = scene_consistency(report['results'], scene.get('maxGapSeconds', 30))
             csv_report(job / 'results.csv', report['results'])
     except Exception as error:
         report['status'] = 'FAILED'
@@ -398,6 +634,8 @@ def run_job(job, bundle):
         with (job / 'engine-error.txt').open('x', encoding='utf-8') as stream:
             traceback.print_exc(file=stream)
     finally:
+        if exif_session is not None:
+            exif_session.close()
         report['finishedUtc'] = utc_now()
         report['elapsedSeconds'] = round(time.monotonic() - started, 3)
         report['computedPhotos'] = sum(r['status'] == 'COMPUTED' for r in report['results'])

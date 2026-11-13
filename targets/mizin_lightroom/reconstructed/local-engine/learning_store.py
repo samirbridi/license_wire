@@ -52,7 +52,11 @@ def register(root, references, model, catalog_identity):
         for original, row in zip(references, validated):
             photo_id = original.get('catalogPhotoId') or row['sourcePath'].casefold()
             key = digest([catalog_identity.casefold(), str(photo_id)])
-            label_hash = digest([row['currentParameters'], row['features'], row['eventGroupId']])
+            identity = [row['currentParameters'], row['features'], row['eventGroupId']]
+            # Retain historical hashes for references with no additional labels.
+            if row.get('extendedParameters'):
+                identity.append(row['extendedParameters'])
+            label_hash = digest(identity)
             previous = db.execute('SELECT id,label_hash,record FROM revisions WHERE source_key=? AND active=1',(key,)).fetchone()
             if previous and dt.datetime.fromisoformat(strict_json(previous[2])['approvedUtc']) > dt.datetime.fromisoformat(row['approvedUtc']):
                 duplicates += 1
@@ -75,15 +79,41 @@ def active_rows(db):
     return [next(iter(versions.values())) for versions in grouped.values() if len(versions)==1], conflicts
 
 
+def variant_of(row):
+    return row.get('styleVariant', 'color')
+
+
+def report_variant(report):
+    # Evaluations created before monochrome support are color evaluations.
+    return report.get('styleVariant', 'color')
+
+
 def summary(root):
     with connect(root) as db:
         rows, conflicts = active_rows(db)
+        monochrome = [row for row in rows if variant_of(row) == 'monochrome']
+        mono_groups = {}
+        for row in monochrome:
+            mono_groups[row['eventGroupId']] = mono_groups.get(row['eventGroupId'], 0) + 1
+        rows = [row for row in rows if variant_of(row) == 'color']
         groups = {}
         for row in rows:
             item = groups.setdefault(row['eventGroupId'],{'name':row['eventName'],'count':0})
             item['count'] += 1
-        latest = db.execute('SELECT folder,report FROM evaluations ORDER BY rowid DESC LIMIT 1').fetchone()
+        mono_latest = None
+        for folder, report in db.execute('SELECT folder,report FROM evaluations ORDER BY rowid DESC'):
+            if report_variant(strict_json(report)) == 'monochrome':
+                mono_latest = folder
+                break
+        latest = None
+        for folder, report in db.execute('SELECT folder,report FROM evaluations ORDER BY rowid DESC'):
+            if report_variant(strict_json(report)) == 'color':
+                latest = (folder,)
+                break
         return {'uniqueApprovedReferences':len(rows),'eventCount':len(groups),'events':groups,
+                'monochromeReferences':len(monochrome),'monochromeEventCount':len(mono_groups),
+                'monochromeEventsWith50':sum(count>=50 for count in mono_groups.values()),
+                'latestMonochromeCandidate':mono_latest,
                 'conflictingRawFilesExcluded':conflicts,'feedbackCount':db.execute('SELECT COUNT(*) FROM feedback').fetchone()[0],
                 'latestCandidate':latest[0] if latest else None,'modelActivated':False,
                 'nextStep':'COLLECT_THREE_EVENTS_WITH_50_REFERENCES' if sum(g['count']>=50 for g in groups.values())<3 else 'CANDIDATE_OR_NEW_EVALUATION_EVENT'}
@@ -100,18 +130,30 @@ def record_feedback(root, rating, note, analysis_job):
     return {'feedbackSaved':True,'feedbackUsedAsApprovedEdits':False,**summary(root)}
 
 
-def train_candidate(root, contract):
+def evaluation_key(variant, event_id):
+    # Color keeps the historical key; monochrome evaluations are namespaced.
+    return event_id if variant == 'color' else variant + ':' + event_id
+
+
+def train_candidate(root, contract, variant='color'):
     """A fresh event is evaluated once; candidate weights never activate themselves."""
+    from develop_targets import VARIANTS
+    if variant not in VARIANTS:
+        raise ValueError('Variante de estilo invalida')
     root=Path(root)
     with connect(root) as db:
         rows, conflicts=active_rows(db)
+        rows=[row for row in rows if variant_of(row)==variant]
         groups={}
         for row in rows:groups.setdefault(row['eventGroupId'],[]).append(row)
         groups={key:values for key,values in groups.items() if len(values)>=50}
         used=set()
         for event_id,old_report in db.execute('SELECT event_id,report FROM evaluations'):
             previous=strict_json(old_report)
-            used.update([event_id,previous['validationEvent'],*previous['innerTrainingEvents']])
+            if report_variant(previous)!=variant:
+                continue
+            used.update([previous['evaluationEvent'] if 'evaluationEvent' in previous else event_id,
+                         previous['validationEvent'],*previous['innerTrainingEvents']])
         fresh=sorted(set(groups)-used, key=lambda key:(max(r['captureTimeExif'] for r in groups[key]),key))
         if len(groups)<3 or not fresh:
             return {'candidateCreated':False,'reason':'MORE_EVENTS_REQUIRED' if len(groups)<3 else 'WAIT_FOR_A_NEW_EVALUATION_EVENT'}
@@ -129,7 +171,10 @@ def train_candidate(root, contract):
             log_target=target=='Temperature'
             choices=[]
             inner_bounds=[float(ys[0].min()),float(ys[0].max())]
-            for alpha in (1.0,10.0,100.0):
+            # Widened from (1,10,100): a coarse 10x-spaced grid can miss the true optimum
+            # by a wide margin whenever it falls between two grid points (observed for
+            # Temperature on the real color dataset). Selection still uses validation only.
+            for alpha in (.3,1.0,3.0,10.0,30.0,100.0,300.0):
                 candidate=fit_ridge(matrices[0],np.log(ys[0]) if log_target else ys[0],alpha)
                 pred=native_predictions(candidate,matrices[1],inner_bounds,log_target)
                 choices.append((float(np.abs(pred-ys[1]).mean()),alpha))
@@ -141,29 +186,66 @@ def train_candidate(root, contract):
             baseline=float(np.abs(ys[3]-np.median(ys[2])).mean())
             metrics[target]={'mae':mae,'trainingMedianBaselineMae':baseline,'betterThanMedian':mae<baseline,'selectedAlpha':alpha}
             result_models[target]={'regression':regression,'nativeBoundsFromTrainingOnly':bounds,'logTarget':log_target}
-        corpus_hash=digest(sorted((r['rawSha256'],digest(r['currentParameters'])) for r in rows))
+        # Optional labels must have sufficient coverage in EVERY independent split.
+        # Never impute absent develop settings as neutral training targets.
+        extended_keys = sorted({key for r in inner for key in r.get('extendedParameters', {})})
+        extended_models = {}; extended_metrics = {}
+        for target in extended_keys:
+            parts = [[r for r in part if target in r.get('extendedParameters', {})]
+                     for part in (inner, validation, train, test)]
+            if min(map(len, parts)) < 50:
+                extended_metrics[target] = {'status': 'INSUFFICIENT_SPLIT_COVERAGE'}
+                continue
+            xs = [build_matrix(part, keys) for part in parts]
+            ys = [np.array([r['extendedParameters'][target] for r in part], dtype=float) for part in parts]
+            bounds_inner = [float(ys[0].min()), float(ys[0].max())]
+            choices = []
+            for alpha in (.3,1.0,3.0,10.0,30.0,100.0,300.0):
+                candidate = fit_ridge(xs[0], ys[0], alpha)
+                pred = native_predictions(candidate, xs[1], bounds_inner, False)
+                choices.append((float(np.abs(pred-ys[1]).mean()), alpha))
+            _, alpha = min(choices)
+            regression = fit_ridge(xs[2], ys[2], alpha)
+            bounds = [float(ys[2].min()), float(ys[2].max())]
+            pred = native_predictions(regression, xs[3], bounds, False)
+            mae = float(np.abs(pred-ys[3]).mean())
+            baseline = float(np.abs(ys[3]-np.median(ys[2])).mean())
+            extended_metrics[target] = {'status': 'EXPERIMENTAL_HELD_OUT_EVENT',
+                'mae': mae, 'trainingMedianBaselineMae': baseline,
+                'betterThanMedian': mae < baseline, 'selectedAlpha': alpha,
+                'splitLabelCounts': list(map(len, parts))}
+            extended_models[target] = {'regression': regression,
+                'nativeBoundsFromTrainingOnly': bounds, 'logTarget': False}
+        corpus_hash=digest(sorted((r['rawSha256'],digest([r['currentParameters'],r.get('extendedParameters', {})])) for r in rows))
         folder=root/'models'/('candidate-'+dt.datetime.now(dt.timezone.utc).strftime('%Y%m%dT%H%M%S')+'-'+uuid.uuid4().hex[:8])
         folder.mkdir(parents=True,exist_ok=False)
-        model={**{k:contract[k] for k in ('schema','inputDomain','featureNames','log1pFeatures','supportedCameraModels','rawpyVersions','librawVersions','supportedTreatment')},
-               'status':'EXPERIMENTAL_NOT_FOR_AUTOMATIC_EDITING','targets':result_models,'featureDatasetSha256':corpus_hash,
+        model={**{k:contract[k] for k in ('schema','inputDomain','featureNames','log1pFeatures','supportedCameraModels','rawpyVersions','librawVersions')},
+               'supportedTreatment':variant,'status':'EXPERIMENTAL_NOT_FOR_AUTOMATIC_EDITING','targets':result_models,
+               'extendedTargets':extended_models,'featureDatasetSha256':corpus_hash,
                'crossEventGeneralizationValidated':False,'lightroomHostValidated':False,'modelsAreFinalRefitOnAllData':False}
-        report={'schema':'mizin-lightroom.acervo-candidate-evaluation/1','candidateCreated':True,'trainingReferences':len(train),
+        report={'schema':'mizin-lightroom.acervo-candidate-evaluation/1','candidateCreated':True,'styleVariant':variant,'trainingReferences':len(train),
                 'innerTrainingEvents':sorted(set(other)-{validation_group}),'validationEvent':validation_group,'evaluationEvent':test_group,
                 'evaluationReferences':len(test),'eventCount':len(groups),'conflictsExcluded':conflicts,'metrics':metrics,
+                'extendedMetrics':extended_metrics,
                 'modelActivated':False,'photographicQualityApproved':False,'feedbackTreatedAsGroundTruth':False,
                 'limitation':'One event is evaluated once; results do not establish general photographic quality.'}
         model_bytes=(encoded(model)+'\n').encode('utf-8');(folder/'model.json').write_bytes(model_bytes)
         report['modelSha256']=hashlib.sha256(model_bytes).hexdigest();report['candidateDirectory']=str(folder)
         (folder/'evaluation.json').write_text(json.dumps(report,indent=2),encoding='utf-8')
         db.execute('INSERT INTO evaluations(event_id,corpus_hash,folder,report) VALUES(?,?,?,?)',
-                   (test_group,corpus_hash,str(folder),encoded(report)))
+                   (evaluation_key(variant,test_group),corpus_hash,str(folder),encoded(report)))
         return report
 
 
-def latest_candidate(root):
+def latest_candidate(root, variant='color'):
+    latest=None
     with connect(root) as db:
-        latest=db.execute('SELECT folder,report FROM evaluations ORDER BY rowid DESC LIMIT 1').fetchone()
-    if not latest:raise ValueError('Ainda nao ha modelo candidato: importe referencias de pelo menos tres trabalhos')
+        for folder,report in db.execute('SELECT folder,report FROM evaluations ORDER BY rowid DESC'):
+            if report_variant(strict_json(report))==variant:
+                latest=(folder,report);break
+    if not latest:
+        if variant=='monochrome':raise ValueError('Ainda nao ha modelo P&B treinado: colete referencias P&B aprovadas de pelo menos tres trabalhos (50 cada)')
+        raise ValueError('Ainda nao ha modelo candidato: importe referencias de pelo menos tres trabalhos')
     folder=Path(latest[0]).resolve();allowed=(Path(root)/'models').resolve()
     if not folder.is_relative_to(allowed):raise ValueError('Pasta de modelo invalida')
     path=folder/'model.json';report=strict_json(latest[1])

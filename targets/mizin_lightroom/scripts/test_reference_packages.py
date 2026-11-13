@@ -60,17 +60,20 @@ class ReferencePackageTests(unittest.TestCase):
                 with self.assertRaises(ValueError):import_sources([bad],model,folder/'output')
                 self.assertFalse((folder/'output').exists())
 
-    def test_monochrome_is_skipped_without_reading_raw_and_no_empty_package_is_generated(self):
-        with tempfile.TemporaryDirectory() as directory:
-            fixtures=collection_fixtures.ReferenceCollectionTests();bundle,job,raw,request=fixtures.prepare(Path(directory))
-            request['photos'][0]['treatment']='monochrome'
-            (job/'request.json').write_text(json.dumps(request))
-            with patch.object(engine,'source_reader',side_effect=AssertionError('P&B must not be read')):
+    def test_monochrome_is_collected_as_its_own_variant_with_gray_mixer_labels(self):
+        for treatment in ('monochrome', 'color'):
+            with self.subTest(treatment=treatment), tempfile.TemporaryDirectory() as directory:
+                fixtures=collection_fixtures.ReferenceCollectionTests();bundle,job,raw,request=fixtures.prepare(Path(directory))
+                request['photos'][0]['treatment']=treatment
+                request['photos'][0]['current'].update(GrayMixerRed=10,HueAdjustmentRed=-3)
+                (job/'request.json').write_text(json.dumps(request))
                 report=fixtures.run_collection(bundle,job)
-            self.assertEqual((report['collectedReferences'],report['skippedPhotos'],report['failedPhotos']),(0,1,0))
-            self.assertEqual(report['status'],'COMPLETED_WITH_SKIPS')
-            self.assertEqual(report['results'][0]['skipReason'],'MONOCHROME_NOT_SUPPORTED')
-            self.assertFalse((job/'references-package.zip').exists())
+                self.assertEqual((report['collectedReferences'],report['failedPhotos']),(1,0))
+                reference=json.loads((job/'references.jsonl').read_text(encoding='utf-8').splitlines()[0])
+                self.assertEqual(reference['styleVariant'],treatment)
+                self.assertEqual(reference['extendedParameters']['HueAdjustmentRed'],-3)
+                if treatment=='monochrome':self.assertEqual(reference['extendedParameters']['GrayMixerRed'],10)
+                else:self.assertNotIn('GrayMixerRed',reference['extendedParameters'])
 
     def test_package_failure_keeps_approved_jsonl_and_reports_fallback(self):
         with tempfile.TemporaryDirectory() as directory:

@@ -1,0 +1,17 @@
+﻿{
+    "schema":  "mizin-lightroom.scene-consistency-qa/1",
+    "version":  "v0.17.0 (build 0029)",
+    "archiveSha256":  "97b306bb66fc59634eaf4c5d9fa1965731398bf39f75a29ef4f18a6662368b98",
+    "packagedIsolatedRuntime":  true,
+    "realRawPhotos":  2,
+    "captureTimesParsed":  2,
+    "photosWithoutCaptureTime":  0,
+    "captureGapMinutes":  78,
+    "sequencesFound":  0,
+    "adjustedPhotos":  0,
+    "expectedBehaviour":  "Fotos distantes no tempo nao sao agrupadas",
+    "equalizationExercisedOnlyInSyntheticTests":  true,
+    "nativeLightroomValidated":  false,
+    "photographicQualityApproved":  false,
+    "unitTestsPassed":  145
+}

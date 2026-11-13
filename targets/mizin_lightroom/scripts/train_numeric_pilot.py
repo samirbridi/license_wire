@@ -120,7 +120,11 @@ def train(dataset):
         y_fit[valid] = transformed
         bounds_inner = [float(y[inner].min()),float(y[inner].max())]
         choices=[]
-        for alpha in (1.0,10.0,100.0):
+        # Widened from the original (1,10,100): on the real 524-reference color dataset,
+        # Temperature's validation-only MAE kept improving up to alpha=30 then got worse
+        # at 100 and 300, so the coarse 1/10/100 grid could land 3x off the true optimum
+        # for a target whose best alpha falls between two of the old grid points.
+        for alpha in (.3,1.0,3.0,10.0,30.0,100.0,300.0):
             candidate = fit_ridge(x[inner],y_fit[inner],alpha)
             proposed = native_predictions(candidate,x[validation],bounds_inner,log_target)
             choices.append((float(np.abs(proposed-y[validation]).mean()),alpha))

@@ -65,6 +65,9 @@ function M.showResults(job)
         LrDialogs.message('Mizin Lightroom - meu aprendizado',
             'Referencias unicas aprovadas: ' .. tostring(state.uniqueApprovedReferences or 0) .. '\n' ..
             'Trabalhos: ' .. tostring(state.eventCount or 0) .. '\n' ..
+            'Referencias P&B: ' .. tostring(state.monochromeReferences or 0) .. ' | trabalhos P&B com 50+: ' ..
+                tostring(state.monochromeEventsWith50 or 0) .. ' de 3 | modelo P&B: ' ..
+                (state.latestMonochromeCandidate and 'disponivel' or 'ainda nao treinado') .. '\n' ..
             'Conflitos entre catalogos aguardando revisao: ' .. tostring(state.conflictingRawFilesExcluded or 0) .. '\n' ..
             'Avaliacoes registradas: ' .. tostring(state.feedbackCount or 0) .. '\n\n' ..
             (state.latestCandidate and 'Modelo candidato disponivel. Use Avaliar aprendizado do acervo.' or
@@ -132,7 +135,7 @@ function M.showResults(job)
         spacing = f:control_spacing(),
         f:static_text { title = 'Calculadas: ' .. tostring(report.computedPhotos) .. ' | falhas: ' .. tostring(report.failedPhotos) ..
             ' | estado: ' .. tostring(report.status), width_in_chars = 105 },
-        f:static_text { title = 'Estilo: ' .. tostring(report.styleName) .. '\nEsta analise mostra sugestoes. Para aplica-las, use Mizin: editar fotos em copias virtuais.',
+        f:static_text { title = 'Estilo: ' .. tostring(report.styleName) .. '\nEsta analise mostra sugestoes. Para aplica-las, use EDITAR FOTOS no menu do plug-in.',
             width_in_chars = 105, height_in_lines = 2 },
         f:scrolled_view { width = 850, height = 420, horizontal_scroller = false, f:column(rows) },
         f:static_text { title = 'O CSV inclui os 10 controles calculados. As imagens input-*.jpg sao entradas tecnicas, sem o estilo aplicado.',
@@ -188,8 +191,8 @@ local function makeRequest(operation)
     -- getTargetPhotos can return the filmstrip when no photo is selected.
     if not catalog:getTargetPhoto() then error('Selecione explicitamente as fotos no Lightroom.') end
     local selection = catalog:getTargetPhotos()
-    local maximum = operation=='cull' and 2000 or 100
-    if #selection == 0 or #selection > maximum then error('Selecione de 1 a '..tostring(maximum)..' fotos por tarefa. Selecione um lote menor.') end
+    if #selection == 0 then error('Selecione explicitamente as fotos no Lightroom.') end
+    if operation=='cull' and #selection>2000 then error('A selecao visual aceita ate 2.000 fotos nesta versao.') end
     if operation=='cull' then
         request.catalogIdentity=catalog:getPath()
         local options=dofile(child(_PLUGIN.path,'CullingReview.lua')).options(#selection)
@@ -208,6 +211,22 @@ local function makeRequest(operation)
         if not ok or type(settings) ~= 'table' then settings = {} end
         local current = {}
         for _, key in ipairs(targets) do if finite(settings[key]) then current[key] = settings[key] end end
+        -- Capture additional labels without manufacturing missing neutral values.
+        for _, channel in ipairs({'Red','Orange','Yellow','Green','Aqua','Blue','Purple','Magenta'}) do
+            for _, prefix in ipairs({'HueAdjustment','SaturationAdjustment','LuminanceAdjustment'}) do
+                local key=prefix..channel
+                if finite(settings[key]) then current[key]=settings[key] end
+            end
+        end
+        for _,key in ipairs({'Texture','Clarity2012','Dehaze','ParametricShadows','ParametricDarks','ParametricLights','ParametricHighlights'}) do
+            if finite(settings[key]) then current[key]=settings[key] end
+        end
+        -- Black-and-white mixer is a label only for monochrome references.
+        if settings.ConvertToGrayscale == true then
+            for _,channel in ipairs({'Red','Orange','Yellow','Green','Aqua','Blue','Purple','Magenta'}) do
+                if finite(settings['GrayMixer'..channel]) then current['GrayMixer'..channel]=settings['GrayMixer'..channel] end
+            end
+        end
         request.photos[#request.photos + 1] = { id = operation=='cull' and tostring(photo.localIdentifier) or tostring(index), path = photo:getRawMetadata('path'), current = current,
             treatment = settings.ConvertToGrayscale == true and 'monochrome' or 'color', isVirtualCopy = virtual }
         if index % 10 == 0 then LrTasks.yield() end
@@ -251,7 +270,7 @@ local function executeRequest(operation, suppliedRequest, silent, modelVariant)
             executionOK, exitCode = LrTasks.pcall(function() return LrTasks.execute(command) end)
             runnerDone = true
         end)
-        local started, cancelSent = LrDate.currentTime(), false
+        local started, cancelSent, finishedAt = LrDate.currentTime(), false, nil
         while true do
             if progress:isCanceled() and not cancelSent then
                 writeText(child(job, 'cancel.request'), 'cancel\n')
@@ -269,7 +288,14 @@ local function executeRequest(operation, suppliedRequest, silent, modelVariant)
                 error('O motor local retornou erro ' .. tostring(exitCode) .. ': ' .. tostring(detail) .. '\nPasta: ' .. job)
             end
             if runnerDone and LrFileUtils.exists(child(job, 'results.json')) then break end
-            if LrDate.currentTime() - started > (operation=='cull' and 7200 or 1800) then
+            -- A runner that exited without results would otherwise wait for the long timeout.
+            if runnerDone then
+                finishedAt = finishedAt or LrDate.currentTime()
+                if LrDate.currentTime() - finishedAt > 10 then
+                    error('O motor local terminou sem gravar resultados. Consulte bootstrap.log e engine-error.txt.\nPasta: ' .. job)
+                end
+            end
+            if LrDate.currentTime() - started > math.max(operation=='cull' and 7200 or 1800, #(request.photos or {}) * 120) then
                 writeText(child(job, 'cancel.request'), 'timeout\n')
                 error('Tempo limite atingido. Cancelamento solicitado. Pasta: ' .. job)
             end

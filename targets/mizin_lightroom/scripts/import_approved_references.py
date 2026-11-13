@@ -55,7 +55,7 @@ def validate(row, model):
         raise ValueError('Explicit reference approval missing')
     if row.get('modelTrainingPerformed') is not False or row.get('sourceMetadataStable') is not True:
         raise ValueError('Invalid collection provenance')
-    if row.get('parameterScope') != 'TEN_BASIC_GLOBAL_DEVELOP_CONTROLS' or row.get('styleVariant') != 'color':
+    if row.get('parameterScope') != 'TEN_BASIC_GLOBAL_DEVELOP_CONTROLS' or row.get('styleVariant') not in ('color', 'monochrome'):
         raise ValueError('Unsupported parameter scope/treatment')
     if row.get('inputDomain') != model['inputDomain']:
         raise ValueError('Rendering input domain mismatch')
@@ -109,10 +109,19 @@ def validate(row, model):
                    'featureNames': list(model['featureNames']),
                    'features': {k: float(row['features'][k]) for k in model['featureNames']},
                    'currentParameters': {k: float(row['currentParameters'][k]) for k in TARGETS}})
+    if 'extendedParameters' in row:
+        extra = row['extendedParameters']
+        from develop_targets import bounds_for, extended_labels
+        allowed = set(bounds_for(row['styleVariant']))
+        if not isinstance(extra, dict) or not set(extra).issubset(allowed):
+            raise ValueError('Unsupported extended parameters')
+        result['extendedParameters'] = extended_labels(extra, row['styleVariant'])
     return result
 
 
 def equivalent(first, second):
+    if first.get('extendedParameters', {}) != second.get('extendedParameters', {}):
+        return False
     if any(first[key] != second[key] for key in ('eventGroupId', 'cameraModel', 'captureTimeExif', 'inputDomain', 'rawpyVersion', 'librawVersion')):
         return False
     return all(math.isclose(first[field][key], second[field][key], rel_tol=1e-12, abs_tol=1e-9)

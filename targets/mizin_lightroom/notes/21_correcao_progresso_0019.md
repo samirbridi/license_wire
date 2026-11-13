@@ -1,0 +1,5 @@
+# Build 0019 — entrega corretiva parcial
+
+v0.12.1: progresso com cancelamento durante captura, antes da inferencia. Fontes virtuais resolvidas por ID dentro do master, verificacao de master de novas copias e snapshots no master. Selecao mista conta e exclui P&B mediante confirmacao antes de continuar somente com cor; nao aplica modelo colorido em P&B. Nao representa suporte a aprendizado P&B: esse pedido continua pendente, assim como coleta/treino de virtuais. Formato/camera continuam CR3 Canon EOS R6m2.
+
+111 testes aprovados (evidence/qa-0019.txt), pacote evidence/package-0019.json; verify_editing_release executado com dois RAWs reais e contratos doubles SDK, evidencia release-0019.txt/editing-plugin-qa-0019.json. Captura virtual testada; fluxo completo virtual ainda precisa validacao nativa. Nao se afirma corrigir tempo de 20 minutos nem homologar progresso no host. Copia nova entregue em Downloads/PLUGIN LIGHTROOM/MizinLightroom-0.12.1-build0019-a9e3b40d, SHA256 igual ao recibo. Nao instalado em producao.

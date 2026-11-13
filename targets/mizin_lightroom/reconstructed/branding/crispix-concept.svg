@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="760" viewBox="0 0 1200 760" role="img" aria-labelledby="title desc">
+<title id="title">CRISPIX — conceito de identidade</title><desc id="desc">Proposta independente: C segmentado inspirado em diafragma, com detalhe ciano. Logo principal e estudo de icone pequeno sobre fundo grafite.</desc>
+<rect width="1200" height="760" fill="#10191F"/>
+<text x="72" y="72" fill="#8EA4AF" font-family="Segoe UI,Arial,sans-serif" font-size="16" letter-spacing="4">IDENTIDADE VISUAL / CONCEITO 01</text>
+<g transform="translate(105 178)">
+<g fill="none" stroke-width="27" stroke-linecap="butt">
+<path d="M165 25 A113 113 0 0 0 66 36" stroke="#EEF6F8"/>
+<path d="M48 48 A113 113 0 0 0 18 140" stroke="#D3E4EB"/>
+<path d="M21 160 A113 113 0 0 0 86 235" stroke="#A7C3CF"/>
+<path d="M106 242 A113 113 0 0 0 195 215" stroke="#EEF6F8"/>
+</g>
+<path d="M130 71 L166 92 L166 136 L130 157 L94 136 L94 92 Z" fill="#10191F" stroke="#42D9E8" stroke-width="3"/>
+<path d="M229 116 L233 128 L245 132 L233 136 L229 148 L225 136 L213 132 L225 128 Z" fill="#42D9E8"/>
+</g>
+<text x="395" y="335" fill="#F0F6F8" font-family="Segoe UI,Arial,sans-serif" font-size="105" font-weight="650" letter-spacing="6">CRISPIX</text>
+<text x="402" y="384" fill="#91A9B5" font-family="Segoe UI,Arial,sans-serif" font-size="19" letter-spacing="5">SEU OLHAR. SUA EDIÇÃO.</text>
+<path d="M72 480 H1128" stroke="#2C3E48"/>
+<text x="72" y="530" fill="#91A9B5" font-family="Segoe UI,Arial,sans-serif" font-size="14" letter-spacing="2">SÍMBOLO / ESTUDO REDUZIDO</text>
+<g transform="translate(72 558)"><rect width="86" height="86" rx="20" fill="#1D2C35"/><path d="M60 23 A26 26 0 1 0 62 62" fill="none" stroke="#EEF6F8" stroke-width="8"/><path d="M61 31 L68 38 L61 45 L54 38 Z" fill="#42D9E8"/></g>
+<text x="193" y="597" fill="#EDF5F8" font-family="Segoe UI,Arial,sans-serif" font-size="22">Fotografia + identidade pessoal</text>
+<text x="193" y="628" fill="#91A9B5" font-family="Segoe UI,Arial,sans-serif" font-size="17">Diafragma aberto em C · brilho de precisão · contraste para interfaces escuras</text>
+<rect x="901" y="562" width="55" height="55" rx="12" fill="#42D9E8"/><rect x="971" y="562" width="55" height="55" rx="12" fill="#EEF6F8"/><rect x="1041" y="562" width="55" height="55" rx="12" fill="#263B47"/>
+<text x="72" y="713" fill="#718A97" font-family="Segoe UI,Arial,sans-serif" font-size="14">PROPOSTA PARA APROVAÇÃO • Ainda não aplicada ao plugin • Tipografia de sistema; versão final poderá usar letras vetoriais.</text>
+</svg>
