@@ -69,7 +69,11 @@ try {
     $usingInternet = $false
     try {
         $response = Invoke-WebRequest -Uri $ManifestUrl -TimeoutSec 15 -UseBasicParsing
-        $manifest = $response.Content | ConvertFrom-Json
+        # Decodifica os bytes como UTF-8 e remove um BOM eventual: o PowerShell 5.1 le o corpo
+        # como ISO-8859-1 e o BOM vira "ï»¿", que fazia o ConvertFrom-Json falhar e o canal de
+        # internet nunca ser usado (medido na publicacao do build 0037).
+        $text = [System.Text.Encoding]::UTF8.GetString($response.RawContentStream.ToArray()).TrimStart([char]0xFEFF)
+        $manifest = $text | ConvertFrom-Json
         $usingInternet = $true
         Write-Success "Canal de internet acessivel."
     } catch {

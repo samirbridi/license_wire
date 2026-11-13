@@ -12,10 +12,17 @@ local Json=dofile(Paths.child(_PLUGIN.path,'Json.lua'))
 local INTERNET_MANIFEST_URL = 'https://crispixlr.pages.dev/latest.json'
 local NETWORK_CHANNEL_PATH = '\\\\192.168.1.58\\Users\\Public\\Documents\\MizinLightroomPilot'
 
+-- A UTF-8 BOM before the JSON made Json.decode fail ("Numero JSON invalido"): the internet
+-- manifest of builds 0036/0037 was published with one, so the internet channel was never used.
+local function stripBom(text)
+    return (text:gsub('^\239\187\191',''))
+end
+
 local function readLocalFile(path)
     local f=io.open(path,'rb');if not f then return nil end
     local text=f:read(1024*1024);f:close()
-    local ok,val=pcall(Json.decode,text)
+    if type(text)~='string' then return nil end
+    local ok,val=pcall(Json.decode,stripBom(text))
     -- A manifest is always an object; anything else (number, string) is treated as absent.
     return ok and type(val)=='table' and val or nil
 end
@@ -27,7 +34,7 @@ end
 local function fetchManifest(url)
     local ok,body = pcall(function() return Http.get(url,nil,15) end)
     if not ok or type(body)~='string' or #body==0 then return nil,nil end
-    local parseOk,val = pcall(Json.decode,body)
+    local parseOk,val = pcall(Json.decode,stripBom(body))
     if not parseOk or type(val)~='table' then return nil,nil end
     return val,'internet'
 end

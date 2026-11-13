@@ -1,5 +1,11 @@
 # CHANGELOG - mizin_lightroom
 
+## v0.24.1 (build 0038) - 2026-11-13
+
+### Fixes
+- fix: a atualizacao pela internet nunca funcionou (builds 0036 e 0037): o latest.json publicado no site saia com BOM UTF-8 (Set-Content -Encoding UTF8 do PowerShell 5.1), e tanto o Json.lua do plugin ("Numero JSON invalido") quanto o ConvertFrom-Json do atualizador falhavam, caindo sempre para a rede local. Publicador grava sem BOM; CheckUpdates.lua e Update-CrispixPlugin.ps1 passam a tolerar BOM.
+- fix: Publish-CrispixBuild.ps1 fixa a versao do wrangler ja instalada (4.152.0); sem isso o npx --no-install tentava a mais nova e a publicacao na internet falhava.
+
 ## v0.24.0 (build 0037) - 2026-11-13
 
 ### Fixes

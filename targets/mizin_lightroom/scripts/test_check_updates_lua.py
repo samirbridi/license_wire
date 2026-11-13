@@ -93,6 +93,22 @@ class CheckUpdatesLuaTests(unittest.TestCase):
             self.assertEqual(len(runtime.globals().revealed), 1)
             self.assertIn('Atualizar-CRISPIX.cmd', runtime.globals().revealed[1])
 
+    def test_internet_manifest_with_utf8_bom_is_still_read(self):
+        # Regression (build 0037 publication): the live manifest was served with a UTF-8 BOM,
+        # Json.decode rejected it and the internet channel silently never answered.
+        with tempfile.TemporaryDirectory() as temp:
+            plugin_dir = Path(temp) / 'plugin'
+            runtime = self.setup(plugin_dir, local_version='v0.23.0 (build 0036)')
+            manifest = json.dumps({'version': 'v0.24.0 (build 0037)', 'build': '0037',
+                                   'downloadUrl': 'https://example.invalid/x.zip'})
+            # Bytes, not str: lupa would UTF-8-encode '\xef\xbb\xbf' into 6 bytes instead of the BOM.
+            runtime.globals().http_response = b'\xef\xbb\xbf' + manifest.encode('utf-8')
+            self.patch_network_channel(runtime, Path(temp) / 'unused-network-channel')
+            self.assertEqual(len(runtime.globals().confirms), 1)
+            body = runtime.globals().confirms[1]['body']
+            self.assertIn('build 0037', body)
+            self.assertIn('internet', body)
+
     def test_internet_down_falls_back_to_network_share(self):
         with tempfile.TemporaryDirectory() as temp:
             plugin_dir = Path(temp) / 'plugin'

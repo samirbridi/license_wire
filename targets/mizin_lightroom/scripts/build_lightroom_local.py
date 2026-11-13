@@ -105,6 +105,10 @@ def build(runtime_base, model_folder, dataset, manifest):
         'schema': 'mizin-lightroom.saved-pilot/1', 'version': version, 'automaticEditing': False, 'entries': entries}) + '\n', encoding='utf-8')
     readme = f'''# CRISPIX - motor local experimental
 
+## Build 0038: atualizacao pela internet funcionando de verdade
+
+O arquivo de versao publicado no site saia com uma marca invisivel (BOM) que nem o plugin nem o atualizador conseguiam ler; por isso "Verificar atualizações" e o Atualizar-CRISPIX.cmd sempre recorriam a rede local, e fora dela diziam que nao havia conexao. O site agora publica o arquivo sem essa marca e o plugin/atualizador passaram a aceita-la de qualquer forma. Inclui todas as mudancas do build 0037 abaixo.
+
 ## Build 0037: enquadramento corrigido e analise mais rapida
 
 Endireitar horizonte: o corte gravado no Lightroom estava na convencao errada. O Lightroom guarda o corte inclinado como os dois cantos (superior-esquerdo e inferior-direito) do retangulo girado, sempre na orientacao do sensor (mesmo em fotos verticais). Conferido contra 127 endireitamentos feitos pelo proprio Lightroom no seu catalogo aprovado: a formula nova bate em 111 (as outras 16 foram apertadas a mao depois). O sinal do angulo tambem foi confirmado com fotos reais (8 de 9 concordam). A edicao automatica por pasta vigiada agora respeita a opcao "Endireitar horizonte" salva (antes era sempre desligada).

@@ -47,7 +47,10 @@ param(
     [string]$R2PublicUrl = 'https://pub-739d5fceaa824a6c8c84e39bb74ec917.r2.dev',
     [string]$PagesProject = 'crispixlr',
     [string]$SiteSourceDir = '',
-    [switch]$SkipInternet
+    [switch]$SkipInternet,
+    # Versao do wrangler ja instalada/logada. Sem fixar, 'npx --no-install' tenta a mais nova
+    # do npm e falha quando ela nao esta no cache (ocorreu na publicacao do build 0037).
+    [string]$WranglerVersion = '4.152.0'
 )
 
 Set-StrictMode -Version Latest
@@ -130,7 +133,7 @@ Write-Host "[PUBLICACAO] Publicando no canal de internet (R2 + Pages) ..." -Fore
 # Enviar o ZIP ao bucket R2 publico. --remote e obrigatorio: sem ele o wrangler grava
 # no simulador de desenvolvimento local, nao no bucket real da nuvem.
 Write-Host "  Enviando $archiveName para o bucket R2 '$R2Bucket' (pode levar alguns minutos) ..."
-& npx --no-install wrangler r2 object put "$R2Bucket/$archiveName" --file="$sourceArchive" --content-type="application/zip" --remote
+& npx --no-install "wrangler@$WranglerVersion" r2 object put "$R2Bucket/$archiveName" --file="$sourceArchive" --content-type="application/zip" --remote
 if ($LASTEXITCODE -ne 0) {
     throw "Falha ao enviar o pacote para o R2. O canal de rede ja foi publicado; o canal de internet ficou desatualizado."
 }
@@ -179,10 +182,12 @@ try {
     # sozinho, ou o deploy anterior (a pagina) desaparece do projeto.
     Copy-Item -LiteralPath (Join-Path $SiteSourceDir '*') -Destination $manifestStageDir -Recurse -Force
     $manifestStagePath = Join-Path $manifestStageDir 'latest.json'
-    ($internetManifest | ConvertTo-Json -Depth 5) | Set-Content -LiteralPath $manifestStagePath -Encoding UTF8
+    # UTF-8 SEM BOM: 'Set-Content -Encoding UTF8' do PowerShell 5.1 grava BOM, e com ele nem o
+    # Json.lua do plugin nem o ConvertFrom-Json do atualizador liam o manifesto da internet.
+    [System.IO.File]::WriteAllText($manifestStagePath, ($internetManifest | ConvertTo-Json -Depth 5), (New-Object System.Text.UTF8Encoding $false))
 
     Write-Host "  Publicando site + manifesto em https://$PagesProject.pages.dev/ ..."
-    & npx --no-install wrangler pages deploy $manifestStageDir --project-name=$PagesProject --branch=main --commit-dirty=true
+    & npx --no-install "wrangler@$WranglerVersion" pages deploy $manifestStageDir --project-name=$PagesProject --branch=main --commit-dirty=true
     if ($LASTEXITCODE -ne 0) {
         throw "Falha ao publicar no Cloudflare Pages. O arquivo ja esta no R2, mas o site ainda aponta para a versao anterior."
     }

@@ -35,7 +35,8 @@ Todos contra o mesmo gabarito; "melhor/pior" = erro reduzido >0.1 grau / aumenta
 
 - Python: 110 testes OK nesta maquina (novos: corte/veto/concordancia/inclinacao intencional em `test_horizon_analysis.py`; `sensor_swapped`, `horizon_for` com o flag e paridade real da sessao ExifTool em `test_local_engine.py`). Sintaxe do `.ps1` validada pelo parser do PowerShell.
 - Suite completa apos instalar `lupa 2.8` e `rawpy 0.28.0` (pip, com autorizacao do usuario): **190 testes OK, 0 pulados**, incluindo as 7 suites Lua e os testes novos `test_horizon_crop_matches_lightroom_own_straighten_values` e `test_automatic_edit_honors_saved_horizon_but_never_masks`.
-- Nenhum pacote gerado, nada publicado (rede local/R2/site intocados), sem commits. VERSION atualizado manualmente.
+- Pacote gerado a pedido do usuario: `private/deliveries/CRISPIX-0.24.0-build0037-a645c332/`, ZIP `CRISPIX-0.24.0-build0037-motor-local.zip` 84.043.354 bytes, SHA-256 `17ff198bef3d99c907dcf004a01deca79dc305c8a6bc659a57cacd0c56f82a78`, 1.746 arquivos. Entradas: runtime `private/runtime/culling-base-c75c76d3`, modelo `pilot-models/20261111T214051736452Z` (inalterado, `83ecd6e0...`), dataset/manifest iguais aos builds anteriores (comando completo na nota 10, trocando o runtime).
+- `verify_editing_release.py --package <delivery>/package.json --unit-tests-passed 190` OK: 1.746 hashes, CRC, 33 fontes Lua compiladas, 2 RAWs reais pelo motor do pacote (ja com a sessao ExifTool) e handoff para o duplo SDK, originais intactos. Recibo `evidence/editing-plugin-qa-0037.json`.
 
 ## Pendente / proximo passo real
 
