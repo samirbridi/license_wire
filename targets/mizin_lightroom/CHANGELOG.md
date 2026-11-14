@@ -1,5 +1,23 @@
 # CHANGELOG - mizin_lightroom
 
+## v0.27.0 (build 0041) - 2026-11-14
+
+### 💥 Breaking Changes
+
+- Nenhum.
+
+### ✨ Features
+
+- feat: atualiza site com telas ilustrativas e comparador de fotos (commit `60accf69cc5b15c5ab52f7403c3fcced89e5b626`)
+
+### 🐛 Fixes
+
+- Nenhum.
+
+### ⚡ Improvements
+
+- improve: registra publicacao verificada do build 0040 na internet e rede (commit `3961286ff66be13ad16ac3e7728445fe85716de9`)
+
 ## v0.26.0 (build 0040) - 2026-11-14
 
 Publicacao verificada em 2026-11-14: internet e rede, pacote do commit `9b15b8f628755a9ee75892660a993752788f92ff`; manifesto e download conferidos. Recibo `evidence/publication-0040.json`. Mesma compilacao, sem alterar versao ou artefato.

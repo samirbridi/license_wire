@@ -1,0 +1,23 @@
+{
+  "previous": "v0.26.0 (build 0040)",
+  "version": "v0.27.0 (build 0041)",
+  "date": "2026-11-14",
+  "timezone": "America/Sao_Paulo",
+  "baseline": "bd85ce0979014fd6d501aca20948dadba47565f5",
+  "sourceHead": "60accf69cc5b15c5ab52f7403c3fcced89e5b626",
+  "increment": "feat",
+  "commits": [
+    {
+      "hash": "3961286ff66be13ad16ac3e7728445fe85716de9",
+      "subject": "improve: registra publicacao verificada do build 0040 na internet e rede",
+      "type": "improve",
+      "breaking": false
+    },
+    {
+      "hash": "60accf69cc5b15c5ab52f7403c3fcced89e5b626",
+      "subject": "feat: atualiza site com telas ilustrativas e comparador de fotos",
+      "type": "feat",
+      "breaking": false
+    }
+  ]
+}

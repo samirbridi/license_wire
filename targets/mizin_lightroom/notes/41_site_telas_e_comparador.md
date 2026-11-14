@@ -26,3 +26,11 @@ A versao do repositorio para esta entrega web e calculada pelos commits com scri
 ## Para incluir fotos aprovadas
 
 Adicionar exportacoes de antes/depois da mesma foto em assets/, com dimensoes iguais e nomes simples (letras, numeros, hifen/underscore; JPG/PNG/WebP). Cada entrada de comparisons.json deve ter title, before, after e caption; before/after sao caminhos assets/nome.jpg. A legenda identifica versao/modelo e eventuais ajustes manuais, sem atribuir ao plugin trabalho feito pelo fotografo. Publicar apenas pares indicados/aprovados pelo usuario. Revalidar o comparador com os pares reais e conferir a apresentacao visual antes do deploy.
+
+## Entrega publicada
+
+Versao web calculada automaticamente: v0.27.0 (build 0041), recibo evidence/release-build-0041.json, commit funcional 60accf69cc5b15c5ab52f7403c3fcced89e5b626. Plugin permanece v0.26.0 (build 0040), sem recompilacao do ZIP.
+
+Comando: `npx --no-install wrangler@4.152.0 pages deploy private/site-release-0041 --project-name=crispixlr --branch=main --commit-dirty=true`. Deployment https://768a1e5f.crispixlr.pages.dev; producao https://crispixlr.pages.dev/. Cinco arquivos publicos conferidos byte a byte e por SHA-256: index.html, showcase.css, showcase.js, comparisons.json, latest.json. O manifesto anterior foi preservado byte a byte (SHA-256 83099e219941dc02f985f53de8e11e8276e76ca6c97efd9c037c44080a553a09). Cache .wrangler excluido pelo deploy; requisicao a esse caminho serve o fallback HTML da pagina, nao o cache.
+
+Chrome real headless na URL publica, sem mocks: versao consultada via manifesto, aba Atualizar navegavel, download do ZIP 0040 e galeria vazia oculta; zero erros JavaScript. Recibo evidence/site-showcase-0041/publication.json. Continua pendente somente o conteudo fotografico real do comparador, dependente dos pares indicados pelo usuario.

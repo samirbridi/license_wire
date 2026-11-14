@@ -1,0 +1,20 @@
+{
+  "siteUrl": "https://crispixlr.pages.dev/",
+  "deploymentUrl": "https://768a1e5f.crispixlr.pages.dev",
+  "verifiedUtc": "2026-11-14T10:23:44.320884+00:00",
+  "webRelease": "v0.27.0 (build 0041)",
+  "pluginVersionUnchanged": "v0.26.0 (build 0040)",
+  "publicFilesSha256": {
+    "index.html": "92fa32116f6bc81b263796434d996d62f77c8154eec6429238baa8d5cc5f2560",
+    "showcase.css": "4ea82862b487e71c672f70366b03f6297dc29db4e14519d5303ba4a1cddf867e",
+    "showcase.js": "144a25f458097680a889541a6d0c820eb6d4c46a3f9ca8b8f440342da122cd64",
+    "comparisons.json": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+    "latest.json": "83099e219941dc02f985f53de8e11e8276e76ca6c97efd9c037c44080a553a09"
+  },
+  "browserLiveVerified": true,
+  "javascriptErrors": [],
+  "privateWranglerCacheExcluded": true,
+  "unknownPathReturnsIndexFallback": true,
+  "publishedRealPhotoPairs": 0,
+  "pending": "User must supply approved before/after photo pairs"
+}
