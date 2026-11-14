@@ -2,6 +2,8 @@
 
 ## v0.26.0 (build 0040) - 2026-11-14
 
+Publicacao verificada em 2026-11-14: internet e rede, pacote do commit `9b15b8f628755a9ee75892660a993752788f92ff`; manifesto e download conferidos. Recibo `evidence/publication-0040.json`. Mesma compilacao, sem alterar versao ou artefato.
+
 ### 💥 Breaking Changes
 
 - Nenhum.

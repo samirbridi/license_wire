@@ -64,3 +64,18 @@ Comando final: `python scripts/verify_editing_release.py --package private/deliv
 Verificacao adicional em banco temporario: tres trabalhos com 50 referencias, simulacao de candidato antigo substituindo model.json pelos pesos reservados sem metadados do pipeline novo e recalculando o hash do registro; Treinar candidato agora criou novo diretorio com 150 referencias, preservou os bytes anteriores e nao declarou nova avaliacao independente. Recibo `evidence/learning-legacy-candidate-migration.json`; nao usou banco do usuario.
 
 Para adotar o ZIP local: fechar Lightroom, substituir a pasta CRISPIX.lrplugin no mesmo local e executar Treinar candidato agora. Aprendizado fica no AppData, fora do plugin. Novas coletas aprovadas sao necessarias para acrescentar os atributos de pele descartados antes. Nao houve publicacao online/rede nem alteracao da instalacao remota. QA visual e avaliacao das 19 fotos especificas continuam pendentes.
+
+
+## Publicacao solicitada e concluida em 2026-11-14
+
+Apos autorizacao explicita do usuario, publicado o mesmo ZIP 0040 (sem recompilar ou trocar seu hash). Site de origem conferido byte a byte contra a pagina publica antes do deploy. Staging em private/publication-0040/site contem index.html e latest.json em UTF-8 sem BOM, com downloadUrl publico do R2. Nenhum conteudo visual do site alterado.
+
+Comandos de publicacao:
+
+```powershell
+npx --no-install wrangler@4.152.0 r2 object put crispix-updates/CRISPIX-0.26.0-build0040-motor-local.zip --file=private/deliveries/CRISPIX-0.26.0-build0040-800533cb/CRISPIX-0.26.0-build0040-motor-local.zip --content-type=application/zip --remote
+curl.exe --fail --silent --show-error -A 'Mozilla/5.0' --max-time 300 -o private/publication-0040/download-verified.zip https://pub-739d5fceaa824a6c8c84e39bb74ec917.r2.dev/CRISPIX-0.26.0-build0040-motor-local.zip
+npx --no-install wrangler@4.152.0 pages deploy private/publication-0040/site --project-name=crispixlr --branch=main --commit-dirty=true
+```
+
+Tamanho e SHA-256 do download foram comparados ao manifesto local antes de publicar o Pages. Deployment https://c14c1640.crispixlr.pages.dev. Canal de rede tambem atualizado: ZIP na subpasta da entrega e raiz, arquivos auxiliares e latest.json por ultimo; ambos os ZIPs conferidos por hash. Manifesto final https://crispixlr.pages.dev/latest.json lido por HTTP, JSON Python e Json.lua real no Lua 5.1; build 0040 confirmado. Pagina principal continua identica ao original. Recibo evidence/publication-0040.json. Fluxo de instalacao dentro do Lightroom ainda nao exercitado nativamente; nenhuma instalacao remota alterada.

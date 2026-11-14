@@ -1,0 +1,17 @@
+{
+  "version": "v0.26.0 (build 0040)",
+  "verifiedUtc": "2026-11-14T10:06:38.653023+00:00",
+  "siteUrl": "https://crispixlr.pages.dev/",
+  "manifestUrl": "https://crispixlr.pages.dev/latest.json",
+  "downloadUrl": "https://pub-739d5fceaa824a6c8c84e39bb74ec917.r2.dev/CRISPIX-0.26.0-build0040-motor-local.zip",
+  "archiveSha256": "eb7d4f253c3e1720ae1fd7e18a5cfc57e8b6bd14b6f11b38de135dcd527720cf",
+  "archiveBytes": 84055445,
+  "publicDownloadMatchesLocal": true,
+  "manifestWithoutBom": true,
+  "realLua51JsonParserPassed": true,
+  "siteUnchangedSha256": "94a5a550e439261fc895f40bff219f906679764af77f691d0f84e997828f1529",
+  "networkFallbackVerified": true,
+  "deploymentUrl": "https://c14c1640.crispixlr.pages.dev",
+  "packageSourceCommit": "9b15b8f628755a9ee75892660a993752788f92ff",
+  "nativeLightroomUpdateTested": false
+}
