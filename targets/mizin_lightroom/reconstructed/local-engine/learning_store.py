@@ -56,6 +56,8 @@ def register(root, references, model, catalog_identity):
             # Retain historical hashes for references with no additional labels.
             if row.get('extendedParameters'):
                 identity.append(row['extendedParameters'])
+            if row.get('appearanceFeatures'):
+                identity.append(row['appearanceFeatures'])
             label_hash = digest(identity)
             previous = db.execute('SELECT id,label_hash,record FROM revisions WHERE source_key=? AND active=1',(key,)).fetchone()
             if previous and dt.datetime.fromisoformat(strict_json(previous[2])['approvedUtc']) > dt.datetime.fromisoformat(row['approvedUtc']):
@@ -105,10 +107,11 @@ def summary(root):
             if report_variant(strict_json(report)) == 'monochrome':
                 mono_latest = folder
                 break
-        latest = None
-        for folder, report in db.execute('SELECT folder,report FROM evaluations ORDER BY rowid DESC'):
+        latest = None; latest_report={}; latest_corpus=None
+        for folder, report, stored_corpus in db.execute('SELECT folder,report,corpus_hash FROM evaluations ORDER BY rowid DESC'):
             if report_variant(strict_json(report)) == 'color':
                 latest = (folder,)
+                latest_report=strict_json(report);latest_corpus=stored_corpus
                 break
         return {'uniqueApprovedReferences':len(rows),'eventCount':len(groups),'events':groups,
                 'monochromeReferences':len(monochrome),'monochromeEventCount':len(mono_groups),
@@ -116,6 +119,10 @@ def summary(root):
                 'latestMonochromeCandidate':mono_latest,
                 'conflictingRawFilesExcluded':conflicts,'feedbackCount':db.execute('SELECT COUNT(*) FROM feedback').fetchone()[0],
                 'latestCandidate':latest[0] if latest else None,'modelActivated':False,
+                'candidateTrainingReferences':latest_report.get('deploymentTrainingReferences',latest_report.get('trainingReferences',0)),
+                'candidateNeedsRefresh':bool(latest and latest_corpus!=corpus_identity([r for r in rows if groups[r['eventGroupId']]['count']>=50])),
+                'appearanceReferences':sum(bool(r.get('appearanceFeatures')) for r in rows),
+                'appearanceWhiteBalanceEnabled':latest_report.get('appearanceWhiteBalanceEnabled',False),
                 'nextStep':'COLLECT_THREE_EVENTS_WITH_50_REFERENCES' if sum(g['count']>=50 for g in groups.values())<3 else 'CANDIDATE_OR_NEW_EVALUATION_EVENT'}
 
 
@@ -135,6 +142,111 @@ def evaluation_key(variant, event_id):
     return event_id if variant == 'color' else variant + ':' + event_id
 
 
+PIPELINE_VERSION = 2
+SKIN_KEYS = ['skinR', 'skinG', 'skinB', 'skinRedBlueRatio', 'skinRedGreenRatio']
+
+
+def corpus_identity(rows):
+    return digest(sorted((r['rawSha256'], digest([r['currentParameters'], r['features'],
+                        r.get('extendedParameters', {}), r.get('appearanceFeatures', {})])) for r in rows))
+
+
+def appearance_rows(rows):
+    return [{**r, 'features': {**r['features'], **r.get('appearanceFeatures', {})}}
+            for r in rows if all(k in r.get('appearanceFeatures', {}) for k in SKIN_KEYS)]
+
+
+def fit_appearance(inner, validation, train, base):
+    """Select WB-only skin regressions on internal validation, never on evaluation labels."""
+    parts = [appearance_rows(part) for part in (inner, validation, train)]
+    if min(map(len, parts)) < 50:
+        return None
+    keys = list(base['featureNames'])+SKIN_KEYS
+    xs = [build_matrix(part, keys) for part in parts]
+    baseline_x = [build_matrix(part, base['featureNames']) for part in parts[:2]]
+    targets = {}
+    for target in ('Temperature', 'Tint'):
+        ys = [np.array([r['currentParameters'][target] for r in part], dtype=float) for part in parts]
+        log = target == 'Temperature'
+        bounds = [float(ys[0].min()), float(ys[0].max())]
+        alpha_base = base['targets'][target]['regression']['alpha']
+        base_fit = fit_ridge(baseline_x[0], np.log(ys[0]) if log else ys[0], alpha_base)
+        base_error = float(np.abs(native_predictions(base_fit, baseline_x[1], bounds, log)-ys[1]).mean())
+        choices = []
+        for alpha in (.3, 1., 3., 10., 30., 100., 300.):
+            fit = fit_ridge(xs[0], np.log(ys[0]) if log else ys[0], alpha)
+            error = float(np.abs(native_predictions(fit, xs[1], bounds, log)-ys[1]).mean())
+            choices.append((error, alpha))
+        error, alpha = min(choices)
+        if error >= base_error*.95:
+            continue
+        targets[target] = {'regression': fit_ridge(xs[2], np.log(ys[2]) if log else ys[2], alpha),
+                           'nativeBoundsFromTrainingOnly': [float(ys[2].min()), float(ys[2].max())],
+                           'logTarget': log}
+    return {'featureNames': keys, 'requiredFeatures': SKIN_KEYS, 'targets': targets} if targets else None
+
+
+def refit_all(model, rows):
+    """Deployment fit uses ALL approved examples; evaluation weights remain a separate file."""
+    import copy
+    model = copy.deepcopy(model)
+    for group, field in (('targets', 'currentParameters'), ('extendedTargets', 'extendedParameters')):
+        for name, target in model.get(group, {}).items():
+            eligible = [r for r in rows if name in r.get(field, {})]
+            ys = np.array([r[field][name] for r in eligible], dtype=float)
+            target['regression'] = fit_ridge(build_matrix(eligible, model['featureNames']),
+                                             np.log(ys) if target['logTarget'] else ys, target['regression']['alpha'])
+            target['nativeBoundsFromTrainingOnly'] = [float(ys.min()), float(ys.max())]
+    appearance = model.get('appearanceWhiteBalance')
+    if appearance:
+        eligible = appearance_rows(rows)
+        if len(eligible) < 50:
+            model.pop('appearanceWhiteBalance')
+        else:
+            for name, target in appearance['targets'].items():
+                ys = np.array([r['currentParameters'][name] for r in eligible], dtype=float)
+                target['regression'] = fit_ridge(build_matrix(eligible, appearance['featureNames']),
+                                                np.log(ys) if target['logTarget'] else ys, target['regression']['alpha'])
+                target['nativeBoundsFromTrainingOnly'] = [float(ys.min()), float(ys.max())]
+    model.update(modelsAreFinalRefitOnAllData=True, trainingPipelineVersion=PIPELINE_VERSION,
+                 deploymentTrainingReferences=len(rows), featureDatasetSha256=corpus_identity(rows))
+    return model
+
+
+def refresh_candidate(db, root, rows, groups, variant, previous):
+    path, _ = latest_candidate(root, variant)
+    model = strict_json(path.read_text(encoding='utf-8'))
+    eligible = [r for group in groups.values() for r in group]
+    if model.get('trainingPipelineVersion') == PIPELINE_VERSION and model.get('featureDatasetSha256') == corpus_identity(eligible):
+        return {'candidateCreated': False, 'reason': 'NO_APPROVED_CHANGES', 'styleVariant': variant}
+    # Reusing training events is allowed for a deployment refresh, but it is NOT a
+    # new independent evaluation. Old assessment metrics are not relabelled as current.
+    validation_id = previous['validationEvent']
+    validation = groups.get(validation_id, [])
+    inner = [r for key, group in groups.items() if key != validation_id for r in group]
+    if variant == 'color':
+        appearance = fit_appearance(inner, validation, eligible, model)
+        if appearance:
+            model['appearanceWhiteBalance'] = appearance
+        else:
+            model.pop('appearanceWhiteBalance', None)
+    model = refit_all(model, eligible)
+    folder = root/'models'/('candidate-'+dt.datetime.now(dt.timezone.utc).strftime('%Y%m%dT%H%M%S')+'-'+uuid.uuid4().hex[:8])
+    folder.mkdir(parents=True, exist_ok=False)
+    content = (encoded(model)+'\n').encode('utf-8')
+    (folder/'model.json').write_bytes(content)
+    report = {**previous, 'candidateCreated': True, 'reason': 'APPROVED_DATA_REFIT',
+              'freshEvaluationPerformed': False, 'metricsApplyToCurrentWeights': False,
+              'deploymentTrainingReferences': len(eligible), 'appearanceTrainingReferences': len(appearance_rows(eligible)),
+              'appearanceWhiteBalanceEnabled': bool(model.get('appearanceWhiteBalance')),
+              'modelActivated': False, 'modelSha256': hashlib.sha256(content).hexdigest(),
+              'candidateDirectory': str(folder), 'refreshedUtc': dt.datetime.now(dt.timezone.utc).isoformat()}
+    (folder/'evaluation.json').write_text(json.dumps(report, indent=2), encoding='utf-8')
+    db.execute('INSERT INTO evaluations(event_id,corpus_hash,folder,report) VALUES(?,?,?,?)',
+               ('refit:'+variant+':'+uuid.uuid4().hex, model['featureDatasetSha256'], str(folder), encoded(report)))
+    return report
+
+
 def train_candidate(root, contract, variant='color'):
     """A fresh event is evaluated once; candidate weights never activate themselves."""
     from develop_targets import VARIANTS
@@ -147,16 +259,19 @@ def train_candidate(root, contract, variant='color'):
         groups={}
         for row in rows:groups.setdefault(row['eventGroupId'],[]).append(row)
         groups={key:values for key,values in groups.items() if len(values)>=50}
-        used=set()
-        for event_id,old_report in db.execute('SELECT event_id,report FROM evaluations'):
+        used=set();latest_report=None
+        for event_id,old_report in db.execute('SELECT event_id,report FROM evaluations ORDER BY rowid'):
             previous=strict_json(old_report)
             if report_variant(previous)!=variant:
                 continue
+            latest_report=previous
             used.update([previous['evaluationEvent'] if 'evaluationEvent' in previous else event_id,
                          previous['validationEvent'],*previous['innerTrainingEvents']])
         fresh=sorted(set(groups)-used, key=lambda key:(max(r['captureTimeExif'] for r in groups[key]),key))
-        if len(groups)<3 or not fresh:
-            return {'candidateCreated':False,'reason':'MORE_EVENTS_REQUIRED' if len(groups)<3 else 'WAIT_FOR_A_NEW_EVALUATION_EVENT'}
+        if len(groups)<3:
+            return {'candidateCreated':False,'reason':'MORE_EVENTS_REQUIRED'}
+        if not fresh:
+            return refresh_candidate(db, root, rows, groups, variant, latest_report)
         test_group=fresh[-1]
         other=sorted(set(groups)-{test_group})
         validation_group=other[-1]
@@ -216,18 +331,45 @@ def train_candidate(root, contract, variant='color'):
                 'splitLabelCounts': list(map(len, parts))}
             extended_models[target] = {'regression': regression,
                 'nativeBoundsFromTrainingOnly': bounds, 'logTarget': False}
-        corpus_hash=digest(sorted((r['rawSha256'],digest([r['currentParameters'],r.get('extendedParameters', {})])) for r in rows))
+        eligible=[r for group in groups.values() for r in group]
+        corpus_hash=corpus_identity(eligible)
         folder=root/'models'/('candidate-'+dt.datetime.now(dt.timezone.utc).strftime('%Y%m%dT%H%M%S')+'-'+uuid.uuid4().hex[:8])
         folder.mkdir(parents=True,exist_ok=False)
         model={**{k:contract[k] for k in ('schema','inputDomain','featureNames','log1pFeatures','supportedCameraModels','rawpyVersions','librawVersions')},
                'supportedTreatment':variant,'status':'EXPERIMENTAL_NOT_FOR_AUTOMATIC_EDITING','targets':result_models,
                'extendedTargets':extended_models,'featureDatasetSha256':corpus_hash,
                'crossEventGeneralizationValidated':False,'lightroomHostValidated':False,'modelsAreFinalRefitOnAllData':False}
+        if variant=='color':
+            appearance=fit_appearance(inner,validation,train,model)
+            if appearance:
+                model['appearanceWhiteBalance']=appearance
+                # Evaluate the actual optional/fallback route on the untouched event.
+                # Choosing the feature set above never consults these labels.
+                for target, fitted in appearance['targets'].items():
+                    base=result_models[target]
+                    pred=native_predictions(base['regression'],matrices[3],base['nativeBoundsFromTrainingOnly'],base['logTarget'])
+                    selected=[i for i,r in enumerate(test) if all(k in r.get('appearanceFeatures',{}) for k in SKIN_KEYS)]
+                    if selected:
+                        rich=appearance_rows([test[i] for i in selected])
+                        pred[selected]=native_predictions(fitted['regression'],build_matrix(rich,appearance['featureNames']),
+                            fitted['nativeBoundsFromTrainingOnly'],fitted['logTarget'])
+                    truth=np.array([r['currentParameters'][target] for r in test],dtype=float)
+                    mae=float(np.abs(pred-truth).mean())
+                    metrics[target].update(mae=mae,betterThanMedian=mae<metrics[target]['trainingMedianBaselineMae'],
+                        appearanceEvaluationReferences=len(selected),appearanceSelectedAlpha=fitted['regression']['alpha'])
+        evaluation_bytes=(encoded(model)+'\n').encode('utf-8')
+        (folder/'evaluation-model.json').write_bytes(evaluation_bytes)
+        model=refit_all(model,eligible)
         report={'schema':'mizin-lightroom.acervo-candidate-evaluation/1','candidateCreated':True,'styleVariant':variant,'trainingReferences':len(train),
                 'innerTrainingEvents':sorted(set(other)-{validation_group}),'validationEvent':validation_group,'evaluationEvent':test_group,
                 'evaluationReferences':len(test),'eventCount':len(groups),'conflictsExcluded':conflicts,'metrics':metrics,
                 'extendedMetrics':extended_metrics,
                 'modelActivated':False,'photographicQualityApproved':False,'feedbackTreatedAsGroundTruth':False,
+                'freshEvaluationPerformed':True,'metricsApplyToCurrentWeights':False,
+                'evaluationModelSha256':hashlib.sha256(evaluation_bytes).hexdigest(),
+                'evaluationModelPath':str(folder/'evaluation-model.json'),
+                'deploymentTrainingReferences':len(eligible),'appearanceTrainingReferences':len(appearance_rows(eligible)),
+                'appearanceWhiteBalanceEnabled':bool(model.get('appearanceWhiteBalance')),
                 'limitation':'One event is evaluated once; results do not establish general photographic quality.'}
         model_bytes=(encoded(model)+'\n').encode('utf-8');(folder/'model.json').write_bytes(model_bytes)
         report['modelSha256']=hashlib.sha256(model_bytes).hexdigest();report['candidateDirectory']=str(folder)

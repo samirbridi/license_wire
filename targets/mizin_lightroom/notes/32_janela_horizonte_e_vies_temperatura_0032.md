@@ -19,6 +19,8 @@ Pedido do usuario: janela de EDITAR FOTOS maior que a tela 1080p de teste; confu
 
 ## Diagnostico do amarelado persistente (medido, nao suposto)
 
+Errata 2026-11-14: a interpretacao do sentido da temperatura no paragrafo historico abaixo estava invertida. No slider Temp do Lightroom, um valor maior aquece/amarela a imagem; portanto um excesso de +301 K pode manter amarelado. A medicao era do piloto antigo e nao diagnostica o candidato do acervo atualmente usado. Fonte: https://helpx.adobe.com/be_en/lightroom-classic/desktop/process-and-develop-photos/image-tone-color.html . A nota da nova entrega registra separadamente as falhas de atualizacao do aprendizado.
+
 Usando `private/raw-datasets/20261029T172842Z-c6cf2182/pilot-models/20261029T174242827221Z/holdout-predictions.jsonl` (92 fotos reais de teste, nunca usadas para escolher hiperparametros):
 
 - Fotos nos 25% mais quentes do teste (Temperature aprovada <=4930K): vies medio de previsao = **+301 K** (o modelo deixa a foto mais fria/azulada do que o fotografo aprovou, ou seja, sub-corrige o amarelado).

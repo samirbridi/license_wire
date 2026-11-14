@@ -105,7 +105,13 @@ def build(runtime_base, model_folder, dataset, manifest):
         'schema': 'mizin-lightroom.saved-pilot/1', 'version': version, 'automaticEditing': False, 'entries': entries}) + '\n', encoding='utf-8')
     readme = f'''# CRISPIX - motor local experimental
 
-## {version}: atualizacao dentro do Lightroom e lotes resistentes a falhas
+## {version}: candidato atualizado e analise do ambiente e dos olhos
+
+Use Treinar candidato agora depois de atualizar para aproveitar as correcoes do
+aprendizado com as referencias ja salvas. Veja abaixo Aprendizado e nivelamento
+desta entrega. O nivelamento segue conservador e nao corrige todas as fotos.
+
+### Atualizacao dentro do Lightroom e lotes resistentes a falhas
 
 No menu Arquivo > Extras de plug-in > CRISPIX, use VERIFICAR ATUALIZACOES.
 O Gerenciador de plug-ins tambem tem um botao. Ao encontrar uma versao nova,
@@ -143,6 +149,14 @@ A verificacao de atualizacao ("Verificar atualizações" no menu) agora tenta pr
 `Atualizar-CRISPIX.cmd`/`Update-CrispixPlugin.ps1` seguem a mesma logica: baixam da internet quando possivel, da rede local quando nao. A integridade do pacote continua validada por hash SHA-256 antes de qualquer instalacao, nos dois canais.
 
 Para quem publica uma nova versao: `Publish-CrispixBuild.ps1` agora publica nos dois canais de uma vez (rede local + internet), confirmando a integridade em cada um antes de considerar concluido. Use `-SkipInternet` para publicar so na rede local se preferir.
+
+## Aprendizado e nivelamento desta entrega
+
+Depois de atualizar, use FERRAMENTAS E APRENDIZADO > Treinar candidato agora com o que ja foi aprendido. O candidato passa a incluir todas as referencias aprovadas elegiveis, inclusive as mais recentes. Corrigir e reaprender fotos do mesmo trabalho tambem permite atualizar o candidato. A avaliacao em trabalho reservado fica registrada separadamente; atualizar pesos com referencias conhecidas nao representa uma nova avaliacao independente.
+
+Novas coletas preservam atributos de tom de pele. Com cobertura suficiente por trabalho e melhora medida na validacao interna, o treino usa esses atributos em Temperatura/Matiz. Referencias antigas continuam validas, mas precisam ser coletadas novamente para ganhar esses atributos. Nao ha deslocamento frio fixo imposto a todas as fotos. Confira o modelo e qualquer ajuste fino de temperatura indicados no resumo da edicao.
+
+Com Nivelar foto ligado, cada foto e analisada: linhas horizontais/verticais do ambiente e olhos detectados. Olhos sao apoio; cabecas inclinadas, perspectiva e ausencia de linhas ainda podem impedir o nivelamento. O resumo separa fotos analisadas de nivelamentos confirmados e apresenta motivos. Esta entrega nao promete nivelar todas as fotos: criterios que aumentavam a cobertura mas pioravam os resultados foram recusados nos testes. Falhas individuais continuam sem interromper o restante do lote, com registros para restauracao.
 
 ## Build 0035: atualizacao automatica (sem reinstalar manualmente)
 

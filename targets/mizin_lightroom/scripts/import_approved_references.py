@@ -21,6 +21,9 @@ TARGETS = ('Exposure2012', 'Temperature', 'Tint', 'Contrast2012', 'Highlights201
            'Shadows2012', 'Whites2012', 'Blacks2012', 'Saturation', 'Vibrance')
 MAX_FILE_BYTES = 64 * 1024 * 1024
 MAX_LINE_BYTES = 256 * 1024
+APPEARANCE_BOUNDS = {'skinR': (0, 1), 'skinG': (0, 1), 'skinB': (0, 1),
+                     'skinRedBlueRatio': (0, 100), 'skinRedGreenRatio': (0, 100),
+                     'faceConfidence': (0, 1), 'skinSampledPixels': (1, 1048576)}
 CAPTURE = re.compile(r'^(\d{4}:\d{2}:\d{2} \d{2}:\d{2}:\d{2})(?:\.\d+)?(?:[+-]\d{2}:\d{2}|Z)?$')
 
 
@@ -116,10 +119,21 @@ def validate(row, model):
         if not isinstance(extra, dict) or not set(extra).issubset(allowed):
             raise ValueError('Unsupported extended parameters')
         result['extendedParameters'] = extended_labels(extra, row['styleVariant'])
+    appearance = row.get('appearanceFeatures', {})
+    if not isinstance(appearance, dict) or not set(appearance).issubset(APPEARANCE_BOUNDS):
+        raise ValueError('Unsupported appearance features')
+    for key, value in appearance.items():
+        low, high = APPEARANCE_BOUNDS[key]
+        if type(value) not in (int, float) or not math.isfinite(value) or not low <= value <= high:
+            raise ValueError('Invalid appearance feature')
+    if appearance:
+        result['appearanceFeatures'] = dict(appearance)
     return result
 
 
 def equivalent(first, second):
+    if first.get('appearanceFeatures', {}) != second.get('appearanceFeatures', {}):
+        return False
     if first.get('extendedParameters', {}) != second.get('extendedParameters', {}):
         return False
     if any(first[key] != second[key] for key in ('eventGroupId', 'cameraModel', 'captureTimeExif', 'inputDomain', 'rawpyVersion', 'librawVersion')):

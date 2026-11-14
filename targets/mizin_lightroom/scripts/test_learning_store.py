@@ -149,7 +149,7 @@ class LearningStoreTests(unittest.TestCase):
                     store.register(directory,rows,contract(),str(group))
                 result=store.train_candidate(directory,contract())
                 model_path,sha=store.latest_candidate(directory)
-                model=json.loads(model_path.read_text());regressions.append(model['targets'])
+                model=json.loads((model_path.parent/'evaluation-model.json').read_text());regressions.append(model['targets'])
                 model_path.write_text('{}')
                 with self.assertRaisesRegex(ValueError,'alterado'):store.latest_candidate(directory)
         self.assertEqual(regressions[0],regressions[1])

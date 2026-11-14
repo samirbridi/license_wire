@@ -10,6 +10,20 @@ engine = fixtures.engine
 
 
 class ReferenceCollectionTests(unittest.TestCase):
+    def test_skin_features_are_exported_separately_instead_of_silently_discarded(self):
+        with tempfile.TemporaryDirectory() as directory:
+            bundle,job,raw,request=self.prepare(Path(directory))
+            def render(path,destination,metadata,face_detector=None):
+                destination.write_bytes(b'technical')
+                return {'features':{'redMean':.2,'captureISO':100,'skinR':.7,'skinG':.5,'skinB':.4,
+                    'skinRedBlueRatio':1.75,'skinRedGreenRatio':1.4,'faceConfidence':.98,'skinSampledPixels':200},
+                    'inputDomain':engine.DOMAIN,'jpegSha256':engine.sha256_file(destination)}
+            result=self.run_collection(bundle,job,render)
+            self.assertEqual(result['collectedReferences'],1)
+            row=json.loads((job/'references.jsonl').read_text())
+            self.assertEqual(row['appearanceFeatures']['skinRedBlueRatio'],1.75)
+            self.assertEqual(set(row['features']),{'redMean','captureISO'})
+
     def prepare(self, root, count=1):
         bundle, job, raw = fixtures.LocalEngineTests().fixture(root, count=count)
         request = json.loads((job / 'request.json').read_text())

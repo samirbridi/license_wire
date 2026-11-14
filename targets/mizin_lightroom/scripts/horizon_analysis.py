@@ -2,7 +2,10 @@
 
 Perspective and intentional camera roll remain ambiguous. A proposal requires
 agreement among spatially distributed near-horizontal edges, never one line.
-The image-coordinate slope is NOT a validated Lightroom CropAngle convention.
+CropAngle conversion and rotation-safe cropping belong to the Lightroom adapter.
+Eyes corroborate scene geometry; head pose alone never establishes gravity.
+The perspective estimate is diagnostic only: measured real-photo errors did not
+justify using it to authorize additional automatic rotations.
 
 Calibrated against 102 real technical renders preserved from prior QA jobs
 (private/incoming, private/qa; de-duplicated by content hash). The original
@@ -139,7 +142,203 @@ def combine(horizontal, line_peak, vertical_peak):
             'applyAutomatically': False, 'reason': 'REQUIRES_LIGHTROOM_SIGN_AND_CROP_VALIDATION'}
 
 
-def analyze_image(path):
+def eye_evidence(faces, width, height):
+    """YuNet 15-column output: box, right/left eye, nose, mouth corners, score.
+
+    Eyes measure head roll, NOT gravity. Retain only sufficiently large, frontal,
+    well localized faces; a consensus is corroboration for scene geometry.
+    No recognition, identity or biometric template is produced.
+    """
+    usable, boxes = [], []
+    for row in ([] if faces is None else faces):
+        row = np.asarray(row, dtype=float).reshape(-1)
+        if len(row) != 15 or not np.isfinite(row).all():
+            continue
+        x, y, w, h = row[:4]
+        if w <= 0 or h <= 0 or row[14] < .9:
+            continue
+        boxes.append([float(x), float(y), float(x+w), float(y+h)])
+        points = row[4:14].reshape(5, 2)
+        if any(not (0 <= px < width and 0 <= py < height and
+                    x <= px <= x+w and y <= py <= y+h) for px, py in points):
+            continue
+        left, right = sorted(points[:2], key=lambda p: p[0])
+        delta = right-left
+        distance = float(np.linalg.norm(delta))
+        if distance < 16 or not .2 <= distance/w <= .75:
+            continue
+        axis = delta/distance
+        nose = points[2]-(left+right)/2
+        # Oblique faces and hidden eyes are poor references even with a high face score.
+        if abs(float(nose @ axis))/distance > .22:
+            continue
+        mouth_left, mouth_right = sorted(points[3:], key=lambda p: p[0])
+        mouth = mouth_right-mouth_left
+        angle = math.degrees(math.atan2(delta[1], delta[0]))
+        mouth_angle = math.degrees(math.atan2(mouth[1], mouth[0]))
+        if abs(angle) > 20 or abs(mouth_angle-angle) > 8:
+            continue
+        usable.append({'angle': float(angle), 'x': float((x+w/2)/width),
+                       'y': float((y+h/2)/height), 'eyePixels': distance})
+    usable = sorted(usable, key=lambda f: f['eyePixels'], reverse=True)[:64]
+    result = {'status': 'NO_RELIABLE_EYES', 'detectedFaces': len(boxes),
+              'usableFaces': len(usable), 'supportingFaces': 0, 'boxes': boxes}
+    if not usable:
+        return result
+    angles = np.array([f['angle'] for f in usable])
+    median = float(np.median(angles))
+    selected = np.abs(angles-median) <= 2
+    kept = [f for f, keep in zip(usable, selected) if keep]
+    if not kept or selected.sum()/len(usable) < .7:
+        return {**result, 'status': 'HEAD_POSES_DISAGREE'}
+    angle = float(np.median(angles[selected]))
+    spread = float(np.median(np.abs(angles[selected]-angle)))
+    span = max(f['x'] for f in kept)-min(f['x'] for f in kept)
+    group = len(kept) >= 3 and span >= .2 and spread <= 1
+    return {**result, 'status': 'GROUP_CONSENSUS' if group else 'HEAD_POSE_ONLY',
+            'angle': angle, 'supportingFaces': len(kept), 'spread': spread}
+
+
+def scene_axis(lines, width, height, vertical, face_boxes=()):
+    """One background direction, supported across different parts of the frame.
+
+    Remove facial segments so eyes cannot double-count as background evidence.
+    Long parallel duplicates confined to one decoration cannot decide the roll.
+    """
+    segments = np.asarray(lines, dtype=float).reshape(-1, 4)
+    if not len(segments):
+        return None
+    mid = (segments[:, :2]+segments[:, 2:])/2
+    keep = np.isfinite(segments).all(axis=1)
+    for x0, y0, x1, y1 in face_boxes:
+        keep &= ~((mid[:, 0] >= x0) & (mid[:, 0] <= x1) & (mid[:, 1] >= y0) & (mid[:, 1] <= y1))
+    segments = segments[keep]
+    peak = family_peak(segments, width, height, vertical, min_length=.08,
+                       min_fraction=.55, min_span=.5, bandwidth=.4, max_dev=8)
+    if peak is None:
+        return None
+    dx, dy = segments[:, 2]-segments[:, 0], segments[:, 3]-segments[:, 1]
+    raw = np.degrees(np.arctan2(dy, dx))
+    angles = raw % 180-90 if vertical else (raw+90) % 180-90
+    chosen = (np.abs(angles-peak[0]) <= .8) & (np.hypot(dx, dy) >= .08*max(width, height))
+    supporting = segments[chosen]
+    if len(supporting) < 3:
+        return None
+    across = (supporting[:, 0]+supporting[:, 2])/(2*width) if vertical else (supporting[:, 1]+supporting[:, 3])/(2*height)
+    if float(np.ptp(across)) < .2:
+        return None
+    return {'angle': float(peak[0]), 'supportingSegments': len(supporting), 'acrossSpan': float(np.ptp(across))}
+
+
+def combine_scene_eyes(legacy, horizontal, vertical, eyes):
+    """Conservative multi-cue roll: scene authority, eyes only as corroboration."""
+    result = dict(legacy)
+    eye_angle = eyes.get('angle')
+    axes = [a for a in (horizontal, vertical) if a is not None]
+    angle, evidence = None, None
+    if horizontal and vertical and abs(horizontal['angle']-vertical['angle']) <= .5:
+        angle = (horizontal['angle']+vertical['angle'])/2
+        evidence = 'SCENE_AXES_AGREE'
+    # Measured development set: an eye line plus one scene axis introduced eight
+    # extra worse corrections. Head pose is not an independent gravity reference.
+    # Eyes corroborate a scene proposal, but never authorize a new rotation alone.
+    elif legacy.get('status') == 'PROPOSAL_ONLY' and eye_angle is not None and abs(legacy['imageSlopeDegrees']-eye_angle) <= .8:
+        angle = legacy['imageSlopeDegrees']
+        evidence = 'SCENE_AND_EYES_AGREE'
+    # Conflicting scene directions mean perspective; no eye-only escape from that veto.
+    if angle is not None:
+        if abs(angle) < .25:
+            result = {'status': 'KEEP_EXISTING', 'reason': 'ALREADY_LEVEL', 'applyAutomatically': False}
+        elif abs(angle) <= MAX_TILT:
+            result = {'status': 'PROPOSAL_ONLY', 'imageSlopeDegrees': angle, 'evidence': evidence,
+                      'reason': 'MULTI_CUE_CONSENSUS', 'applyAutomatically': False}
+        else:
+            result = {'status': 'KEEP_EXISTING', 'reason': 'LIKELY_INTENTIONAL_TILT', 'applyAutomatically': False}
+    elif legacy.get('reason') == 'INSUFFICIENT_AGREEMENT' and eye_angle is not None:
+        disagrees = any(abs(axis['angle']-eye_angle) > .8 for axis in axes)
+        result['reason'] = 'SCENE_EYES_DISAGREE' if disagrees else 'EYES_WITHOUT_SCENE_SUPPORT'
+    # Fixed-size diagnostics only; no image or landmark coordinates in the job report.
+    result['analysisMethod'] = 'scene-and-eyes/1'
+    result['scene'] = {'horizontal': horizontal, 'vertical': vertical}
+    result['eyes'] = {k: v for k, v in eyes.items() if k != 'boxes'}
+    return result
+
+
+def perspective_vertical(lines, width, height, face_boxes=()):
+    """Robust vertical vanishing point, including a point at infinity (parallel walls).
+
+    Different vertical slopes can be perspective, not conflicting camera roll.
+    Fit one common vanishing direction across multiple image regions, excluding
+    approximate person regions so clothing/poses do not masquerade as room axes.
+    """
+    segments = np.asarray(lines, dtype=float).reshape(-1, 4)
+    if not len(segments):
+        return None
+    mid = (segments[:, :2]+segments[:, 2:])/2
+    delta = segments[:, 2:]-segments[:, :2]
+    length = np.linalg.norm(delta, axis=1)
+    dev = np.degrees(np.arctan2(delta[:, 1], delta[:, 0])) % 180-90
+    keep = np.isfinite(segments).all(axis=1) & (length >= .12*height) & (np.abs(dev) < 25)
+    for x0, y0, x1, y1 in face_boxes:
+        fw, fh = x1-x0, y1-y0
+        keep &= ~((mid[:, 0] >= x0-.5*fw) & (mid[:, 0] <= x1+.5*fw) &
+                  (mid[:, 1] >= y0-.2*fh) & (mid[:, 1] <= y1+3*fh))
+    indices = np.flatnonzero(keep)
+    # At most two long segments per grid cell; duplicate edge fragments cannot vote unboundedly.
+    cells, chosen = {}, []
+    for i in sorted(indices, key=lambda i: -length[i]):
+        cell = (int(mid[i, 0]/width*8), int(mid[i, 1]/height*6))
+        if cells.get(cell, 0) < 2:
+            chosen.append(i);cells[cell] = cells.get(cell, 0)+1
+    if len(chosen) < 6:
+        return None
+    segments, mid, length, delta = segments[chosen], mid[chosen], length[chosen], delta[chosen]
+    scale = max(width, height)
+    center = np.array([width/2, height/2])
+    first = np.column_stack(((segments[:, :2]-center)/scale, np.ones(len(segments))))
+    last = np.column_stack(((segments[:, 2:]-center)/scale, np.ones(len(segments))))
+    equations = np.cross(first, last)
+    equations /= np.linalg.norm(equations[:, :2], axis=1)[:, None]
+    ia, ib = np.triu_indices(len(segments), 1)
+    vp = np.cross(equations[ia], equations[ib])
+    norm = np.linalg.norm(vp[:, :2], axis=1)
+    valid = norm > 1e-8
+    vp = vp[valid]/norm[valid, None]
+    vp *= np.where(vp[:, 1:2] > 0, -1, 1)
+    roll = np.degrees(np.arctan2(vp[:, 0], -vp[:, 1]))
+    # Avoid extrapolating from an implausibly close vanishing point.
+    valid = (np.abs(roll) <= 8) & (np.abs(vp[:, 2])*height/scale < .65)
+    vp = vp[valid]
+    if not len(vp):
+        return None
+    mids = (mid-center)/scale
+    rays = vp[:, None, :2]-vp[:, None, 2:]*mids[None, :, :]
+    unit = delta/length[:, None]
+    cross = np.abs(rays[:, :, 0]*unit[None, :, 1]-rays[:, :, 1]*unit[None, :, 0])
+    residual = np.degrees(np.arcsin(np.clip(cross/np.linalg.norm(rays, axis=2), 0, 1)))
+    support = residual < .5
+    scores = support @ length
+    best = support[int(np.argmax(scores))]
+    if best.sum() < 6 or length[best].sum()/length.sum() < .6:
+        return None
+    xs = mid[best, 0]/width
+    if np.ptp(xs) < .4 or xs.min() > .35 or xs.max() < .65:
+        return None
+    points = segments[best].reshape(-1, 2)
+    if np.ptp(points[:, 1])/height < .5:
+        return None
+    _, _, vectors = np.linalg.svd(equations[best]*np.sqrt(length[best, None]))
+    point = vectors[-1]
+    if point[1] > 0:
+        point = -point
+    angle = float(np.degrees(np.arctan2(point[0], -point[1])))
+    if not math.isfinite(angle) or abs(angle) > MAX_TILT:
+        return None
+    return {'angle': angle, 'supportingSegments': int(best.sum()),
+            'supportFraction': float(length[best].sum()/length.sum()), 'acrossSpan': float(np.ptp(xs))}
+
+
+def analyze_image(path, face_detector=None, include_legacy=False):
     import cv2
     # imdecode keeps non-ASCII Windows profile paths working (cv2.imread does not).
     data = np.fromfile(str(path), dtype=np.uint8)
@@ -147,17 +346,41 @@ def analyze_image(path):
     if image is None:
         raise ValueError('Image unavailable')
     height, width = image.shape
+    eyes = {'status': 'DETECTOR_UNAVAILABLE', 'usableFaces': 0, 'supportingFaces': 0, 'boxes': []}
+    if face_detector is not None:
+        try:
+            color = cv2.imdecode(data, cv2.IMREAD_COLOR)
+            scale = min(1, 960/max(width, height))
+            small = cv2.resize(color, (round(width*scale), round(height*scale))) if scale < 1 else color
+            face_detector.setInputSize((small.shape[1], small.shape[0]))
+            _, found = face_detector.detect(small)
+            if found is not None:
+                found = np.asarray(found, dtype=float).copy()
+                found[:, :14] /= scale
+            eyes = eye_evidence(found, width, height)
+        except Exception:
+            eyes['status'] = 'DETECTOR_FAILED'
     edges = cv2.Canny(image, 60, 160)
     lines = cv2.HoughLinesP(edges, 1, np.pi/1800, threshold=60,
                             minLineLength=max(20, int(width*.10)), maxLineGap=12)
     horizontal = propose_from_lines([] if lines is None else lines.reshape(-1, 4), width, height)
     line_peak = vertical_peak = None
+    segments = np.zeros((0, 4))
     detector = getattr(cv2, 'createLineSegmentDetector', None)
     if detector is not None:
         found = detector(cv2.LSD_REFINE_STD).detect(image)[0]
         segments = np.zeros((0, 4)) if found is None else found.reshape(-1, 4)
         line_peak = family_peak(segments, width, height, vertical=False)
         vertical_peak = family_peak(segments, width, height, vertical=True)
-    result = combine(horizontal, line_peak, vertical_peak)
+    legacy = combine(horizontal, line_peak, vertical_peak)
+    result = combine_scene_eyes(legacy, scene_axis(segments, width, height, False, eyes['boxes']),
+                               scene_axis(segments, width, height, True, eyes['boxes']), eyes)
+    vp = perspective_vertical(segments, width, height, eyes['boxes'])
+    result['scene']['perspectiveVertical'] = vp
+    # Development corpus: this fallback added 15 proposals, but 10 moved farther
+    # from the photographer's approved angle. Preserve it as diagnostic evidence,
+    # never as authority to rotate. Do not trade correctness for a higher counter.
+    if include_legacy:
+        result['legacy'] = legacy
     # Oriented render size: the editor needs the aspect ratio for a rotation-safe crop.
     return {**result, 'imageWidth': int(width), 'imageHeight': int(height)}

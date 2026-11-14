@@ -200,6 +200,9 @@ class PhotoEditorLuaTests(unittest.TestCase):
             results=[{'id':p['id'],'path':p['path'],'status':'COMPUTED','predictions':predictions} for p in request['photos']]
             if request.get('geometry',{}).get('horizon'):
                 for row in results:row['geometry']={'status':'PROPOSAL_ONLY','imageSlopeDegrees':3.0,'imageWidth':1024,'imageHeight':683,'applyAutomatically':False}
+                if runtime.globals().only_first_geometry:
+                    for row in results[1:]:
+                        row['geometry']={'status':'KEEP_EXISTING','reason':'EYES_WITHOUT_SCENE_SUPPORT','applyAutomatically':False}
             status='COMPLETED'
             if runtime.globals().fail_last and len(results)>1:
                 last=results[-1]
@@ -559,7 +562,9 @@ class PhotoEditorLuaTests(unittest.TestCase):
             cases=[("nil",'geometria nao foi calculada'),
                    ("{status='KEEP_EXISTING',reason='ALREADY_LEVEL'}",'ja esta nivelada'),
                    ("{status='KEEP_EXISTING',reason='ANALYSIS_FAILED'}",'nao foi possivel analisar'),
-                   ("{status='KEEP_EXISTING',reason='INSUFFICIENT_AGREEMENT'}",'sem linhas de horizonte confiaveis')]
+                   ("{status='KEEP_EXISTING',reason='INSUFFICIENT_AGREEMENT'}",'sem referencias confiaveis'),
+                   ("{status='KEEP_EXISTING',reason='EYES_WITHOUT_SCENE_SUPPORT'}",'sem referencia segura do ambiente'),
+                   ("{status='KEEP_EXISTING',reason='SCENE_EYES_DISAGREE'}",'nao confirmam o mesmo eixo')]
             for proposal,expected in cases:
                 result,reason=runtime.eval('editor.horizon({},{CropTop=0,CropLeft=0,CropBottom=1,CropRight=1},'+proposal+')')
                 self.assertIsNone(result);self.assertIn(expected,reason)
@@ -577,6 +582,35 @@ class PhotoEditorLuaTests(unittest.TestCase):
                 self.assertTrue(bool(self.last_request.get('geometry')))
                 target=runtime.globals().source.copies[1] if destination=='copies' else runtime.globals().source
                 self.assertEqual(target.settings.CropAngle,3)
+
+    def test_twenty_photos_are_edited_when_only_one_has_reliable_leveling(self):
+        with tempfile.TemporaryDirectory() as temp:
+            runtime=self.setup_editor(Path(temp))
+            runtime.execute('''
+                only_first_geometry=true;masters={};selected={}
+                for i=1,20 do
+                    local p=newMaster(i);p.settings.CropTop=0
+                    p.applyDevelopSettings=function(self,settings)
+                        assert(inGate);for k,v in pairs(settings) do self.settings[k]=clone(v) end
+                    end
+                    masters[i]=p;selected[i]=p
+                end
+                modules.LrDialogs.confirm=function() return 'ok' end
+                modules.LrDialogs.presentModalDialog=function(props)
+                    referenceProps.horizon=true;referenceProps.destination='selection';return 'ok'
+                end
+                modules.LrDialogs.message=function(title,message) finalMessage=message end
+            ''')
+            directory=Path(runtime.globals().editor.edit())
+            session=json.loads((directory/'session.json').read_text())
+            outcome=json.loads((directory/'outcome.json').read_text())
+            self.assertEqual(len(self.last_request['photos']),20)
+            self.assertEqual(session['geometryAnalyzed'],20)
+            self.assertEqual(outcome['application']['completed'],20)
+            self.assertEqual(outcome['application']['straightened'],1)
+            self.assertIn('Fotos analisadas para nivelamento: 20 de 20',runtime.globals().finalMessage)
+            self.assertIn('19x',runtime.globals().finalMessage)
+            self.assertEqual(runtime.globals().masters[20].settings.Temperature,5436)
 
     def test_adaptive_mask_preset_is_applied_to_new_copy_and_restored(self):
         with tempfile.TemporaryDirectory() as temp:

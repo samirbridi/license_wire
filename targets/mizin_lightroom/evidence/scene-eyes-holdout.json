@@ -1,0 +1,5546 @@
+{
+  "sourceSha256": "841c5d2a1365dc0db3a81b604556777596bec6f1ea19b4ad8d8a8770a61431d1",
+  "labelSha256": "ff2d65662d0e3ab0a85fbb1181990148d566dc2f2f6e5434f7df93057e44de93",
+  "faceModelSha256": "8f2383e4dd3cfbb4553ea8718107fc0423210dc964f9f4280604804ed2552fa4",
+  "opencvVersion": "4.13.0",
+  "start": 360,
+  "limit": 186,
+  "withinEventOnly": true,
+  "legacy": {
+    "photos": 186,
+    "proposals": 0,
+    "closer": 0,
+    "farther": 0,
+    "meanAbsoluteErrorDegrees": 0.9960676021505377,
+    "evidence": {
+      "INSUFFICIENT_AGREEMENT": 185,
+      "LIKELY_INTENTIONAL_TILT": 1
+    }
+  },
+  "new": {
+    "photos": 186,
+    "proposals": 0,
+    "closer": 0,
+    "farther": 0,
+    "meanAbsoluteErrorDegrees": 0.9960676021505377,
+    "evidence": {
+      "SCENE_EYES_DISAGREE": 8,
+      "EYES_WITHOUT_SCENE_SUPPORT": 112,
+      "INSUFFICIENT_AGREEMENT": 65,
+      "LIKELY_INTENTIONAL_TILT": 1
+    }
+  },
+  "eyes": {
+    "HEAD_POSE_ONLY": 107,
+    "GROUP_CONSENSUS": 13,
+    "HEAD_POSES_DISAGREE": 23,
+    "NO_RELIABLE_EYES": 43
+  },
+  "seconds": 206.29796314239502,
+  "rows": [
+    {
+      "index": 360,
+      "photographer": 0.93,
+      "legacy": {
+        "status": "KEEP_EXISTING",
+        "reason": "INSUFFICIENT_AGREEMENT",
+        "applyAutomatically": false
+      },
+      "new": {
+        "status": "KEEP_EXISTING",
+        "reason": "SCENE_EYES_DISAGREE",
+        "applyAutomatically": false,
+        "analysisMethod": "scene-and-eyes/1",
+        "scene": {
+          "horizontal": {
+            "angle": 0.5514862882191707,
+            "supportingSegments": 6,
+            "acrossSpan": 0.5152406190571032
+          },
+          "vertical": null,
+          "perspectiveVertical": null
+        },
+        "eyes": {
+          "status": "HEAD_POSE_ONLY",
+          "detectedFaces": 2,
+          "usableFaces": 2,
+          "supportingFaces": 2,
+          "angle": -0.597689666687222,
+          "spread": 1.2788137074118588
+        },
+        "imageWidth": 1024,
+        "imageHeight": 684
+      }
+    },
+    {
+      "index": 361,
+      "photographer": 0.198688,
+      "legacy": {
+        "status": "KEEP_EXISTING",
+        "reason": "INSUFFICIENT_AGREEMENT",
+        "applyAutomatically": false
+      },
+      "new": {
+        "status": "KEEP_EXISTING",
+        "reason": "EYES_WITHOUT_SCENE_SUPPORT",
+        "applyAutomatically": false,
+        "analysisMethod": "scene-and-eyes/1",
+        "scene": {
+          "horizontal": null,
+          "vertical": null,
+          "perspectiveVertical": null
+        },
+        "eyes": {
+          "status": "HEAD_POSE_ONLY",
+          "detectedFaces": 1,
+          "usableFaces": 1,
+          "supportingFaces": 1,
+          "angle": -1.2209447217747424,
+          "spread": 0.0
+        },
+        "imageWidth": 1024,
+        "imageHeight": 684
+      }
+    },
+    {
+      "index": 362,
+      "photographer": -0.893357,
+      "legacy": {
+        "status": "KEEP_EXISTING",
+        "reason": "INSUFFICIENT_AGREEMENT",
+        "applyAutomatically": false
+      },
+      "new": {
+        "status": "KEEP_EXISTING",
+        "reason": "EYES_WITHOUT_SCENE_SUPPORT",
+        "applyAutomatically": false,
+        "analysisMethod": "scene-and-eyes/1",
+        "scene": {
+          "horizontal": null,
+          "vertical": null,
+          "perspectiveVertical": null
+        },
+        "eyes": {
+          "status": "HEAD_POSE_ONLY",
+          "detectedFaces": 2,
+          "usableFaces": 1,
+          "supportingFaces": 1,
+          "angle": -3.1134911259865836,
+          "spread": 0.0
+        },
+        "imageWidth": 1024,
+        "imageHeight": 684
+      }
+    },
+    {
+      "index": 363,
+      "photographer": 0.921465,
+      "legacy": {
+        "status": "KEEP_EXISTING",
+        "reason": "INSUFFICIENT_AGREEMENT",
+        "applyAutomatically": false
+      },
+      "new": {
+        "status": "KEEP_EXISTING",
+        "reason": "EYES_WITHOUT_SCENE_SUPPORT",
+        "applyAutomatically": false,
+        "analysisMethod": "scene-and-eyes/1",
+        "scene": {
+          "horizontal": null,
+          "vertical": null,
+          "perspectiveVertical": null
+        },
+        "eyes": {
+          "status": "HEAD_POSE_ONLY",
+          "detectedFaces": 3,
+          "usableFaces": 1,
+          "supportingFaces": 1,
+          "angle": -0.15372731063419517,
+          "spread": 0.0
+        },
+        "imageWidth": 1024,
+        "imageHeight": 684
+      }
+    },
+    {
+      "index": 364,
+      "photographer": -0.612119,
+      "legacy": {
+        "status": "KEEP_EXISTING",
+        "reason": "INSUFFICIENT_AGREEMENT",
+        "applyAutomatically": false
+      },
+      "new": {
+        "status": "KEEP_EXISTING",
+        "reason": "EYES_WITHOUT_SCENE_SUPPORT",
+        "applyAutomatically": false,
+        "analysisMethod": "scene-and-eyes/1",
+        "scene": {
+          "horizontal": null,
+          "vertical": null,
+          "perspectiveVertical": null
+        },
+        "eyes": {
+          "status": "HEAD_POSE_ONLY",
+          "detectedFaces": 3,
+          "usableFaces": 2,
+          "supportingFaces": 2,
+          "angle": -0.23288239358654259,
+          "spread": 0.5458608190121412
+        },
+        "imageWidth": 1024,
+        "imageHeight": 684
+      }
+    },
+    {
+      "index": 365,
+      "photographer": 0.140534,
+      "legacy": {
+        "status": "KEEP_EXISTING",
+        "reason": "INSUFFICIENT_AGREEMENT",
+        "applyAutomatically": false
+      },
+      "new": {
+        "status": "KEEP_EXISTING",
+        "reason": "EYES_WITHOUT_SCENE_SUPPORT",
+        "applyAutomatically": false,
+        "analysisMethod": "scene-and-eyes/1",
+        "scene": {
+          "horizontal": null,
+          "vertical": null,
+          "perspectiveVertical": null
+        },
+        "eyes": {
+          "status": "HEAD_POSE_ONLY",
+          "detectedFaces": 3,
+          "usableFaces": 2,
+          "supportingFaces": 2,
+          "angle": 0.27369494091050134,
+          "spread": 1.0662827710332308
+        },
+        "imageWidth": 1024,
+        "imageHeight": 684
+      }
+    },
+    {
+      "index": 366,
+      "photographer": 0.535809,
+      "legacy": {
+        "status": "KEEP_EXISTING",
+        "reason": "INSUFFICIENT_AGREEMENT",
+        "applyAutomatically": false
+      },
+      "new": {
+        "status": "KEEP_EXISTING",
+        "reason": "EYES_WITHOUT_SCENE_SUPPORT",
+        "applyAutomatically": false,
+        "analysisMethod": "scene-and-eyes/1",
+        "scene": {
+          "horizontal": null,
+          "vertical": null,
+          "perspectiveVertical": null
+        },
+        "eyes": {
+          "status": "GROUP_CONSENSUS",
+          "detectedFaces": 4,
+          "usableFaces": 4,
+          "supportingFaces": 4,
+          "angle": -1.760782513819069,
+          "spread": 0.23607180310692422
+        },
+        "imageWidth": 1024,
+        "imageHeight": 684
+      }
+    },
+    {
+      "index": 367,
+      "photographer": 0.872938,
+      "legacy": {
+        "status": "KEEP_EXISTING",
+        "reason": "INSUFFICIENT_AGREEMENT",
+        "applyAutomatically": false
+      },
+      "new": {
+        "status": "KEEP_EXISTING",
+        "reason": "INSUFFICIENT_AGREEMENT",
+        "applyAutomatically": false,
+        "analysisMethod": "scene-and-eyes/1",
+        "scene": {
+          "horizontal": null,
+          "vertical": null,
+          "perspectiveVertical": null
+        },
+        "eyes": {
+          "status": "HEAD_POSES_DISAGREE",
+          "detectedFaces": 3,
+          "usableFaces": 3,
+          "supportingFaces": 0
+        },
+        "imageWidth": 1024,
+        "imageHeight": 684
+      }
+    },
+    {
+      "index": 368,
+      "photographer": 0.001124,
+      "legacy": {
+        "status": "KEEP_EXISTING",
+        "reason": "INSUFFICIENT_AGREEMENT",
+        "applyAutomatically": false
+      },
+      "new": {
+        "status": "KEEP_EXISTING",
+        "reason": "EYES_WITHOUT_SCENE_SUPPORT",
+        "applyAutomatically": false,
+        "analysisMethod": "scene-and-eyes/1",
+        "scene": {
+          "horizontal": null,
+          "vertical": null,
+          "perspectiveVertical": null
+        },
+        "eyes": {
+          "status": "HEAD_POSE_ONLY",
+          "detectedFaces": 2,
+          "usableFaces": 1,
+          "supportingFaces": 1,
+          "angle": 0.6134254159371934,
+          "spread": 0.0
+        },
+        "imageWidth": 1024,
+        "imageHeight": 684
+      }
+    },
+    {
+      "index": 369,
+      "photographer": -1.0641,
+      "legacy": {
+        "status": "KEEP_EXISTING",
+        "reason": "INSUFFICIENT_AGREEMENT",
+        "applyAutomatically": false
+      },
+      "new": {
+        "status": "KEEP_EXISTING",
+        "reason": "EYES_WITHOUT_SCENE_SUPPORT",
+        "applyAutomatically": false,
+        "analysisMethod": "scene-and-eyes/1",
+        "scene": {
+          "horizontal": null,
+          "vertical": null,
+          "perspectiveVertical": null
+        },
+        "eyes": {
+          "status": "GROUP_CONSENSUS",
+          "detectedFaces": 4,
+          "usableFaces": 3,
+          "supportingFaces": 3,
+          "angle": -0.49513076820672275,
+          "spread": 0.6616655913861271
+        },
+        "imageWidth": 1024,
+        "imageHeight": 684
+      }
+    },
+    {
+      "index": 370,
+      "photographer": -1.03231,
+      "legacy": {
+        "status": "KEEP_EXISTING",
+        "reason": "INSUFFICIENT_AGREEMENT",
+        "applyAutomatically": false
+      },
+      "new": {
+        "status": "KEEP_EXISTING",
+        "reason": "INSUFFICIENT_AGREEMENT",
+        "applyAutomatically": false,
+        "analysisMethod": "scene-and-eyes/1",
+        "scene": {
+          "horizontal": null,
+          "vertical": null,
+          "perspectiveVertical": null
+        },
+        "eyes": {
+          "status": "HEAD_POSES_DISAGREE",
+          "detectedFaces": 3,
+          "usableFaces": 3,
+          "supportingFaces": 0
+        },
+        "imageWidth": 1024,
+        "imageHeight": 684
+      }
+    },
+    {
+      "index": 371,
+      "photographer": -1.15216,
+      "legacy": {
+        "status": "KEEP_EXISTING",
+        "reason": "INSUFFICIENT_AGREEMENT",
+        "applyAutomatically": false
+      },
+      "new": {
+        "status": "KEEP_EXISTING",
+        "reason": "EYES_WITHOUT_SCENE_SUPPORT",
+        "applyAutomatically": false,
+        "analysisMethod": "scene-and-eyes/1",
+        "scene": {
+          "horizontal": null,
+          "vertical": null,
+          "perspectiveVertical": null
+        },
+        "eyes": {
+          "status": "HEAD_POSE_ONLY",
+          "detectedFaces": 2,
+          "usableFaces": 1,
+          "supportingFaces": 1,
+          "angle": 0.47462553072214597,
+          "spread": 0.0
+        },
+        "imageWidth": 1024,
+        "imageHeight": 684
+      }
+    },
+    {
+      "index": 372,
+      "photographer": -1.56136,
+      "legacy": {
+        "status": "KEEP_EXISTING",
+        "reason": "INSUFFICIENT_AGREEMENT",
+        "applyAutomatically": false
+      },
+      "new": {
+        "status": "KEEP_EXISTING",
+        "reason": "INSUFFICIENT_AGREEMENT",
+        "applyAutomatically": false,
+        "analysisMethod": "scene-and-eyes/1",
+        "scene": {
+          "horizontal": null,
+          "vertical": null,
+          "perspectiveVertical": null
+        },
+        "eyes": {
+          "status": "NO_RELIABLE_EYES",
+          "detectedFaces": 0,
+          "usableFaces": 0,
+          "supportingFaces": 0
+        },
+        "imageWidth": 1024,
+        "imageHeight": 684
+      }
+    },
+    {
+      "index": 373,
+      "photographer": -1.34116,
+      "legacy": {
+        "status": "KEEP_EXISTING",
+        "reason": "INSUFFICIENT_AGREEMENT",
+        "applyAutomatically": false
+      },
+      "new": {
+        "status": "KEEP_EXISTING",
+        "reason": "EYES_WITHOUT_SCENE_SUPPORT",
+        "applyAutomatically": false,
+        "analysisMethod": "scene-and-eyes/1",
+        "scene": {
+          "horizontal": null,
+          "vertical": null,
+          "perspectiveVertical": null
+        },
+        "eyes": {
+          "status": "GROUP_CONSENSUS",
+          "detectedFaces": 8,
+          "usableFaces": 3,
+          "supportingFaces": 3,
+          "angle": -0.6368137341553116,
+          "spread": 0.6280325308143003
+        },
+        "imageWidth": 1024,
+        "imageHeight": 684
+      }
+    },
+    {
+      "index": 374,
+      "photographer": -0.488883,
+      "legacy": {
+        "status": "KEEP_EXISTING",
+        "reason": "INSUFFICIENT_AGREEMENT",
+        "applyAutomatically": false
+      },
+      "new": {
+        "status": "KEEP_EXISTING",
+        "reason": "EYES_WITHOUT_SCENE_SUPPORT",
+        "applyAutomatically": false,
+        "analysisMethod": "scene-and-eyes/1",
+        "scene": {
+          "horizontal": null,
+          "vertical": null,
+          "perspectiveVertical": null
+        },
+        "eyes": {
+          "status": "HEAD_POSE_ONLY",
+          "detectedFaces": 1,
+          "usableFaces": 1,
+          "supportingFaces": 1,
+          "angle": 4.700099901431428,
+          "spread": 0.0
+        },
+        "imageWidth": 1024,
+        "imageHeight": 684
+      }
+    },
+    {
+      "index": 375,
+      "photographer": -0.256897,
+      "legacy": {
+        "status": "KEEP_EXISTING",
+        "reason": "INSUFFICIENT_AGREEMENT",
+        "applyAutomatically": false
+      },
+      "new": {
+        "status": "KEEP_EXISTING",
+        "reason": "INSUFFICIENT_AGREEMENT",
+        "applyAutomatically": false,
+        "analysisMethod": "scene-and-eyes/1",
+        "scene": {
+          "horizontal": null,
+          "vertical": null,
+          "perspectiveVertical": null
+        },
+        "eyes": {
+          "status": "HEAD_POSES_DISAGREE",
+          "detectedFaces": 3,
+          "usableFaces": 3,
+          "supportingFaces": 0
+        },
+        "imageWidth": 1024,
+        "imageHeight": 684
+      }
+    },
+    {
+      "index": 376,
+      "photographer": -0.919369,
+      "legacy": {
+        "status": "KEEP_EXISTING",
+        "reason": "INSUFFICIENT_AGREEMENT",
+        "applyAutomatically": false
+      },
+      "new": {
+        "status": "KEEP_EXISTING",
+        "reason": "EYES_WITHOUT_SCENE_SUPPORT",
+        "applyAutomatically": false,
+        "analysisMethod": "scene-and-eyes/1",
+        "scene": {
+          "horizontal": null,
+          "vertical": null,
+          "perspectiveVertical": null
+        },
+        "eyes": {
+          "status": "HEAD_POSE_ONLY",
+          "detectedFaces": 3,
+          "usableFaces": 1,
+          "supportingFaces": 1,
+          "angle": -0.4202063372394013,
+          "spread": 0.0
+        },
+        "imageWidth": 1024,
+        "imageHeight": 684
+      }
+    },
+    {
+      "index": 377,
+      "photographer": -2.15613,
+      "legacy": {
+        "status": "KEEP_EXISTING",
+        "reason": "INSUFFICIENT_AGREEMENT",
+        "applyAutomatically": false
+      },
+      "new": {
+        "status": "KEEP_EXISTING",
+        "reason": "EYES_WITHOUT_SCENE_SUPPORT",
+        "applyAutomatically": false,
+        "analysisMethod": "scene-and-eyes/1",
+        "scene": {
+          "horizontal": null,
+          "vertical": null,
+          "perspectiveVertical": null
+        },
+        "eyes": {
+          "status": "HEAD_POSE_ONLY",
+          "detectedFaces": 4,
+          "usableFaces": 1,
+          "supportingFaces": 1,
+          "angle": 0.2537878881014629,
+          "spread": 0.0
+        },
+        "imageWidth": 1024,
+        "imageHeight": 684
+      }
+    },
+    {
+      "index": 378,
+      "photographer": 1.41,
+      "legacy": {
+        "status": "KEEP_EXISTING",
+        "reason": "INSUFFICIENT_AGREEMENT",
+        "applyAutomatically": false
+      },
+      "new": {
+        "status": "KEEP_EXISTING",
+        "reason": "SCENE_EYES_DISAGREE",
+        "applyAutomatically": false,
+        "analysisMethod": "scene-and-eyes/1",
+        "scene": {
+          "horizontal": null,
+          "vertical": {
+            "angle": 0.6442266696964296,
+            "supportingSegments": 8,
+            "acrossSpan": 0.5347248297184706
+          },
+          "perspectiveVertical": null
+        },
+        "eyes": {
+          "status": "HEAD_POSE_ONLY",
+          "detectedFaces": 4,
+          "usableFaces": 1,
+          "supportingFaces": 1,
+          "angle": 1.7311951319028225,
+          "spread": 0.0
+        },
+        "imageWidth": 1024,
+        "imageHeight": 684
+      }
+    },
+    {
+      "index": 379,
+      "photographer": 1.01857,
+      "legacy": {
+        "status": "KEEP_EXISTING",
+        "reason": "INSUFFICIENT_AGREEMENT",
+        "applyAutomatically": false
+      },
+      "new": {
+        "status": "KEEP_EXISTING",
+        "reason": "EYES_WITHOUT_SCENE_SUPPORT",
+        "applyAutomatically": false,
+        "analysisMethod": "scene-and-eyes/1",
+        "scene": {
+          "horizontal": null,
+          "vertical": null,
+          "perspectiveVertical": null
+        },
+        "eyes": {
+          "status": "HEAD_POSE_ONLY",
+          "detectedFaces": 2,
+          "usableFaces": 1,
+          "supportingFaces": 1,
+          "angle": 3.221745901479132,
+          "spread": 0.0
+        },
+        "imageWidth": 1024,
+        "imageHeight": 684
+      }
+    },
+    {
+      "index": 380,
+      "photographer": 0.245679,
+      "legacy": {
+        "status": "KEEP_EXISTING",
+        "reason": "INSUFFICIENT_AGREEMENT",
+        "applyAutomatically": false
+      },
+      "new": {
+        "status": "KEEP_EXISTING",
+        "reason": "INSUFFICIENT_AGREEMENT",
+        "applyAutomatically": false,
+        "analysisMethod": "scene-and-eyes/1",
+        "scene": {
+          "horizontal": null,
+          "vertical": null,
+          "perspectiveVertical": null
+        },
+        "eyes": {
+          "status": "HEAD_POSES_DISAGREE",
+          "detectedFaces": 7,
+          "usableFaces": 2,
+          "supportingFaces": 0
+        },
+        "imageWidth": 1024,
+        "imageHeight": 684
+      }
+    },
+    {
+      "index": 381,
+      "photographer": 0.448316,
+      "legacy": {
+        "status": "KEEP_EXISTING",
+        "reason": "INSUFFICIENT_AGREEMENT",
+        "applyAutomatically": false
+      },
+      "new": {
+        "status": "KEEP_EXISTING",
+        "reason": "INSUFFICIENT_AGREEMENT",
+        "applyAutomatically": false,
+        "analysisMethod": "scene-and-eyes/1",
+        "scene": {
+          "horizontal": null,
+          "vertical": null,
+          "perspectiveVertical": null
+        },
+        "eyes": {
+          "status": "NO_RELIABLE_EYES",
+          "detectedFaces": 2,
+          "usableFaces": 0,
+          "supportingFaces": 0
+        },
+        "imageWidth": 1024,
+        "imageHeight": 684
+      }
+    },
+    {
+      "index": 382,
+      "photographer": -3.28,
+      "legacy": {
+        "status": "KEEP_EXISTING",
+        "reason": "INSUFFICIENT_AGREEMENT",
+        "applyAutomatically": false
+      },
+      "new": {
+        "status": "KEEP_EXISTING",
+        "reason": "EYES_WITHOUT_SCENE_SUPPORT",
+        "applyAutomatically": false,
+        "analysisMethod": "scene-and-eyes/1",
+        "scene": {
+          "horizontal": null,
+          "vertical": null,
+          "perspectiveVertical": null
+        },
+        "eyes": {
+          "status": "HEAD_POSE_ONLY",
+          "detectedFaces": 2,
+          "usableFaces": 2,
+          "supportingFaces": 2,
+          "angle": -1.8329701772591518,
+          "spread": 0.7847193900479374
+        },
+        "imageWidth": 1024,
+        "imageHeight": 684
+      }
+    },
+    {
+      "index": 383,
+      "photographer": -1.0154,
+      "legacy": {
+        "status": "KEEP_EXISTING",
+        "reason": "INSUFFICIENT_AGREEMENT",
+        "applyAutomatically": false
+      },
+      "new": {
+        "status": "KEEP_EXISTING",
+        "reason": "EYES_WITHOUT_SCENE_SUPPORT",
+        "applyAutomatically": false,
+        "analysisMethod": "scene-and-eyes/1",
+        "scene": {
+          "horizontal": null,
+          "vertical": null,
+          "perspectiveVertical": null
+        },
+        "eyes": {
+          "status": "HEAD_POSE_ONLY",
+          "detectedFaces": 3,
+          "usableFaces": 1,
+          "supportingFaces": 1,
+          "angle": 4.452448598292803,
+          "spread": 0.0
+        },
+        "imageWidth": 1024,
+        "imageHeight": 684
+      }
+    },
+    {
+      "index": 384,
+      "photographer": 1.15158,
+      "legacy": {
+        "status": "KEEP_EXISTING",
+        "reason": "INSUFFICIENT_AGREEMENT",
+        "applyAutomatically": false
+      },
+      "new": {
+        "status": "KEEP_EXISTING",
+        "reason": "INSUFFICIENT_AGREEMENT",
+        "applyAutomatically": false,
+        "analysisMethod": "scene-and-eyes/1",
+        "scene": {
+          "horizontal": null,
+          "vertical": null,
+          "perspectiveVertical": null
+        },
+        "eyes": {
+          "status": "NO_RELIABLE_EYES",
+          "detectedFaces": 1,
+          "usableFaces": 0,
+          "supportingFaces": 0
+        },
+        "imageWidth": 1024,
+        "imageHeight": 684
+      }
+    },
+    {
+      "index": 385,
+      "photographer": 1.32105,
+      "legacy": {
+        "status": "KEEP_EXISTING",
+        "reason": "INSUFFICIENT_AGREEMENT",
+        "applyAutomatically": false
+      },
+      "new": {
+        "status": "KEEP_EXISTING",
+        "reason": "EYES_WITHOUT_SCENE_SUPPORT",
+        "applyAutomatically": false,
+        "analysisMethod": "scene-and-eyes/1",
+        "scene": {
+          "horizontal": null,
+          "vertical": null,
+          "perspectiveVertical": null
+        },
+        "eyes": {
+          "status": "HEAD_POSE_ONLY",
+          "detectedFaces": 3,
+          "usableFaces": 2,
+          "supportingFaces": 2,
+          "angle": -3.2541455418059737,
+          "spread": 1.5627809737026317
+        },
+        "imageWidth": 684,
+        "imageHeight": 1024
+      }
+    },
+    {
+      "index": 386,
+      "photographer": -2.28,
+      "legacy": {
+        "status": "KEEP_EXISTING",
+        "reason": "INSUFFICIENT_AGREEMENT",
+        "applyAutomatically": false
+      },
+      "new": {
+        "status": "KEEP_EXISTING",
+        "reason": "INSUFFICIENT_AGREEMENT",
+        "applyAutomatically": false,
+        "analysisMethod": "scene-and-eyes/1",
+        "scene": {
+          "horizontal": null,
+          "vertical": null,
+          "perspectiveVertical": null
+        },
+        "eyes": {
+          "status": "NO_RELIABLE_EYES",
+          "detectedFaces": 3,
+          "usableFaces": 0,
+          "supportingFaces": 0
+        },
+        "imageWidth": 1024,
+        "imageHeight": 684
+      }
+    },
+    {
+      "index": 387,
+      "photographer": -2.2738,
+      "legacy": {
+        "status": "KEEP_EXISTING",
+        "reason": "INSUFFICIENT_AGREEMENT",
+        "applyAutomatically": false
+      },
+      "new": {
+        "status": "KEEP_EXISTING",
+        "reason": "EYES_WITHOUT_SCENE_SUPPORT",
+        "applyAutomatically": false,
+        "analysisMethod": "scene-and-eyes/1",
+        "scene": {
+          "horizontal": null,
+          "vertical": null,
+          "perspectiveVertical": null
+        },
+        "eyes": {
+          "status": "HEAD_POSE_ONLY",
+          "detectedFaces": 6,
+          "usableFaces": 1,
+          "supportingFaces": 1,
+          "angle": 0.09325877405522048,
+          "spread": 0.0
+        },
+        "imageWidth": 1024,
+        "imageHeight": 684
+      }
+    },
+    {
+      "index": 388,
+      "photographer": -1.87,
+      "legacy": {
+        "status": "KEEP_EXISTING",
+        "reason": "INSUFFICIENT_AGREEMENT",
+        "applyAutomatically": false
+      },
+      "new": {
+        "status": "KEEP_EXISTING",
+        "reason": "EYES_WITHOUT_SCENE_SUPPORT",
+        "applyAutomatically": false,
+        "analysisMethod": "scene-and-eyes/1",
+        "scene": {
+          "horizontal": null,
+          "vertical": null,
+          "perspectiveVertical": null
+        },
+        "eyes": {
+          "status": "HEAD_POSE_ONLY",
+          "detectedFaces": 3,
+          "usableFaces": 1,
+          "supportingFaces": 1,
+          "angle": -3.0273971386903904,
+          "spread": 0.0
+        },
+        "imageWidth": 1024,
+        "imageHeight": 684
+      }
+    },
+    {
+      "index": 389,
+      "photographer": -3.27,
+      "legacy": {
+        "status": "KEEP_EXISTING",
+        "reason": "INSUFFICIENT_AGREEMENT",
+        "applyAutomatically": false
+      },
+      "new": {
+        "status": "KEEP_EXISTING",
+        "reason": "SCENE_EYES_DISAGREE",
+        "applyAutomatically": false,
+        "analysisMethod": "scene-and-eyes/1",
+        "scene": {
+          "horizontal": null,
+          "vertical": {
+            "angle": -3.522398281615536,
+            "supportingSegments": 4,
+            "acrossSpan": 0.2278447151184082
+          },
+          "perspectiveVertical": null
+        },
+        "eyes": {
+          "status": "HEAD_POSE_ONLY",
+          "detectedFaces": 4,
+          "usableFaces": 1,
+          "supportingFaces": 1,
+          "angle": -2.989647604690811,
+          "spread": 0.0
+        },
+        "imageWidth": 1024,
+        "imageHeight": 684
+      }
+    },
+    {
+      "index": 390,
+      "photographer": -2.31893,
+      "legacy": {
+        "status": "KEEP_EXISTING",
+        "reason": "INSUFFICIENT_AGREEMENT",
+        "applyAutomatically": false
+      },
+      "new": {
+        "status": "KEEP_EXISTING",
+        "reason": "EYES_WITHOUT_SCENE_SUPPORT",
+        "applyAutomatically": false,
+        "analysisMethod": "scene-and-eyes/1",
+        "scene": {
+          "horizontal": null,
+          "vertical": null,
+          "perspectiveVertical": null
+        },
+        "eyes": {
+          "status": "HEAD_POSE_ONLY",
+          "detectedFaces": 5,
+          "usableFaces": 1,
+          "supportingFaces": 1,
+          "angle": -1.7811209567717656,
+          "spread": 0.0
+        },
+        "imageWidth": 1024,
+        "imageHeight": 684
+      }
+    },
+    {
+      "index": 391,
+      "photographer": -0.895074,
+      "legacy": {
+        "status": "KEEP_EXISTING",
+        "reason": "INSUFFICIENT_AGREEMENT",
+        "applyAutomatically": false
+      },
+      "new": {
+        "status": "KEEP_EXISTING",
+        "reason": "INSUFFICIENT_AGREEMENT",
+        "applyAutomatically": false,
+        "analysisMethod": "scene-and-eyes/1",
+        "scene": {
+          "horizontal": null,
+          "vertical": null,
+          "perspectiveVertical": null
+        },
+        "eyes": {
+          "status": "NO_RELIABLE_EYES",
+          "detectedFaces": 3,
+          "usableFaces": 0,
+          "supportingFaces": 0
+        },
+        "imageWidth": 1024,
+        "imageHeight": 684
+      }
+    },
+    {
+      "index": 392,
+      "photographer": -3.0602,
+      "legacy": {
+        "status": "KEEP_EXISTING",
+        "reason": "INSUFFICIENT_AGREEMENT",
+        "applyAutomatically": false
+      },
+      "new": {
+        "status": "KEEP_EXISTING",
+        "reason": "EYES_WITHOUT_SCENE_SUPPORT",
+        "applyAutomatically": false,
+        "analysisMethod": "scene-and-eyes/1",
+        "scene": {
+          "horizontal": null,
+          "vertical": null,
+          "perspectiveVertical": null
+        },
+        "eyes": {
+          "status": "HEAD_POSE_ONLY",
+          "detectedFaces": 8,
+          "usableFaces": 3,
+          "supportingFaces": 3,
+          "angle": -1.3235132126477591,
+          "spread": 1.4027139969507365
+        },
+        "imageWidth": 1024,
+        "imageHeight": 684
+      }
+    },
+    {
+      "index": 393,
+      "photographer": -2.29725,
+      "legacy": {
+        "status": "KEEP_EXISTING",
+        "reason": "INSUFFICIENT_AGREEMENT",
+        "applyAutomatically": false
+      },
+      "new": {
+        "status": "KEEP_EXISTING",
+        "reason": "INSUFFICIENT_AGREEMENT",
+        "applyAutomatically": false,
+        "analysisMethod": "scene-and-eyes/1",
+        "scene": {
+          "horizontal": null,
+          "vertical": null,
+          "perspectiveVertical": null
+        },
+        "eyes": {
+          "status": "NO_RELIABLE_EYES",
+          "detectedFaces": 2,
+          "usableFaces": 0,
+          "supportingFaces": 0
+        },
+        "imageWidth": 1024,
+        "imageHeight": 684
+      }
+    },
+    {
+      "index": 394,
+      "photographer": -1.79368,
+      "legacy": {
+        "status": "KEEP_EXISTING",
+        "reason": "INSUFFICIENT_AGREEMENT",
+        "applyAutomatically": false
+      },
+      "new": {
+        "status": "KEEP_EXISTING",
+        "reason": "EYES_WITHOUT_SCENE_SUPPORT",
+        "applyAutomatically": false,
+        "analysisMethod": "scene-and-eyes/1",
+        "scene": {
+          "horizontal": null,
+          "vertical": null,
+          "perspectiveVertical": null
+        },
+        "eyes": {
+          "status": "HEAD_POSE_ONLY",
+          "detectedFaces": 4,
+          "usableFaces": 1,
+          "supportingFaces": 1,
+          "angle": -2.6253400209987428,
+          "spread": 0.0
+        },
+        "imageWidth": 1024,
+        "imageHeight": 684
+      }
+    },
+    {
+      "index": 395,
+      "photographer": -0.85,
+      "legacy": {
+        "status": "KEEP_EXISTING",
+        "reason": "INSUFFICIENT_AGREEMENT",
+        "applyAutomatically": false
+      },
+      "new": {
+        "status": "KEEP_EXISTING",
+        "reason": "INSUFFICIENT_AGREEMENT",
+        "applyAutomatically": false,
+        "analysisMethod": "scene-and-eyes/1",
+        "scene": {
+          "horizontal": null,
+          "vertical": null,
+          "perspectiveVertical": null
+        },
+        "eyes": {
+          "status": "NO_RELIABLE_EYES",
+          "detectedFaces": 4,
+          "usableFaces": 0,
+          "supportingFaces": 0
+        },
+        "imageWidth": 1024,
+        "imageHeight": 684
+      }
+    },
+    {
+      "index": 396,
+      "photographer": -2.89209,
+      "legacy": {
+        "status": "KEEP_EXISTING",
+        "reason": "INSUFFICIENT_AGREEMENT",
+        "applyAutomatically": false
+      },
+      "new": {
+        "status": "KEEP_EXISTING",
+        "reason": "INSUFFICIENT_AGREEMENT",
+        "applyAutomatically": false,
+        "analysisMethod": "scene-and-eyes/1",
+        "scene": {
+          "horizontal": null,
+          "vertical": null,
+          "perspectiveVertical": null
+        },
+        "eyes": {
+          "status": "NO_RELIABLE_EYES",
+          "detectedFaces": 6,
+          "usableFaces": 0,
+          "supportingFaces": 0
+        },
+        "imageWidth": 1024,
+        "imageHeight": 684
+      }
+    },
+    {
+      "index": 397,
+      "photographer": -1.07977,
+      "legacy": {
+        "status": "KEEP_EXISTING",
+        "reason": "INSUFFICIENT_AGREEMENT",
+        "applyAutomatically": false
+      },
+      "new": {
+        "status": "KEEP_EXISTING",
+        "reason": "INSUFFICIENT_AGREEMENT",
+        "applyAutomatically": false,
+        "analysisMethod": "scene-and-eyes/1",
+        "scene": {
+          "horizontal": null,
+          "vertical": null,
+          "perspectiveVertical": null
+        },
+        "eyes": {
+          "status": "NO_RELIABLE_EYES",
+          "detectedFaces": 1,
+          "usableFaces": 0,
+          "supportingFaces": 0
+        },
+        "imageWidth": 1024,
+        "imageHeight": 684
+      }
+    },
+    {
+      "index": 398,
+      "photographer": -0.529237,
+      "legacy": {
+        "status": "KEEP_EXISTING",
+        "reason": "INSUFFICIENT_AGREEMENT",
+        "applyAutomatically": false
+      },
+      "new": {
+        "status": "KEEP_EXISTING",
+        "reason": "EYES_WITHOUT_SCENE_SUPPORT",
+        "applyAutomatically": false,
+        "analysisMethod": "scene-and-eyes/1",
+        "scene": {
+          "horizontal": null,
+          "vertical": null,
+          "perspectiveVertical": null
+        },
+        "eyes": {
+          "status": "HEAD_POSE_ONLY",
+          "detectedFaces": 1,
+          "usableFaces": 1,
+          "supportingFaces": 1,
+          "angle": 5.687285211236519,
+          "spread": 0.0
+        },
+        "imageWidth": 1024,
+        "imageHeight": 684
+      }
+    },
+    {
+      "index": 399,
+      "photographer": 0.16,
+      "legacy": {
+        "status": "KEEP_EXISTING",
+        "reason": "INSUFFICIENT_AGREEMENT",
+        "applyAutomatically": false
+      },
+      "new": {
+        "status": "KEEP_EXISTING",
+        "reason": "SCENE_EYES_DISAGREE",
+        "applyAutomatically": false,
+        "analysisMethod": "scene-and-eyes/1",
+        "scene": {
+          "horizontal": null,
+          "vertical": {
+            "angle": -1.15804100676711,
+            "supportingSegments": 13,
+            "acrossSpan": 0.3300282284617424
+          },
+          "perspectiveVertical": {
+            "angle": -0.3815934206316159,
+            "supportingSegments": 12,
+            "supportFraction": 0.8266485048468755,
+            "acrossSpan": 0.5616824850440025
+          }
+        },
+        "eyes": {
+          "status": "HEAD_POSE_ONLY",
+          "detectedFaces": 2,
+          "usableFaces": 1,
+          "supportingFaces": 1,
+          "angle": -1.9724302561993314,
+          "spread": 0.0
+        },
+        "imageWidth": 1024,
+        "imageHeight": 684
+      }
+    },
+    {
+      "index": 400,
+      "photographer": -2.81404,
+      "legacy": {
+        "status": "KEEP_EXISTING",
+        "reason": "INSUFFICIENT_AGREEMENT",
+        "applyAutomatically": false
+      },
+      "new": {
+        "status": "KEEP_EXISTING",
+        "reason": "EYES_WITHOUT_SCENE_SUPPORT",
+        "applyAutomatically": false,
+        "analysisMethod": "scene-and-eyes/1",
+        "scene": {
+          "horizontal": null,
+          "vertical": null,
+          "perspectiveVertical": null
+        },
+        "eyes": {
+          "status": "HEAD_POSE_ONLY",
+          "detectedFaces": 2,
+          "usableFaces": 1,
+          "supportingFaces": 1,
+          "angle": 3.2310512484474825,
+          "spread": 0.0
+        },
+        "imageWidth": 1024,
+        "imageHeight": 684
+      }
+    },
+    {
+      "index": 401,
+      "photographer": -0.228447,
+      "legacy": {
+        "status": "KEEP_EXISTING",
+        "reason": "INSUFFICIENT_AGREEMENT",
+        "applyAutomatically": false
+      },
+      "new": {
+        "status": "KEEP_EXISTING",
+        "reason": "INSUFFICIENT_AGREEMENT",
+        "applyAutomatically": false,
+        "analysisMethod": "scene-and-eyes/1",
+        "scene": {
+          "horizontal": null,
+          "vertical": null,
+          "perspectiveVertical": null
+        },
+        "eyes": {
+          "status": "HEAD_POSES_DISAGREE",
+          "detectedFaces": 3,
+          "usableFaces": 2,
+          "supportingFaces": 0
+        },
+        "imageWidth": 1024,
+        "imageHeight": 684
+      }
+    },
+    {
+      "index": 402,
+      "photographer": 0.187353,
+      "legacy": {
+        "status": "KEEP_EXISTING",
+        "reason": "INSUFFICIENT_AGREEMENT",
+        "applyAutomatically": false
+      },
+      "new": {
+        "status": "KEEP_EXISTING",
+        "reason": "EYES_WITHOUT_SCENE_SUPPORT",
+        "applyAutomatically": false,
+        "analysisMethod": "scene-and-eyes/1",
+        "scene": {
+          "horizontal": null,
+          "vertical": null,
+          "perspectiveVertical": null
+        },
+        "eyes": {
+          "status": "HEAD_POSE_ONLY",
+          "detectedFaces": 3,
+          "usableFaces": 2,
+          "supportingFaces": 2,
+          "angle": 1.8331056394294643,
+          "spread": 0.18770445029317295
+        },
+        "imageWidth": 1024,
+        "imageHeight": 684
+      }
+    },
+    {
+      "index": 403,
+      "photographer": -1.21295,
+      "legacy": {
+        "status": "KEEP_EXISTING",
+        "reason": "INSUFFICIENT_AGREEMENT",
+        "applyAutomatically": false
+      },
+      "new": {
+        "status": "KEEP_EXISTING",
+        "reason": "EYES_WITHOUT_SCENE_SUPPORT",
+        "applyAutomatically": false,
+        "analysisMethod": "scene-and-eyes/1",
+        "scene": {
+          "horizontal": null,
+          "vertical": null,
+          "perspectiveVertical": {
+            "angle": -0.915804527529493,
+            "supportingSegments": 13,
+            "supportFraction": 0.827483121197884,
+            "acrossSpan": 0.9732292480766773
+          }
+        },
+        "eyes": {
+          "status": "GROUP_CONSENSUS",
+          "detectedFaces": 3,
+          "usableFaces": 3,
+          "supportingFaces": 3,
+          "angle": 0.2985378325712757,
+          "spread": 0.17098027908029267
+        },
+        "imageWidth": 1024,
+        "imageHeight": 684
+      }
+    },
+    {
+      "index": 404,
+      "photographer": 0.335823,
+      "legacy": {
+        "status": "KEEP_EXISTING",
+        "reason": "INSUFFICIENT_AGREEMENT",
+        "applyAutomatically": false
+      },
+      "new": {
+        "status": "KEEP_EXISTING",
+        "reason": "EYES_WITHOUT_SCENE_SUPPORT",
+        "applyAutomatically": false,
+        "analysisMethod": "scene-and-eyes/1",
+        "scene": {
+          "horizontal": null,
+          "vertical": null,
+          "perspectiveVertical": null
+        },
+        "eyes": {
+          "status": "HEAD_POSE_ONLY",
+          "detectedFaces": 2,
+          "usableFaces": 2,
+          "supportingFaces": 2,
+          "angle": 0.35837445826132264,
+          "spread": 1.5273820251065722
+        },
+        "imageWidth": 1024,
+        "imageHeight": 684
+      }
+    },
+    {
+      "index": 405,
+      "photographer": -1.30156,
+      "legacy": {
+        "status": "KEEP_EXISTING",
+        "reason": "INSUFFICIENT_AGREEMENT",
+        "applyAutomatically": false
+      },
+      "new": {
+        "status": "KEEP_EXISTING",
+        "reason": "EYES_WITHOUT_SCENE_SUPPORT",
+        "applyAutomatically": false,
+        "analysisMethod": "scene-and-eyes/1",
+        "scene": {
+          "horizontal": null,
+          "vertical": null,
+          "perspectiveVertical": null
+        },
+        "eyes": {
+          "status": "HEAD_POSE_ONLY",
+          "detectedFaces": 3,
+          "usableFaces": 1,
+          "supportingFaces": 1,
+          "angle": 0.26798624253768816,
+          "spread": 0.0
+        },
+        "imageWidth": 1024,
+        "imageHeight": 684
+      }
+    },
+    {
+      "index": 406,
+      "photographer": -0.564757,
+      "legacy": {
+        "status": "KEEP_EXISTING",
+        "reason": "INSUFFICIENT_AGREEMENT",
+        "applyAutomatically": false
+      },
+      "new": {
+        "status": "KEEP_EXISTING",
+        "reason": "INSUFFICIENT_AGREEMENT",
+        "applyAutomatically": false,
+        "analysisMethod": "scene-and-eyes/1",
+        "scene": {
+          "horizontal": null,
+          "vertical": null,
+          "perspectiveVertical": null
+        },
+        "eyes": {
+          "status": "NO_RELIABLE_EYES",
+          "detectedFaces": 1,
+          "usableFaces": 0,
+          "supportingFaces": 0
+        },
+        "imageWidth": 1024,
+        "imageHeight": 684
+      }
+    },
+    {
+      "index": 407,
+      "photographer": -1.46745,
+      "legacy": {
+        "status": "KEEP_EXISTING",
+        "reason": "INSUFFICIENT_AGREEMENT",
+        "applyAutomatically": false
+      },
+      "new": {
+        "status": "KEEP_EXISTING",
+        "reason": "INSUFFICIENT_AGREEMENT",
+        "applyAutomatically": false,
+        "analysisMethod": "scene-and-eyes/1",
+        "scene": {
+          "horizontal": null,
+          "vertical": null,
+          "perspectiveVertical": null
+        },
+        "eyes": {
+          "status": "HEAD_POSES_DISAGREE",
+          "detectedFaces": 3,
+          "usableFaces": 3,
+          "supportingFaces": 0
+        },
+        "imageWidth": 1024,
+        "imageHeight": 684
+      }
+    },
+    {
+      "index": 408,
+      "photographer": -0.311758,
+      "legacy": {
+        "status": "KEEP_EXISTING",
+        "reason": "INSUFFICIENT_AGREEMENT",
+        "applyAutomatically": false
+      },
+      "new": {
+        "status": "KEEP_EXISTING",
+        "reason": "EYES_WITHOUT_SCENE_SUPPORT",
+        "applyAutomatically": false,
+        "analysisMethod": "scene-and-eyes/1",
+        "scene": {
+          "horizontal": null,
+          "vertical": null,
+          "perspectiveVertical": null
+        },
+        "eyes": {
+          "status": "HEAD_POSE_ONLY",
+          "detectedFaces": 1,
+          "usableFaces": 1,
+          "supportingFaces": 1,
+          "angle": 1.3829825257710175,
+          "spread": 0.0
+        },
+        "imageWidth": 684,
+        "imageHeight": 1024
+      }
+    },
+    {
+      "index": 409,
+      "photographer": -0.259377,
+      "legacy": {
+        "status": "KEEP_EXISTING",
+        "reason": "INSUFFICIENT_AGREEMENT",
+        "applyAutomatically": false
+      },
+      "new": {
+        "status": "KEEP_EXISTING",
+        "reason": "INSUFFICIENT_AGREEMENT",
+        "applyAutomatically": false,
+        "analysisMethod": "scene-and-eyes/1",
+        "scene": {
+          "horizontal": null,
+          "vertical": null,
+          "perspectiveVertical": null
+        },
+        "eyes": {
+          "status": "NO_RELIABLE_EYES",
+          "detectedFaces": 3,
+          "usableFaces": 0,
+          "supportingFaces": 0
+        },
+        "imageWidth": 1024,
+        "imageHeight": 684
+      }
+    },
+    {
+      "index": 410,
+      "photographer": -2.22607,
+      "legacy": {
+        "status": "KEEP_EXISTING",
+        "reason": "INSUFFICIENT_AGREEMENT",
+        "applyAutomatically": false
+      },
+      "new": {
+        "status": "KEEP_EXISTING",
+        "reason": "EYES_WITHOUT_SCENE_SUPPORT",
+        "applyAutomatically": false,
+        "analysisMethod": "scene-and-eyes/1",
+        "scene": {
+          "horizontal": null,
+          "vertical": null,
+          "perspectiveVertical": null
+        },
+        "eyes": {
+          "status": "HEAD_POSE_ONLY",
+          "detectedFaces": 1,
+          "usableFaces": 1,
+          "supportingFaces": 1,
+          "angle": 0.9861747408180188,
+          "spread": 0.0
+        },
+        "imageWidth": 1024,
+        "imageHeight": 684
+      }
+    },
+    {
+      "index": 411,
+      "photographer": -0.892052,
+      "legacy": {
+        "status": "KEEP_EXISTING",
+        "reason": "INSUFFICIENT_AGREEMENT",
+        "applyAutomatically": false
+      },
+      "new": {
+        "status": "KEEP_EXISTING",
+        "reason": "INSUFFICIENT_AGREEMENT",
+        "applyAutomatically": false,
+        "analysisMethod": "scene-and-eyes/1",
+        "scene": {
+          "horizontal": null,
+          "vertical": null,
+          "perspectiveVertical": null
+        },
+        "eyes": {
+          "status": "NO_RELIABLE_EYES",
+          "detectedFaces": 1,
+          "usableFaces": 0,
+          "supportingFaces": 0
+        },
+        "imageWidth": 1024,
+        "imageHeight": 684
+      }
+    },
+    {
+      "index": 412,
+      "photographer": -1.50411,
+      "legacy": {
+        "status": "KEEP_EXISTING",
+        "reason": "INSUFFICIENT_AGREEMENT",
+        "applyAutomatically": false
+      },
+      "new": {
+        "status": "KEEP_EXISTING",
+        "reason": "INSUFFICIENT_AGREEMENT",
+        "applyAutomatically": false,
+        "analysisMethod": "scene-and-eyes/1",
+        "scene": {
+          "horizontal": null,
+          "vertical": null,
+          "perspectiveVertical": null
+        },
+        "eyes": {
+          "status": "NO_RELIABLE_EYES",
+          "detectedFaces": 2,
+          "usableFaces": 0,
+          "supportingFaces": 0
+        },
+        "imageWidth": 1024,
+        "imageHeight": 684
+      }
+    },
+    {
+      "index": 413,
+      "photographer": -0.564219,
+      "legacy": {
+        "status": "KEEP_EXISTING",
+        "reason": "INSUFFICIENT_AGREEMENT",
+        "applyAutomatically": false
+      },
+      "new": {
+        "status": "KEEP_EXISTING",
+        "reason": "SCENE_EYES_DISAGREE",
+        "applyAutomatically": false,
+        "analysisMethod": "scene-and-eyes/1",
+        "scene": {
+          "horizontal": null,
+          "vertical": {
+            "angle": -0.4027050489559161,
+            "supportingSegments": 5,
+            "acrossSpan": 0.2769671380519867
+          },
+          "perspectiveVertical": null
+        },
+        "eyes": {
+          "status": "HEAD_POSE_ONLY",
+          "detectedFaces": 2,
+          "usableFaces": 1,
+          "supportingFaces": 1,
+          "angle": -3.092805908761759,
+          "spread": 0.0
+        },
+        "imageWidth": 1024,
+        "imageHeight": 684
+      }
+    },
+    {
+      "index": 414,
+      "photographer": -1.16153,
+      "legacy": {
+        "status": "KEEP_EXISTING",
+        "reason": "INSUFFICIENT_AGREEMENT",
+        "applyAutomatically": false
+      },
+      "new": {
+        "status": "KEEP_EXISTING",
+        "reason": "EYES_WITHOUT_SCENE_SUPPORT",
+        "applyAutomatically": false,
+        "analysisMethod": "scene-and-eyes/1",
+        "scene": {
+          "horizontal": null,
+          "vertical": null,
+          "perspectiveVertical": null
+        },
+        "eyes": {
+          "status": "HEAD_POSE_ONLY",
+          "detectedFaces": 4,
+          "usableFaces": 2,
+          "supportingFaces": 2,
+          "angle": 1.2082190486072555,
+          "spread": 1.3391838316137914
+        },
+        "imageWidth": 1024,
+        "imageHeight": 684
+      }
+    },
+    {
+      "index": 415,
+      "photographer": -0.179218,
+      "legacy": {
+        "status": "KEEP_EXISTING",
+        "reason": "INSUFFICIENT_AGREEMENT",
+        "applyAutomatically": false
+      },
+      "new": {
+        "status": "KEEP_EXISTING",
+        "reason": "EYES_WITHOUT_SCENE_SUPPORT",
+        "applyAutomatically": false,
+        "analysisMethod": "scene-and-eyes/1",
+        "scene": {
+          "horizontal": null,
+          "vertical": null,
+          "perspectiveVertical": null
+        },
+        "eyes": {
+          "status": "HEAD_POSE_ONLY",
+          "detectedFaces": 2,
+          "usableFaces": 2,
+          "supportingFaces": 2,
+          "angle": 0.598051458813022,
+          "spread": 1.601332464452236
+        },
+        "imageWidth": 1024,
+        "imageHeight": 684
+      }
+    },
+    {
+      "index": 416,
+      "photographer": -0.387617,
+      "legacy": {
+        "status": "KEEP_EXISTING",
+        "reason": "INSUFFICIENT_AGREEMENT",
+        "applyAutomatically": false
+      },
+      "new": {
+        "status": "KEEP_EXISTING",
+        "reason": "EYES_WITHOUT_SCENE_SUPPORT",
+        "applyAutomatically": false,
+        "analysisMethod": "scene-and-eyes/1",
+        "scene": {
+          "horizontal": null,
+          "vertical": null,
+          "perspectiveVertical": null
+        },
+        "eyes": {
+          "status": "GROUP_CONSENSUS",
+          "detectedFaces": 4,
+          "usableFaces": 4,
+          "supportingFaces": 4,
+          "angle": -0.42410119772808275,
+          "spread": 0.6430167227954915
+        },
+        "imageWidth": 1024,
+        "imageHeight": 684
+      }
+    },
+    {
+      "index": 417,
+      "photographer": -0.4548,
+      "legacy": {
+        "status": "KEEP_EXISTING",
+        "reason": "INSUFFICIENT_AGREEMENT",
+        "applyAutomatically": false
+      },
+      "new": {
+        "status": "KEEP_EXISTING",
+        "reason": "EYES_WITHOUT_SCENE_SUPPORT",
+        "applyAutomatically": false,
+        "analysisMethod": "scene-and-eyes/1",
+        "scene": {
+          "horizontal": null,
+          "vertical": null,
+          "perspectiveVertical": null
+        },
+        "eyes": {
+          "status": "HEAD_POSE_ONLY",
+          "detectedFaces": 1,
+          "usableFaces": 1,
+          "supportingFaces": 1,
+          "angle": 9.511638105201182,
+          "spread": 0.0
+        },
+        "imageWidth": 684,
+        "imageHeight": 1024
+      }
+    },
+    {
+      "index": 418,
+      "photographer": -1.93913,
+      "legacy": {
+        "status": "KEEP_EXISTING",
+        "reason": "INSUFFICIENT_AGREEMENT",
+        "applyAutomatically": false
+      },
+      "new": {
+        "status": "KEEP_EXISTING",
+        "reason": "EYES_WITHOUT_SCENE_SUPPORT",
+        "applyAutomatically": false,
+        "analysisMethod": "scene-and-eyes/1",
+        "scene": {
+          "horizontal": null,
+          "vertical": null,
+          "perspectiveVertical": null
+        },
+        "eyes": {
+          "status": "GROUP_CONSENSUS",
+          "detectedFaces": 4,
+          "usableFaces": 4,
+          "supportingFaces": 3,
+          "angle": 0.7833911729900473,
+          "spread": 0.18331906908665807
+        },
+        "imageWidth": 1024,
+        "imageHeight": 684
+      }
+    },
+    {
+      "index": 419,
+      "photographer": -1.62643,
+      "legacy": {
+        "status": "KEEP_EXISTING",
+        "reason": "INSUFFICIENT_AGREEMENT",
+        "applyAutomatically": false
+      },
+      "new": {
+        "status": "KEEP_EXISTING",
+        "reason": "INSUFFICIENT_AGREEMENT",
+        "applyAutomatically": false,
+        "analysisMethod": "scene-and-eyes/1",
+        "scene": {
+          "horizontal": null,
+          "vertical": null,
+          "perspectiveVertical": null
+        },
+        "eyes": {
+          "status": "HEAD_POSES_DISAGREE",
+          "detectedFaces": 3,
+          "usableFaces": 3,
+          "supportingFaces": 0
+        },
+        "imageWidth": 1024,
+        "imageHeight": 684
+      }
+    },
+    {
+      "index": 420,
+      "photographer": -0.638552,
+      "legacy": {
+        "status": "KEEP_EXISTING",
+        "reason": "INSUFFICIENT_AGREEMENT",
+        "applyAutomatically": false
+      },
+      "new": {
+        "status": "KEEP_EXISTING",
+        "reason": "EYES_WITHOUT_SCENE_SUPPORT",
+        "applyAutomatically": false,
+        "analysisMethod": "scene-and-eyes/1",
+        "scene": {
+          "horizontal": null,
+          "vertical": null,
+          "perspectiveVertical": null
+        },
+        "eyes": {
+          "status": "HEAD_POSE_ONLY",
+          "detectedFaces": 1,
+          "usableFaces": 1,
+          "supportingFaces": 1,
+          "angle": -0.31653597020001734,
+          "spread": 0.0
+        },
+        "imageWidth": 1024,
+        "imageHeight": 684
+      }
+    },
+    {
+      "index": 421,
+      "photographer": 0.839652,
+      "legacy": {
+        "status": "KEEP_EXISTING",
+        "reason": "INSUFFICIENT_AGREEMENT",
+        "applyAutomatically": false
+      },
+      "new": {
+        "status": "KEEP_EXISTING",
+        "reason": "INSUFFICIENT_AGREEMENT",
+        "applyAutomatically": false,
+        "analysisMethod": "scene-and-eyes/1",
+        "scene": {
+          "horizontal": null,
+          "vertical": null,
+          "perspectiveVertical": null
+        },
+        "eyes": {
+          "status": "NO_RELIABLE_EYES",
+          "detectedFaces": 3,
+          "usableFaces": 0,
+          "supportingFaces": 0
+        },
+        "imageWidth": 684,
+        "imageHeight": 1024
+      }
+    },
+    {
+      "index": 422,
+      "photographer": -0.497073,
+      "legacy": {
+        "status": "KEEP_EXISTING",
+        "reason": "INSUFFICIENT_AGREEMENT",
+        "applyAutomatically": false
+      },
+      "new": {
+        "status": "KEEP_EXISTING",
+        "reason": "EYES_WITHOUT_SCENE_SUPPORT",
+        "applyAutomatically": false,
+        "analysisMethod": "scene-and-eyes/1",
+        "scene": {
+          "horizontal": null,
+          "vertical": null,
+          "perspectiveVertical": null
+        },
+        "eyes": {
+          "status": "HEAD_POSE_ONLY",
+          "detectedFaces": 2,
+          "usableFaces": 2,
+          "supportingFaces": 2,
+          "angle": 0.26844743454162096,
+          "spread": 0.5365351140033088
+        },
+        "imageWidth": 1024,
+        "imageHeight": 684
+      }
+    },
+    {
+      "index": 423,
+      "photographer": 0.093307,
+      "legacy": {
+        "status": "KEEP_EXISTING",
+        "reason": "INSUFFICIENT_AGREEMENT",
+        "applyAutomatically": false
+      },
+      "new": {
+        "status": "KEEP_EXISTING",
+        "reason": "EYES_WITHOUT_SCENE_SUPPORT",
+        "applyAutomatically": false,
+        "analysisMethod": "scene-and-eyes/1",
+        "scene": {
+          "horizontal": null,
+          "vertical": null,
+          "perspectiveVertical": null
+        },
+        "eyes": {
+          "status": "HEAD_POSE_ONLY",
+          "detectedFaces": 2,
+          "usableFaces": 2,
+          "supportingFaces": 2,
+          "angle": 0.5684278676906205,
+          "spread": 1.6300956052184805
+        },
+        "imageWidth": 1024,
+        "imageHeight": 684
+      }
+    },
+    {
+      "index": 424,
+      "photographer": -0.636384,
+      "legacy": {
+        "status": "KEEP_EXISTING",
+        "reason": "INSUFFICIENT_AGREEMENT",
+        "applyAutomatically": false
+      },
+      "new": {
+        "status": "KEEP_EXISTING",
+        "reason": "EYES_WITHOUT_SCENE_SUPPORT",
+        "applyAutomatically": false,
+        "analysisMethod": "scene-and-eyes/1",
+        "scene": {
+          "horizontal": null,
+          "vertical": null,
+          "perspectiveVertical": null
+        },
+        "eyes": {
+          "status": "HEAD_POSE_ONLY",
+          "detectedFaces": 2,
+          "usableFaces": 2,
+          "supportingFaces": 2,
+          "angle": 0.5897300778460062,
+          "spread": 1.188472637092213
+        },
+        "imageWidth": 1024,
+        "imageHeight": 684
+      }
+    },
+    {
+      "index": 425,
+      "photographer": -1.32105,
+      "legacy": {
+        "status": "KEEP_EXISTING",
+        "reason": "INSUFFICIENT_AGREEMENT",
+        "applyAutomatically": false
+      },
+      "new": {
+        "status": "KEEP_EXISTING",
+        "reason": "INSUFFICIENT_AGREEMENT",
+        "applyAutomatically": false,
+        "analysisMethod": "scene-and-eyes/1",
+        "scene": {
+          "horizontal": null,
+          "vertical": null,
+          "perspectiveVertical": null
+        },
+        "eyes": {
+          "status": "NO_RELIABLE_EYES",
+          "detectedFaces": 2,
+          "usableFaces": 0,
+          "supportingFaces": 0
+        },
+        "imageWidth": 1024,
+        "imageHeight": 684
+      }
+    },
+    {
+      "index": 426,
+      "photographer": -1.33594,
+      "legacy": {
+        "status": "KEEP_EXISTING",
+        "reason": "INSUFFICIENT_AGREEMENT",
+        "applyAutomatically": false
+      },
+      "new": {
+        "status": "KEEP_EXISTING",
+        "reason": "INSUFFICIENT_AGREEMENT",
+        "applyAutomatically": false,
+        "analysisMethod": "scene-and-eyes/1",
+        "scene": {
+          "horizontal": null,
+          "vertical": null,
+          "perspectiveVertical": null
+        },
+        "eyes": {
+          "status": "HEAD_POSES_DISAGREE",
+          "detectedFaces": 3,
+          "usableFaces": 3,
+          "supportingFaces": 0
+        },
+        "imageWidth": 1024,
+        "imageHeight": 684
+      }
+    },
+    {
+      "index": 427,
+      "photographer": 1.80867,
+      "legacy": {
+        "status": "KEEP_EXISTING",
+        "reason": "INSUFFICIENT_AGREEMENT",
+        "applyAutomatically": false
+      },
+      "new": {
+        "status": "KEEP_EXISTING",
+        "reason": "EYES_WITHOUT_SCENE_SUPPORT",
+        "applyAutomatically": false,
+        "analysisMethod": "scene-and-eyes/1",
+        "scene": {
+          "horizontal": null,
+          "vertical": null,
+          "perspectiveVertical": null
+        },
+        "eyes": {
+          "status": "GROUP_CONSENSUS",
+          "detectedFaces": 5,
+          "usableFaces": 4,
+          "supportingFaces": 3,
+          "angle": 0.04226905263620051,
+          "spread": 0.7136060599450762
+        },
+        "imageWidth": 1024,
+        "imageHeight": 684
+      }
+    },
+    {
+      "index": 428,
+      "photographer": 0.748448,
+      "legacy": {
+        "status": "KEEP_EXISTING",
+        "reason": "INSUFFICIENT_AGREEMENT",
+        "applyAutomatically": false
+      },
+      "new": {
+        "status": "KEEP_EXISTING",
+        "reason": "INSUFFICIENT_AGREEMENT",
+        "applyAutomatically": false,
+        "analysisMethod": "scene-and-eyes/1",
+        "scene": {
+          "horizontal": null,
+          "vertical": null,
+          "perspectiveVertical": null
+        },
+        "eyes": {
+          "status": "HEAD_POSES_DISAGREE",
+          "detectedFaces": 5,
+          "usableFaces": 5,
+          "supportingFaces": 0
+        },
+        "imageWidth": 1024,
+        "imageHeight": 684
+      }
+    },
+    {
+      "index": 429,
+      "photographer": 1.33555,
+      "legacy": {
+        "status": "KEEP_EXISTING",
+        "reason": "INSUFFICIENT_AGREEMENT",
+        "applyAutomatically": false
+      },
+      "new": {
+        "status": "KEEP_EXISTING",
+        "reason": "EYES_WITHOUT_SCENE_SUPPORT",
+        "applyAutomatically": false,
+        "analysisMethod": "scene-and-eyes/1",
+        "scene": {
+          "horizontal": null,
+          "vertical": null,
+          "perspectiveVertical": null
+        },
+        "eyes": {
+          "status": "GROUP_CONSENSUS",
+          "detectedFaces": 5,
+          "usableFaces": 5,
+          "supportingFaces": 5,
+          "angle": -0.8664757873135016,
+          "spread": 0.20681696948315031
+        },
+        "imageWidth": 1024,
+        "imageHeight": 684
+      }
+    },
+    {
+      "index": 430,
+      "photographer": -0.185092,
+      "legacy": {
+        "status": "KEEP_EXISTING",
+        "reason": "INSUFFICIENT_AGREEMENT",
+        "applyAutomatically": false
+      },
+      "new": {
+        "status": "KEEP_EXISTING",
+        "reason": "INSUFFICIENT_AGREEMENT",
+        "applyAutomatically": false,
+        "analysisMethod": "scene-and-eyes/1",
+        "scene": {
+          "horizontal": null,
+          "vertical": null,
+          "perspectiveVertical": null
+        },
+        "eyes": {
+          "status": "NO_RELIABLE_EYES",
+          "detectedFaces": 4,
+          "usableFaces": 0,
+          "supportingFaces": 0
+        },
+        "imageWidth": 1024,
+        "imageHeight": 684
+      }
+    },
+    {
+      "index": 431,
+      "photographer": -0.100461,
+      "legacy": {
+        "status": "KEEP_EXISTING",
+        "reason": "INSUFFICIENT_AGREEMENT",
+        "applyAutomatically": false
+      },
+      "new": {
+        "status": "KEEP_EXISTING",
+        "reason": "EYES_WITHOUT_SCENE_SUPPORT",
+        "applyAutomatically": false,
+        "analysisMethod": "scene-and-eyes/1",
+        "scene": {
+          "horizontal": null,
+          "vertical": null,
+          "perspectiveVertical": null
+        },
+        "eyes": {
+          "status": "HEAD_POSE_ONLY",
+          "detectedFaces": 3,
+          "usableFaces": 1,
+          "supportingFaces": 1,
+          "angle": -0.3302870914598892,
+          "spread": 0.0
+        },
+        "imageWidth": 1024,
+        "imageHeight": 684
+      }
+    },
+    {
+      "index": 432,
+      "photographer": -0.39,
+      "legacy": {
+        "status": "KEEP_EXISTING",
+        "reason": "INSUFFICIENT_AGREEMENT",
+        "applyAutomatically": false
+      },
+      "new": {
+        "status": "KEEP_EXISTING",
+        "reason": "EYES_WITHOUT_SCENE_SUPPORT",
+        "applyAutomatically": false,
+        "analysisMethod": "scene-and-eyes/1",
+        "scene": {
+          "horizontal": null,
+          "vertical": null,
+          "perspectiveVertical": null
+        },
+        "eyes": {
+          "status": "HEAD_POSE_ONLY",
+          "detectedFaces": 2,
+          "usableFaces": 1,
+          "supportingFaces": 1,
+          "angle": 1.8849566809088028,
+          "spread": 0.0
+        },
+        "imageWidth": 1024,
+        "imageHeight": 684
+      }
+    },
+    {
+      "index": 433,
+      "photographer": -0.164027,
+      "legacy": {
+        "status": "KEEP_EXISTING",
+        "reason": "INSUFFICIENT_AGREEMENT",
+        "applyAutomatically": false
+      },
+      "new": {
+        "status": "KEEP_EXISTING",
+        "reason": "EYES_WITHOUT_SCENE_SUPPORT",
+        "applyAutomatically": false,
+        "analysisMethod": "scene-and-eyes/1",
+        "scene": {
+          "horizontal": null,
+          "vertical": null,
+          "perspectiveVertical": null
+        },
+        "eyes": {
+          "status": "HEAD_POSE_ONLY",
+          "detectedFaces": 5,
+          "usableFaces": 2,
+          "supportingFaces": 2,
+          "angle": -1.986823557569531,
+          "spread": 1.1569255364369906
+        },
+        "imageWidth": 1024,
+        "imageHeight": 684
+      }
+    },
+    {
+      "index": 434,
+      "photographer": -1.02833,
+      "legacy": {
+        "status": "KEEP_EXISTING",
+        "reason": "INSUFFICIENT_AGREEMENT",
+        "applyAutomatically": false
+      },
+      "new": {
+        "status": "KEEP_EXISTING",
+        "reason": "EYES_WITHOUT_SCENE_SUPPORT",
+        "applyAutomatically": false,
+        "analysisMethod": "scene-and-eyes/1",
+        "scene": {
+          "horizontal": null,
+          "vertical": null,
+          "perspectiveVertical": null
+        },
+        "eyes": {
+          "status": "HEAD_POSE_ONLY",
+          "detectedFaces": 1,
+          "usableFaces": 1,
+          "supportingFaces": 1,
+          "angle": -10.219757850523749,
+          "spread": 0.0
+        },
+        "imageWidth": 684,
+        "imageHeight": 1024
+      }
+    },
+    {
+      "index": 435,
+      "photographer": -0.774288,
+      "legacy": {
+        "status": "KEEP_EXISTING",
+        "reason": "INSUFFICIENT_AGREEMENT",
+        "applyAutomatically": false
+      },
+      "new": {
+        "status": "KEEP_EXISTING",
+        "reason": "EYES_WITHOUT_SCENE_SUPPORT",
+        "applyAutomatically": false,
+        "analysisMethod": "scene-and-eyes/1",
+        "scene": {
+          "horizontal": null,
+          "vertical": null,
+          "perspectiveVertical": null
+        },
+        "eyes": {
+          "status": "HEAD_POSE_ONLY",
+          "detectedFaces": 1,
+          "usableFaces": 1,
+          "supportingFaces": 1,
+          "angle": -11.959662595051622,
+          "spread": 0.0
+        },
+        "imageWidth": 684,
+        "imageHeight": 1024
+      }
+    },
+    {
+      "index": 436,
+      "photographer": -0.337463,
+      "legacy": {
+        "status": "KEEP_EXISTING",
+        "reason": "INSUFFICIENT_AGREEMENT",
+        "applyAutomatically": false
+      },
+      "new": {
+        "status": "KEEP_EXISTING",
+        "reason": "EYES_WITHOUT_SCENE_SUPPORT",
+        "applyAutomatically": false,
+        "analysisMethod": "scene-and-eyes/1",
+        "scene": {
+          "horizontal": null,
+          "vertical": null,
+          "perspectiveVertical": null
+        },
+        "eyes": {
+          "status": "HEAD_POSE_ONLY",
+          "detectedFaces": 2,
+          "usableFaces": 1,
+          "supportingFaces": 1,
+          "angle": 1.3768386467945564,
+          "spread": 0.0
+        },
+        "imageWidth": 1024,
+        "imageHeight": 684
+      }
+    },
+    {
+      "index": 437,
+      "photographer": -2.22,
+      "legacy": {
+        "status": "KEEP_EXISTING",
+        "reason": "INSUFFICIENT_AGREEMENT",
+        "applyAutomatically": false
+      },
+      "new": {
+        "status": "KEEP_EXISTING",
+        "reason": "EYES_WITHOUT_SCENE_SUPPORT",
+        "applyAutomatically": false,
+        "analysisMethod": "scene-and-eyes/1",
+        "scene": {
+          "horizontal": null,
+          "vertical": null,
+          "perspectiveVertical": null
+        },
+        "eyes": {
+          "status": "HEAD_POSE_ONLY",
+          "detectedFaces": 5,
+          "usableFaces": 1,
+          "supportingFaces": 1,
+          "angle": -2.4886676218651687,
+          "spread": 0.0
+        },
+        "imageWidth": 1024,
+        "imageHeight": 684
+      }
+    },
+    {
+      "index": 438,
+      "photographer": -0.458411,
+      "legacy": {
+        "status": "KEEP_EXISTING",
+        "reason": "INSUFFICIENT_AGREEMENT",
+        "applyAutomatically": false
+      },
+      "new": {
+        "status": "KEEP_EXISTING",
+        "reason": "EYES_WITHOUT_SCENE_SUPPORT",
+        "applyAutomatically": false,
+        "analysisMethod": "scene-and-eyes/1",
+        "scene": {
+          "horizontal": null,
+          "vertical": null,
+          "perspectiveVertical": null
+        },
+        "eyes": {
+          "status": "HEAD_POSE_ONLY",
+          "detectedFaces": 4,
+          "usableFaces": 1,
+          "supportingFaces": 1,
+          "angle": -1.5098211273605155,
+          "spread": 0.0
+        },
+        "imageWidth": 1024,
+        "imageHeight": 684
+      }
+    },
+    {
+      "index": 439,
+      "photographer": -0.914699,
+      "legacy": {
+        "status": "KEEP_EXISTING",
+        "reason": "INSUFFICIENT_AGREEMENT",
+        "applyAutomatically": false
+      },
+      "new": {
+        "status": "KEEP_EXISTING",
+        "reason": "EYES_WITHOUT_SCENE_SUPPORT",
+        "applyAutomatically": false,
+        "analysisMethod": "scene-and-eyes/1",
+        "scene": {
+          "horizontal": null,
+          "vertical": null,
+          "perspectiveVertical": null
+        },
+        "eyes": {
+          "status": "HEAD_POSE_ONLY",
+          "detectedFaces": 4,
+          "usableFaces": 2,
+          "supportingFaces": 2,
+          "angle": 0.9855813888248084,
+          "spread": 0.6433214337037616
+        },
+        "imageWidth": 1024,
+        "imageHeight": 684
+      }
+    },
+    {
+      "index": 440,
+      "photographer": -0.269508,
+      "legacy": {
+        "status": "KEEP_EXISTING",
+        "reason": "INSUFFICIENT_AGREEMENT",
+        "applyAutomatically": false
+      },
+      "new": {
+        "status": "KEEP_EXISTING",
+        "reason": "EYES_WITHOUT_SCENE_SUPPORT",
+        "applyAutomatically": false,
+        "analysisMethod": "scene-and-eyes/1",
+        "scene": {
+          "horizontal": null,
+          "vertical": null,
+          "perspectiveVertical": null
+        },
+        "eyes": {
+          "status": "HEAD_POSE_ONLY",
+          "detectedFaces": 2,
+          "usableFaces": 2,
+          "supportingFaces": 2,
+          "angle": 1.893052200025373,
+          "spread": 1.4731942671856508
+        },
+        "imageWidth": 684,
+        "imageHeight": 1024
+      }
+    },
+    {
+      "index": 441,
+      "photographer": 0.925589,
+      "legacy": {
+        "status": "KEEP_EXISTING",
+        "reason": "INSUFFICIENT_AGREEMENT",
+        "applyAutomatically": false
+      },
+      "new": {
+        "status": "KEEP_EXISTING",
+        "reason": "INSUFFICIENT_AGREEMENT",
+        "applyAutomatically": false,
+        "analysisMethod": "scene-and-eyes/1",
+        "scene": {
+          "horizontal": null,
+          "vertical": null,
+          "perspectiveVertical": null
+        },
+        "eyes": {
+          "status": "HEAD_POSES_DISAGREE",
+          "detectedFaces": 2,
+          "usableFaces": 2,
+          "supportingFaces": 0
+        },
+        "imageWidth": 684,
+        "imageHeight": 1024
+      }
+    },
+    {
+      "index": 442,
+      "photographer": 1.95283,
+      "legacy": {
+        "status": "KEEP_EXISTING",
+        "reason": "INSUFFICIENT_AGREEMENT",
+        "applyAutomatically": false
+      },
+      "new": {
+        "status": "KEEP_EXISTING",
+        "reason": "INSUFFICIENT_AGREEMENT",
+        "applyAutomatically": false,
+        "analysisMethod": "scene-and-eyes/1",
+        "scene": {
+          "horizontal": null,
+          "vertical": null,
+          "perspectiveVertical": null
+        },
+        "eyes": {
+          "status": "HEAD_POSES_DISAGREE",
+          "detectedFaces": 3,
+          "usableFaces": 3,
+          "supportingFaces": 0
+        },
+        "imageWidth": 1024,
+        "imageHeight": 684
+      }
+    },
+    {
+      "index": 443,
+      "photographer": -0.514731,
+      "legacy": {
+        "status": "KEEP_EXISTING",
+        "reason": "INSUFFICIENT_AGREEMENT",
+        "applyAutomatically": false
+      },
+      "new": {
+        "status": "KEEP_EXISTING",
+        "reason": "INSUFFICIENT_AGREEMENT",
+        "applyAutomatically": false,
+        "analysisMethod": "scene-and-eyes/1",
+        "scene": {
+          "horizontal": null,
+          "vertical": null,
+          "perspectiveVertical": null
+        },
+        "eyes": {
+          "status": "HEAD_POSES_DISAGREE",
+          "detectedFaces": 3,
+          "usableFaces": 3,
+          "supportingFaces": 0
+        },
+        "imageWidth": 1024,
+        "imageHeight": 684
+      }
+    },
+    {
+      "index": 444,
+      "photographer": -0.66562,
+      "legacy": {
+        "status": "KEEP_EXISTING",
+        "reason": "INSUFFICIENT_AGREEMENT",
+        "applyAutomatically": false
+      },
+      "new": {
+        "status": "KEEP_EXISTING",
+        "reason": "INSUFFICIENT_AGREEMENT",
+        "applyAutomatically": false,
+        "analysisMethod": "scene-and-eyes/1",
+        "scene": {
+          "horizontal": null,
+          "vertical": null,
+          "perspectiveVertical": null
+        },
+        "eyes": {
+          "status": "HEAD_POSES_DISAGREE",
+          "detectedFaces": 3,
+          "usableFaces": 3,
+          "supportingFaces": 0
+        },
+        "imageWidth": 1024,
+        "imageHeight": 684
+      }
+    },
+    {
+      "index": 445,
+      "photographer": -0.45,
+      "legacy": {
+        "status": "KEEP_EXISTING",
+        "reason": "INSUFFICIENT_AGREEMENT",
+        "applyAutomatically": false
+      },
+      "new": {
+        "status": "KEEP_EXISTING",
+        "reason": "INSUFFICIENT_AGREEMENT",
+        "applyAutomatically": false,
+        "analysisMethod": "scene-and-eyes/1",
+        "scene": {
+          "horizontal": null,
+          "vertical": null,
+          "perspectiveVertical": null
+        },
+        "eyes": {
+          "status": "NO_RELIABLE_EYES",
+          "detectedFaces": 3,
+          "usableFaces": 0,
+          "supportingFaces": 0
+        },
+        "imageWidth": 1024,
+        "imageHeight": 684
+      }
+    },
+    {
+      "index": 446,
+      "photographer": 0.574906,
+      "legacy": {
+        "status": "KEEP_EXISTING",
+        "reason": "INSUFFICIENT_AGREEMENT",
+        "applyAutomatically": false
+      },
+      "new": {
+        "status": "KEEP_EXISTING",
+        "reason": "EYES_WITHOUT_SCENE_SUPPORT",
+        "applyAutomatically": false,
+        "analysisMethod": "scene-and-eyes/1",
+        "scene": {
+          "horizontal": null,
+          "vertical": null,
+          "perspectiveVertical": null
+        },
+        "eyes": {
+          "status": "HEAD_POSE_ONLY",
+          "detectedFaces": 3,
+          "usableFaces": 2,
+          "supportingFaces": 2,
+          "angle": 3.2003950947465376,
+          "spread": 0.002757221912534469
+        },
+        "imageWidth": 684,
+        "imageHeight": 1024
+      }
+    },
+    {
+      "index": 447,
+      "photographer": -1.25947,
+      "legacy": {
+        "status": "KEEP_EXISTING",
+        "reason": "INSUFFICIENT_AGREEMENT",
+        "applyAutomatically": false
+      },
+      "new": {
+        "status": "KEEP_EXISTING",
+        "reason": "INSUFFICIENT_AGREEMENT",
+        "applyAutomatically": false,
+        "analysisMethod": "scene-and-eyes/1",
+        "scene": {
+          "horizontal": null,
+          "vertical": null,
+          "perspectiveVertical": null
+        },
+        "eyes": {
+          "status": "HEAD_POSES_DISAGREE",
+          "detectedFaces": 4,
+          "usableFaces": 3,
+          "supportingFaces": 0
+        },
+        "imageWidth": 1024,
+        "imageHeight": 684
+      }
+    },
+    {
+      "index": 448,
+      "photographer": -0.483711,
+      "legacy": {
+        "status": "KEEP_EXISTING",
+        "reason": "INSUFFICIENT_AGREEMENT",
+        "applyAutomatically": false
+      },
+      "new": {
+        "status": "KEEP_EXISTING",
+        "reason": "EYES_WITHOUT_SCENE_SUPPORT",
+        "applyAutomatically": false,
+        "analysisMethod": "scene-and-eyes/1",
+        "scene": {
+          "horizontal": null,
+          "vertical": null,
+          "perspectiveVertical": null
+        },
+        "eyes": {
+          "status": "HEAD_POSE_ONLY",
+          "detectedFaces": 3,
+          "usableFaces": 2,
+          "supportingFaces": 2,
+          "angle": 4.985087541948064,
+          "spread": 0.0033436598084497504
+        },
+        "imageWidth": 684,
+        "imageHeight": 1024
+      }
+    },
+    {
+      "index": 449,
+      "photographer": 1.31338,
+      "legacy": {
+        "status": "KEEP_EXISTING",
+        "reason": "INSUFFICIENT_AGREEMENT",
+        "applyAutomatically": false
+      },
+      "new": {
+        "status": "KEEP_EXISTING",
+        "reason": "INSUFFICIENT_AGREEMENT",
+        "applyAutomatically": false,
+        "analysisMethod": "scene-and-eyes/1",
+        "scene": {
+          "horizontal": null,
+          "vertical": null,
+          "perspectiveVertical": null
+        },
+        "eyes": {
+          "status": "HEAD_POSES_DISAGREE",
+          "detectedFaces": 2,
+          "usableFaces": 2,
+          "supportingFaces": 0
+        },
+        "imageWidth": 684,
+        "imageHeight": 1024
+      }
+    },
+    {
+      "index": 450,
+      "photographer": 0.648959,
+      "legacy": {
+        "status": "KEEP_EXISTING",
+        "reason": "INSUFFICIENT_AGREEMENT",
+        "applyAutomatically": false
+      },
+      "new": {
+        "status": "KEEP_EXISTING",
+        "reason": "INSUFFICIENT_AGREEMENT",
+        "applyAutomatically": false,
+        "analysisMethod": "scene-and-eyes/1",
+        "scene": {
+          "horizontal": null,
+          "vertical": null,
+          "perspectiveVertical": null
+        },
+        "eyes": {
+          "status": "HEAD_POSES_DISAGREE",
+          "detectedFaces": 2,
+          "usableFaces": 2,
+          "supportingFaces": 0
+        },
+        "imageWidth": 684,
+        "imageHeight": 1024
+      }
+    },
+    {
+      "index": 451,
+      "photographer": 0.041101,
+      "legacy": {
+        "status": "KEEP_EXISTING",
+        "reason": "INSUFFICIENT_AGREEMENT",
+        "applyAutomatically": false
+      },
+      "new": {
+        "status": "KEEP_EXISTING",
+        "reason": "EYES_WITHOUT_SCENE_SUPPORT",
+        "applyAutomatically": false,
+        "analysisMethod": "scene-and-eyes/1",
+        "scene": {
+          "horizontal": null,
+          "vertical": null,
+          "perspectiveVertical": null
+        },
+        "eyes": {
+          "status": "HEAD_POSE_ONLY",
+          "detectedFaces": 2,
+          "usableFaces": 1,
+          "supportingFaces": 1,
+          "angle": 0.26872660270158555,
+          "spread": 0.0
+        },
+        "imageWidth": 1024,
+        "imageHeight": 684
+      }
+    },
+    {
+      "index": 452,
+      "photographer": -0.22583,
+      "legacy": {
+        "status": "KEEP_EXISTING",
+        "reason": "INSUFFICIENT_AGREEMENT",
+        "applyAutomatically": false
+      },
+      "new": {
+        "status": "KEEP_EXISTING",
+        "reason": "EYES_WITHOUT_SCENE_SUPPORT",
+        "applyAutomatically": false,
+        "analysisMethod": "scene-and-eyes/1",
+        "scene": {
+          "horizontal": null,
+          "vertical": null,
+          "perspectiveVertical": null
+        },
+        "eyes": {
+          "status": "HEAD_POSE_ONLY",
+          "detectedFaces": 1,
+          "usableFaces": 1,
+          "supportingFaces": 1,
+          "angle": -0.5241674931870767,
+          "spread": 0.0
+        },
+        "imageWidth": 1024,
+        "imageHeight": 684
+      }
+    },
+    {
+      "index": 453,
+      "photographer": -0.622013,
+      "legacy": {
+        "status": "KEEP_EXISTING",
+        "reason": "INSUFFICIENT_AGREEMENT",
+        "applyAutomatically": false
+      },
+      "new": {
+        "status": "KEEP_EXISTING",
+        "reason": "EYES_WITHOUT_SCENE_SUPPORT",
+        "applyAutomatically": false,
+        "analysisMethod": "scene-and-eyes/1",
+        "scene": {
+          "horizontal": null,
+          "vertical": null,
+          "perspectiveVertical": null
+        },
+        "eyes": {
+          "status": "HEAD_POSE_ONLY",
+          "detectedFaces": 2,
+          "usableFaces": 1,
+          "supportingFaces": 1,
+          "angle": -3.741731558698977,
+          "spread": 0.0
+        },
+        "imageWidth": 1024,
+        "imageHeight": 684
+      }
+    },
+    {
+      "index": 454,
+      "photographer": -0.604381,
+      "legacy": {
+        "status": "KEEP_EXISTING",
+        "reason": "INSUFFICIENT_AGREEMENT",
+        "applyAutomatically": false
+      },
+      "new": {
+        "status": "KEEP_EXISTING",
+        "reason": "EYES_WITHOUT_SCENE_SUPPORT",
+        "applyAutomatically": false,
+        "analysisMethod": "scene-and-eyes/1",
+        "scene": {
+          "horizontal": null,
+          "vertical": null,
+          "perspectiveVertical": null
+        },
+        "eyes": {
+          "status": "HEAD_POSE_ONLY",
+          "detectedFaces": 3,
+          "usableFaces": 2,
+          "supportingFaces": 2,
+          "angle": -0.7463652218567116,
+          "spread": 0.0689813876869464
+        },
+        "imageWidth": 1024,
+        "imageHeight": 684
+      }
+    },
+    {
+      "index": 455,
+      "photographer": 1.57029,
+      "legacy": {
+        "status": "KEEP_EXISTING",
+        "reason": "INSUFFICIENT_AGREEMENT",
+        "applyAutomatically": false
+      },
+      "new": {
+        "status": "KEEP_EXISTING",
+        "reason": "INSUFFICIENT_AGREEMENT",
+        "applyAutomatically": false,
+        "analysisMethod": "scene-and-eyes/1",
+        "scene": {
+          "horizontal": null,
+          "vertical": null,
+          "perspectiveVertical": null
+        },
+        "eyes": {
+          "status": "NO_RELIABLE_EYES",
+          "detectedFaces": 2,
+          "usableFaces": 0,
+          "supportingFaces": 0
+        },
+        "imageWidth": 1024,
+        "imageHeight": 684
+      }
+    },
+    {
+      "index": 456,
+      "photographer": -0.160232,
+      "legacy": {
+        "status": "KEEP_EXISTING",
+        "reason": "INSUFFICIENT_AGREEMENT",
+        "applyAutomatically": false
+      },
+      "new": {
+        "status": "KEEP_EXISTING",
+        "reason": "EYES_WITHOUT_SCENE_SUPPORT",
+        "applyAutomatically": false,
+        "analysisMethod": "scene-and-eyes/1",
+        "scene": {
+          "horizontal": null,
+          "vertical": null,
+          "perspectiveVertical": null
+        },
+        "eyes": {
+          "status": "HEAD_POSE_ONLY",
+          "detectedFaces": 2,
+          "usableFaces": 1,
+          "supportingFaces": 1,
+          "angle": -0.9108666336409851,
+          "spread": 0.0
+        },
+        "imageWidth": 1024,
+        "imageHeight": 684
+      }
+    },
+    {
+      "index": 457,
+      "photographer": 0.873854,
+      "legacy": {
+        "status": "KEEP_EXISTING",
+        "reason": "INSUFFICIENT_AGREEMENT",
+        "applyAutomatically": false
+      },
+      "new": {
+        "status": "KEEP_EXISTING",
+        "reason": "EYES_WITHOUT_SCENE_SUPPORT",
+        "applyAutomatically": false,
+        "analysisMethod": "scene-and-eyes/1",
+        "scene": {
+          "horizontal": null,
+          "vertical": null,
+          "perspectiveVertical": null
+        },
+        "eyes": {
+          "status": "HEAD_POSE_ONLY",
+          "detectedFaces": 3,
+          "usableFaces": 1,
+          "supportingFaces": 1,
+          "angle": 3.192388905765093,
+          "spread": 0.0
+        },
+        "imageWidth": 1024,
+        "imageHeight": 684
+      }
+    },
+    {
+      "index": 458,
+      "photographer": 0.271472,
+      "legacy": {
+        "status": "KEEP_EXISTING",
+        "reason": "INSUFFICIENT_AGREEMENT",
+        "applyAutomatically": false
+      },
+      "new": {
+        "status": "KEEP_EXISTING",
+        "reason": "INSUFFICIENT_AGREEMENT",
+        "applyAutomatically": false,
+        "analysisMethod": "scene-and-eyes/1",
+        "scene": {
+          "horizontal": null,
+          "vertical": null,
+          "perspectiveVertical": null
+        },
+        "eyes": {
+          "status": "NO_RELIABLE_EYES",
+          "detectedFaces": 1,
+          "usableFaces": 0,
+          "supportingFaces": 0
+        },
+        "imageWidth": 1024,
+        "imageHeight": 684
+      }
+    },
+    {
+      "index": 459,
+      "photographer": 0.732798,
+      "legacy": {
+        "status": "KEEP_EXISTING",
+        "reason": "INSUFFICIENT_AGREEMENT",
+        "applyAutomatically": false
+      },
+      "new": {
+        "status": "KEEP_EXISTING",
+        "reason": "INSUFFICIENT_AGREEMENT",
+        "applyAutomatically": false,
+        "analysisMethod": "scene-and-eyes/1",
+        "scene": {
+          "horizontal": null,
+          "vertical": null,
+          "perspectiveVertical": null
+        },
+        "eyes": {
+          "status": "HEAD_POSES_DISAGREE",
+          "detectedFaces": 4,
+          "usableFaces": 3,
+          "supportingFaces": 0
+        },
+        "imageWidth": 1024,
+        "imageHeight": 684
+      }
+    },
+    {
+      "index": 460,
+      "photographer": -2.26938,
+      "legacy": {
+        "status": "KEEP_EXISTING",
+        "reason": "INSUFFICIENT_AGREEMENT",
+        "applyAutomatically": false
+      },
+      "new": {
+        "status": "KEEP_EXISTING",
+        "reason": "EYES_WITHOUT_SCENE_SUPPORT",
+        "applyAutomatically": false,
+        "analysisMethod": "scene-and-eyes/1",
+        "scene": {
+          "horizontal": null,
+          "vertical": null,
+          "perspectiveVertical": null
+        },
+        "eyes": {
+          "status": "HEAD_POSE_ONLY",
+          "detectedFaces": 2,
+          "usableFaces": 1,
+          "supportingFaces": 1,
+          "angle": -0.706308947236701,
+          "spread": 0.0
+        },
+        "imageWidth": 1024,
+        "imageHeight": 684
+      }
+    },
+    {
+      "index": 461,
+      "photographer": -1.35282,
+      "legacy": {
+        "status": "KEEP_EXISTING",
+        "reason": "INSUFFICIENT_AGREEMENT",
+        "applyAutomatically": false
+      },
+      "new": {
+        "status": "KEEP_EXISTING",
+        "reason": "EYES_WITHOUT_SCENE_SUPPORT",
+        "applyAutomatically": false,
+        "analysisMethod": "scene-and-eyes/1",
+        "scene": {
+          "horizontal": null,
+          "vertical": null,
+          "perspectiveVertical": null
+        },
+        "eyes": {
+          "status": "HEAD_POSE_ONLY",
+          "detectedFaces": 2,
+          "usableFaces": 1,
+          "supportingFaces": 1,
+          "angle": -1.5851877033526582,
+          "spread": 0.0
+        },
+        "imageWidth": 1024,
+        "imageHeight": 684
+      }
+    },
+    {
+      "index": 462,
+      "photographer": -0.993732,
+      "legacy": {
+        "status": "KEEP_EXISTING",
+        "reason": "INSUFFICIENT_AGREEMENT",
+        "applyAutomatically": false
+      },
+      "new": {
+        "status": "KEEP_EXISTING",
+        "reason": "INSUFFICIENT_AGREEMENT",
+        "applyAutomatically": false,
+        "analysisMethod": "scene-and-eyes/1",
+        "scene": {
+          "horizontal": null,
+          "vertical": null,
+          "perspectiveVertical": null
+        },
+        "eyes": {
+          "status": "NO_RELIABLE_EYES",
+          "detectedFaces": 0,
+          "usableFaces": 0,
+          "supportingFaces": 0
+        },
+        "imageWidth": 1024,
+        "imageHeight": 684
+      }
+    },
+    {
+      "index": 463,
+      "photographer": -0.238053,
+      "legacy": {
+        "status": "KEEP_EXISTING",
+        "reason": "INSUFFICIENT_AGREEMENT",
+        "applyAutomatically": false
+      },
+      "new": {
+        "status": "KEEP_EXISTING",
+        "reason": "EYES_WITHOUT_SCENE_SUPPORT",
+        "applyAutomatically": false,
+        "analysisMethod": "scene-and-eyes/1",
+        "scene": {
+          "horizontal": null,
+          "vertical": null,
+          "perspectiveVertical": null
+        },
+        "eyes": {
+          "status": "GROUP_CONSENSUS",
+          "detectedFaces": 5,
+          "usableFaces": 4,
+          "supportingFaces": 4,
+          "angle": 0.8387268485614273,
+          "spread": 0.40725995958501043
+        },
+        "imageWidth": 1024,
+        "imageHeight": 684
+      }
+    },
+    {
+      "index": 464,
+      "photographer": -0.299667,
+      "legacy": {
+        "status": "KEEP_EXISTING",
+        "reason": "INSUFFICIENT_AGREEMENT",
+        "applyAutomatically": false
+      },
+      "new": {
+        "status": "KEEP_EXISTING",
+        "reason": "INSUFFICIENT_AGREEMENT",
+        "applyAutomatically": false,
+        "analysisMethod": "scene-and-eyes/1",
+        "scene": {
+          "horizontal": null,
+          "vertical": null,
+          "perspectiveVertical": null
+        },
+        "eyes": {
+          "status": "NO_RELIABLE_EYES",
+          "detectedFaces": 0,
+          "usableFaces": 0,
+          "supportingFaces": 0
+        },
+        "imageWidth": 1024,
+        "imageHeight": 684
+      }
+    },
+    {
+      "index": 465,
+      "photographer": 0.72078,
+      "legacy": {
+        "status": "KEEP_EXISTING",
+        "reason": "INSUFFICIENT_AGREEMENT",
+        "applyAutomatically": false
+      },
+      "new": {
+        "status": "KEEP_EXISTING",
+        "reason": "INSUFFICIENT_AGREEMENT",
+        "applyAutomatically": false,
+        "analysisMethod": "scene-and-eyes/1",
+        "scene": {
+          "horizontal": null,
+          "vertical": null,
+          "perspectiveVertical": null
+        },
+        "eyes": {
+          "status": "NO_RELIABLE_EYES",
+          "detectedFaces": 0,
+          "usableFaces": 0,
+          "supportingFaces": 0
+        },
+        "imageWidth": 1024,
+        "imageHeight": 684
+      }
+    },
+    {
+      "index": 466,
+      "photographer": -0.339954,
+      "legacy": {
+        "status": "KEEP_EXISTING",
+        "reason": "INSUFFICIENT_AGREEMENT",
+        "applyAutomatically": false
+      },
+      "new": {
+        "status": "KEEP_EXISTING",
+        "reason": "EYES_WITHOUT_SCENE_SUPPORT",
+        "applyAutomatically": false,
+        "analysisMethod": "scene-and-eyes/1",
+        "scene": {
+          "horizontal": null,
+          "vertical": null,
+          "perspectiveVertical": null
+        },
+        "eyes": {
+          "status": "HEAD_POSE_ONLY",
+          "detectedFaces": 2,
+          "usableFaces": 1,
+          "supportingFaces": 1,
+          "angle": 1.9099282208931894,
+          "spread": 0.0
+        },
+        "imageWidth": 1024,
+        "imageHeight": 684
+      }
+    },
+    {
+      "index": 467,
+      "photographer": 1.19195,
+      "legacy": {
+        "status": "KEEP_EXISTING",
+        "reason": "INSUFFICIENT_AGREEMENT",
+        "applyAutomatically": false
+      },
+      "new": {
+        "status": "KEEP_EXISTING",
+        "reason": "EYES_WITHOUT_SCENE_SUPPORT",
+        "applyAutomatically": false,
+        "analysisMethod": "scene-and-eyes/1",
+        "scene": {
+          "horizontal": null,
+          "vertical": null,
+          "perspectiveVertical": null
+        },
+        "eyes": {
+          "status": "HEAD_POSE_ONLY",
+          "detectedFaces": 2,
+          "usableFaces": 2,
+          "supportingFaces": 2,
+          "angle": -0.6399016492104954,
+          "spread": 0.570393839543033
+        },
+        "imageWidth": 1024,
+        "imageHeight": 684
+      }
+    },
+    {
+      "index": 468,
+      "photographer": 2.35,
+      "legacy": {
+        "status": "KEEP_EXISTING",
+        "reason": "INSUFFICIENT_AGREEMENT",
+        "applyAutomatically": false
+      },
+      "new": {
+        "status": "KEEP_EXISTING",
+        "reason": "EYES_WITHOUT_SCENE_SUPPORT",
+        "applyAutomatically": false,
+        "analysisMethod": "scene-and-eyes/1",
+        "scene": {
+          "horizontal": null,
+          "vertical": null,
+          "perspectiveVertical": null
+        },
+        "eyes": {
+          "status": "GROUP_CONSENSUS",
+          "detectedFaces": 3,
+          "usableFaces": 3,
+          "supportingFaces": 3,
+          "angle": 0.16150246548736646,
+          "spread": 0.21387711943990412
+        },
+        "imageWidth": 1024,
+        "imageHeight": 684
+      }
+    },
+    {
+      "index": 469,
+      "photographer": -0.2596,
+      "legacy": {
+        "status": "KEEP_EXISTING",
+        "reason": "INSUFFICIENT_AGREEMENT",
+        "applyAutomatically": false
+      },
+      "new": {
+        "status": "KEEP_EXISTING",
+        "reason": "SCENE_EYES_DISAGREE",
+        "applyAutomatically": false,
+        "analysisMethod": "scene-and-eyes/1",
+        "scene": {
+          "horizontal": null,
+          "vertical": {
+            "angle": -1.001281236336415,
+            "supportingSegments": 4,
+            "acrossSpan": 0.23925742506980896
+          },
+          "perspectiveVertical": null
+        },
+        "eyes": {
+          "status": "HEAD_POSE_ONLY",
+          "detectedFaces": 2,
+          "usableFaces": 2,
+          "supportingFaces": 2,
+          "angle": -1.3533684332285245,
+          "spread": 0.5910240585593187
+        },
+        "imageWidth": 1024,
+        "imageHeight": 684
+      }
+    },
+    {
+      "index": 470,
+      "photographer": 1.25,
+      "legacy": {
+        "status": "KEEP_EXISTING",
+        "reason": "INSUFFICIENT_AGREEMENT",
+        "applyAutomatically": false
+      },
+      "new": {
+        "status": "KEEP_EXISTING",
+        "reason": "EYES_WITHOUT_SCENE_SUPPORT",
+        "applyAutomatically": false,
+        "analysisMethod": "scene-and-eyes/1",
+        "scene": {
+          "horizontal": null,
+          "vertical": null,
+          "perspectiveVertical": null
+        },
+        "eyes": {
+          "status": "HEAD_POSE_ONLY",
+          "detectedFaces": 3,
+          "usableFaces": 1,
+          "supportingFaces": 1,
+          "angle": 2.107356458874264,
+          "spread": 0.0
+        },
+        "imageWidth": 1024,
+        "imageHeight": 684
+      }
+    },
+    {
+      "index": 471,
+      "photographer": 0.635139,
+      "legacy": {
+        "status": "KEEP_EXISTING",
+        "reason": "INSUFFICIENT_AGREEMENT",
+        "applyAutomatically": false
+      },
+      "new": {
+        "status": "KEEP_EXISTING",
+        "reason": "EYES_WITHOUT_SCENE_SUPPORT",
+        "applyAutomatically": false,
+        "analysisMethod": "scene-and-eyes/1",
+        "scene": {
+          "horizontal": null,
+          "vertical": null,
+          "perspectiveVertical": null
+        },
+        "eyes": {
+          "status": "HEAD_POSE_ONLY",
+          "detectedFaces": 3,
+          "usableFaces": 1,
+          "supportingFaces": 1,
+          "angle": 1.5478822063229907,
+          "spread": 0.0
+        },
+        "imageWidth": 1024,
+        "imageHeight": 684
+      }
+    },
+    {
+      "index": 472,
+      "photographer": -2.02966,
+      "legacy": {
+        "status": "KEEP_EXISTING",
+        "reason": "INSUFFICIENT_AGREEMENT",
+        "applyAutomatically": false
+      },
+      "new": {
+        "status": "KEEP_EXISTING",
+        "reason": "EYES_WITHOUT_SCENE_SUPPORT",
+        "applyAutomatically": false,
+        "analysisMethod": "scene-and-eyes/1",
+        "scene": {
+          "horizontal": null,
+          "vertical": null,
+          "perspectiveVertical": null
+        },
+        "eyes": {
+          "status": "HEAD_POSE_ONLY",
+          "detectedFaces": 2,
+          "usableFaces": 1,
+          "supportingFaces": 1,
+          "angle": -1.6157399179269838,
+          "spread": 0.0
+        },
+        "imageWidth": 1024,
+        "imageHeight": 684
+      }
+    },
+    {
+      "index": 473,
+      "photographer": -0.75276,
+      "legacy": {
+        "status": "KEEP_EXISTING",
+        "reason": "INSUFFICIENT_AGREEMENT",
+        "applyAutomatically": false
+      },
+      "new": {
+        "status": "KEEP_EXISTING",
+        "reason": "EYES_WITHOUT_SCENE_SUPPORT",
+        "applyAutomatically": false,
+        "analysisMethod": "scene-and-eyes/1",
+        "scene": {
+          "horizontal": null,
+          "vertical": null,
+          "perspectiveVertical": null
+        },
+        "eyes": {
+          "status": "HEAD_POSE_ONLY",
+          "detectedFaces": 2,
+          "usableFaces": 2,
+          "supportingFaces": 2,
+          "angle": -1.9263939788589015,
+          "spread": 1.3092542651714356
+        },
+        "imageWidth": 1024,
+        "imageHeight": 684
+      }
+    },
+    {
+      "index": 474,
+      "photographer": 0.226039,
+      "legacy": {
+        "status": "KEEP_EXISTING",
+        "reason": "INSUFFICIENT_AGREEMENT",
+        "applyAutomatically": false
+      },
+      "new": {
+        "status": "KEEP_EXISTING",
+        "reason": "EYES_WITHOUT_SCENE_SUPPORT",
+        "applyAutomatically": false,
+        "analysisMethod": "scene-and-eyes/1",
+        "scene": {
+          "horizontal": null,
+          "vertical": null,
+          "perspectiveVertical": null
+        },
+        "eyes": {
+          "status": "GROUP_CONSENSUS",
+          "detectedFaces": 4,
+          "usableFaces": 3,
+          "supportingFaces": 3,
+          "angle": 1.9500817259235301,
+          "spread": 0.3491730427311768
+        },
+        "imageWidth": 1024,
+        "imageHeight": 684
+      }
+    },
+    {
+      "index": 475,
+      "photographer": -1.13817,
+      "legacy": {
+        "status": "KEEP_EXISTING",
+        "reason": "INSUFFICIENT_AGREEMENT",
+        "applyAutomatically": false
+      },
+      "new": {
+        "status": "KEEP_EXISTING",
+        "reason": "EYES_WITHOUT_SCENE_SUPPORT",
+        "applyAutomatically": false,
+        "analysisMethod": "scene-and-eyes/1",
+        "scene": {
+          "horizontal": null,
+          "vertical": null,
+          "perspectiveVertical": null
+        },
+        "eyes": {
+          "status": "HEAD_POSE_ONLY",
+          "detectedFaces": 1,
+          "usableFaces": 1,
+          "supportingFaces": 1,
+          "angle": -1.1010873626617015,
+          "spread": 0.0
+        },
+        "imageWidth": 1024,
+        "imageHeight": 684
+      }
+    },
+    {
+      "index": 476,
+      "photographer": -0.046684,
+      "legacy": {
+        "status": "KEEP_EXISTING",
+        "reason": "INSUFFICIENT_AGREEMENT",
+        "applyAutomatically": false
+      },
+      "new": {
+        "status": "KEEP_EXISTING",
+        "reason": "EYES_WITHOUT_SCENE_SUPPORT",
+        "applyAutomatically": false,
+        "analysisMethod": "scene-and-eyes/1",
+        "scene": {
+          "horizontal": null,
+          "vertical": null,
+          "perspectiveVertical": null
+        },
+        "eyes": {
+          "status": "HEAD_POSE_ONLY",
+          "detectedFaces": 3,
+          "usableFaces": 1,
+          "supportingFaces": 1,
+          "angle": -0.9355505138013667,
+          "spread": 0.0
+        },
+        "imageWidth": 684,
+        "imageHeight": 1024
+      }
+    },
+    {
+      "index": 477,
+      "photographer": 0.915928,
+      "legacy": {
+        "status": "KEEP_EXISTING",
+        "reason": "INSUFFICIENT_AGREEMENT",
+        "applyAutomatically": false
+      },
+      "new": {
+        "status": "KEEP_EXISTING",
+        "reason": "INSUFFICIENT_AGREEMENT",
+        "applyAutomatically": false,
+        "analysisMethod": "scene-and-eyes/1",
+        "scene": {
+          "horizontal": null,
+          "vertical": null,
+          "perspectiveVertical": null
+        },
+        "eyes": {
+          "status": "NO_RELIABLE_EYES",
+          "detectedFaces": 0,
+          "usableFaces": 0,
+          "supportingFaces": 0
+        },
+        "imageWidth": 684,
+        "imageHeight": 1024
+      }
+    },
+    {
+      "index": 478,
+      "photographer": -0.819468,
+      "legacy": {
+        "status": "KEEP_EXISTING",
+        "reason": "INSUFFICIENT_AGREEMENT",
+        "applyAutomatically": false
+      },
+      "new": {
+        "status": "KEEP_EXISTING",
+        "reason": "EYES_WITHOUT_SCENE_SUPPORT",
+        "applyAutomatically": false,
+        "analysisMethod": "scene-and-eyes/1",
+        "scene": {
+          "horizontal": null,
+          "vertical": null,
+          "perspectiveVertical": null
+        },
+        "eyes": {
+          "status": "HEAD_POSE_ONLY",
+          "detectedFaces": 1,
+          "usableFaces": 1,
+          "supportingFaces": 1,
+          "angle": 3.8296201059345454,
+          "spread": 0.0
+        },
+        "imageWidth": 684,
+        "imageHeight": 1024
+      }
+    },
+    {
+      "index": 479,
+      "photographer": 0.151034,
+      "legacy": {
+        "status": "KEEP_EXISTING",
+        "reason": "INSUFFICIENT_AGREEMENT",
+        "applyAutomatically": false
+      },
+      "new": {
+        "status": "KEEP_EXISTING",
+        "reason": "EYES_WITHOUT_SCENE_SUPPORT",
+        "applyAutomatically": false,
+        "analysisMethod": "scene-and-eyes/1",
+        "scene": {
+          "horizontal": null,
+          "vertical": null,
+          "perspectiveVertical": null
+        },
+        "eyes": {
+          "status": "HEAD_POSE_ONLY",
+          "detectedFaces": 1,
+          "usableFaces": 1,
+          "supportingFaces": 1,
+          "angle": 1.0325410560276753,
+          "spread": 0.0
+        },
+        "imageWidth": 684,
+        "imageHeight": 1024
+      }
+    },
+    {
+      "index": 480,
+      "photographer": 1.2527,
+      "legacy": {
+        "status": "KEEP_EXISTING",
+        "reason": "INSUFFICIENT_AGREEMENT",
+        "applyAutomatically": false
+      },
+      "new": {
+        "status": "KEEP_EXISTING",
+        "reason": "EYES_WITHOUT_SCENE_SUPPORT",
+        "applyAutomatically": false,
+        "analysisMethod": "scene-and-eyes/1",
+        "scene": {
+          "horizontal": null,
+          "vertical": null,
+          "perspectiveVertical": null
+        },
+        "eyes": {
+          "status": "HEAD_POSE_ONLY",
+          "detectedFaces": 2,
+          "usableFaces": 2,
+          "supportingFaces": 2,
+          "angle": -0.637316293056716,
+          "spread": 0.33478498288846825
+        },
+        "imageWidth": 1024,
+        "imageHeight": 684
+      }
+    },
+    {
+      "index": 481,
+      "photographer": -1.69945,
+      "legacy": {
+        "status": "KEEP_EXISTING",
+        "reason": "INSUFFICIENT_AGREEMENT",
+        "applyAutomatically": false
+      },
+      "new": {
+        "status": "KEEP_EXISTING",
+        "reason": "EYES_WITHOUT_SCENE_SUPPORT",
+        "applyAutomatically": false,
+        "analysisMethod": "scene-and-eyes/1",
+        "scene": {
+          "horizontal": null,
+          "vertical": null,
+          "perspectiveVertical": null
+        },
+        "eyes": {
+          "status": "HEAD_POSE_ONLY",
+          "detectedFaces": 2,
+          "usableFaces": 1,
+          "supportingFaces": 1,
+          "angle": 0.5857271560422528,
+          "spread": 0.0
+        },
+        "imageWidth": 1024,
+        "imageHeight": 684
+      }
+    },
+    {
+      "index": 482,
+      "photographer": -4.03,
+      "legacy": {
+        "status": "KEEP_EXISTING",
+        "reason": "INSUFFICIENT_AGREEMENT",
+        "applyAutomatically": false
+      },
+      "new": {
+        "status": "KEEP_EXISTING",
+        "reason": "SCENE_EYES_DISAGREE",
+        "applyAutomatically": false,
+        "analysisMethod": "scene-and-eyes/1",
+        "scene": {
+          "horizontal": null,
+          "vertical": {
+            "angle": -6.771486541601592,
+            "supportingSegments": 4,
+            "acrossSpan": 0.6303133964538574
+          },
+          "perspectiveVertical": null
+        },
+        "eyes": {
+          "status": "HEAD_POSE_ONLY",
+          "detectedFaces": 2,
+          "usableFaces": 2,
+          "supportingFaces": 2,
+          "angle": -2.66736130961245,
+          "spread": 1.1334774327041628
+        },
+        "imageWidth": 1024,
+        "imageHeight": 684
+      }
+    },
+    {
+      "index": 483,
+      "photographer": -3.14,
+      "legacy": {
+        "status": "KEEP_EXISTING",
+        "reason": "INSUFFICIENT_AGREEMENT",
+        "applyAutomatically": false
+      },
+      "new": {
+        "status": "KEEP_EXISTING",
+        "reason": "EYES_WITHOUT_SCENE_SUPPORT",
+        "applyAutomatically": false,
+        "analysisMethod": "scene-and-eyes/1",
+        "scene": {
+          "horizontal": null,
+          "vertical": null,
+          "perspectiveVertical": null
+        },
+        "eyes": {
+          "status": "HEAD_POSE_ONLY",
+          "detectedFaces": 2,
+          "usableFaces": 1,
+          "supportingFaces": 1,
+          "angle": -3.944384228821652,
+          "spread": 0.0
+        },
+        "imageWidth": 1024,
+        "imageHeight": 684
+      }
+    },
+    {
+      "index": 484,
+      "photographer": 1.24079,
+      "legacy": {
+        "status": "KEEP_EXISTING",
+        "reason": "INSUFFICIENT_AGREEMENT",
+        "applyAutomatically": false
+      },
+      "new": {
+        "status": "KEEP_EXISTING",
+        "reason": "EYES_WITHOUT_SCENE_SUPPORT",
+        "applyAutomatically": false,
+        "analysisMethod": "scene-and-eyes/1",
+        "scene": {
+          "horizontal": null,
+          "vertical": null,
+          "perspectiveVertical": {
+            "angle": 0.6541006645157657,
+            "supportingSegments": 8,
+            "supportFraction": 1.0,
+            "acrossSpan": 0.8668575938791037
+          }
+        },
+        "eyes": {
+          "status": "HEAD_POSE_ONLY",
+          "detectedFaces": 4,
+          "usableFaces": 1,
+          "supportingFaces": 1,
+          "angle": -1.4492993365446805,
+          "spread": 0.0
+        },
+        "imageWidth": 1024,
+        "imageHeight": 684
+      }
+    },
+    {
+      "index": 485,
+      "photographer": 0.634638,
+      "legacy": {
+        "status": "KEEP_EXISTING",
+        "reason": "INSUFFICIENT_AGREEMENT",
+        "applyAutomatically": false
+      },
+      "new": {
+        "status": "KEEP_EXISTING",
+        "reason": "EYES_WITHOUT_SCENE_SUPPORT",
+        "applyAutomatically": false,
+        "analysisMethod": "scene-and-eyes/1",
+        "scene": {
+          "horizontal": null,
+          "vertical": null,
+          "perspectiveVertical": null
+        },
+        "eyes": {
+          "status": "HEAD_POSE_ONLY",
+          "detectedFaces": 2,
+          "usableFaces": 2,
+          "supportingFaces": 2,
+          "angle": -0.2906865642790075,
+          "spread": 0.1444739193290725
+        },
+        "imageWidth": 1024,
+        "imageHeight": 684
+      }
+    },
+    {
+      "index": 486,
+      "photographer": 0.980494,
+      "legacy": {
+        "status": "KEEP_EXISTING",
+        "reason": "INSUFFICIENT_AGREEMENT",
+        "applyAutomatically": false
+      },
+      "new": {
+        "status": "KEEP_EXISTING",
+        "reason": "INSUFFICIENT_AGREEMENT",
+        "applyAutomatically": false,
+        "analysisMethod": "scene-and-eyes/1",
+        "scene": {
+          "horizontal": null,
+          "vertical": {
+            "angle": 1.0929407852443043,
+            "supportingSegments": 11,
+            "acrossSpan": 0.7761447429656982
+          },
+          "perspectiveVertical": {
+            "angle": 1.0071550306410642,
+            "supportingSegments": 11,
+            "supportFraction": 0.9214456213280627,
+            "acrossSpan": 0.7761447429656982
+          }
+        },
+        "eyes": {
+          "status": "NO_RELIABLE_EYES",
+          "detectedFaces": 0,
+          "usableFaces": 0,
+          "supportingFaces": 0
+        },
+        "imageWidth": 1024,
+        "imageHeight": 684
+      }
+    },
+    {
+      "index": 487,
+      "photographer": -1.13918,
+      "legacy": {
+        "status": "KEEP_EXISTING",
+        "reason": "INSUFFICIENT_AGREEMENT",
+        "applyAutomatically": false
+      },
+      "new": {
+        "status": "KEEP_EXISTING",
+        "reason": "EYES_WITHOUT_SCENE_SUPPORT",
+        "applyAutomatically": false,
+        "analysisMethod": "scene-and-eyes/1",
+        "scene": {
+          "horizontal": null,
+          "vertical": null,
+          "perspectiveVertical": null
+        },
+        "eyes": {
+          "status": "HEAD_POSE_ONLY",
+          "detectedFaces": 1,
+          "usableFaces": 1,
+          "supportingFaces": 1,
+          "angle": 1.2317212601420289,
+          "spread": 0.0
+        },
+        "imageWidth": 1024,
+        "imageHeight": 684
+      }
+    },
+    {
+      "index": 488,
+      "photographer": -0.325468,
+      "legacy": {
+        "status": "KEEP_EXISTING",
+        "reason": "INSUFFICIENT_AGREEMENT",
+        "applyAutomatically": false
+      },
+      "new": {
+        "status": "KEEP_EXISTING",
+        "reason": "EYES_WITHOUT_SCENE_SUPPORT",
+        "applyAutomatically": false,
+        "analysisMethod": "scene-and-eyes/1",
+        "scene": {
+          "horizontal": null,
+          "vertical": null,
+          "perspectiveVertical": null
+        },
+        "eyes": {
+          "status": "HEAD_POSE_ONLY",
+          "detectedFaces": 2,
+          "usableFaces": 1,
+          "supportingFaces": 1,
+          "angle": -2.3920862366138738,
+          "spread": 0.0
+        },
+        "imageWidth": 1024,
+        "imageHeight": 684
+      }
+    },
+    {
+      "index": 489,
+      "photographer": 0.942592,
+      "legacy": {
+        "status": "KEEP_EXISTING",
+        "reason": "INSUFFICIENT_AGREEMENT",
+        "applyAutomatically": false
+      },
+      "new": {
+        "status": "KEEP_EXISTING",
+        "reason": "EYES_WITHOUT_SCENE_SUPPORT",
+        "applyAutomatically": false,
+        "analysisMethod": "scene-and-eyes/1",
+        "scene": {
+          "horizontal": null,
+          "vertical": null,
+          "perspectiveVertical": null
+        },
+        "eyes": {
+          "status": "HEAD_POSE_ONLY",
+          "detectedFaces": 2,
+          "usableFaces": 1,
+          "supportingFaces": 1,
+          "angle": -1.7995611368351347,
+          "spread": 0.0
+        },
+        "imageWidth": 1024,
+        "imageHeight": 684
+      }
+    },
+    {
+      "index": 490,
+      "photographer": -0.298656,
+      "legacy": {
+        "status": "KEEP_EXISTING",
+        "reason": "INSUFFICIENT_AGREEMENT",
+        "applyAutomatically": false
+      },
+      "new": {
+        "status": "KEEP_EXISTING",
+        "reason": "INSUFFICIENT_AGREEMENT",
+        "applyAutomatically": false,
+        "analysisMethod": "scene-and-eyes/1",
+        "scene": {
+          "horizontal": null,
+          "vertical": null,
+          "perspectiveVertical": null
+        },
+        "eyes": {
+          "status": "NO_RELIABLE_EYES",
+          "detectedFaces": 2,
+          "usableFaces": 0,
+          "supportingFaces": 0
+        },
+        "imageWidth": 1024,
+        "imageHeight": 684
+      }
+    },
+    {
+      "index": 491,
+      "photographer": 0.981089,
+      "legacy": {
+        "status": "KEEP_EXISTING",
+        "reason": "INSUFFICIENT_AGREEMENT",
+        "applyAutomatically": false
+      },
+      "new": {
+        "status": "KEEP_EXISTING",
+        "reason": "EYES_WITHOUT_SCENE_SUPPORT",
+        "applyAutomatically": false,
+        "analysisMethod": "scene-and-eyes/1",
+        "scene": {
+          "horizontal": null,
+          "vertical": null,
+          "perspectiveVertical": null
+        },
+        "eyes": {
+          "status": "HEAD_POSE_ONLY",
+          "detectedFaces": 1,
+          "usableFaces": 1,
+          "supportingFaces": 1,
+          "angle": -0.8870686085910517,
+          "spread": 0.0
+        },
+        "imageWidth": 1024,
+        "imageHeight": 684
+      }
+    },
+    {
+      "index": 492,
+      "photographer": -0.637809,
+      "legacy": {
+        "status": "KEEP_EXISTING",
+        "reason": "INSUFFICIENT_AGREEMENT",
+        "applyAutomatically": false
+      },
+      "new": {
+        "status": "KEEP_EXISTING",
+        "reason": "INSUFFICIENT_AGREEMENT",
+        "applyAutomatically": false,
+        "analysisMethod": "scene-and-eyes/1",
+        "scene": {
+          "horizontal": null,
+          "vertical": null,
+          "perspectiveVertical": null
+        },
+        "eyes": {
+          "status": "HEAD_POSES_DISAGREE",
+          "detectedFaces": 3,
+          "usableFaces": 3,
+          "supportingFaces": 0
+        },
+        "imageWidth": 1024,
+        "imageHeight": 684
+      }
+    },
+    {
+      "index": 493,
+      "photographer": 0.169299,
+      "legacy": {
+        "status": "KEEP_EXISTING",
+        "reason": "INSUFFICIENT_AGREEMENT",
+        "applyAutomatically": false
+      },
+      "new": {
+        "status": "KEEP_EXISTING",
+        "reason": "INSUFFICIENT_AGREEMENT",
+        "applyAutomatically": false,
+        "analysisMethod": "scene-and-eyes/1",
+        "scene": {
+          "horizontal": null,
+          "vertical": null,
+          "perspectiveVertical": null
+        },
+        "eyes": {
+          "status": "HEAD_POSES_DISAGREE",
+          "detectedFaces": 3,
+          "usableFaces": 3,
+          "supportingFaces": 0
+        },
+        "imageWidth": 1024,
+        "imageHeight": 684
+      }
+    },
+    {
+      "index": 494,
+      "photographer": 2.27906,
+      "legacy": {
+        "status": "KEEP_EXISTING",
+        "reason": "INSUFFICIENT_AGREEMENT",
+        "applyAutomatically": false
+      },
+      "new": {
+        "status": "KEEP_EXISTING",
+        "reason": "INSUFFICIENT_AGREEMENT",
+        "applyAutomatically": false,
+        "analysisMethod": "scene-and-eyes/1",
+        "scene": {
+          "horizontal": null,
+          "vertical": null,
+          "perspectiveVertical": null
+        },
+        "eyes": {
+          "status": "NO_RELIABLE_EYES",
+          "detectedFaces": 0,
+          "usableFaces": 0,
+          "supportingFaces": 0
+        },
+        "imageWidth": 1024,
+        "imageHeight": 684
+      }
+    },
+    {
+      "index": 495,
+      "photographer": -0.940469,
+      "legacy": {
+        "status": "KEEP_EXISTING",
+        "reason": "INSUFFICIENT_AGREEMENT",
+        "applyAutomatically": false
+      },
+      "new": {
+        "status": "KEEP_EXISTING",
+        "reason": "INSUFFICIENT_AGREEMENT",
+        "applyAutomatically": false,
+        "analysisMethod": "scene-and-eyes/1",
+        "scene": {
+          "horizontal": null,
+          "vertical": null,
+          "perspectiveVertical": null
+        },
+        "eyes": {
+          "status": "NO_RELIABLE_EYES",
+          "detectedFaces": 1,
+          "usableFaces": 0,
+          "supportingFaces": 0
+        },
+        "imageWidth": 1024,
+        "imageHeight": 684
+      }
+    },
+    {
+      "index": 496,
+      "photographer": -2.43119,
+      "legacy": {
+        "status": "KEEP_EXISTING",
+        "reason": "INSUFFICIENT_AGREEMENT",
+        "applyAutomatically": false
+      },
+      "new": {
+        "status": "KEEP_EXISTING",
+        "reason": "EYES_WITHOUT_SCENE_SUPPORT",
+        "applyAutomatically": false,
+        "analysisMethod": "scene-and-eyes/1",
+        "scene": {
+          "horizontal": null,
+          "vertical": null,
+          "perspectiveVertical": null
+        },
+        "eyes": {
+          "status": "HEAD_POSE_ONLY",
+          "detectedFaces": 2,
+          "usableFaces": 1,
+          "supportingFaces": 1,
+          "angle": 1.163482732314726,
+          "spread": 0.0
+        },
+        "imageWidth": 1024,
+        "imageHeight": 684
+      }
+    },
+    {
+      "index": 497,
+      "photographer": -2.65992,
+      "legacy": {
+        "status": "KEEP_EXISTING",
+        "reason": "INSUFFICIENT_AGREEMENT",
+        "applyAutomatically": false
+      },
+      "new": {
+        "status": "KEEP_EXISTING",
+        "reason": "INSUFFICIENT_AGREEMENT",
+        "applyAutomatically": false,
+        "analysisMethod": "scene-and-eyes/1",
+        "scene": {
+          "horizontal": null,
+          "vertical": null,
+          "perspectiveVertical": null
+        },
+        "eyes": {
+          "status": "NO_RELIABLE_EYES",
+          "detectedFaces": 2,
+          "usableFaces": 0,
+          "supportingFaces": 0
+        },
+        "imageWidth": 1024,
+        "imageHeight": 684
+      }
+    },
+    {
+      "index": 498,
+      "photographer": -1.23536,
+      "legacy": {
+        "status": "KEEP_EXISTING",
+        "reason": "INSUFFICIENT_AGREEMENT",
+        "applyAutomatically": false
+      },
+      "new": {
+        "status": "KEEP_EXISTING",
+        "reason": "INSUFFICIENT_AGREEMENT",
+        "applyAutomatically": false,
+        "analysisMethod": "scene-and-eyes/1",
+        "scene": {
+          "horizontal": null,
+          "vertical": null,
+          "perspectiveVertical": null
+        },
+        "eyes": {
+          "status": "NO_RELIABLE_EYES",
+          "detectedFaces": 2,
+          "usableFaces": 0,
+          "supportingFaces": 0
+        },
+        "imageWidth": 1024,
+        "imageHeight": 684
+      }
+    },
+    {
+      "index": 499,
+      "photographer": -0.35732,
+      "legacy": {
+        "status": "KEEP_EXISTING",
+        "reason": "INSUFFICIENT_AGREEMENT",
+        "applyAutomatically": false
+      },
+      "new": {
+        "status": "KEEP_EXISTING",
+        "reason": "EYES_WITHOUT_SCENE_SUPPORT",
+        "applyAutomatically": false,
+        "analysisMethod": "scene-and-eyes/1",
+        "scene": {
+          "horizontal": null,
+          "vertical": null,
+          "perspectiveVertical": null
+        },
+        "eyes": {
+          "status": "HEAD_POSE_ONLY",
+          "detectedFaces": 1,
+          "usableFaces": 1,
+          "supportingFaces": 1,
+          "angle": -0.7886877428009915,
+          "spread": 0.0
+        },
+        "imageWidth": 1024,
+        "imageHeight": 684
+      }
+    },
+    {
+      "index": 500,
+      "photographer": -1.80403,
+      "legacy": {
+        "status": "KEEP_EXISTING",
+        "reason": "INSUFFICIENT_AGREEMENT",
+        "applyAutomatically": false
+      },
+      "new": {
+        "status": "KEEP_EXISTING",
+        "reason": "EYES_WITHOUT_SCENE_SUPPORT",
+        "applyAutomatically": false,
+        "analysisMethod": "scene-and-eyes/1",
+        "scene": {
+          "horizontal": null,
+          "vertical": null,
+          "perspectiveVertical": null
+        },
+        "eyes": {
+          "status": "HEAD_POSE_ONLY",
+          "detectedFaces": 2,
+          "usableFaces": 1,
+          "supportingFaces": 1,
+          "angle": -4.884811140343525,
+          "spread": 0.0
+        },
+        "imageWidth": 1024,
+        "imageHeight": 684
+      }
+    },
+    {
+      "index": 501,
+      "photographer": -1.0396,
+      "legacy": {
+        "status": "KEEP_EXISTING",
+        "reason": "INSUFFICIENT_AGREEMENT",
+        "applyAutomatically": false
+      },
+      "new": {
+        "status": "KEEP_EXISTING",
+        "reason": "EYES_WITHOUT_SCENE_SUPPORT",
+        "applyAutomatically": false,
+        "analysisMethod": "scene-and-eyes/1",
+        "scene": {
+          "horizontal": null,
+          "vertical": null,
+          "perspectiveVertical": null
+        },
+        "eyes": {
+          "status": "HEAD_POSE_ONLY",
+          "detectedFaces": 2,
+          "usableFaces": 1,
+          "supportingFaces": 1,
+          "angle": -0.9365024821024015,
+          "spread": 0.0
+        },
+        "imageWidth": 1024,
+        "imageHeight": 684
+      }
+    },
+    {
+      "index": 502,
+      "photographer": -0.331564,
+      "legacy": {
+        "status": "KEEP_EXISTING",
+        "reason": "INSUFFICIENT_AGREEMENT",
+        "applyAutomatically": false
+      },
+      "new": {
+        "status": "KEEP_EXISTING",
+        "reason": "INSUFFICIENT_AGREEMENT",
+        "applyAutomatically": false,
+        "analysisMethod": "scene-and-eyes/1",
+        "scene": {
+          "horizontal": null,
+          "vertical": null,
+          "perspectiveVertical": null
+        },
+        "eyes": {
+          "status": "HEAD_POSES_DISAGREE",
+          "detectedFaces": 3,
+          "usableFaces": 3,
+          "supportingFaces": 0
+        },
+        "imageWidth": 684,
+        "imageHeight": 1024
+      }
+    },
+    {
+      "index": 503,
+      "photographer": -0.103276,
+      "legacy": {
+        "status": "KEEP_EXISTING",
+        "reason": "INSUFFICIENT_AGREEMENT",
+        "applyAutomatically": false
+      },
+      "new": {
+        "status": "KEEP_EXISTING",
+        "reason": "EYES_WITHOUT_SCENE_SUPPORT",
+        "applyAutomatically": false,
+        "analysisMethod": "scene-and-eyes/1",
+        "scene": {
+          "horizontal": null,
+          "vertical": null,
+          "perspectiveVertical": null
+        },
+        "eyes": {
+          "status": "GROUP_CONSENSUS",
+          "detectedFaces": 5,
+          "usableFaces": 5,
+          "supportingFaces": 5,
+          "angle": 0.5146070549810401,
+          "spread": 0.9999919072561593
+        },
+        "imageWidth": 684,
+        "imageHeight": 1024
+      }
+    },
+    {
+      "index": 504,
+      "photographer": 1.08941,
+      "legacy": {
+        "status": "KEEP_EXISTING",
+        "reason": "INSUFFICIENT_AGREEMENT",
+        "applyAutomatically": false
+      },
+      "new": {
+        "status": "KEEP_EXISTING",
+        "reason": "INSUFFICIENT_AGREEMENT",
+        "applyAutomatically": false,
+        "analysisMethod": "scene-and-eyes/1",
+        "scene": {
+          "horizontal": null,
+          "vertical": null,
+          "perspectiveVertical": null
+        },
+        "eyes": {
+          "status": "NO_RELIABLE_EYES",
+          "detectedFaces": 1,
+          "usableFaces": 0,
+          "supportingFaces": 0
+        },
+        "imageWidth": 1024,
+        "imageHeight": 684
+      }
+    },
+    {
+      "index": 505,
+      "photographer": -0.540046,
+      "legacy": {
+        "status": "KEEP_EXISTING",
+        "reason": "INSUFFICIENT_AGREEMENT",
+        "applyAutomatically": false
+      },
+      "new": {
+        "status": "KEEP_EXISTING",
+        "reason": "INSUFFICIENT_AGREEMENT",
+        "applyAutomatically": false,
+        "analysisMethod": "scene-and-eyes/1",
+        "scene": {
+          "horizontal": null,
+          "vertical": null,
+          "perspectiveVertical": null
+        },
+        "eyes": {
+          "status": "NO_RELIABLE_EYES",
+          "detectedFaces": 1,
+          "usableFaces": 0,
+          "supportingFaces": 0
+        },
+        "imageWidth": 684,
+        "imageHeight": 1024
+      }
+    },
+    {
+      "index": 506,
+      "photographer": 0.053097,
+      "legacy": {
+        "status": "KEEP_EXISTING",
+        "reason": "INSUFFICIENT_AGREEMENT",
+        "applyAutomatically": false
+      },
+      "new": {
+        "status": "KEEP_EXISTING",
+        "reason": "EYES_WITHOUT_SCENE_SUPPORT",
+        "applyAutomatically": false,
+        "analysisMethod": "scene-and-eyes/1",
+        "scene": {
+          "horizontal": null,
+          "vertical": null,
+          "perspectiveVertical": null
+        },
+        "eyes": {
+          "status": "HEAD_POSE_ONLY",
+          "detectedFaces": 3,
+          "usableFaces": 2,
+          "supportingFaces": 2,
+          "angle": -2.2774761881259487,
+          "spread": 1.5003888548377025
+        },
+        "imageWidth": 1024,
+        "imageHeight": 684
+      }
+    },
+    {
+      "index": 507,
+      "photographer": -0.387776,
+      "legacy": {
+        "status": "KEEP_EXISTING",
+        "reason": "INSUFFICIENT_AGREEMENT",
+        "applyAutomatically": false
+      },
+      "new": {
+        "status": "KEEP_EXISTING",
+        "reason": "EYES_WITHOUT_SCENE_SUPPORT",
+        "applyAutomatically": false,
+        "analysisMethod": "scene-and-eyes/1",
+        "scene": {
+          "horizontal": null,
+          "vertical": null,
+          "perspectiveVertical": null
+        },
+        "eyes": {
+          "status": "HEAD_POSE_ONLY",
+          "detectedFaces": 3,
+          "usableFaces": 3,
+          "supportingFaces": 3,
+          "angle": -0.14868170851574286,
+          "spread": 1.2596492386369167
+        },
+        "imageWidth": 1024,
+        "imageHeight": 684
+      }
+    },
+    {
+      "index": 508,
+      "photographer": -0.875026,
+      "legacy": {
+        "status": "KEEP_EXISTING",
+        "reason": "INSUFFICIENT_AGREEMENT",
+        "applyAutomatically": false
+      },
+      "new": {
+        "status": "KEEP_EXISTING",
+        "reason": "EYES_WITHOUT_SCENE_SUPPORT",
+        "applyAutomatically": false,
+        "analysisMethod": "scene-and-eyes/1",
+        "scene": {
+          "horizontal": null,
+          "vertical": null,
+          "perspectiveVertical": null
+        },
+        "eyes": {
+          "status": "HEAD_POSE_ONLY",
+          "detectedFaces": 1,
+          "usableFaces": 1,
+          "supportingFaces": 1,
+          "angle": -5.080250312127415,
+          "spread": 0.0
+        },
+        "imageWidth": 1024,
+        "imageHeight": 684
+      }
+    },
+    {
+      "index": 509,
+      "photographer": -0.800435,
+      "legacy": {
+        "status": "KEEP_EXISTING",
+        "reason": "INSUFFICIENT_AGREEMENT",
+        "applyAutomatically": false
+      },
+      "new": {
+        "status": "KEEP_EXISTING",
+        "reason": "EYES_WITHOUT_SCENE_SUPPORT",
+        "applyAutomatically": false,
+        "analysisMethod": "scene-and-eyes/1",
+        "scene": {
+          "horizontal": null,
+          "vertical": null,
+          "perspectiveVertical": null
+        },
+        "eyes": {
+          "status": "HEAD_POSE_ONLY",
+          "detectedFaces": 4,
+          "usableFaces": 1,
+          "supportingFaces": 1,
+          "angle": -1.0264939879982915,
+          "spread": 0.0
+        },
+        "imageWidth": 1024,
+        "imageHeight": 684
+      }
+    },
+    {
+      "index": 510,
+      "photographer": 1.30257,
+      "legacy": {
+        "status": "KEEP_EXISTING",
+        "reason": "INSUFFICIENT_AGREEMENT",
+        "applyAutomatically": false
+      },
+      "new": {
+        "status": "KEEP_EXISTING",
+        "reason": "INSUFFICIENT_AGREEMENT",
+        "applyAutomatically": false,
+        "analysisMethod": "scene-and-eyes/1",
+        "scene": {
+          "horizontal": null,
+          "vertical": null,
+          "perspectiveVertical": null
+        },
+        "eyes": {
+          "status": "NO_RELIABLE_EYES",
+          "detectedFaces": 0,
+          "usableFaces": 0,
+          "supportingFaces": 0
+        },
+        "imageWidth": 684,
+        "imageHeight": 1024
+      }
+    },
+    {
+      "index": 511,
+      "photographer": 1.00831,
+      "legacy": {
+        "status": "KEEP_EXISTING",
+        "reason": "INSUFFICIENT_AGREEMENT",
+        "applyAutomatically": false
+      },
+      "new": {
+        "status": "KEEP_EXISTING",
+        "reason": "EYES_WITHOUT_SCENE_SUPPORT",
+        "applyAutomatically": false,
+        "analysisMethod": "scene-and-eyes/1",
+        "scene": {
+          "horizontal": null,
+          "vertical": null,
+          "perspectiveVertical": null
+        },
+        "eyes": {
+          "status": "HEAD_POSE_ONLY",
+          "detectedFaces": 1,
+          "usableFaces": 1,
+          "supportingFaces": 1,
+          "angle": -2.2549053845309546,
+          "spread": 0.0
+        },
+        "imageWidth": 684,
+        "imageHeight": 1024
+      }
+    },
+    {
+      "index": 512,
+      "photographer": -1.5089,
+      "legacy": {
+        "status": "KEEP_EXISTING",
+        "reason": "INSUFFICIENT_AGREEMENT",
+        "applyAutomatically": false
+      },
+      "new": {
+        "status": "KEEP_EXISTING",
+        "reason": "INSUFFICIENT_AGREEMENT",
+        "applyAutomatically": false,
+        "analysisMethod": "scene-and-eyes/1",
+        "scene": {
+          "horizontal": null,
+          "vertical": null,
+          "perspectiveVertical": null
+        },
+        "eyes": {
+          "status": "NO_RELIABLE_EYES",
+          "detectedFaces": 1,
+          "usableFaces": 0,
+          "supportingFaces": 0
+        },
+        "imageWidth": 1024,
+        "imageHeight": 684
+      }
+    },
+    {
+      "index": 513,
+      "photographer": -0.301145,
+      "legacy": {
+        "status": "KEEP_EXISTING",
+        "reason": "INSUFFICIENT_AGREEMENT",
+        "applyAutomatically": false
+      },
+      "new": {
+        "status": "KEEP_EXISTING",
+        "reason": "SCENE_EYES_DISAGREE",
+        "applyAutomatically": false,
+        "analysisMethod": "scene-and-eyes/1",
+        "scene": {
+          "horizontal": null,
+          "vertical": {
+            "angle": 1.3088527031054014,
+            "supportingSegments": 4,
+            "acrossSpan": 0.28707030415534973
+          },
+          "perspectiveVertical": null
+        },
+        "eyes": {
+          "status": "HEAD_POSE_ONLY",
+          "detectedFaces": 1,
+          "usableFaces": 1,
+          "supportingFaces": 1,
+          "angle": -8.264187258586594,
+          "spread": 0.0
+        },
+        "imageWidth": 1024,
+        "imageHeight": 684
+      }
+    },
+    {
+      "index": 514,
+      "photographer": -0.971469,
+      "legacy": {
+        "status": "KEEP_EXISTING",
+        "reason": "INSUFFICIENT_AGREEMENT",
+        "applyAutomatically": false
+      },
+      "new": {
+        "status": "KEEP_EXISTING",
+        "reason": "EYES_WITHOUT_SCENE_SUPPORT",
+        "applyAutomatically": false,
+        "analysisMethod": "scene-and-eyes/1",
+        "scene": {
+          "horizontal": null,
+          "vertical": null,
+          "perspectiveVertical": null
+        },
+        "eyes": {
+          "status": "HEAD_POSE_ONLY",
+          "detectedFaces": 3,
+          "usableFaces": 1,
+          "supportingFaces": 1,
+          "angle": -1.3492529433449023,
+          "spread": 0.0
+        },
+        "imageWidth": 684,
+        "imageHeight": 1024
+      }
+    },
+    {
+      "index": 515,
+      "photographer": 0.446725,
+      "legacy": {
+        "status": "KEEP_EXISTING",
+        "reason": "LIKELY_INTENTIONAL_TILT",
+        "applyAutomatically": false
+      },
+      "new": {
+        "status": "KEEP_EXISTING",
+        "reason": "LIKELY_INTENTIONAL_TILT",
+        "applyAutomatically": false,
+        "analysisMethod": "scene-and-eyes/1",
+        "scene": {
+          "horizontal": null,
+          "vertical": null,
+          "perspectiveVertical": null
+        },
+        "eyes": {
+          "status": "NO_RELIABLE_EYES",
+          "detectedFaces": 0,
+          "usableFaces": 0,
+          "supportingFaces": 0
+        },
+        "imageWidth": 1024,
+        "imageHeight": 684
+      }
+    },
+    {
+      "index": 516,
+      "photographer": 1.18334,
+      "legacy": {
+        "status": "KEEP_EXISTING",
+        "reason": "INSUFFICIENT_AGREEMENT",
+        "applyAutomatically": false
+      },
+      "new": {
+        "status": "KEEP_EXISTING",
+        "reason": "INSUFFICIENT_AGREEMENT",
+        "applyAutomatically": false,
+        "analysisMethod": "scene-and-eyes/1",
+        "scene": {
+          "horizontal": null,
+          "vertical": null,
+          "perspectiveVertical": null
+        },
+        "eyes": {
+          "status": "NO_RELIABLE_EYES",
+          "detectedFaces": 0,
+          "usableFaces": 0,
+          "supportingFaces": 0
+        },
+        "imageWidth": 1024,
+        "imageHeight": 684
+      }
+    },
+    {
+      "index": 517,
+      "photographer": -0.705463,
+      "legacy": {
+        "status": "KEEP_EXISTING",
+        "reason": "INSUFFICIENT_AGREEMENT",
+        "applyAutomatically": false
+      },
+      "new": {
+        "status": "KEEP_EXISTING",
+        "reason": "INSUFFICIENT_AGREEMENT",
+        "applyAutomatically": false,
+        "analysisMethod": "scene-and-eyes/1",
+        "scene": {
+          "horizontal": null,
+          "vertical": null,
+          "perspectiveVertical": null
+        },
+        "eyes": {
+          "status": "HEAD_POSES_DISAGREE",
+          "detectedFaces": 3,
+          "usableFaces": 3,
+          "supportingFaces": 0
+        },
+        "imageWidth": 1024,
+        "imageHeight": 684
+      }
+    },
+    {
+      "index": 518,
+      "photographer": -1.619,
+      "legacy": {
+        "status": "KEEP_EXISTING",
+        "reason": "INSUFFICIENT_AGREEMENT",
+        "applyAutomatically": false
+      },
+      "new": {
+        "status": "KEEP_EXISTING",
+        "reason": "EYES_WITHOUT_SCENE_SUPPORT",
+        "applyAutomatically": false,
+        "analysisMethod": "scene-and-eyes/1",
+        "scene": {
+          "horizontal": null,
+          "vertical": null,
+          "perspectiveVertical": null
+        },
+        "eyes": {
+          "status": "HEAD_POSE_ONLY",
+          "detectedFaces": 2,
+          "usableFaces": 2,
+          "supportingFaces": 2,
+          "angle": 1.998546966082552,
+          "spread": 1.7767439809713288
+        },
+        "imageWidth": 1024,
+        "imageHeight": 684
+      }
+    },
+    {
+      "index": 519,
+      "photographer": -1.92367,
+      "legacy": {
+        "status": "KEEP_EXISTING",
+        "reason": "INSUFFICIENT_AGREEMENT",
+        "applyAutomatically": false
+      },
+      "new": {
+        "status": "KEEP_EXISTING",
+        "reason": "EYES_WITHOUT_SCENE_SUPPORT",
+        "applyAutomatically": false,
+        "analysisMethod": "scene-and-eyes/1",
+        "scene": {
+          "horizontal": null,
+          "vertical": null,
+          "perspectiveVertical": null
+        },
+        "eyes": {
+          "status": "HEAD_POSE_ONLY",
+          "detectedFaces": 1,
+          "usableFaces": 1,
+          "supportingFaces": 1,
+          "angle": -1.2291639756826631,
+          "spread": 0.0
+        },
+        "imageWidth": 1024,
+        "imageHeight": 684
+      }
+    },
+    {
+      "index": 520,
+      "photographer": -0.103602,
+      "legacy": {
+        "status": "KEEP_EXISTING",
+        "reason": "INSUFFICIENT_AGREEMENT",
+        "applyAutomatically": false
+      },
+      "new": {
+        "status": "KEEP_EXISTING",
+        "reason": "EYES_WITHOUT_SCENE_SUPPORT",
+        "applyAutomatically": false,
+        "analysisMethod": "scene-and-eyes/1",
+        "scene": {
+          "horizontal": null,
+          "vertical": null,
+          "perspectiveVertical": null
+        },
+        "eyes": {
+          "status": "HEAD_POSE_ONLY",
+          "detectedFaces": 1,
+          "usableFaces": 1,
+          "supportingFaces": 1,
+          "angle": -2.4106283684911296,
+          "spread": 0.0
+        },
+        "imageWidth": 1024,
+        "imageHeight": 684
+      }
+    },
+    {
+      "index": 521,
+      "photographer": 0.01678,
+      "legacy": {
+        "status": "KEEP_EXISTING",
+        "reason": "INSUFFICIENT_AGREEMENT",
+        "applyAutomatically": false
+      },
+      "new": {
+        "status": "KEEP_EXISTING",
+        "reason": "EYES_WITHOUT_SCENE_SUPPORT",
+        "applyAutomatically": false,
+        "analysisMethod": "scene-and-eyes/1",
+        "scene": {
+          "horizontal": null,
+          "vertical": null,
+          "perspectiveVertical": null
+        },
+        "eyes": {
+          "status": "GROUP_CONSENSUS",
+          "detectedFaces": 3,
+          "usableFaces": 3,
+          "supportingFaces": 3,
+          "angle": 0.8056661853049227,
+          "spread": 0.20605866815257068
+        },
+        "imageWidth": 1024,
+        "imageHeight": 684
+      }
+    },
+    {
+      "index": 522,
+      "photographer": -0.429323,
+      "legacy": {
+        "status": "KEEP_EXISTING",
+        "reason": "INSUFFICIENT_AGREEMENT",
+        "applyAutomatically": false
+      },
+      "new": {
+        "status": "KEEP_EXISTING",
+        "reason": "EYES_WITHOUT_SCENE_SUPPORT",
+        "applyAutomatically": false,
+        "analysisMethod": "scene-and-eyes/1",
+        "scene": {
+          "horizontal": null,
+          "vertical": null,
+          "perspectiveVertical": null
+        },
+        "eyes": {
+          "status": "HEAD_POSE_ONLY",
+          "detectedFaces": 1,
+          "usableFaces": 1,
+          "supportingFaces": 1,
+          "angle": -0.3519002331020506,
+          "spread": 0.0
+        },
+        "imageWidth": 1024,
+        "imageHeight": 684
+      }
+    },
+    {
+      "index": 523,
+      "photographer": -0.752934,
+      "legacy": {
+        "status": "KEEP_EXISTING",
+        "reason": "INSUFFICIENT_AGREEMENT",
+        "applyAutomatically": false
+      },
+      "new": {
+        "status": "KEEP_EXISTING",
+        "reason": "INSUFFICIENT_AGREEMENT",
+        "applyAutomatically": false,
+        "analysisMethod": "scene-and-eyes/1",
+        "scene": {
+          "horizontal": null,
+          "vertical": null,
+          "perspectiveVertical": null
+        },
+        "eyes": {
+          "status": "NO_RELIABLE_EYES",
+          "detectedFaces": 2,
+          "usableFaces": 0,
+          "supportingFaces": 0
+        },
+        "imageWidth": 1024,
+        "imageHeight": 684
+      }
+    },
+    {
+      "index": 524,
+      "photographer": -2.34499,
+      "legacy": {
+        "status": "KEEP_EXISTING",
+        "reason": "INSUFFICIENT_AGREEMENT",
+        "applyAutomatically": false
+      },
+      "new": {
+        "status": "KEEP_EXISTING",
+        "reason": "EYES_WITHOUT_SCENE_SUPPORT",
+        "applyAutomatically": false,
+        "analysisMethod": "scene-and-eyes/1",
+        "scene": {
+          "horizontal": null,
+          "vertical": null,
+          "perspectiveVertical": null
+        },
+        "eyes": {
+          "status": "HEAD_POSE_ONLY",
+          "detectedFaces": 1,
+          "usableFaces": 1,
+          "supportingFaces": 1,
+          "angle": 4.617337426587119,
+          "spread": 0.0
+        },
+        "imageWidth": 1024,
+        "imageHeight": 684
+      }
+    },
+    {
+      "index": 525,
+      "photographer": -0.579264,
+      "legacy": {
+        "status": "KEEP_EXISTING",
+        "reason": "INSUFFICIENT_AGREEMENT",
+        "applyAutomatically": false
+      },
+      "new": {
+        "status": "KEEP_EXISTING",
+        "reason": "EYES_WITHOUT_SCENE_SUPPORT",
+        "applyAutomatically": false,
+        "analysisMethod": "scene-and-eyes/1",
+        "scene": {
+          "horizontal": null,
+          "vertical": null,
+          "perspectiveVertical": null
+        },
+        "eyes": {
+          "status": "HEAD_POSE_ONLY",
+          "detectedFaces": 4,
+          "usableFaces": 1,
+          "supportingFaces": 1,
+          "angle": 0.9422583177555726,
+          "spread": 0.0
+        },
+        "imageWidth": 1024,
+        "imageHeight": 684
+      }
+    },
+    {
+      "index": 526,
+      "photographer": -0.249595,
+      "legacy": {
+        "status": "KEEP_EXISTING",
+        "reason": "INSUFFICIENT_AGREEMENT",
+        "applyAutomatically": false
+      },
+      "new": {
+        "status": "KEEP_EXISTING",
+        "reason": "INSUFFICIENT_AGREEMENT",
+        "applyAutomatically": false,
+        "analysisMethod": "scene-and-eyes/1",
+        "scene": {
+          "horizontal": null,
+          "vertical": null,
+          "perspectiveVertical": null
+        },
+        "eyes": {
+          "status": "NO_RELIABLE_EYES",
+          "detectedFaces": 2,
+          "usableFaces": 0,
+          "supportingFaces": 0
+        },
+        "imageWidth": 1024,
+        "imageHeight": 684
+      }
+    },
+    {
+      "index": 527,
+      "photographer": -0.878532,
+      "legacy": {
+        "status": "KEEP_EXISTING",
+        "reason": "INSUFFICIENT_AGREEMENT",
+        "applyAutomatically": false
+      },
+      "new": {
+        "status": "KEEP_EXISTING",
+        "reason": "EYES_WITHOUT_SCENE_SUPPORT",
+        "applyAutomatically": false,
+        "analysisMethod": "scene-and-eyes/1",
+        "scene": {
+          "horizontal": null,
+          "vertical": null,
+          "perspectiveVertical": null
+        },
+        "eyes": {
+          "status": "HEAD_POSE_ONLY",
+          "detectedFaces": 2,
+          "usableFaces": 1,
+          "supportingFaces": 1,
+          "angle": 2.5886089184950585,
+          "spread": 0.0
+        },
+        "imageWidth": 1024,
+        "imageHeight": 684
+      }
+    },
+    {
+      "index": 528,
+      "photographer": 0.148192,
+      "legacy": {
+        "status": "KEEP_EXISTING",
+        "reason": "INSUFFICIENT_AGREEMENT",
+        "applyAutomatically": false
+      },
+      "new": {
+        "status": "KEEP_EXISTING",
+        "reason": "INSUFFICIENT_AGREEMENT",
+        "applyAutomatically": false,
+        "analysisMethod": "scene-and-eyes/1",
+        "scene": {
+          "horizontal": null,
+          "vertical": null,
+          "perspectiveVertical": null
+        },
+        "eyes": {
+          "status": "NO_RELIABLE_EYES",
+          "detectedFaces": 5,
+          "usableFaces": 0,
+          "supportingFaces": 0
+        },
+        "imageWidth": 1024,
+        "imageHeight": 684
+      }
+    },
+    {
+      "index": 529,
+      "photographer": -0.729382,
+      "legacy": {
+        "status": "KEEP_EXISTING",
+        "reason": "INSUFFICIENT_AGREEMENT",
+        "applyAutomatically": false
+      },
+      "new": {
+        "status": "KEEP_EXISTING",
+        "reason": "EYES_WITHOUT_SCENE_SUPPORT",
+        "applyAutomatically": false,
+        "analysisMethod": "scene-and-eyes/1",
+        "scene": {
+          "horizontal": null,
+          "vertical": null,
+          "perspectiveVertical": null
+        },
+        "eyes": {
+          "status": "HEAD_POSE_ONLY",
+          "detectedFaces": 3,
+          "usableFaces": 1,
+          "supportingFaces": 1,
+          "angle": -3.0619738283029347,
+          "spread": 0.0
+        },
+        "imageWidth": 1024,
+        "imageHeight": 684
+      }
+    },
+    {
+      "index": 530,
+      "photographer": -0.259972,
+      "legacy": {
+        "status": "KEEP_EXISTING",
+        "reason": "INSUFFICIENT_AGREEMENT",
+        "applyAutomatically": false
+      },
+      "new": {
+        "status": "KEEP_EXISTING",
+        "reason": "EYES_WITHOUT_SCENE_SUPPORT",
+        "applyAutomatically": false,
+        "analysisMethod": "scene-and-eyes/1",
+        "scene": {
+          "horizontal": null,
+          "vertical": null,
+          "perspectiveVertical": null
+        },
+        "eyes": {
+          "status": "HEAD_POSE_ONLY",
+          "detectedFaces": 3,
+          "usableFaces": 2,
+          "supportingFaces": 2,
+          "angle": -1.2961159159760565,
+          "spread": 0.6276507622433574
+        },
+        "imageWidth": 1024,
+        "imageHeight": 684
+      }
+    },
+    {
+      "index": 531,
+      "photographer": -0.779246,
+      "legacy": {
+        "status": "KEEP_EXISTING",
+        "reason": "INSUFFICIENT_AGREEMENT",
+        "applyAutomatically": false
+      },
+      "new": {
+        "status": "KEEP_EXISTING",
+        "reason": "EYES_WITHOUT_SCENE_SUPPORT",
+        "applyAutomatically": false,
+        "analysisMethod": "scene-and-eyes/1",
+        "scene": {
+          "horizontal": null,
+          "vertical": null,
+          "perspectiveVertical": null
+        },
+        "eyes": {
+          "status": "HEAD_POSE_ONLY",
+          "detectedFaces": 3,
+          "usableFaces": 2,
+          "supportingFaces": 2,
+          "angle": 0.418088482190129,
+          "spread": 1.3291827943188952
+        },
+        "imageWidth": 1024,
+        "imageHeight": 684
+      }
+    },
+    {
+      "index": 532,
+      "photographer": 1.48836,
+      "legacy": {
+        "status": "KEEP_EXISTING",
+        "reason": "INSUFFICIENT_AGREEMENT",
+        "applyAutomatically": false
+      },
+      "new": {
+        "status": "KEEP_EXISTING",
+        "reason": "EYES_WITHOUT_SCENE_SUPPORT",
+        "applyAutomatically": false,
+        "analysisMethod": "scene-and-eyes/1",
+        "scene": {
+          "horizontal": null,
+          "vertical": null,
+          "perspectiveVertical": null
+        },
+        "eyes": {
+          "status": "HEAD_POSE_ONLY",
+          "detectedFaces": 2,
+          "usableFaces": 1,
+          "supportingFaces": 1,
+          "angle": 1.4852540796950697,
+          "spread": 0.0
+        },
+        "imageWidth": 1024,
+        "imageHeight": 684
+      }
+    },
+    {
+      "index": 533,
+      "photographer": 0.704042,
+      "legacy": {
+        "status": "KEEP_EXISTING",
+        "reason": "INSUFFICIENT_AGREEMENT",
+        "applyAutomatically": false
+      },
+      "new": {
+        "status": "KEEP_EXISTING",
+        "reason": "EYES_WITHOUT_SCENE_SUPPORT",
+        "applyAutomatically": false,
+        "analysisMethod": "scene-and-eyes/1",
+        "scene": {
+          "horizontal": null,
+          "vertical": null,
+          "perspectiveVertical": null
+        },
+        "eyes": {
+          "status": "HEAD_POSE_ONLY",
+          "detectedFaces": 1,
+          "usableFaces": 1,
+          "supportingFaces": 1,
+          "angle": 0.17226048720000683,
+          "spread": 0.0
+        },
+        "imageWidth": 1024,
+        "imageHeight": 684
+      }
+    },
+    {
+      "index": 534,
+      "photographer": 1.72339,
+      "legacy": {
+        "status": "KEEP_EXISTING",
+        "reason": "INSUFFICIENT_AGREEMENT",
+        "applyAutomatically": false
+      },
+      "new": {
+        "status": "KEEP_EXISTING",
+        "reason": "INSUFFICIENT_AGREEMENT",
+        "applyAutomatically": false,
+        "analysisMethod": "scene-and-eyes/1",
+        "scene": {
+          "horizontal": null,
+          "vertical": null,
+          "perspectiveVertical": null
+        },
+        "eyes": {
+          "status": "NO_RELIABLE_EYES",
+          "detectedFaces": 0,
+          "usableFaces": 0,
+          "supportingFaces": 0
+        },
+        "imageWidth": 1024,
+        "imageHeight": 684
+      }
+    },
+    {
+      "index": 535,
+      "photographer": -1.34634,
+      "legacy": {
+        "status": "KEEP_EXISTING",
+        "reason": "INSUFFICIENT_AGREEMENT",
+        "applyAutomatically": false
+      },
+      "new": {
+        "status": "KEEP_EXISTING",
+        "reason": "EYES_WITHOUT_SCENE_SUPPORT",
+        "applyAutomatically": false,
+        "analysisMethod": "scene-and-eyes/1",
+        "scene": {
+          "horizontal": null,
+          "vertical": null,
+          "perspectiveVertical": null
+        },
+        "eyes": {
+          "status": "HEAD_POSE_ONLY",
+          "detectedFaces": 2,
+          "usableFaces": 2,
+          "supportingFaces": 2,
+          "angle": 1.4895634626834253,
+          "spread": 0.5865254708596214
+        },
+        "imageWidth": 1024,
+        "imageHeight": 684
+      }
+    },
+    {
+      "index": 536,
+      "photographer": -1.97554,
+      "legacy": {
+        "status": "KEEP_EXISTING",
+        "reason": "INSUFFICIENT_AGREEMENT",
+        "applyAutomatically": false
+      },
+      "new": {
+        "status": "KEEP_EXISTING",
+        "reason": "EYES_WITHOUT_SCENE_SUPPORT",
+        "applyAutomatically": false,
+        "analysisMethod": "scene-and-eyes/1",
+        "scene": {
+          "horizontal": null,
+          "vertical": null,
+          "perspectiveVertical": null
+        },
+        "eyes": {
+          "status": "HEAD_POSE_ONLY",
+          "detectedFaces": 1,
+          "usableFaces": 1,
+          "supportingFaces": 1,
+          "angle": 0.16840811329390948,
+          "spread": 0.0
+        },
+        "imageWidth": 684,
+        "imageHeight": 1024
+      }
+    },
+    {
+      "index": 537,
+      "photographer": 0.03745,
+      "legacy": {
+        "status": "KEEP_EXISTING",
+        "reason": "INSUFFICIENT_AGREEMENT",
+        "applyAutomatically": false
+      },
+      "new": {
+        "status": "KEEP_EXISTING",
+        "reason": "INSUFFICIENT_AGREEMENT",
+        "applyAutomatically": false,
+        "analysisMethod": "scene-and-eyes/1",
+        "scene": {
+          "horizontal": null,
+          "vertical": null,
+          "perspectiveVertical": null
+        },
+        "eyes": {
+          "status": "HEAD_POSES_DISAGREE",
+          "detectedFaces": 3,
+          "usableFaces": 2,
+          "supportingFaces": 0
+        },
+        "imageWidth": 1024,
+        "imageHeight": 684
+      }
+    },
+    {
+      "index": 538,
+      "photographer": 1.47518,
+      "legacy": {
+        "status": "KEEP_EXISTING",
+        "reason": "INSUFFICIENT_AGREEMENT",
+        "applyAutomatically": false
+      },
+      "new": {
+        "status": "KEEP_EXISTING",
+        "reason": "EYES_WITHOUT_SCENE_SUPPORT",
+        "applyAutomatically": false,
+        "analysisMethod": "scene-and-eyes/1",
+        "scene": {
+          "horizontal": null,
+          "vertical": null,
+          "perspectiveVertical": null
+        },
+        "eyes": {
+          "status": "HEAD_POSE_ONLY",
+          "detectedFaces": 2,
+          "usableFaces": 1,
+          "supportingFaces": 1,
+          "angle": 0.3970022897055692,
+          "spread": 0.0
+        },
+        "imageWidth": 1024,
+        "imageHeight": 684
+      }
+    },
+    {
+      "index": 539,
+      "photographer": 2.19042,
+      "legacy": {
+        "status": "KEEP_EXISTING",
+        "reason": "INSUFFICIENT_AGREEMENT",
+        "applyAutomatically": false
+      },
+      "new": {
+        "status": "KEEP_EXISTING",
+        "reason": "EYES_WITHOUT_SCENE_SUPPORT",
+        "applyAutomatically": false,
+        "analysisMethod": "scene-and-eyes/1",
+        "scene": {
+          "horizontal": null,
+          "vertical": null,
+          "perspectiveVertical": null
+        },
+        "eyes": {
+          "status": "HEAD_POSE_ONLY",
+          "detectedFaces": 4,
+          "usableFaces": 1,
+          "supportingFaces": 1,
+          "angle": 0.5872091466632524,
+          "spread": 0.0
+        },
+        "imageWidth": 1024,
+        "imageHeight": 684
+      }
+    },
+    {
+      "index": 540,
+      "photographer": 0.504898,
+      "legacy": {
+        "status": "KEEP_EXISTING",
+        "reason": "INSUFFICIENT_AGREEMENT",
+        "applyAutomatically": false
+      },
+      "new": {
+        "status": "KEEP_EXISTING",
+        "reason": "INSUFFICIENT_AGREEMENT",
+        "applyAutomatically": false,
+        "analysisMethod": "scene-and-eyes/1",
+        "scene": {
+          "horizontal": null,
+          "vertical": null,
+          "perspectiveVertical": null
+        },
+        "eyes": {
+          "status": "NO_RELIABLE_EYES",
+          "detectedFaces": 1,
+          "usableFaces": 0,
+          "supportingFaces": 0
+        },
+        "imageWidth": 684,
+        "imageHeight": 1024
+      }
+    },
+    {
+      "index": 541,
+      "photographer": -1.22393,
+      "legacy": {
+        "status": "KEEP_EXISTING",
+        "reason": "INSUFFICIENT_AGREEMENT",
+        "applyAutomatically": false
+      },
+      "new": {
+        "status": "KEEP_EXISTING",
+        "reason": "INSUFFICIENT_AGREEMENT",
+        "applyAutomatically": false,
+        "analysisMethod": "scene-and-eyes/1",
+        "scene": {
+          "horizontal": null,
+          "vertical": null,
+          "perspectiveVertical": null
+        },
+        "eyes": {
+          "status": "NO_RELIABLE_EYES",
+          "detectedFaces": 2,
+          "usableFaces": 0,
+          "supportingFaces": 0
+        },
+        "imageWidth": 1024,
+        "imageHeight": 684
+      }
+    },
+    {
+      "index": 542,
+      "photographer": 0.027475,
+      "legacy": {
+        "status": "KEEP_EXISTING",
+        "reason": "INSUFFICIENT_AGREEMENT",
+        "applyAutomatically": false
+      },
+      "new": {
+        "status": "KEEP_EXISTING",
+        "reason": "INSUFFICIENT_AGREEMENT",
+        "applyAutomatically": false,
+        "analysisMethod": "scene-and-eyes/1",
+        "scene": {
+          "horizontal": null,
+          "vertical": null,
+          "perspectiveVertical": null
+        },
+        "eyes": {
+          "status": "NO_RELIABLE_EYES",
+          "detectedFaces": 3,
+          "usableFaces": 0,
+          "supportingFaces": 0
+        },
+        "imageWidth": 1024,
+        "imageHeight": 684
+      }
+    },
+    {
+      "index": 543,
+      "photographer": 0.403981,
+      "legacy": {
+        "status": "KEEP_EXISTING",
+        "reason": "INSUFFICIENT_AGREEMENT",
+        "applyAutomatically": false
+      },
+      "new": {
+        "status": "KEEP_EXISTING",
+        "reason": "INSUFFICIENT_AGREEMENT",
+        "applyAutomatically": false,
+        "analysisMethod": "scene-and-eyes/1",
+        "scene": {
+          "horizontal": null,
+          "vertical": null,
+          "perspectiveVertical": null
+        },
+        "eyes": {
+          "status": "NO_RELIABLE_EYES",
+          "detectedFaces": 0,
+          "usableFaces": 0,
+          "supportingFaces": 0
+        },
+        "imageWidth": 1024,
+        "imageHeight": 684
+      }
+    },
+    {
+      "index": 544,
+      "photographer": -0.941292,
+      "legacy": {
+        "status": "KEEP_EXISTING",
+        "reason": "INSUFFICIENT_AGREEMENT",
+        "applyAutomatically": false
+      },
+      "new": {
+        "status": "KEEP_EXISTING",
+        "reason": "EYES_WITHOUT_SCENE_SUPPORT",
+        "applyAutomatically": false,
+        "analysisMethod": "scene-and-eyes/1",
+        "scene": {
+          "horizontal": null,
+          "vertical": null,
+          "perspectiveVertical": null
+        },
+        "eyes": {
+          "status": "HEAD_POSE_ONLY",
+          "detectedFaces": 3,
+          "usableFaces": 1,
+          "supportingFaces": 1,
+          "angle": -0.5941098731683728,
+          "spread": 0.0
+        },
+        "imageWidth": 1024,
+        "imageHeight": 684
+      }
+    },
+    {
+      "index": 545,
+      "photographer": -0.457518,
+      "legacy": {
+        "status": "KEEP_EXISTING",
+        "reason": "INSUFFICIENT_AGREEMENT",
+        "applyAutomatically": false
+      },
+      "new": {
+        "status": "KEEP_EXISTING",
+        "reason": "INSUFFICIENT_AGREEMENT",
+        "applyAutomatically": false,
+        "analysisMethod": "scene-and-eyes/1",
+        "scene": {
+          "horizontal": null,
+          "vertical": null,
+          "perspectiveVertical": null
+        },
+        "eyes": {
+          "status": "HEAD_POSES_DISAGREE",
+          "detectedFaces": 2,
+          "usableFaces": 2,
+          "supportingFaces": 0
+        },
+        "imageWidth": 1024,
+        "imageHeight": 684
+      }
+    }
+  ]
+}

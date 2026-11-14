@@ -93,9 +93,21 @@ def validate_model(model, treatment='color'):
     allowed = set(bounds_for(treatment))
     if not isinstance(extended, dict) or not set(extended).issubset(allowed):
         raise ValueError('Controles adicionais do modelo incompativeis')
-    for name, target in {**targets, **extended}.items():
+    configurations = [(name, target, keys) for name, target in {**targets, **extended}.items()]
+    appearance = model.get('appearanceWhiteBalance')
+    if appearance is not None:
+        from learning_store import SKIN_KEYS
+        if not isinstance(appearance, dict):
+            raise ValueError('Modelo de balanco de branco por aparencia incompativel')
+        app_keys = appearance.get('featureNames', [])
+        app_targets = appearance.get('targets', {})
+        if (app_keys != keys+SKIN_KEYS or appearance.get('requiredFeatures') != SKIN_KEYS or
+            not isinstance(app_targets, dict) or not app_targets or not set(app_targets).issubset({'Temperature','Tint'})):
+            raise ValueError('Modelo de balanco de branco por aparencia incompativel')
+        configurations.extend((name, target, app_keys) for name, target in app_targets.items())
+    for name, target, feature_keys in configurations:
         regression = target['regression']
-        for key, size in (('featureCenters', len(keys)), ('featureScales', len(keys)), ('weights', len(keys) + 1)):
+        for key, size in (('featureCenters', len(feature_keys)), ('featureScales', len(feature_keys)), ('weights', len(feature_keys) + 1)):
             values = regression[key]
             if len(values) != size or not all(finite_number(v) for v in values):
                 raise ValueError('Coeficientes invalidos')
@@ -123,6 +135,13 @@ def predict_features(model, features):
         if not math.isfinite(value):
             raise ValueError('Previsao nao finita')
         output[name] = value
+    appearance = model.get('appearanceWhiteBalance')
+    if appearance and all(k in features for k in appearance['requiredFeatures']):
+        matrix = build_matrix([{'features': features}], appearance['featureNames'])
+        for name, target in appearance['targets'].items():
+            value = float(native_predictions(target['regression'], matrix, target['nativeBoundsFromTrainingOnly'], target['logTarget'])[0])
+            if not math.isfinite(value):raise ValueError('Previsao de balanco de branco nao finita')
+            output[name] = value
     return output
 
 
@@ -215,11 +234,11 @@ def sensor_swapped(extracted):
     return (raw_w > raw_h) != (width > height)
 
 
-def horizon_for(image, swapped=None):
+def horizon_for(image, swapped=None, face_detector=None):
     """Horizon proposal on the oriented technical render; failures never block the photo."""
     try:
         from horizon_analysis import analyze_image
-        result = analyze_image(image)
+        result = analyze_image(image, face_detector=face_detector)
         if isinstance(swapped, bool):
             result['sensorSwapped'] = swapped
         return result
@@ -390,6 +409,8 @@ def export_references(path, rows, batch, model, runtime):
                          'inputDomain': DOMAIN, 'rawpyVersion': runtime['rawpy'], 'librawVersion': runtime['libraw']}
             if row.get('extendedParameters'):
                 reference['extendedParameters'] = row['extendedParameters']
+            if row.get('appearanceFeatures'):
+                reference['appearanceFeatures'] = row['appearanceFeatures']
             if batch.get('catalogIdentity'):
                 reference.update({'catalogIdentity':batch['catalogIdentity'],'catalogPhotoId':row['id']})
             stream.write(json.dumps(reference, ensure_ascii=False, allow_nan=False) + '\n')
@@ -601,14 +622,19 @@ def run_job(job, bundle):
                 if collecting:
                     from develop_targets import extended_labels
                     row['extendedParameters'] = extended_labels(photo.get('current', {}), treatment)
+                    from import_approved_references import APPEARANCE_BOUNDS
+                    row['appearanceFeatures'] = {k: v for k, v in extracted['features'].items() if k in APPEARANCE_BOUNDS}
                     row.update({'features': {k: extracted['features'][k] for k in model['featureNames']},
                                 'captureTimeExif': capture_time})
                     seen_hashes.add(digest)
                 else:
                     row['predictions'] = predict_features(active, extracted['features'])
+                    appearance = active.get('appearanceWhiteBalance')
+                    row['whiteBalanceSource'] = ('APPEARANCE_AND_SCENE' if appearance and
+                        all(k in extracted['features'] for k in appearance['requiredFeatures']) else 'GLOBAL_MODEL')
                     row['captureTimeExif'] = capture_time
                     if geometry.get('horizon') is True:
-                        row['geometry'] = horizon_for(image, sensor_swapped(extracted))
+                        row['geometry'] = horizon_for(image, sensor_swapped(extracted), face_detector)
             except Exception as error:
                 row['status'] = 'FAILED'
                 row['error'] = str(error)[:1500]

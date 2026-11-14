@@ -62,6 +62,7 @@ function M.showResults(job)
     end
     if report.operation == 'learning-status' or report.operation == 'learning-update' or report.operation == 'feedback' then
         local state = report.learning or {}
+        local training = report.candidateTraining or {}
         LrDialogs.message('Mizin Lightroom - meu aprendizado',
             'Referencias unicas aprovadas: ' .. tostring(state.uniqueApprovedReferences or 0) .. '\n' ..
             'Trabalhos: ' .. tostring(state.eventCount or 0) .. '\n' ..
@@ -69,6 +70,11 @@ function M.showResults(job)
                 tostring(state.monochromeEventsWith50 or 0) .. ' de 3 | modelo P&B: ' ..
                 (state.latestMonochromeCandidate and 'disponivel' or 'ainda nao treinado') .. '\n' ..
             'Conflitos entre catalogos aguardando revisao: ' .. tostring(state.conflictingRawFilesExcluded or 0) .. '\n' ..
+            'Referencias usadas no candidato: '..tostring(state.candidateTrainingReferences or 0)..'\n'..
+            (training.candidateCreated and 'Candidato atualizado com as referencias aprovadas.\n' or '')..
+            'Referencias com tom de pele: '..tostring(state.appearanceReferences or 0)..'\n'..
+            'WB com aparencia de pele: '..(state.appearanceWhiteBalanceEnabled and 'disponivel' or 'aguarda dados e validacao')..'\n'..
+            (state.candidateNeedsRefresh and 'Ha aprendizado novo: use Treinar candidato agora.\n' or '')..
             'Avaliacoes registradas: ' .. tostring(state.feedbackCount or 0) .. '\n\n' ..
             (state.latestCandidate and 'Modelo candidato disponivel. Use Avaliar aprendizado do acervo.' or
                 'O treino automatico comeca com pelo menos tres trabalhos de 50 referencias em cor cada.') ..

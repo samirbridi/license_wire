@@ -275,7 +275,9 @@ function M.horizon(settings,before,proposal)
         if proposal.reason=='ALREADY_LEVEL' then return nil,'esta foto ja esta nivelada' end
         if proposal.reason=='ANALYSIS_FAILED' then return nil,'nao foi possivel analisar o horizonte desta foto' end
         if proposal.reason=='LIKELY_INTENTIONAL_TILT' then return nil,'inclinacao acima de 5 graus mantida (provavelmente intencional)' end
-        return nil,'sem linhas de horizonte confiaveis nesta foto'
+        if proposal.reason=='EYES_WITHOUT_SCENE_SUPPORT' then return nil,'olhos encontrados, mas sem referencia segura do ambiente' end
+        if proposal.reason=='SCENE_EYES_DISAGREE' then return nil,'ambiente e olhos nao confirmam o mesmo eixo' end
+        return nil,'sem referencias confiaveis de ambiente e olhos nesta foto'
     end
     local angle,width,height=proposal.imageSlopeDegrees,proposal.imageWidth,proposal.imageHeight
     if not finite(angle) or math.abs(angle)<.25 or math.abs(angle)>8 or not finite(width) or not finite(height) or width<=0 or height<=0 then
@@ -465,7 +467,8 @@ local function options(count,inPlace)
             f:group_box{title='OPÇÕES DE ESTILO',spacing=f:control_spacing(),
                 f:checkbox{title='Acrescentar curvas e tonalidade do acervo aprovado',value=UI.bind('base')},
                 f:checkbox{title='Equilibrar balanço de branco entre fotos da mesma cena (sequências)',value=UI.bind('scene')},
-                f:checkbox{title='Endireitar horizonte quando houver linhas confiáveis (experimental)',value=UI.bind('horizon')},
+                f:checkbox{title='Nivelar foto: analisar ambiente e linha dos olhos (experimental)',value=UI.bind('horizon')},
+                f:static_text{title='Analisa todas as fotos do lote. Olhos ajudam a confirmar o ambiente;\ncabecas inclinadas ou sinais conflitantes nao devem forcar uma rotacao.',width=480,height_in_lines=2},
                 f:static_text{title='Máscara de pessoa/céu: preset adaptativo do Lightroom (somente em novas cópias; ignorada ao aplicar na seleção atual)'},
                 f:popup_menu{value=UI.bind('mask'),items=presets,width=470},
                 f:static_text{title='Preset complementar do Lightroom (perfil, granulação, vinheta...)'},
@@ -734,6 +737,7 @@ local function process(catalog,path,records,photos,ignored,choice,inPlace,auto)
             '\n\nContinuar com as '..#computed..' fotos calculadas?','Continuar','Cancelar')~='ok' then return nil end
         records=computed
     end
+    local geometryAnalyzed=0
     for _,record in ipairs(records) do
         if normal(paths[record.id])~=normal(record.path) then error('A previsao nao corresponde ao arquivo selecionado') end
         local source=sourceFor(catalog,record);local before=source:getDevelopSettings()
@@ -741,8 +745,9 @@ local function process(catalog,path,records,photos,ignored,choice,inPlace,auto)
         local adjusted=neutral(choice.adjust) and predictions[record.id] or M.adjust(predictions[record.id],before,choice.adjust)
         record.settings,record.omittedBaseKeys=M.settings(adjusted,base,before)
         if useHorizon then
+            if type(geometry[record.id])=='table' then geometryAnalyzed=geometryAnalyzed+1 end
             local applied,reason=M.horizon(record.settings,before,geometry[record.id])
-            record.horizon=applied and {cropAngle=applied} or {skipped=reason}
+            record.horizon=applied and {cropAngle=applied,evidence=geometry[record.id].evidence} or {skipped=reason}
         end
         if preset then record.presetKeys=M.mergePreset(record.settings,preset,inPlace and before or nil) end
         if maskName then record.maskPresetUuid=choice.maskPresetUuid end
@@ -764,7 +769,7 @@ local function process(catalog,path,records,photos,ignored,choice,inPlace,auto)
         projectName=choice.project,started=Date.currentTime(),photos=records,mode=inPlace and 'IN_PLACE' or 'NEW_VIRTUAL_COPIES_ONLY',
         styleAdjust=choice.adjust,presetUuid=choice.presetUuid,presetName=presetName,sceneConsistency=choice.sceneConsistency==true,
         sceneConsistencyReport=report.sceneConsistency,monochromeIncluded=ignored.monochrome,ignoredUnsupported=ignored.unsupported,notComputed=#failures,
-        monochromeModelSha256=report.monochromeModelSha256,horizonRequested=useHorizon,straightenedPhotos=straightened,
+        monochromeModelSha256=report.monochromeModelSha256,horizonRequested=useHorizon,straightenedPhotos=straightened,geometryAnalyzed=geometryAnalyzed,
         maskPresetUuid=maskName and choice.maskPresetUuid or nil,maskPresetName=maskName,automatic=auto==true}
     writeNew(child(dir,'session.json'),manifest);Prefs.prefsForPlugin().lastEditSession=dir
     local result=nil
@@ -782,7 +787,8 @@ local function process(catalog,path,records,photos,ignored,choice,inPlace,auto)
     end)
     local applied=manifest.application
     return {dir=dir,status=result,records=records,failures=failures,application=applied,
-        straightened=applied.straightened,skipReasons=skipReasons,useHorizon=useHorizon,maskName=maskName}
+        straightened=applied.straightened,skipReasons=skipReasons,useHorizon=useHorizon,maskName=maskName,geometryAnalyzed=geometryAnalyzed,
+        modelLabel=report.usingCandidateModel and 'candidato do acervo' or 'piloto',temperatureOffset=choice.adjust and choice.adjust.temperature or 0}
 end
 
 function M.edit(inPlace)
@@ -824,6 +830,8 @@ function M.edit(inPlace)
                 'Edicao cancelada. As copias ja criadas ficaram na colecao para revisao.'
         end
         message=message..'\nEdicoes confirmadas: '..done.application.completed..'. Falhas: '..done.application.failed..'.'
+        message=message..'\nModelo usado: '..done.modelLabel..'.'
+        if done.temperatureOffset~=0 then message=message..'\nAjuste fino de temperatura no lote: '..done.temperatureOffset..' K.' end
         if done.application.failed>0 then
             message=message..'\nAs fotos com falha podem ter ajustes parciais. Confira-as ou use RESTAURAR ULTIMA SESSAO.\nRegistros: '..done.dir
             for i,issue in ipairs(done.application.issues) do
@@ -831,7 +839,8 @@ function M.edit(inPlace)
             end
         end
         if done.useHorizon then
-            message=message..'\nHorizonte endireitado em '..done.straightened..' de '..#done.records..' fotos.'
+            message=message..'\nFotos analisadas para nivelamento: '..done.geometryAnalyzed..' de '..#done.records..'.'..
+                '\nNivelamento confirmado: '..done.straightened..'. Mantidas ou nao confirmadas: '..(#done.records-done.straightened)..'.'
             local reasons={};for reason,count in pairs(done.skipReasons or {}) do reasons[#reasons+1]=count..'x '..reason end
             table.sort(reasons)
             if #reasons>0 then message=message..'\nNao endireitadas: '..table.concat(reasons,'; ')..'.' end
