@@ -1,5 +1,11 @@
-<title>CRISPIX</title>
-<meta name="claude:viewport-fit-sides" content="cover">
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="CRISPIX para Lightroom Classic: edição local, aprendizado com suas fotos aprovadas e atualização pelo próprio plugin. Conheça o build 0040.">
+<title>CRISPIX — seu estilo, no Lightroom Classic</title>
+
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -222,32 +228,38 @@
   }
   .copy-box button { background: none; border: none; color: var(--accent); font-weight: 600; cursor: pointer; font-size: 13px; font-family: inherit; }
 </style>
+<link rel="stylesheet" href="showcase.css">
+</head>
+<body>
+<a class="skip-link" href="#conteudo">Pular para o conteúdo</a>
 
-<nav class="wrap">
+<nav class="wrap" aria-label="Navegação principal">
   <div class="brand">
     <svg viewBox="0 0 86 86"><rect width="86" height="86" rx="20" fill="#1D2C35"/><path d="M60 23 A26 26 0 1 0 62 62" fill="none" stroke="#EEF6F8" stroke-width="8"/><path d="M61 31 L68 38 L61 45 L54 38 Z" fill="#42D9E8"/></svg>
     CRISPIX
   </div>
   <div class="navlinks">
     <a href="#recursos">Recursos</a>
-    <a href="#comparativo">Comparativo</a>
+    <a href="#telas">Telas</a>
+    <a href="#comparativo" data-comparison-link hidden>Antes e depois</a>
     <a href="#como-funciona">Como funciona</a>
     <a href="#transparencia">Transparência</a>
     <a href="#novidades">Novidades</a>
   </div>
 </nav>
 
+<main id="conteudo">
 <header class="hero wrap">
   <div class="hero-grid">
     <div>
       <div class="eyebrow">Plugin para Lightroom Classic</div>
       <h1 class="title">Seu olhar.<br>Sua edição.</h1>
-      <p class="sub">Um motor de edição que aprende o seu estilo a partir das suas próprias fotos aprovadas e trabalha inteiro na sua máquina — RAW nunca sai do computador, não existe mensalidade e os controles usados se ajustam foto a foto, sem presets fixos.</p>
+      <p class="sub">Edição local no Lightroom Classic, aprendida com as suas fotos aprovadas. Escolha o estilo, processe o lote e confira o resultado. O treinamento e a análise dos RAWs acontecem no seu computador.</p>
       <div class="cta-row">
-        <a class="btn btn-primary" href="#comparativo">Ver o comparativo</a>
-        <a class="btn btn-ghost" href="#transparencia">O que ainda é experimental</a>
+        <a class="btn btn-primary" href="#atualizar">Atualizar o CRISPIX <span aria-hidden="true">↗</span></a>
+        <a class="btn btn-ghost" href="#telas">Conhecer as telas</a>
       </div>
-      <p class="hero-note">Em desenvolvimento ativo — versão mais recente: <span class="mono" id="verAtual">v0.22.0 (build 0035)</span></p>
+      <p class="hero-note">Windows · RAW CR3 da Canon EOS R6 Mark II<br>Em desenvolvimento ativo — versão mais recente: <span class="mono" id="verAtual">v0.26.0 (build 0040)</span></p>
     </div>
     <div class="mark-stage">
       <div class="mark-ring"></div>
@@ -257,6 +269,47 @@
   </div>
 </header>
 
+<section id="telas" class="wrap showcase">
+ <div class="container">
+  <div class="section-head"><div class="eyebrow">Por dentro do fluxo</div><h2>Da escolha do estilo<br>à conferência do lote.</h2><p>Três momentos do CRISPIX no Lightroom. Explore as telas para conhecer os controles e as informações disponíveis.</p></div>
+  <div class="showcase-layout">
+   <div class="screen-navigation" role="tablist" aria-label="Telas ilustrativas" aria-orientation="vertical">
+    <button id="tab-edit" role="tab" aria-selected="true" aria-controls="screen-edit" data-screen="edit"><span class="screen-number">01</span><span><strong>Preparar a edição</strong><small>Seu modelo, destino e opções de estilo.</small></span></button>
+    <button id="tab-result" role="tab" aria-selected="false" aria-controls="screen-result" tabindex="-1" data-screen="result"><span class="screen-number">02</span><span><strong>Conferir o resultado</strong><small>Análise, aplicação e motivos das recusas.</small></span></button>
+    <button id="tab-update" role="tab" aria-selected="false" aria-controls="screen-update" tabindex="-1" data-screen="update"><span class="screen-number">03</span><span><strong>Atualizar pelo plugin</strong><small>Consulte a versão disponível na internet.</small></span></button>
+   </div>
+   <div class="demo-frame">
+    <div class="demo-bar"><span class="demo-dots" aria-hidden="true">● ● ●</span><span>CRISPIX / Lightroom Classic</span><span class="mono">0040</span></div>
+    <div id="screen-edit" role="tabpanel" aria-labelledby="tab-edit" class="demo-panel">
+     <div class="demo-heading"><strong>Preparar edição</strong><span>20 fotos em cor</span></div>
+     <div class="mock-field"><span>Modelo de edição</span><div>Meu estilo · candidato do acervo <span aria-hidden="true">⌄</span></div></div>
+     <div class="mock-field"><span>Onde aplicar</span><div>Em novas cópias · teste e comparação <span aria-hidden="true">⌄</span></div></div>
+     <div class="mock-options"><div><span class="mock-check" aria-hidden="true">✓</span> Nivelar foto: ambiente e linha dos olhos <span class="small-badge">Experimental</span></div><p>Olhos ajudam a confirmar o ambiente. Uma cabeça inclinada, sozinha, não determina a rotação da foto.</p></div>
+     <div class="mock-adjust"><div><span>Intensidade</span><strong>100%</strong><i></i></div><div><span>Ajuste de temperatura do lote</span><strong>0 K</strong><i></i></div></div>
+     <div class="demo-actions"><span>Processamento local</span><span class="mock-action">Editar fotos</span></div>
+    </div>
+    <div id="screen-result" role="tabpanel" aria-labelledby="tab-result" class="demo-panel" hidden>
+     <div class="demo-heading"><strong>Lote finalizado</strong><span>Exemplo do teste automatizado</span></div>
+     <div class="result-grid"><div><strong>20</strong><span>Edições confirmadas</span></div><div><strong>0</strong><span>Falhas de aplicação</span></div></div>
+     <div class="result-line"><span>Fotos analisadas para nivelamento</span><strong>20 de 20</strong></div>
+     <div class="result-line"><span>Nivelamentos confirmados</span><strong>1</strong></div>
+     <div class="result-line"><span>Fotos mantidas sem nivelamento</span><strong>19</strong></div>
+     <div class="demo-callout">Motivo neste exemplo: olhos detectados, mas sem referência segura do ambiente. As demais edições do lote são aplicadas.</div>
+     <div class="demo-actions"><span>Restauração disponível no menu</span><span class="mock-action">Concluir</span></div>
+    </div>
+    <div id="screen-update" role="tabpanel" aria-labelledby="tab-update" class="demo-panel" hidden>
+     <div class="demo-heading"><strong>Nova versão disponível</strong><span>Canal: internet</span></div>
+     <div class="update-version"><span class="small-badge">Disponível</span><strong>v0.26.0</strong><span class="mono">build 0040</span></div>
+     <p>O atualizador baixa o pacote e confere sua integridade antes de instalar.</p><div class="demo-callout">O Lightroom será fechado e reaberto. Conclua o backup do catálogo se a janela aparecer. O aprendizado salvo fica preservado.</div>
+     <div class="demo-actions"><span>Verificar atualizações</span><span class="mock-action">Atualizar agora</span></div>
+    </div>
+    <p class="demo-caption">Representações ilustrativas dos controles do build 0040. Não são capturas do Lightroom. Os números do lote representam um cenário de teste, não uma taxa de acerto.</p>
+   </div>
+  </div>
+ </div>
+</section>
+
+
 <div class="horizon"></div>
 
 <section id="recursos" class="wrap">
@@ -264,62 +317,62 @@
     <div class="section-head">
       <div class="eyebrow">Recursos</div>
       <h2>O que o CRISPIX já faz</h2>
-      <p>Cada item aqui corresponde a um recurso implementado e testado no motor — não a uma promessa de roteiro.</p>
+      <p>Recursos disponíveis no build 0040. A edição aprendida e o nivelamento continuam em validação fotográfica.</p>
     </div>
     <div class="features">
       <div class="feature">
         <span class="num">01</span>
         <h3>Edição aprendida do seu estilo</h3>
-        <p>Regressão treinada com as suas próprias fotos aprovadas: exposição, temperatura, contraste, realces, sombras, brancos, pretos, saturação e vibratilidade — sem presets universais.</p>
-        <span class="tag tag-live">Em produção</span>
+        <p>O candidato usa referências aprovadas para calcular exposição, temperatura, matiz e tonalidade por foto. Os controles adicionais dependem dos dados disponíveis para treino.</p>
+        <span class="tag tag-live">Disponível</span>
       </div>
       <div class="feature">
         <span class="num">02</span>
         <h3>Três formas de ensinar</h3>
         <p>Aprenda com o catálogo inteiro, com a seleção atual de um trabalho, ou com uma coleção específica — útil quando você já separa manualmente o que foi realmente editado.</p>
-        <span class="tag tag-live">Em produção</span>
+        <span class="tag tag-live">Disponível</span>
       </div>
       <div class="feature">
         <span class="num">03</span>
         <h3>Ajuste fino por lote</h3>
         <p>Intensidade e deslocamentos opcionais somados depois da previsão automática — para calibrar o estilo sem precisar reaprender do zero.</p>
-        <span class="tag tag-live">Em produção</span>
+        <span class="tag tag-live">Disponível</span>
       </div>
       <div class="feature">
         <span class="num">04</span>
-        <h3>Correção de horizonte</h3>
-        <p>Detecta linhas de horizonte confiáveis e endireita com corte seguro, preservando a proporção original. Tolera pequenas margens já existentes na foto.</p>
+        <h3>Ambiente e linha dos olhos</h3>
+        <p>Com a opção ligada, cada foto é analisada. O ambiente orienta a decisão e os olhos ajudam a confirmá-la. Sem referências confiáveis, o corte é mantido; a cobertura ainda é baixa.</p>
         <span class="tag tag-beta">Experimental</span>
       </div>
       <div class="feature">
         <span class="num">05</span>
         <h3>Edição automática por pasta</h3>
         <p>Vigie uma pasta de importação: fotos novas são editadas sozinhas com o seu estilo salvo, sem tocar na sua seleção ou módulo atual.</p>
-        <span class="tag tag-live">Em produção</span>
+        <span class="tag tag-live">Disponível</span>
       </div>
       <div class="feature">
         <span class="num">06</span>
-        <h3>Restauração garantida</h3>
-        <p>Toda edição gera um registro de recuperação local. Reverter uma sessão inteira é um clique, mesmo após reiniciar o Lightroom.</p>
-        <span class="tag tag-live">Em produção</span>
+        <h3>Registros para restauração</h3>
+        <p>As edições guardam registros locais para restaurar a última sessão. Mudanças manuais posteriores são preservadas; fotos com falhas parciais precisam ser conferidas.</p>
+        <span class="tag tag-live">Disponível</span>
       </div>
       <div class="feature">
         <span class="num">07</span>
         <h3>Tom de pele como sinal de cor</h3>
-        <p>O mesmo detector de rosto da seleção agora também amostra o tom de pele para alimentar o aprendizado de temperatura e matiz mais natural.</p>
-        <span class="tag tag-beta">Coletando dados</span>
+        <p>Novas coletas preservam informações de pele. O treino só as usa em temperatura e matiz quando há dados suficientes e melhora medida na validação interna.</p>
+        <span class="tag tag-beta">Treino condicional</span>
       </div>
       <div class="feature">
         <span class="num">08</span>
         <h3>Seleção inteligente de fotos</h3>
         <p>Agrupa repetidas por semelhança visual e tempo, sinaliza foco/movimento e risco de exposição a partir do próprio sensor RAW — sem apagar nada sozinho.</p>
-        <span class="tag tag-live">Em produção</span>
+        <span class="tag tag-live">Disponível</span>
       </div>
       <div class="feature">
         <span class="num">09</span>
         <h3>Atualização em um clique</h3>
-        <p>O plugin avisa quando existe uma versão nova e instala sozinho no mesmo lugar — sem remover e recadastrar nada no Gerenciador de plug-ins.</p>
-        <span class="tag tag-live">Em produção</span>
+        <p>Use Verificar atualizações no menu ou no Gerenciador de plug-ins. Quando houver uma nova versão, Atualizar agora inicia o instalador no mesmo local.</p>
+        <span class="tag tag-live">Disponível</span>
       </div>
     </div>
   </div>
@@ -331,88 +384,23 @@
   <div class="container">
     <div class="stats">
       <div class="stat"><div class="big mono">100%</div><div class="lbl">Processamento local — nenhum RAW enviado à internet</div></div>
-      <div class="stat"><div class="big mono">R$ 0</div><div class="lbl">Mensalidade ou taxa por foto</div></div>
-      <div class="stat"><div class="big mono">182</div><div class="lbl">Testes automatizados cobrindo o motor</div></div>
-      <div class="stat"><div class="big mono">31+</div><div class="lbl">Controles de edição aprendidos além dos básicos</div></div>
+      <div class="stat"><div class="big mono">3 × 50</div><div class="lbl">Trabalhos e referências mínimas para treinar o candidato</div></div>
+      <div class="stat"><div class="big mono">219</div><div class="lbl">Testes automatizados aprovados no build 0040</div></div>
+      <div class="stat"><div class="big mono">0040</div><div class="lbl">Build do plugin publicado e verificado</div></div>
     </div>
   </div>
 </section>
 
 <div class="horizon"></div>
 
-<section id="comparativo" class="wrap">
-  <div class="container">
-    <div class="section-head">
-      <div class="eyebrow">Comparativo</div>
-      <h2>CRISPIX vs. Neurapix</h2>
-      <p>Comparação direta de onde cada ferramenta processa seus dados, como cobra e o que você pode inspecionar.</p>
-    </div>
-    <div class="compare-wrap">
-      <table class="compare">
-        <thead>
-          <tr>
-            <th>Característica</th>
-            <th class="col-crispix">CRISPIX</th>
-            <th>Neurapix</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td>Onde o RAW é processado</td>
-            <td class="col-crispix yes"><span class="pip on"></span>100% na sua máquina</td>
-            <td class="mid"><span class="pip mid"></span>Motor local, modelo proprietário fechado</td>
-          </tr>
-          <tr>
-            <td>Modelo de cobrança</td>
-            <td class="col-crispix yes"><span class="pip on"></span>Sem mensalidade</td>
-            <td class="no"><span class="pip off"></span>Assinatura / plano pago</td>
-          </tr>
-          <tr>
-            <td>Estilo aprendido de quem</td>
-            <td class="col-crispix yes"><span class="pip on"></span>Só das suas próprias edições aprovadas</td>
-            <td class="mid"><span class="pip mid"></span>Modelo da empresa, ajustável por preset</td>
-          </tr>
-          <tr>
-            <td>Fonte da coleta de aprendizado</td>
-            <td class="col-crispix yes"><span class="pip on"></span>Catálogo inteiro, evento ou coleção à escolha</td>
-            <td class="no"><span class="pip off"></span>Não documentado publicamente</td>
-          </tr>
-          <tr>
-            <td>Seleção de fotos repetidas/foco</td>
-            <td class="col-crispix yes"><span class="pip on"></span>Incluída, local e auditável</td>
-            <td class="mid"><span class="pip mid"></span>Incluída (SmartPreset), motor fechado</td>
-          </tr>
-          <tr>
-            <td>Correção de horizonte e recorte</td>
-            <td class="col-crispix mid"><span class="pip mid"></span>Em fase experimental</td>
-            <td class="yes"><span class="pip on"></span>Recurso maduro no produto</td>
-          </tr>
-          <tr>
-            <td>Máscaras de pessoa/céu geradas por IA própria</td>
-            <td class="col-crispix no"><span class="pip off"></span>Ainda não — usa preset adaptativo nativo do Lightroom</td>
-            <td class="yes"><span class="pip on"></span>Recurso maduro no produto</td>
-          </tr>
-          <tr>
-            <td>Qualidade fotográfica homologada</td>
-            <td class="col-crispix no"><span class="pip off"></span>Ainda em validação (ver transparência)</td>
-            <td class="yes"><span class="pip on"></span>Produto comercial estabelecido</td>
-          </tr>
-          <tr>
-            <td>Atualização do software</td>
-            <td class="col-crispix yes"><span class="pip on"></span>Um clique, no mesmo lugar</td>
-            <td class="yes"><span class="pip on"></span>Automática (SaaS)</td>
-          </tr>
-          <tr>
-            <td>Código e lógica de edição</td>
-            <td class="col-crispix yes"><span class="pip on"></span>Desenvolvido e auditável pelo dono</td>
-            <td class="no"><span class="pip off"></span>Fechado</td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-    <p class="compare-note">Esta tabela compara características verificáveis dos dois produtos, não qualidade final de imagem — isso ainda não foi medido lado a lado de forma independente. O CRISPIX é mais novo e mais estreito em recursos maduros de geometria e máscaras; seu diferencial real hoje é processar tudo localmente, aprender exclusivamente do seu próprio estilo e não cobrar por isso.</p>
-  </div>
-</section>
+<section id="comparativo" class="wrap" hidden>
+ <div class="container"><div class="section-head"><div class="eyebrow">Fotos reais</div><h2>Antes e depois, na mesma foto.</h2><p>Arraste a divisória para comparar a imagem antes da edição com o resultado do CRISPIX.</p></div>
+ <div id="photo-choices" class="photo-choices" aria-label="Escolher foto para comparar"></div>
+ <figure class="comparison-figure"><div class="photo-compare" id="photo-compare">
+ <img id="photo-after" alt=""><img id="photo-before" alt="" class="photo-before">
+ <span class="photo-label label-before">Antes</span><span class="photo-label label-after">Depois</span><div class="photo-divider" aria-hidden="true"><span>↔</span></div>
+ </div><label class="comparison-control" for="comparison-position">Posição da divisória <input id="comparison-position" type="range" min="0" max="100" value="50" aria-valuetext="50% da imagem antes da edição"></label><figcaption id="comparison-caption"></figcaption></figure>
+ </div></section>
 
 <div class="horizon"></div>
 
@@ -433,11 +421,11 @@
       </div>
       <div class="step">
         <div class="idx">03</div>
-        <div><h3>O motor treina localmente</h3><p>Uma regressão roda na sua própria máquina sobre as características técnicas de cada RAW — sem enviar nada para servidores externos.</p></div>
+        <div><h3>O motor treina localmente</h3><p>Com pelo menos três trabalhos de 50 referências aprovadas cada, use Treinar candidato agora. O candidato inclui as referências elegíveis mais recentes e pode ser atualizado após novas correções no mesmo trabalho.</p></div>
       </div>
       <div class="step">
         <div class="idx">04</div>
-        <div><h3>Fotos novas recebem o seu estilo</h3><p>Exposição, cor e tonalidade calculadas foto a foto, com restauração garantida caso algo não fique do seu jeito.</p></div>
+        <div><h3>Fotos novas recebem o seu estilo</h3><p>Escolha Meu estilo · candidato do acervo na edição. Compare o resultado, faça os ajustes necessários e aprove as fotos antes de usá-las como novas referências.</p></div>
       </div>
     </div>
   </div>
@@ -454,21 +442,21 @@
     </div>
     <div class="honest">
       <div>
-        <h3><span class="pip on"></span>Já validado</h3>
+        <h3><span class="pip on"></span>Verificado nesta entrega</h3>
         <ul>
-          <li>Motor de edição treina e aplica os controles aprendidos em cópias ou diretamente na seleção, com restauração testada.</li>
-          <li>182 testes automatizados cobrindo captura, treino, aplicação e restauração.</li>
-          <li>Pacote final verificado por hash em RAWs reais antes de cada entrega.</li>
-          <li>Aprendizado e configurações isolados da pasta do plugin — sobrevivem a qualquer atualização.</li>
+          <li>Treino e aplicação com restauração verificados em testes automatizados; a integração de escrita usa uma simulação do SDK.</li>
+          <li>219 testes automatizados aprovados, mais verificação do pacote com dois RAWs reais.</li>
+          <li>Download público do build 0040 conferido por tamanho e SHA-256.</li>
+          <li>Aprendizado e configurações ficam no AppData, separados da pasta substituída pelo atualizador.</li>
         </ul>
       </div>
       <div>
         <h3><span class="pip mid"></span>Ainda em validação</h3>
         <ul>
           <li>Qualidade fotográfica final não foi homologada de forma independente.</li>
-          <li>Correção de horizonte funciona em testes com fotos reais, mas não foi exercitada dentro do Lightroom ao vivo.</li>
-          <li>Tom de pele já é coletado e medido (correlação forte com a temperatura aprovada), mas nenhum modelo ainda foi treinado usando esse dado.</li>
-          <li>Em fotos muito escuras ou muito amareladas, o modelo ainda sub-corrige — sabemos a causa e ela depende de mais referências variadas para treino.</li>
+          <li>Nivelamento: 11 propostas em 544 fotos do acervo avaliado. A nova análise não aumentou a cobertura comprovada; não nivela todas as fotos.</li>
+          <li>O treino com tom de pele foi verificado em dados de teste. Referências antigas precisam de nova coleta para receber esses atributos.</li>
+          <li>As correções do aprendizado precisam ser conferidas nas fotos do usuário. Ainda não há garantia de eliminar o amarelado. O fluxo completo desta versão requer validação no Lightroom real.</li>
         </ul>
       </div>
     </div>
@@ -484,38 +472,15 @@
       <h2>Últimas versões</h2>
     </div>
     <div class="log">
-      <div class="log-row">
-        <div class="log-ver">v0.22.0</div>
-        <div class="log-body">
-          <h4>Atualização automática</h4>
-          <p>O plugin agora avisa sozinho quando há versão nova e instala em um clique, sem precisar remover e recadastrar nada no Lightroom.</p>
-        </div>
-      </div>
-      <div class="log-row">
-        <div class="log-ver">v0.21.0</div>
-        <div class="log-body">
-          <h4>Aprender com coleção</h4>
-          <p>Terceiro modo de aprendizado: ensine o motor a partir de uma coleção específica, útil quando você já separa manualmente só o que foi realmente editado.</p>
-        </div>
-      </div>
-      <div class="log-row">
-        <div class="log-ver">v0.20.0</div>
-        <div class="log-body">
-          <h4>Treino sob demanda e início do tom de pele</h4>
-          <p>Treine o modelo imediatamente com o que já foi aprovado, sem esperar o catálogo inteiro processar. Começou a coleta de tom de pele via detecção de rosto.</p>
-        </div>
-      </div>
-      <div class="log-row">
-        <div class="log-ver">v0.19.1</div>
-        <div class="log-body">
-          <h4>Janela compacta e horizonte corrigido</h4>
-          <p>Janela de edição adaptada para telas menores; correção de horizonte recalibrada contra fotos reais e liberada também para edição direta.</p>
-        </div>
-      </div>
+<div class="log-row"><div class="log-ver">v0.26.0<br><small>build 0040</small></div><div class="log-body"><h4>Aprendizado atualizado, ambiente e olhos</h4><p>O candidato inclui referências elegíveis recentes e aceita atualizações após correções no mesmo trabalho. Coleta de pele preservada, análise de olhos e resumo que distingue tentativas de nivelamentos aplicados.</p></div></div>
+<div class="log-row"><div class="log-ver">v0.25.0<br><small>build 0039</small></div><div class="log-body"><h4>Lotes seguem após falhas individuais</h4><p>Correção da falha HasCrop, conferência dos controles numéricos do corte e registros por foto. Botão de atualização no Gerenciador de plug-ins e instalação iniciada pelo menu.</p></div></div>
+<div class="log-row"><div class="log-ver">v0.24.1<br><small>build 0038</small></div><div class="log-body"><h4>Canal de atualização pela internet corrigido</h4><p>Leitura do manifesto corrigida. O download publicado é conferido antes da instalação; a rede local funciona como alternativa.</p></div></div>
     </div>
   </div>
 </section>
 
+<section id="atualizar" class="wrap"><div class="container download-panel"><div><div class="eyebrow">Pronto para atualizar</div><h2>Seu aprendizado continua com você.</h2><p>No Lightroom, abra <strong>CRISPIX → Verificar atualizações</strong>. Depois de instalar o build 0040, execute <strong>Treinar candidato agora</strong> para aproveitar as correções com as referências já salvas.</p><p class="download-note">Primeira instalação: extraia o ZIP e adicione a pasta CRISPIX.lrplugin no Gerenciador de plug-ins. Esta entrega foi preparada para Windows e CR3 da Canon EOS R6 Mark II.</p></div><div class="download-action"><span class="mono" id="download-version">v0.26.0 (build 0040)</span><a class="btn btn-primary" id="download-link" href="https://pub-739d5fceaa824a6c8c84e39bb74ec917.r2.dev/CRISPIX-0.26.0-build0040-motor-local.zip">Baixar plugin <span aria-hidden="true">↓</span></a><small id="download-size">ZIP · 84,1 MB · Windows</small><p id="release-status" role="status">Informações verificadas para o build 0040.</p></div></div></section>
+</main>
 <footer class="wrap">
   <div class="container foot-grid">
     <div>
@@ -527,7 +492,7 @@
     </div>
     <div>
       <div class="copy-box">
-        <span id="pageUrl">crispix.pages.dev</span>
+        <span id="pageUrl">crispixlr.pages.dev</span>
         <button type="button" onclick="copyUrl(this)">Copiar link</button>
       </div>
     </div>
@@ -536,7 +501,7 @@
 
 <script>
   function copyUrl(btn) {
-    var text = location.hostname ? location.href : 'https://crispix.pages.dev';
+    var text = 'https://crispixlr.pages.dev/';
     var original = btn.textContent;
     function done(ok) {
       btn.textContent = ok ? 'Copiado!' : 'Copiar link';
@@ -547,6 +512,10 @@
     } catch (e) { done(false); }
   }
   try {
-    document.getElementById('pageUrl').textContent = location.hostname ? location.host + location.pathname : 'crispix.pages.dev';
+    document.getElementById('pageUrl').textContent = 'crispixlr.pages.dev';
   } catch (e) {}
 </script>
+
+<script src="showcase.js" defer></script>
+</body>
+</html>
