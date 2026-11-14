@@ -1,0 +1,17 @@
+{
+  "previous": "v0.25.0 (build 0039)",
+  "version": "v0.26.0 (build 0040)",
+  "date": "2026-11-14",
+  "timezone": "America/Sao_Paulo",
+  "baseline": "895fb976cc009e7f6ce11fef072dd612d81a893e",
+  "sourceHead": "9b15b8f628755a9ee75892660a993752788f92ff",
+  "increment": "feat",
+  "commits": [
+    {
+      "hash": "9b15b8f628755a9ee75892660a993752788f92ff",
+      "subject": "feat: analisa ambiente e olhos e atualiza candidato com referencias aprovadas",
+      "type": "feat",
+      "breaking": false
+    }
+  ]
+}

@@ -54,3 +54,13 @@ python scripts/build_lightroom_local.py --runtime-base private/runtime/culling-b
 ```
 
 As execucoes historicas de prototipos refletem o hash de fonte registrado em cada arquivo; executar o codigo final nao reproduz a politica rejeitada. Suite completa: 219 testes aprovados em 151,447 s, evidence/qa-scene-learning.txt. Revalidacao final focada: 11 testes de ambiente/olhos e 4 de atualizacao do aprendizado aprovados. SDK simulado com Lua 5.1, nao Lightroom nativo. Nao foram usadas ferramentas de engenharia reversa binaria neste ciclo de implementacao propria.
+
+## Entrega verificada
+
+Versao calculada automaticamente: **v0.26.0 (build 0040)**, commit de origem `9b15b8f628755a9ee75892660a993752788f92ff`, recibo `evidence/release-build-0040.json`. ZIP local `private/deliveries/CRISPIX-0.26.0-build0040-800533cb/CRISPIX-0.26.0-build0040-motor-local.zip`, 84.055.445 bytes, SHA-256 `eb7d4f253c3e1720ae1fd7e18a5cfc57e8b6bd14b6f11b38de135dcd527720cf`.
+
+Comando final: `python scripts/verify_editing_release.py --package private/deliveries/CRISPIX-0.26.0-build0040-800533cb/package.json --unit-tests-passed 219`. Aprovados: CRC, 1.748 hashes, 34 fontes Lua, runtime isolado, dois RAWs reais e edicao/restauracao pelo SDK simulado. Hashes dos RAWs intactos. Recibo `evidence/editing-plugin-qa-0040.json`. Piloto embarcado permanece inalterado; o candidato pessoal e atualizado na maquina de uso.
+
+Verificacao adicional em banco temporario: tres trabalhos com 50 referencias, simulacao de candidato antigo substituindo model.json pelos pesos reservados sem metadados do pipeline novo e recalculando o hash do registro; Treinar candidato agora criou novo diretorio com 150 referencias, preservou os bytes anteriores e nao declarou nova avaliacao independente. Recibo `evidence/learning-legacy-candidate-migration.json`; nao usou banco do usuario.
+
+Para adotar o ZIP local: fechar Lightroom, substituir a pasta CRISPIX.lrplugin no mesmo local e executar Treinar candidato agora. Aprendizado fica no AppData, fora do plugin. Novas coletas aprovadas sao necessarias para acrescentar os atributos de pele descartados antes. Nao houve publicacao online/rede nem alteracao da instalacao remota. QA visual e avaliacao das 19 fotos especificas continuam pendentes.

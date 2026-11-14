@@ -1,11 +1,13 @@
 # Mizin Lightroom - aquisicao local e perfil de referencia
 
-> **Versão da Análise**: `v0.25.0 (build 0039)`
+> **Versão da Análise**: `v0.26.0 (build 0040)`
 > Atualizado em: 2026-11-14, America/Sao_Paulo.
 
 Projeto independente para Lightroom Classic no Windows, inicialmente para uso pessoal. Treinamento e inferencia devem acontecer nos computadores do usuario. O Lightroom continua responsavel pela revelacao e renderizacao final.
 
 ## Estado Atual e Próximos Passos
+
+Pacote atual: **v0.26.0 (build 0040)**, `private/deliveries/CRISPIX-0.26.0-build0040-800533cb/CRISPIX-0.26.0-build0040-motor-local.zip`, 84.055.445 bytes, SHA-256 `eb7d4f253c3e1720ae1fd7e18a5cfc57e8b6bd14b6f11b38de135dcd527720cf`. Versao/changelog calculados pelo commit `9b15b8f628755a9ee75892660a993752788f92ff`. Recibo `evidence/editing-plugin-qa-0040.json`: 219 testes, CRC e 1.748 hashes verificados, 34 fontes Lua compiladas, dois RAWs reais processados, edicao/restauracao no duplo SDK, originais preservados. Migracao de candidato antigo verificada em fixture (`evidence/learning-legacy-candidate-migration.json`). Pacote local, nao publicado no canal online/rede; sem QA nativo no Lightroom. Para instalar, fechar Lightroom e substituir a pasta CRISPIX.lrplugin no mesmo local, preservando o AppData; depois executar Treinar candidato agora.
 
 Sessao atual: corrigida atualizacao do candidato apos novas referencias/correcoes no mesmo trabalho; separados pesos de avaliacao e pesos de uso com todas as referencias elegiveis. Coleta preserva atributos de pele para treino opcional de Temperatura/Matiz, selecionado por validacao interna. Nivelamento analisa ambiente e olhos por foto e distingue tentativas de ajustes confirmados. **A cobertura automatica continua baixa (11/544 no corpus medido); as politicas mais permissivas pioraram os resultados e foram rejeitadas.** Nao se afirma resolvido o nivelamento das 19 fotos do relato, nem o amarelado do candidato remoto sem QA fotografico. 219 testes passaram; detalhes e comandos em `notes/40_nivelamento_e_aprendizado.md`. Proximo passo no Lightroom: atualizar, Treinar candidato agora e comparar fotos aprovadas; novas coletas sao necessarias para os atributos de pele antes descartados.
 

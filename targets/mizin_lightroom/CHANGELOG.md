@@ -1,5 +1,23 @@
 # CHANGELOG - mizin_lightroom
 
+## v0.26.0 (build 0040) - 2026-11-14
+
+### 💥 Breaking Changes
+
+- Nenhum.
+
+### ✨ Features
+
+- feat: analisa ambiente e olhos e atualiza candidato com referencias aprovadas (commit `9b15b8f628755a9ee75892660a993752788f92ff`)
+
+### 🐛 Fixes
+
+- Nenhum.
+
+### ⚡ Improvements
+
+- Nenhum.
+
 ## v0.25.0 (build 0039) - 2026-11-13
 
 ### 💥 Breaking Changes
