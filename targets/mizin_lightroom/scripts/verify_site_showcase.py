@@ -8,9 +8,20 @@ from playwright.sync_api import sync_playwright
 ROOT = Path(__file__).resolve().parents[1]
 
 
+R2_PUBLIC = 'https://pub-739d5fceaa824a6c8c84e39bb74ec917.r2.dev'
+
+
+def current_release():
+    """Latest local delivery as the public manifest will serve it (downloadUrl added on publish)."""
+    release = json.loads((ROOT/'private/deliveries/latest.json').read_text(encoding='utf-8-sig'))
+    release.setdefault('downloadUrl', f"{R2_PUBLIC}/{release['archiveName']}")
+    return release
+
+
 def verify(url, output):
     output.mkdir(parents=True, exist_ok=True)
-    manifest = (ROOT/'private/publication-0040/site/latest.json').read_text(encoding='utf-8')
+    release = current_release()
+    manifest = json.dumps(release)
     errors, checks = [], []
     with sync_playwright() as p:
         browser = p.chromium.launch(channel='chrome', headless=True)
@@ -20,7 +31,7 @@ def verify(url, output):
         page.goto(url, wait_until='networkidle')
         assert page.title().startswith('CRISPIX')
         assert page.locator('h1').count()==1
-        assert page.locator('#verAtual').inner_text()=='v0.26.0 (build 0040)'
+        assert page.locator('#verAtual').inner_text()==release['version']
         assert page.locator('#comparativo').is_hidden()
         assert page.locator('[data-comparison-link]').is_hidden()
         for screen in ('result','update','edit'):
@@ -47,7 +58,7 @@ def verify(url, output):
         page.route('**/latest.json',lambda route:route.fulfill(status=503,body='Unavailable'))
         page.reload(wait_until='networkidle')
         assert 'indisponível' in page.locator('#release-status').inner_text()
-        assert 'build0040' in page.locator('#download-link').get_attribute('href')
+        assert f"build{release['build']}" in page.locator('#download-link').get_attribute('href')
         checks.append('manifest failure preserves known download')
         # A tiny test pixel exercises slider loading without presenting invented photo results.
         pixel=base64.b64decode('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+jC1sAAAAASUVORK5CYII=')
@@ -86,5 +97,5 @@ def verify(url, output):
 if __name__=='__main__':
     parser=argparse.ArgumentParser()
     parser.add_argument('--url',default='http://127.0.0.1:8764/')
-    parser.add_argument('--output',type=Path,default=ROOT/'evidence/site-showcase-0041')
+    parser.add_argument('--output',type=Path,default=ROOT/'evidence/site-identidade-cx')
     args=parser.parse_args();verify(args.url,args.output)

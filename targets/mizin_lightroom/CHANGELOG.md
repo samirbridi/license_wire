@@ -1,5 +1,23 @@
 # CHANGELOG - mizin_lightroom
 
+## v0.28.0 (build 0042) - 2026-11-16
+
+### 💥 Breaking Changes
+
+- Nenhum.
+
+### ✨ Features
+
+- feat: aplica identidade visual CX Ribbon Core ao plugin e ao site (commit `cf5f3152d69d324066d30a3ddc5a92087595d15d`)
+
+### 🐛 Fixes
+
+- Nenhum.
+
+### ⚡ Improvements
+
+- Nenhum.
+
 ## v0.27.0 (build 0041) - 2026-11-14
 
 ### 💥 Breaking Changes

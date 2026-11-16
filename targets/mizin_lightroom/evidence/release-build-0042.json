@@ -1,0 +1,17 @@
+{
+  "previous": "v0.27.0 (build 0041)",
+  "version": "v0.28.0 (build 0042)",
+  "date": "2026-11-16",
+  "timezone": "America/Sao_Paulo",
+  "baseline": "46d9adb855730bcece73a2a1dc9aa4d27b4e249d",
+  "sourceHead": "cf5f3152d69d324066d30a3ddc5a92087595d15d",
+  "increment": "feat",
+  "commits": [
+    {
+      "hash": "cf5f3152d69d324066d30a3ddc5a92087595d15d",
+      "subject": "feat: aplica identidade visual CX Ribbon Core ao plugin e ao site",
+      "type": "feat",
+      "breaking": false
+    }
+  ]
+}
