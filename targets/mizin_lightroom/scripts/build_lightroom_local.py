@@ -105,7 +105,16 @@ def build(runtime_base, model_folder, dataset, manifest):
         'schema': 'mizin-lightroom.saved-pilot/1', 'version': version, 'automaticEditing': False, 'entries': entries}) + '\n', encoding='utf-8')
     readme = f'''# CRISPIX - motor local experimental
 
-## {version}: nova identidade visual CX Ribbon Core
+## {version}: Atualizar agora volta a funcionar dentro do Lightroom
+
+Ate o build 0042, ATUALIZAR AGORA nao fazia nada: o instalador era iniciado sem console
+e o Windows o encerrava antes da primeira linha, sem nenhum aviso. Agora ele roda
+oculto, confirma que comecou (se nao comecar, o Lightroom avisa e indica o
+Atualizar-CRISPIX.cmd) e reabre o mesmo Lightroom que estava aberto.
+Quem esta no 0042 ou anterior precisa atualizar UMA vez pelo Atualizar-CRISPIX.cmd
+da pasta do plugin; dai em diante o botao do Lightroom funciona.
+
+## Build 0042: nova identidade visual CX Ribbon Core
 
 O cabecalho das janelas do CRISPIX no Lightroom passa a usar a nova marca (simbolo CX,
 azul profundo, azul eletrico e ciano), a mesma do site. Nenhuma mudanca no motor, no

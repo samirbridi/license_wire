@@ -30,6 +30,62 @@ class UpdaterTests(unittest.TestCase):
             self.assertIn('finally', source)
             self.assertEqual((work / 'Update-CrispixPlugin.ps1').read_text(), '# fixture')
 
+    class FakeProcess:
+        def __init__(self, marker=None, exit_code=None):
+            self.pid, self.marker, self.returncode = 4242, marker, exit_code
+
+        def poll(self):
+            if self.marker:
+                Path(self.marker).write_text('started')
+            return self.returncode
+
+    def fake_popen(self, calls, process, refuse_breakaway=False):
+        def popen(argv, **kwargs):
+            calls.append(kwargs['creationflags'])
+            if refuse_breakaway and kwargs['creationflags'] & launcher.CREATE_BREAKAWAY_FROM_JOB:
+                raise PermissionError(5, 'Access is denied')
+            return process
+        return popen
+
+    @unittest.skipUnless(os.name == 'nt', 'Windows process flags')
+    def test_launcher_uses_a_hidden_console_never_a_detached_process(self):
+        # Regression (build 0040): DETACHED_PROCESS made powershell.exe exit 0 without running.
+        with tempfile.TemporaryDirectory() as temp:
+            marker, calls = Path(temp) / 'update.log', []
+            pid = launcher.start('AA==', temp, marker, popen=self.fake_popen(calls, self.FakeProcess(marker)),
+                                 pause=lambda _: None)
+            self.assertEqual(pid, 4242)
+            self.assertFalse(calls[0] & subprocess.DETACHED_PROCESS)
+            self.assertTrue(calls[0] & subprocess.CREATE_NO_WINDOW)
+            self.assertTrue(calls[0] & launcher.CREATE_BREAKAWAY_FROM_JOB)
+
+    @unittest.skipUnless(os.name == 'nt', 'Windows process flags')
+    def test_launcher_retries_inside_the_job_when_breakaway_is_refused(self):
+        with tempfile.TemporaryDirectory() as temp:
+            marker, calls = Path(temp) / 'update.log', []
+            launcher.start('AA==', temp, marker, popen=self.fake_popen(calls, self.FakeProcess(marker), True),
+                           pause=lambda _: None)
+            self.assertEqual(len(calls), 2)
+            self.assertFalse(calls[1] & launcher.CREATE_BREAKAWAY_FROM_JOB)
+            self.assertTrue(calls[1] & subprocess.CREATE_NO_WINDOW)
+
+    @unittest.skipUnless(os.name == 'nt', 'Windows process flags')
+    def test_launcher_fails_loudly_when_powershell_ends_without_starting(self):
+        with tempfile.TemporaryDirectory() as temp:
+            with self.assertRaisesRegex(RuntimeError, 'sem iniciar'):
+                launcher.start('AA==', temp, Path(temp) / 'update.log',
+                               popen=self.fake_popen([], self.FakeProcess(exit_code=0)), pause=lambda _: None)
+
+    @unittest.skipUnless(os.name == 'nt', 'Windows PowerShell integration')
+    def test_launcher_really_runs_the_encoded_powershell_command(self):
+        # Real powershell.exe: the encoded command must execute, not just start and vanish.
+        with tempfile.TemporaryDirectory() as temp:
+            marker = Path(temp) / 'update.log'
+            source = f"Set-Content -LiteralPath {launcher.ps_literal(marker)} -Value 'started'"
+            encoded = base64.b64encode(source.encode('utf-16le')).decode('ascii')
+            launcher.start(encoded, temp, marker, timeout=60)
+            self.assertEqual(marker.read_text(encoding='utf-8-sig').strip(), 'started')
+
     @unittest.skipUnless(os.name == 'nt', 'Windows PowerShell integration')
     def test_installer_success_hash_failure_version_mismatch_and_rollback(self):
         for mode in ('success', 'internet', 'hash', 'version', 'move'):

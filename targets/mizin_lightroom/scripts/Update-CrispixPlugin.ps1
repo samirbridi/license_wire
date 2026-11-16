@@ -202,6 +202,8 @@ try {
 
     # Fechar Lightroom Classic de forma limpa se estiver rodando
     $lrProcesses = Get-Process -Name 'Lightroom' -ErrorAction SilentlyContinue
+    # Reabre o mesmo executavel que estava aberto (instalacoes fora do caminho padrao).
+    $runningLrExe = @($lrProcesses | ForEach-Object { try { $_.Path } catch { $null } } | Where-Object { $_ }) | Select-Object -First 1
     if ($lrProcesses) {
         Write-Step "Lightroom Classic em execucao. Fechando de forma limpa para liberar os arquivos..."
         $lrProcesses | ForEach-Object {
@@ -275,7 +277,7 @@ try {
     if ($Reopen -or -not $NonInteractive) {
         $reopenAnswer = if ($Reopen) { 'S' } else { Read-Host "Deseja reabrir o Lightroom Classic agora? (S/N)" }
         if ($reopenAnswer -match '^[sSyY]') {
-            $lrExe = "C:\Program Files\Adobe\Adobe Lightroom Classic\Lightroom.exe"
+            $lrExe = if ($runningLrExe) { $runningLrExe } else { "C:\Program Files\Adobe\Adobe Lightroom Classic\Lightroom.exe" }
             if (Test-Path -LiteralPath $lrExe) {
                 Start-Process -FilePath $lrExe
                 Write-Success "Lightroom Classic iniciado."

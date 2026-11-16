@@ -97,6 +97,9 @@ Tasks.startAsyncTask(function()
             if not ok or code~=0 then
                 Dialogs.message('CRISPIX - atualizacoes','Nao foi possivel iniciar o atualizador.\n'..tostring(code)..
                     '\nExecute Atualizar-CRISPIX.cmd na pasta do plugin.','critical')
+            elseif Dialogs.showBezel then
+                -- Non-modal on purpose: a modal dialog would keep Lightroom from closing for the update.
+                pcall(Dialogs.showBezel,'CRISPIX: baixando a atualizacao. O Lightroom sera fechado em instantes.',6)
             end
         end
     else

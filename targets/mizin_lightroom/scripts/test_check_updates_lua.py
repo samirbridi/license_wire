@@ -74,11 +74,12 @@ class CheckUpdatesLuaTests(unittest.TestCase):
         runtime = LuaRuntime(unpack_returned_tuples=True)
         runtime.globals().plugin_path = plugin_dir.as_posix()
         runtime.execute('''
-            messages, confirms, revealed, httpCalls = {}, {}, {}, {}
+            messages, confirms, revealed, httpCalls, bezels = {}, {}, {}, {}, {}
             modules = {
                 LrApplication = {},
                 LrDialogs = {
                     message = function(title, body, kind) messages[#messages+1] = {title=title, body=body, kind=kind} end,
+                    showBezel = function(text) bezels[#bezels+1] = text end,
                     confirm = function(title, body, actionVerb, cancelVerb)
                         confirms[#confirms+1] = {title=title, body=body}
                         return confirm_answer or 'cancel'
@@ -139,6 +140,19 @@ class CheckUpdatesLuaTests(unittest.TestCase):
             self.assertIn('internet', body)
             self.assertEqual(len(runtime.globals().revealed), 1)
             self.assertIn('Launch-CrispixUpdate.py', runtime.globals().revealed[1])
+
+    def test_started_update_shows_a_non_modal_notice_only(self):
+        # A modal dialog here would keep Lightroom from closing when the installer asks it to.
+        with tempfile.TemporaryDirectory() as temp:
+            plugin_dir = Path(temp) / 'plugin'
+            runtime = self.setup(plugin_dir, local_version='v0.26.0 (build 0040)')
+            runtime.globals().http_response = json.dumps({'version': 'v0.28.0 (build 0042)', 'build': 42,
+                                                            'downloadUrl': 'https://crispixlr.pages.dev/x.zip'})
+            runtime.globals().confirm_answer = 'ok'
+            self.patch_network_channel(runtime, Path(temp) / 'unused-network-channel')
+            self.assertEqual(len(runtime.globals().messages), 0)
+            self.assertEqual(len(runtime.globals().bezels), 1)
+            self.assertIn('fechado em instantes', runtime.globals().bezels[1])
 
     def test_internet_manifest_with_utf8_bom_is_still_read(self):
         # Regression (build 0037 publication): the live manifest was served with a UTF-8 BOM,
