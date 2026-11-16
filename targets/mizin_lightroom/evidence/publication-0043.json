@@ -1,0 +1,44 @@
+{
+  "schema": "mizin-lightroom.publication/1",
+  "version": "v0.28.1 (build 0043)",
+  "date": "2026-11-16",
+  "fixCommit": "08d3532",
+  "releaseCommit": "0a63998",
+  "archive": {
+    "name": "CRISPIX-0.28.1-build0043-motor-local.zip",
+    "bytes": 84193093,
+    "sha256": "cd626a3e6eb6c9c85bcb55dedd26155008f72e585f70345bbb986c8f731e872a",
+    "publicUrl": "https://pub-739d5fceaa824a6c8c84e39bb74ec917.r2.dev/CRISPIX-0.28.1-build0043-motor-local.zip",
+    "publicDownloadSizeAndHashMatch": true
+  },
+  "networkChannel": {
+    "path": "\\192.168.1.58\\Users\\Public\\Documents\\MizinLightroomPilot",
+    "manifestVersion": "v0.28.1 (build 0043)",
+    "archiveHashMatch": true
+  },
+  "pages": {
+    "project": "crispixlr",
+    "deployment": "https://b3491f10.crispixlr.pages.dev",
+    "publishedBy": "scripts/Publish-CrispixBuild.ps1 (staging corrigido: 12 arquivos)",
+    "filesVerifiedByteForByteOnProductionAndDeployment": {
+      "apple-touch-icon.png": "0c34c711de02954b7ac24e678db3526cd51989eb05f097e2dd7f5519cc0bc871",
+      "brand/crispix-logo-fundo-claro.svg": "6392e34cf1c8ba2262e824c726dc69577f893e2888177b4ff1b58a50f45d075e",
+      "brand/crispix-logo-fundo-escuro.svg": "24015f2a85f65849c8567c4b27d647b42cb71d38b93ef968bffadd1791f71a40",
+      "brand/crispix-simbolo.svg": "19ed96ffb20e4f242d9095e639ff89091d70fca30bf612c741ebcdd7f50efbec",
+      "brand/crispix-social-1200x630.png": "4cfaa275253f7bea62e284f0cc813bf4d1e0b48029c62e49e2b5267169afb090",
+      "comparisons.json": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+      "favicon.ico": "83a0d6ce7cc946706a5967f2b559670b50c3863112f29d80096b13c7875f0305",
+      "favicon.svg": "f3e75346907f832a936517db0e714f89df0d172fbf2c07de2ba5871dd9afbd84",
+      "index.html": "75b5267ec5ad984215011822df464da408022e2a50ebeee700c094ac01fe7034",
+      "latest.json": "f1a34092a54c600dde60dd05fd401c631dfaa3f4561e55f85d8eb81c75c52391",
+      "showcase.css": "550300eca4cd71ef7ac0423daad0dcb4254ae43a26cad1704a7f649f9981d6fe",
+      "showcase.js": "cc30a85a52e9d20064eca64ff12ce71d8fe9b08c2c281b479be4ba27b131887d"
+    },
+    "manifestUtf8WithoutBom": true
+  },
+  "manifestReadByPluginJsonLua": true,
+  "liveSiteQa": "evidence/site-identidade-cx/publicado-0043/qa.json",
+  "pluginQa": "evidence/editing-plugin-qa-0043.json",
+  "manualUpdaterEndToEnd": "Atualizar-CRISPIX.cmd numa copia do 0040 -> v0.28.1 (build 0043) pelo canal de internet ao vivo, backup preservado",
+  "nativeLightroomUpdateExercised": false
+}

@@ -36,6 +36,17 @@
 
 O launcher quebrado esta **dentro** do plugin instalado (0040/0042). Nenhuma publicacao conserta a primeira atualizacao. E preciso rodar uma vez o `Atualizar-CRISPIX.cmd` da pasta do plugin; ele chama o `Update-CrispixPlugin.ps1` direto, com console visivel, e nao depende do launcher. Do 0043 em diante, o botao do Lightroom funciona.
 
+## Publicacao (2026-11-16)
+
+- Publicado com `Publish-CrispixBuild.ps1` nos dois canais, ja com o staging corrigido (nota 42): 12 arquivos no deploy `b3491f10`.
+- Conferido ao vivo:
+  - 12/12 arquivos byte a byte no deploy e no dominio de producao.
+  - Manifesto sem BOM, lido pelo Json.lua.
+  - Download publico e ZIP da rede com o mesmo SHA-256 (`cd626a3e...`, 84.193.093 bytes).
+  - QA do site no Chrome sem erros.
+- Caminho que o usuario vai usar, testado: `Atualizar-CRISPIX.cmd` numa copia do 0040, respondendo S, foi direto para o 0043 pelo canal ao vivo, com backup preservado.
+- Recibo: `evidence/publication-0043.json`.
+
 ## Pendente
 
 - Validacao nativa no Lightroom da maquina de edicao. Ainda nao foi confirmado se o Lightroom poe processos filhos num job e se recusa o breakaway; o codigo cobre os dois casos.
