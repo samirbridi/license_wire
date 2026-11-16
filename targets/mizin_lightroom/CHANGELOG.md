@@ -1,5 +1,24 @@
 # CHANGELOG - mizin_lightroom
 
+## v0.28.1 (build 0043) - 2026-11-16
+
+### 💥 Breaking Changes
+
+- Nenhum.
+
+### ✨ Features
+
+- Nenhum.
+
+### 🐛 Fixes
+
+- fix: corrige staging do site no publicador e registra publicacao do build 0042 (commit `860021971469f5de81c941919514da33d9bcfe3f`)
+- fix: corrige atualizador que nao iniciava pelo Lightroom (commit `08d3532fd2b401b78dddb62e939a9a8a208a3d14`)
+
+### ⚡ Improvements
+
+- Nenhum.
+
 ## v0.28.0 (build 0042) - 2026-11-16
 
 ### 💥 Breaking Changes

@@ -1,0 +1,23 @@
+{
+  "previous": "v0.28.0 (build 0042)",
+  "version": "v0.28.1 (build 0043)",
+  "date": "2026-11-16",
+  "timezone": "America/Sao_Paulo",
+  "baseline": "500c03b31e860f94383f49313085a05799c0cab9",
+  "sourceHead": "08d3532fd2b401b78dddb62e939a9a8a208a3d14",
+  "increment": "fix",
+  "commits": [
+    {
+      "hash": "860021971469f5de81c941919514da33d9bcfe3f",
+      "subject": "fix: corrige staging do site no publicador e registra publicacao do build 0042",
+      "type": "fix",
+      "breaking": false
+    },
+    {
+      "hash": "08d3532fd2b401b78dddb62e939a9a8a208a3d14",
+      "subject": "fix: corrige atualizador que nao iniciava pelo Lightroom",
+      "type": "fix",
+      "breaking": false
+    }
+  ]
+}
