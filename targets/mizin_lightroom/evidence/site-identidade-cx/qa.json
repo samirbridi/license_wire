@@ -1,0 +1,18 @@
+{
+  "url": "http://127.0.0.1:8764/",
+  "checks": [
+    "page semantics and section links",
+    "three screen tabs and keyboard navigation",
+    "empty gallery hidden",
+    "official release link",
+    "desktop/mobile light/dark without horizontal overflow",
+    "manifest failure preserves known download",
+    "before/after image loading, selection and keyboard slider endpoints",
+    "direct dragging over the photo",
+    "missing photo does not display a broken comparison"
+  ],
+  "javascriptErrors": [],
+  "screenshotsContainRealUserPhotos": false,
+  "galleryTestedWithPrivateSyntheticFixtures": true,
+  "realPublishedPhotoPairs": 0
+}

@@ -105,7 +105,14 @@ def build(runtime_base, model_folder, dataset, manifest):
         'schema': 'mizin-lightroom.saved-pilot/1', 'version': version, 'automaticEditing': False, 'entries': entries}) + '\n', encoding='utf-8')
     readme = f'''# CRISPIX - motor local experimental
 
-## {version}: candidato atualizado e analise do ambiente e dos olhos
+## {version}: nova identidade visual CX Ribbon Core
+
+O cabecalho das janelas do CRISPIX no Lightroom passa a usar a nova marca (simbolo CX,
+azul profundo, azul eletrico e ciano), a mesma do site. Nenhuma mudanca no motor, no
+aprendizado ou na edicao: os resultados sao identicos aos do build 0040. O aprendizado
+salvo fica preservado na atualizacao.
+
+## Build 0040: candidato atualizado e analise do ambiente e dos olhos
 
 Use Treinar candidato agora depois de atualizar para aproveitar as correcoes do
 aprendizado com as referencias ja salvas. Veja abaixo Aprendizado e nivelamento

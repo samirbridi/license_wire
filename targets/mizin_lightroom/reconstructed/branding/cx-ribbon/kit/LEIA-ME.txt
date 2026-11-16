@@ -1,0 +1,35 @@
+CRISPIX - identidade visual "CX Ribbon Core"
+
+SIMBOLO
+  C + X fundidos numa fita continua; o corte em S marca a dobra da fita.
+  Geometria reconstruida da prancha aprovada (Modelo 1) e ajustada aos pixels da referencia
+  monocromatica. Mestre parametrico em cx_geometry.py.
+
+ARQUIVOS (svg/ e o mestre vetorial; png/ sao exportacoes com transparencia)
+  crispix-simbolo.svg                 simbolo colorido, fundo transparente
+  crispix-simbolo-azul-profundo.svg   monocromatico #0B1A35 (fundos claros)
+  crispix-simbolo-branco.svg          monocromatico branco (fundos escuros/fotos)
+  crispix-logo-fundo-escuro.svg       logo horizontal, texto branco
+  crispix-logo-fundo-claro.svg        logo horizontal, texto #0B1A35
+  crispix-logo-azul-profundo.svg / crispix-logo-branco.svg   versoes de uma cor
+  crispix-icone-app.svg               icone de aplicativo (quadrado arredondado)
+  crispix-favicon.svg                 icone simplificado para tamanhos pequenos
+  crispix-social-1200x630.svg         cartao de compartilhamento do site
+  crispix.ico                         16 a 256 px
+  png/crispix-header-plugin.png       cabecalho das janelas do plugin no Lightroom (1020x276, exibido em 340x92)
+
+PALETA
+  Azul Profundo  #0B1A35   base, solidez
+  Azul Eletrico  #0A6BFF   energia, destaque
+  Ciano Luminoso #00E5FF   modernidade, fluidez
+  Branco Neutro  #FFFFFF   clareza
+
+TIPOGRAFIA
+  Montserrat (Bold no logotipo, ja convertido em curvas; SemiBold/Medium/Regular em textos).
+
+USO
+  Area de respiro minima: a altura do vao interno do C em todos os lados.
+  Tamanho minimo do logo horizontal: 120 px de largura; abaixo disso use o simbolo ou o icone.
+  Nao distorcer, nao trocar as cores do degrade, nao aplicar o simbolo colorido sobre fundos
+  azuis medios - use a versao branca.
+  Uso de marca registrada nao verificado.

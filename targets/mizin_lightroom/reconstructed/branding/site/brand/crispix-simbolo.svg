@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="-6 -6 1192 660" width="1192" height="660" role="img" aria-label="CRISPIX"><title>CRISPIX</title><defs>
+    <linearGradient id="cxc" gradientUnits="userSpaceOnUse" x1="60" y1="0" x2="300" y2="690">
+      <stop offset="0" stop-color="#00E5FF"/><stop offset=".38" stop-color="#00CBFF"/><stop offset=".74" stop-color="#0A8BFF"/><stop offset="1" stop-color="#0A5CF2"/>
+    </linearGradient>
+    <linearGradient id="cxt" gradientUnits="userSpaceOnUse" x1="500" y1="0" x2="840" y2="320">
+      <stop offset="0" stop-color="#0A5CF2" stop-opacity="0"/><stop offset="1" stop-color="#0646D6" stop-opacity=".72"/>
+    </linearGradient>
+    <radialGradient id="cxf" gradientUnits="userSpaceOnUse" cx="215" cy="500" r="250">
+      <stop offset="0" stop-color="#04239A" stop-opacity=".85"/><stop offset=".55" stop-color="#0530B4" stop-opacity=".35"/><stop offset="1" stop-color="#0530B4" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="cxr" gradientUnits="userSpaceOnUse" x1="363" y1="648" x2="1120" y2="0">
+      <stop offset="0" stop-color="#0A8FFF"/><stop offset=".22" stop-color="#00D2FF"/><stop offset=".6" stop-color="#00E5FF"/><stop offset="1" stop-color="#16C2FF"/>
+    </linearGradient>
+    <linearGradient id="cxb" gradientUnits="userSpaceOnUse" x1="600" y1="360" x2="1150" y2="660">
+      <stop offset="0" stop-color="#0436C4"/><stop offset=".45" stop-color="#0A5AF4"/><stop offset="1" stop-color="#0A6BFF"/>
+    </linearGradient>
+    <linearGradient id="cxe" gradientUnits="userSpaceOnUse" x1="363" y1="648" x2="960" y2="270">
+      <stop offset="0" stop-color="#FFFFFF" stop-opacity="0"/><stop offset=".55" stop-color="#E6FDFF" stop-opacity=".75"/><stop offset="1" stop-color="#FFFFFF" stop-opacity=".2"/>
+    </linearGradient>
+    <clipPath id="cxa"><path d="M220 0L583.23 0A40 40 0 0 1 613.07 13.36L776.91 196.86L934.4 0L1158.4 0L944.8 267C632.8 267 614.15 497.09 363 648L200 648A200 200 0 0 1 0 448L0 220A220 220 0 0 1 220 0ZM234 168A46 46 0 0 0 188 214L188 422A46 46 0 0 0 234 468L497.73 468A120 120 0 0 0 583.02 432.41L670.59 343.93L522.15 181.06A40 40 0 0 0 492.59 168Z" clip-rule="evenodd"/></clipPath></defs>
+    <path d="M347.47 648C598.62 497.09 639.2 259 951.2 259L895.05 329.18L1179.71 648L947.71 648L783.84 468.19L649.01 636.74A30 30 0 0 1 625.58 648Z" fill="url(#cxb)"/>
+    <path d="M220 0L583.23 0A40 40 0 0 1 613.07 13.36L776.91 196.86L934.4 0L1158.4 0L944.8 267C632.8 267 614.15 497.09 363 648L200 648A200 200 0 0 1 0 448L0 220A220 220 0 0 1 220 0ZM234 168A46 46 0 0 0 188 214L188 422A46 46 0 0 0 234 468L497.73 468A120 120 0 0 0 583.02 432.41L670.59 343.93L522.15 181.06A40 40 0 0 0 492.59 168Z" fill="url(#cxc)" fill-rule="evenodd"/>
+    <g clip-path="url(#cxa)">
+      <path d="M220 0L583.23 0A40 40 0 0 1 613.07 13.36L776.91 196.86L934.4 0L1158.4 0L944.8 267C632.8 267 614.15 497.09 363 648L200 648A200 200 0 0 1 0 448L0 220A220 220 0 0 1 220 0ZM234 168A46 46 0 0 0 188 214L188 422A46 46 0 0 0 234 468L497.73 468A120 120 0 0 0 583.02 432.41L670.59 343.93L522.15 181.06A40 40 0 0 0 492.59 168Z" fill="url(#cxt)" fill-rule="evenodd"/>
+      <path d="M220 0L583.23 0A40 40 0 0 1 613.07 13.36L776.91 196.86L934.4 0L1158.4 0L944.8 267C632.8 267 614.15 497.09 363 648L200 648A200 200 0 0 1 0 448L0 220A220 220 0 0 1 220 0ZM234 168A46 46 0 0 0 188 214L188 422A46 46 0 0 0 234 468L497.73 468A120 120 0 0 0 583.02 432.41L670.59 343.93L522.15 181.06A40 40 0 0 0 492.59 168Z" fill="url(#cxf)" fill-rule="evenodd"/>
+      <path d="M934.4 0L1158.4 0L944.8 267C632.8 267 614.15 497.09 363 648C323 608 461.45 593.69 611.45 403.69Z" fill="url(#cxr)"/>
+      <path d="M363 648C614.15 497.09 632.8 267 944.8 267" fill="none" stroke="url(#cxe)" stroke-width="5"/>
+    </g></svg>
