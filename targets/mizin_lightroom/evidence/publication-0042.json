@@ -1,0 +1,44 @@
+{
+  "schema": "mizin-lightroom.publication/1",
+  "version": "v0.28.0 (build 0042)",
+  "date": "2026-11-16",
+  "sourceCommit": "cf5f3152d69d324066d30a3ddc5a92087595d15d",
+  "releaseCommit": "500c03b",
+  "archive": {
+    "name": "CRISPIX-0.28.0-build0042-motor-local.zip",
+    "bytes": 84191973,
+    "sha256": "9205676146f9f40f035670c58820a3d2e11df05912f4059cb18dddc2223cc7bf",
+    "publicUrl": "https://pub-739d5fceaa824a6c8c84e39bb74ec917.r2.dev/CRISPIX-0.28.0-build0042-motor-local.zip",
+    "publicDownloadSizeAndHashMatch": true
+  },
+  "networkChannel": {
+    "path": "\\192.168.1.58\\Users\\Public\\Documents\\MizinLightroomPilot",
+    "hashValidatedByPublisher": true
+  },
+  "pages": {
+    "project": "crispixlr",
+    "productionUrl": "https://crispixlr.pages.dev/",
+    "brokenDeploymentReplaced": "https://b8590586.crispixlr.pages.dev (somente latest.json; bug do -LiteralPath com *)",
+    "finalDeployment": "https://dc5c62cd.crispixlr.pages.dev",
+    "command": "npx --no-install wrangler@4.152.0 pages deploy private/publication-0042/site --project-name=crispixlr --branch=main --commit-dirty=true",
+    "filesVerifiedByteForByte": {
+      "apple-touch-icon.png": "0c34c711de02954b7ac24e678db3526cd51989eb05f097e2dd7f5519cc0bc871",
+      "brand/crispix-logo-fundo-claro.svg": "6392e34cf1c8ba2262e824c726dc69577f893e2888177b4ff1b58a50f45d075e",
+      "brand/crispix-logo-fundo-escuro.svg": "24015f2a85f65849c8567c4b27d647b42cb71d38b93ef968bffadd1791f71a40",
+      "brand/crispix-simbolo.svg": "19ed96ffb20e4f242d9095e639ff89091d70fca30bf612c741ebcdd7f50efbec",
+      "brand/crispix-social-1200x630.png": "4cfaa275253f7bea62e284f0cc813bf4d1e0b48029c62e49e2b5267169afb090",
+      "comparisons.json": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+      "favicon.ico": "83a0d6ce7cc946706a5967f2b559670b50c3863112f29d80096b13c7875f0305",
+      "favicon.svg": "f3e75346907f832a936517db0e714f89df0d172fbf2c07de2ba5871dd9afbd84",
+      "index.html": "c209afda275edb767a463766e51f63984aacf0050a59ca39162f6bb4f2eb9019",
+      "latest.json": "e8faf07b3571c7aa146115084f1b56f7304a105f2c3bb8fa4b96bbdf1a3a7f53",
+      "showcase.css": "550300eca4cd71ef7ac0423daad0dcb4254ae43a26cad1704a7f649f9981d6fe",
+      "showcase.js": "bbbc582e8a26429f48c51579e302970ca6863bca35d13ea69e491e73fec82521"
+    },
+    "manifestUtf8WithoutBom": true
+  },
+  "manifestReadByPluginJsonLua": true,
+  "liveSiteQa": "evidence/site-identidade-cx/publicado/qa.json",
+  "pluginQa": "evidence/editing-plugin-qa-0042.json",
+  "nativeLightroomUpdateExercised": false
+}

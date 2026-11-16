@@ -180,7 +180,16 @@ New-Item -ItemType Directory -Path $manifestStageDir -Force | Out-Null
 try {
     # Copia o site atual inteiro para a pasta de staging -- NUNCA publicar so o manifesto
     # sozinho, ou o deploy anterior (a pagina) desaparece do projeto.
-    Copy-Item -LiteralPath (Join-Path $SiteSourceDir '*') -Destination $manifestStageDir -Recurse -Force
+    # -LiteralPath nao expande '*': no build 0042 isso publicou SO o latest.json (deploy sem
+    # index.html). Copia item a item, sem o cache local do wrangler, e confere antes do deploy.
+    Get-ChildItem -LiteralPath $SiteSourceDir -Force | Where-Object { $_.Name -ne '.wrangler' } |
+        ForEach-Object { Copy-Item -LiteralPath $_.FullName -Destination $manifestStageDir -Recurse -Force }
+    $sourceFiles = @(Get-ChildItem -LiteralPath $SiteSourceDir -File -Recurse -Force |
+        Where-Object { $_.FullName -notmatch '\\\.wrangler\\' })
+    $stagedFiles = @(Get-ChildItem -LiteralPath $manifestStageDir -File -Recurse -Force)
+    if (-not (Test-Path -LiteralPath (Join-Path $manifestStageDir 'index.html')) -or $stagedFiles.Count -lt $sourceFiles.Count) {
+        throw "Staging do site incompleto ($($stagedFiles.Count) de $($sourceFiles.Count) arquivos). Deploy abortado para nao tirar a pagina do ar."
+    }
     $manifestStagePath = Join-Path $manifestStageDir 'latest.json'
     # UTF-8 SEM BOM: 'Set-Content -Encoding UTF8' do PowerShell 5.1 grava BOM, e com ele nem o
     # Json.lua do plugin nem o ConvertFrom-Json do atualizador liam o manifesto da internet.
