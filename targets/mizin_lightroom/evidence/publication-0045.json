@@ -1,0 +1,40 @@
+{
+  "schema": "mizin-lightroom.publication/1",
+  "version": "v0.30.0 (build 0045)",
+  "date": "2026-11-17",
+  "fixCommit": "7b0a456",
+  "featureCommit": "b98517d",
+  "releaseCommit": "78836f7",
+  "siteTextCommit": "7d87e09",
+  "archive": {
+    "name": "CRISPIX-0.30.0-build0045-motor-local.zip",
+    "bytes": 84213634,
+    "sha256": "985ad32bc9617b0702904d599285745725c4e1ff482dd554f974072e69136730",
+    "publicUrl": "https://pub-739d5fceaa824a6c8c84e39bb74ec917.r2.dev/CRISPIX-0.30.0-build0045-motor-local.zip",
+    "publicDownloadSizeAndHashMatch": true
+  },
+  "networkChannel": {
+    "path": "\\\\192.168.1.58\\Users\\Public\\Documents\\MizinLightroomPilot",
+    "manifestVersion": "v0.30.0 (build 0045)",
+    "manifestUtf8WithoutBom": true,
+    "archiveHashMatch": true,
+    "verifiedWith": "PowerShell (o Python do terminal de desenvolvimento nao tem acesso ao compartilhamento)"
+  },
+  "pages": {
+    "project": "crispixlr",
+    "deployment": "https://e6a7d077.crispixlr.pages.dev",
+    "publishedBy": "scripts/Publish-CrispixBuild.ps1",
+    "filesVerifiedByteForByteOnProductionVsRepository": {
+      "index.html": "bb428a6db01d9c0f (prefixo SHA-256)",
+      "showcase.js": "24e14592b92c12e6 (prefixo SHA-256)"
+    },
+    "manifestUtf8WithoutBom": true
+  },
+  "manifestReadByPluginJsonLua": true,
+  "liveSiteQa": "evidence/site-identidade-cx/qa.json (9 verificacoes, 0 erros de JavaScript, Playwright/Chrome real)",
+  "pluginQa": "evidence/editing-plugin-qa-0045.json",
+  "unitTestsPassed": 250,
+  "inPlaceUpdateEndToEnd": "0043->0044 e 0044->0045 com os ZIPs reais, pasta com espaco, mesmo comando cmd /c do Lua: plugin identico ao pacote (0045: 11,1 s, backup de 7 arquivos)",
+  "nativeLightroomUpdateExercised": false,
+  "transitionNote": "Quem esta no 0044 roda o atualizador antigo uma vez: clicar em atualizar e fechar o Lightroom manualmente em ate 3 minutos (ou Atualizar-CRISPIX.cmd). Do 0045 em diante, instalacao com o Lightroom aberto."
+}

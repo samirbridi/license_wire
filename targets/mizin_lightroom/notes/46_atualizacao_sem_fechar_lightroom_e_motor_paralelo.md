@@ -2,7 +2,7 @@
 
 2026-11-17, America/Sao_Paulo. Substitui a parte "atualizador" das notas 44 e 45.
 
-Entregue como **v0.30.0 (build 0045)** (commits `7b0a456` fix e `b98517d` feat; `evidence/release-build-0045.json`). Pacote `private/deliveries/CRISPIX-0.30.0-build0045-e4038373/CRISPIX-0.30.0-build0045-motor-local.zip`, 84.213.634 bytes, SHA-256 `985ad32bc9617b0702904d599285745725c4e1ff482dd554f974072e69136730`, 1.752 arquivos, mesmos insumos do 0040. `verify_editing_release.py --unit-tests-passed 250` ok (`evidence/editing-plugin-qa-0045.json`). Atualizacao real 0044 -> 0045 pelo fluxo novo: 11,1 s, plugin identico ao pacote, backup de 7 arquivos. NAO publicado (site/rede) nesta etapa.
+Entregue como **v0.30.0 (build 0045)** (commits `7b0a456` fix e `b98517d` feat; `evidence/release-build-0045.json`). Pacote `private/deliveries/CRISPIX-0.30.0-build0045-e4038373/CRISPIX-0.30.0-build0045-motor-local.zip`, 84.213.634 bytes, SHA-256 `985ad32bc9617b0702904d599285745725c4e1ff482dd554f974072e69136730`, 1.752 arquivos, mesmos insumos do 0040. `verify_editing_release.py --unit-tests-passed 250` ok (`evidence/editing-plugin-qa-0045.json`). Atualizacao real 0044 -> 0045 pelo fluxo novo: 11,1 s, plugin identico ao pacote, backup de 7 arquivos. Publicado em 2026-11-17 (internet R2+Pages e rede), conferido ao vivo: `evidence/publication-0045.json`.
 
 ## 1. Por que a atualizacao "nao fazia nada" (0043/0044)
 
