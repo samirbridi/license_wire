@@ -1,0 +1,35 @@
+{
+  "previous": "v0.29.0 (build 0044)",
+  "version": "v0.30.0 (build 0045)",
+  "date": "2026-11-17",
+  "timezone": "America/Sao_Paulo",
+  "baseline": "ba12cfd9d7944e1081925830ff991dd334965c00",
+  "sourceHead": "b98517de8bb315323b4b747ba712ca38fa87bf3e",
+  "increment": "feat",
+  "commits": [
+    {
+      "hash": "41beb6a65d1a7dc71c1f8e6b24f2c73059bea64d",
+      "subject": "improve: atualiza textos fixos do site para o build 0044 publicado",
+      "type": "improve",
+      "breaking": false
+    },
+    {
+      "hash": "158ef7f753fc0e917fba347a3a471ee5761f7bee",
+      "subject": "improve: registra publicacao verificada do build 0044 na internet e rede",
+      "type": "improve",
+      "breaking": false
+    },
+    {
+      "hash": "7b0a456ab6bf8da30b584a175fb6ab420f7bfa72",
+      "subject": "fix: instala atualizacao com o Lightroom aberto, como o Neurapix",
+      "type": "fix",
+      "breaking": false
+    },
+    {
+      "hash": "b98517de8bb315323b4b747ba712ca38fa87bf3e",
+      "subject": "feat: analisa fotos em paralelo e oferece previa embutida do RAW na selecao",
+      "type": "feat",
+      "breaking": false
+    }
+  ]
+}

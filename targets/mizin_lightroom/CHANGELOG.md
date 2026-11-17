@@ -1,5 +1,24 @@
 # CHANGELOG - mizin_lightroom
 
+## v0.30.0 (build 0045) - 2026-11-17
+
+### 💥 Breaking Changes
+
+- Nenhum.
+
+### ✨ Features
+
+- feat: analisa fotos em paralelo e oferece previa embutida do RAW na selecao (commit `b98517de8bb315323b4b747ba712ca38fa87bf3e`)
+
+### 🐛 Fixes
+
+- fix: instala atualizacao com o Lightroom aberto, como o Neurapix (commit `7b0a456ab6bf8da30b584a175fb6ab420f7bfa72`)
+
+### ⚡ Improvements
+
+- improve: atualiza textos fixos do site para o build 0044 publicado (commit `41beb6a65d1a7dc71c1f8e6b24f2c73059bea64d`)
+- improve: registra publicacao verificada do build 0044 na internet e rede (commit `158ef7f753fc0e917fba347a3a471ee5761f7bee`)
+
 ## v0.29.0 (build 0044) - 2026-11-16
 
 ### 💥 Breaking Changes
