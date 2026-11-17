@@ -1,5 +1,24 @@
 # CHANGELOG - mizin_lightroom
 
+## v0.31.0 (build 0046) - 2026-11-17
+
+### 💥 Breaking Changes
+
+- Nenhum.
+
+### ✨ Features
+
+- feat: acelera IA por NVIDIA CUDA, DirectML ou CPU com escolha automatica e previa do RAW como padrao (commit `575b6cc915a3dd7b5d05f53fde80abd0b5820983`)
+
+### 🐛 Fixes
+
+- Nenhum.
+
+### ⚡ Improvements
+
+- improve: atualiza textos fixos do site para o build 0045 (commit `7d87e0937837a13cdb13a36e4be266df37f8ff63`)
+- improve: registra publicacao verificada do build 0045 na internet e rede (commit `57ca4113f9e9efb5dc61c4ec2b2faae6690b4268`)
+
 ## v0.30.0 (build 0045) - 2026-11-17
 
 ### 💥 Breaking Changes

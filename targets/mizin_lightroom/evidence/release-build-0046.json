@@ -1,0 +1,29 @@
+{
+  "previous": "v0.30.0 (build 0045)",
+  "version": "v0.31.0 (build 0046)",
+  "date": "2026-11-17",
+  "timezone": "America/Sao_Paulo",
+  "baseline": "78836f741943680cc4f7696f1279fe98bab44298",
+  "sourceHead": "575b6cc915a3dd7b5d05f53fde80abd0b5820983",
+  "increment": "feat",
+  "commits": [
+    {
+      "hash": "7d87e0937837a13cdb13a36e4be266df37f8ff63",
+      "subject": "improve: atualiza textos fixos do site para o build 0045",
+      "type": "improve",
+      "breaking": false
+    },
+    {
+      "hash": "57ca4113f9e9efb5dc61c4ec2b2faae6690b4268",
+      "subject": "improve: registra publicacao verificada do build 0045 na internet e rede",
+      "type": "improve",
+      "breaking": false
+    },
+    {
+      "hash": "575b6cc915a3dd7b5d05f53fde80abd0b5820983",
+      "subject": "feat: acelera IA por NVIDIA CUDA, DirectML ou CPU com escolha automatica e previa do RAW como padrao",
+      "type": "feat",
+      "breaking": false
+    }
+  ]
+}
