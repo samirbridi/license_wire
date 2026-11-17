@@ -14,7 +14,8 @@ def ps_literal(value):
     return "'" + str(value).replace("'", "''") + "'"
 
 
-def prepare(plugin, work, prestaged_archive=None, prestaged_version=None, prestaged_build=None, prestaged_sha256=None):
+def prepare(plugin, work, prestaged_archive=None, prestaged_version=None, prestaged_build=None, prestaged_sha256=None,
+            in_place=False, progress_file=None):
     plugin, work = Path(plugin).resolve(), Path(work).resolve()
     if plugin.suffix.lower() != '.lrplugin' or not (plugin / 'BuildInfo.json').is_file():
         raise ValueError('Instalacao do plugin invalida')
@@ -32,7 +33,26 @@ def prepare(plugin, work, prestaged_archive=None, prestaged_version=None, presta
                       f' -PrestagedVersion {ps_literal(prestaged_version)}'
                       f' -PrestagedBuild {int(prestaged_build)}'
                       f' -PrestagedSha256 {ps_literal(prestaged_sha256)}')
-    source = f"""$ErrorActionPreference='Stop'
+    if in_place:
+        # Lightroom stays open and shows progress/result itself (CheckUpdates.lua reads
+        # progress_file), so no -Reopen and no MessageBox hidden behind Lightroom.
+        if not progress_file:
+            raise ValueError('Instalacao com o Lightroom aberto exige arquivo de progresso')
+        progress = Path(progress_file).resolve()
+        source = f"""$ErrorActionPreference='Stop'
+try {{
+    Start-Transcript -LiteralPath {ps_literal(log)} -Force | Out-Null
+    & {ps_literal(script)} -InstallDirectory {ps_literal(plugin)} -NonInteractive -InPlace -ProgressFile {ps_literal(progress)}{extra_args}
+}} catch {{
+    Write-Output $_
+    $text=(@{{stage='error';percent=0;message=('Falha na instalacao: ' + $_.Exception.Message + ' Registro: ' + {ps_literal(log)})}} | ConvertTo-Json -Compress)
+    try {{ [IO.File]::WriteAllText({ps_literal(progress)}, $text, (New-Object Text.UTF8Encoding($false))) }} catch {{}}
+}} finally {{
+    try {{ Stop-Transcript | Out-Null }} catch {{}}
+}}
+"""
+    else:
+        source = f"""$ErrorActionPreference='Stop'
 $code=1
 try {{
     Start-Transcript -LiteralPath {ps_literal(log)} -Force | Out-Null
@@ -91,21 +111,82 @@ def start(encoded, work, started_marker, timeout=25.0, popen=subprocess.Popen, c
     raise RuntimeError('O atualizador nao confirmou o inicio a tempo.')
 
 
-def launch(plugin, prestaged_archive=None, prestaged_version=None, prestaged_build=None, prestaged_sha256=None):
+def launch(plugin, prestaged_archive=None, prestaged_version=None, prestaged_build=None, prestaged_sha256=None,
+           in_place=False, progress_file=None):
     work = Path(tempfile.mkdtemp(prefix='crispix-updater-'))
-    encoded = prepare(plugin, work, prestaged_archive, prestaged_version, prestaged_build, prestaged_sha256)
+    encoded = prepare(plugin, work, prestaged_archive, prestaged_version, prestaged_build, prestaged_sha256,
+                      in_place, progress_file)
     return start(encoded, work, work / 'update.log')
+
+
+# Lightroom Classic's main frame on Windows is class AgWinMainFrame. Process.CloseMainWindow()
+# picked whatever .NET considered the "main" window and Lightroom kept running (reported by the
+# user on builds 0043/0044: "nada acontece" until Lightroom was closed by hand). WM_CLOSE goes to
+# the real frame; Lightroom then runs its normal exit (catalog backup prompt included). Never
+# forced: if Lightroom is still open after the wait, nothing else happens.
+RESTART_SOURCE = r"""$ErrorActionPreference='Stop'
+Set-Content -LiteralPath __MARKER__ -Value 'started'
+Start-Sleep -Seconds 2
+$lr = Get-Process -Name 'Lightroom' -ErrorAction SilentlyContinue | Select-Object -First 1
+if (-not $lr) { exit 0 }
+$exe = $lr.Path
+Add-Type -Namespace Crispix -Name Win -MemberDefinition @'
+public delegate bool EnumProc(System.IntPtr h, System.IntPtr p);
+[System.Runtime.InteropServices.DllImport("user32.dll")] public static extern bool EnumWindows(EnumProc f, System.IntPtr p);
+[System.Runtime.InteropServices.DllImport("user32.dll")] public static extern uint GetWindowThreadProcessId(System.IntPtr h, out uint pid);
+[System.Runtime.InteropServices.DllImport("user32.dll", CharSet=System.Runtime.InteropServices.CharSet.Unicode)] public static extern int GetClassName(System.IntPtr h, System.Text.StringBuilder s, int n);
+[System.Runtime.InteropServices.DllImport("user32.dll")] public static extern bool IsWindowVisible(System.IntPtr h);
+[System.Runtime.InteropServices.DllImport("user32.dll")] public static extern bool PostMessage(System.IntPtr h, uint m, System.IntPtr w, System.IntPtr l);
+'@
+$targets = New-Object System.Collections.Generic.List[System.IntPtr]
+$callback = [Crispix.Win+EnumProc]{
+    param($h, $p)
+    $owner = [uint32]0
+    [void][Crispix.Win]::GetWindowThreadProcessId($h, [ref]$owner)
+    if ($owner -eq $lr.Id -and [Crispix.Win]::IsWindowVisible($h)) {
+        $name = New-Object System.Text.StringBuilder 256
+        [void][Crispix.Win]::GetClassName($h, $name, 256)
+        if ($name.ToString() -eq 'AgWinMainFrame') { $targets.Add($h) }
+    }
+    return $true
+}
+[void][Crispix.Win]::EnumWindows($callback, [System.IntPtr]::Zero)
+if ($targets.Count -eq 0 -and $lr.MainWindowHandle -ne [System.IntPtr]::Zero) { $targets.Add($lr.MainWindowHandle) }
+foreach ($h in $targets) { [void][Crispix.Win]::PostMessage($h, 0x0010, [System.IntPtr]::Zero, [System.IntPtr]::Zero) }
+# Catalog backup/optimization can take minutes; wait, but never force.
+$lr | Wait-Process -Timeout 600 -ErrorAction SilentlyContinue
+if (Get-Process -Id $lr.Id -ErrorAction SilentlyContinue) { exit 0 }
+Start-Sleep -Seconds 2
+if ($exe -and (Test-Path -LiteralPath $exe)) { Start-Process -FilePath $exe }
+"""
+
+
+def launch_restart():
+    work = Path(tempfile.mkdtemp(prefix='crispix-restart-'))
+    marker = work / 'started.txt'
+    source = RESTART_SOURCE.replace('__MARKER__', ps_literal(marker))
+    encoded = base64.b64encode(source.encode('utf-16le')).decode('ascii')
+    return start(encoded, work, marker)
 
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument('--plugin', required=True, type=Path)
+    parser.add_argument('--plugin', required=False, type=Path)
     parser.add_argument('--prestaged-archive', required=False, type=Path, default=None)
     parser.add_argument('--prestaged-version', required=False, type=str, default=None)
     parser.add_argument('--prestaged-build', required=False, type=int, default=None)
     parser.add_argument('--prestaged-sha256', required=False, type=str, default=None)
+    parser.add_argument('--in-place', action='store_true')
+    parser.add_argument('--progress-file', required=False, type=Path, default=None)
+    parser.add_argument('--restart-lightroom', action='store_true')
     args = parser.parse_args()
     try:
-        launch(args.plugin, args.prestaged_archive, args.prestaged_version, args.prestaged_build, args.prestaged_sha256)
+        if args.restart_lightroom:
+            launch_restart()
+        else:
+            if args.plugin is None:
+                raise ValueError('--plugin e obrigatorio')
+            launch(args.plugin, args.prestaged_archive, args.prestaged_version, args.prestaged_build,
+                   args.prestaged_sha256, args.in_place, args.progress_file)
     except Exception as error:  # pythonw has no console: the exit code is what Lightroom sees
         sys.exit(f'CRISPIX: {error}')

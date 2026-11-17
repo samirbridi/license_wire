@@ -245,6 +245,119 @@ function Get-Process {{ return @() }}
             self.assertEqual((plugin / 'old.txt').read_text(), 'preserve me')
             self.assertEqual(json.loads((plugin / 'BuildInfo.json').read_text()), old)
 
+    def test_launcher_in_place_mode_reports_progress_and_never_reopens_or_pops_messagebox(self):
+        with tempfile.TemporaryDirectory() as temp:
+            plugin = Path(temp) / 'CRISPIX.lrplugin'
+            plugin.mkdir()
+            (plugin / 'BuildInfo.json').write_text('{}')
+            (plugin / 'Update-CrispixPlugin.ps1').write_text('# fixture')
+            progress = Path(temp) / 'install progress.json'
+            source = base64.b64decode(launcher.prepare(
+                plugin, Path(temp) / 'w', Path(temp) / 'staged.zip', 'v0.1.0 (build 0002)', 2, 'a' * 64,
+                in_place=True, progress_file=progress)).decode('utf-16le')
+            self.assertIn(f'-NonInteractive -InPlace -ProgressFile {launcher.ps_literal(progress.resolve())}', source)
+            self.assertNotIn('-Reopen', source)
+            self.assertNotIn('MessageBox', source)
+            self.assertIn("stage='error'", source)
+            with self.assertRaises(ValueError):
+                launcher.prepare(plugin, Path(temp) / 'w2', in_place=True)
+
+    @unittest.skipUnless(os.name == 'nt', 'Windows PowerShell integration')
+    def test_restart_helper_is_valid_powershell_and_never_forces(self):
+        self.assertNotIn('Stop-Process', launcher.RESTART_SOURCE)
+        self.assertIn('AgWinMainFrame', launcher.RESTART_SOURCE)
+        with tempfile.TemporaryDirectory() as temp:
+            script = Path(temp) / 'restart.ps1'
+            script.write_text(launcher.RESTART_SOURCE.replace('__MARKER__', "'x'"), encoding='utf-8-sig')
+            check = (f"$e=$null;[void][System.Management.Automation.Language.Parser]::ParseFile("
+                     f"{launcher.ps_literal(script)},[ref]$null,[ref]$e);if($e){{$e;exit 1}}")
+            ps = Path(os.environ['SystemRoot']) / 'System32/WindowsPowerShell/v1.0/powershell.exe'
+            run = subprocess.run([str(ps), '-NoProfile', '-Command', check], capture_output=True, text=True, timeout=60)
+            self.assertEqual(run.returncode, 0, run.stdout + run.stderr)
+
+    def _in_place_fixture(self, root):
+        plugin = root / "Cris & Ávila.lrplugin"
+        (plugin / 'Runtime').mkdir(parents=True)
+        (plugin / 'BuildInfo.json').write_text(json.dumps({'version': 'v0.0.1 (build 0001)'}))
+        (plugin / 'Runtime' / 'python313.dll').write_bytes(b'same runtime')
+        (plugin / 'Engine.lua').write_text('old engine')
+        (plugin / 'obsolete.lua').write_text('remove me')
+        archive = root / 'staged.zip'
+        version = 'v0.1.0 (build 0002)'
+        with zipfile.ZipFile(archive, 'w') as z:
+            z.writestr('CRISPIX.lrplugin/BuildInfo.json', json.dumps({'version': version}))
+            z.writestr('CRISPIX.lrplugin/Info.lua', 'return {}')
+            z.writestr('CRISPIX.lrplugin/Runtime/python313.dll', b'same runtime')
+            z.writestr('CRISPIX.lrplugin/Engine.lua', 'new engine')
+            z.writestr('CRISPIX.lrplugin/Branding/new.png', b'png')
+        digest = hashlib.sha256(archive.read_bytes()).hexdigest()
+        progress = root / 'progress.json'
+        wrapper = root / 'test.ps1'
+        # Lightroom "is running": closing it would be a failure of this mode.
+        wrapper.write_text(rf"""$ErrorActionPreference='Stop'
+function Invoke-WebRequest {{ throw 'Must not contact the network when prestaged' }}
+function Get-Process {{
+    $p=[PSCustomObject]@{{ Path='C:\fake\Lightroom.exe'; Id=4242 }}
+    $p | Add-Member -MemberType ScriptMethod -Name CloseMainWindow -Value {{ throw 'Lightroom must stay open' }}
+    return $p
+}}
+function Wait-Process {{ throw 'Must not wait for Lightroom' }}
+function Start-Process {{ throw 'Unexpected application launch' }}
+& {launcher.ps_literal(SCRIPTS / 'Update-CrispixPlugin.ps1')} -InstallDirectory {launcher.ps_literal(plugin)} -NonInteractive -InPlace `
+    -ProgressFile {launcher.ps_literal(progress)} -PrestagedArchive {launcher.ps_literal(archive)} `
+    -PrestagedVersion {launcher.ps_literal(version)} -PrestagedBuild 2 -PrestagedSha256 {launcher.ps_literal(digest)}
+""", encoding='utf-8-sig')
+        return plugin, progress, wrapper
+
+    def _run_ps(self, wrapper, timeout=90):
+        ps = Path(os.environ['SystemRoot']) / 'System32/WindowsPowerShell/v1.0/powershell.exe'
+        env = {k: v for k, v in os.environ.items() if k.lower() != 'psmodulepath'}
+        return subprocess.run([str(ps), '-NoProfile', '-ExecutionPolicy', 'Bypass', '-File', str(wrapper)],
+                              capture_output=True, text=True, errors='replace', timeout=timeout, env=env)
+
+    @unittest.skipUnless(os.name == 'nt', 'Windows PowerShell integration')
+    def test_in_place_install_keeps_lightroom_open_and_swaps_only_changed_files(self):
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp)
+            plugin, progress, wrapper = self._in_place_fixture(root)
+            run = self._run_ps(wrapper)
+            self.assertEqual(run.returncode, 0, run.stdout + run.stderr)
+            self.assertEqual((plugin / 'Engine.lua').read_text(), 'new engine')
+            self.assertEqual((plugin / 'Branding' / 'new.png').read_bytes(), b'png')
+            self.assertFalse((plugin / 'obsolete.lua').exists())
+            self.assertEqual(json.loads((plugin / 'BuildInfo.json').read_text())['version'], 'v0.1.0 (build 0002)')
+            self.assertEqual(json.loads(progress.read_text(encoding='utf-8'))['stage'], 'done')
+            backups = list(root.glob('*.bak-*'))
+            self.assertEqual(len(backups), 1)
+            self.assertEqual((backups[0] / 'Engine.lua').read_text(), 'old engine')
+            self.assertEqual((backups[0] / 'obsolete.lua').read_text(), 'remove me')
+            # Identical files (the big Runtime) are never touched or backed up.
+            self.assertFalse((backups[0] / 'Runtime').exists())
+
+    @unittest.skipUnless(os.name == 'nt', 'Windows PowerShell integration')
+    def test_in_place_install_rolls_back_everything_when_a_file_is_locked(self):
+        import msvcrt
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp)
+            plugin, progress, wrapper = self._in_place_fixture(root)
+            (plugin / 'Runtime' / 'python313.dll').write_bytes(b'old runtime in use')
+            # Exclusive lock, like a loaded DLL: replacing it must fail and undo the rest.
+            handle = open(plugin / 'Runtime' / 'python313.dll', 'r+b')
+            msvcrt.locking(handle.fileno(), msvcrt.LK_NBLCK, 1)
+            try:
+                run = self._run_ps(wrapper, timeout=120)
+            finally:
+                msvcrt.locking(handle.fileno(), msvcrt.LK_UNLCK, 1)
+                handle.close()
+            self.assertNotEqual(run.returncode, 0, run.stdout + run.stderr)
+            self.assertEqual((plugin / 'Runtime' / 'python313.dll').read_bytes(), b'old runtime in use')
+            self.assertEqual((plugin / 'Engine.lua').read_text(), 'old engine')
+            self.assertEqual((plugin / 'obsolete.lua').read_text(), 'remove me')
+            self.assertFalse((plugin / 'Branding' / 'new.png').exists())
+            self.assertEqual(json.loads((plugin / 'BuildInfo.json').read_text())['version'], 'v0.0.1 (build 0001)')
+            state = json.loads(progress.read_text(encoding='utf-8'))
+            self.assertEqual(state['stage'], 'error')
+
     def test_cmd_policy_is_scoped_to_process_and_uses_own_installation(self):
         cmd = (SCRIPTS / 'Atualizar-CRISPIX.cmd').read_text()
         self.assertIn('-ExecutionPolicy Bypass', cmd)

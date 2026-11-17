@@ -57,10 +57,6 @@ local function wrapAsCmdLine(commandLine)
     return '"' .. commandLine .. '"'
 end
 
-local function localDataRoot()
-    return Paths.child(Paths.getStandardFilePath('appData'), 'MizinLightroomLocal')
-end
-
 Tasks.startAsyncTask(function()
     if _G.MizinEditorBusy or _G.MizinEngineBusy or _G.MizinAcervoBusy then
         Dialogs.message('CRISPIX - atualizacoes', 'Aguarde a edicao ou pause o aprendizado antes de atualizar.', 'info')
@@ -192,30 +188,47 @@ Tasks.startAsyncTask(function()
                 return
             end
 
-            local stageSuccess = false
-            local stageErrorMsg = nil
-            local stagedPluginPath, stagedArchivePath = nil, nil
+            local stageSuccess, installSuccess = false, false
+            local failureMsg = nil
+            local stagedArchivePath = nil
+            local tempDir = Paths.getStandardFilePath('temp')
+            local runtimePython = Paths.child(Paths.child(_PLUGIN.path, 'Runtime'), 'pythonw.exe')
+            local pythonExe = FileUtils.exists(runtimePython) and runtimePython or 'python'
 
-            -- Janela 2: Barra de Progresso Nativa do Lightroom (somente baixa, confere e
-            -- extrai para uma pasta temporaria; a pasta do plugin em uso nunca e tocada
-            -- aqui, porque e o proprio Runtime/pythonw.exe desta pasta que esta rodando).
-            FunctionContext.callWithContext('crispixInAppUpdateStage', function(context)
+            -- Polls a {stage, percent, message} JSON written by a detached worker and mirrors
+            -- it on the native progress bar, mapped into [base, base+span].
+            local function follow(progress, file, base, span, doneStage, timeoutSeconds)
+                local deadline = os.time() + timeoutSeconds
+                while os.time() < deadline do
+                    Tasks.sleep(0.15)
+                    local st = readLocalFile(file)
+                    if st then
+                        if st.percent then
+                            progress:setPortionComplete(base + span * (tonumber(st.percent) or 0), 1.0)
+                        end
+                        if st.message then progress:setCaption(tostring(st.message)) end
+                        if st.stage == doneStage then return true, st end
+                        if st.stage == 'error' then return false, st end
+                    end
+                end
+                return false, { message = 'Tempo limite esgotado.' }
+            end
+
+            -- Janela 2: uma unica barra de progresso nativa, com o Lightroom aberto o tempo
+            -- todo (como no Neurapix): 1) baixa, confere o SHA-256 e extrai numa pasta
+            -- temporaria; 2) instala arquivo por arquivo com backup e reversao. O passo 2 roda
+            -- em PowerShell, entao nenhum arquivo do plugin (nem o Runtime Python) esta em uso.
+            FunctionContext.callWithContext('crispixInAppUpdate', function(context)
                 local progress = Dialogs.showModalProgressDialog {
-                    title = 'CRISPIX - Baixando atualizacao',
+                    title = 'CRISPIX - Atualizando para ' .. remoteVersion,
                     caption = 'Iniciando download...',
                     cannotCancel = true,
                     functionContext = context,
                 }
 
-                local tempDir = Paths.getStandardFilePath('temp')
                 local progressFile = Paths.child(tempDir, 'crispix_update_progress.json')
                 local stagingDir = Paths.child(tempDir, 'crispix-stage-' .. tostring(remoteBuild))
-                if FileUtils.exists(progressFile) then
-                    FileUtils.delete(progressFile)
-                end
-
-                local runtimePython = Paths.child(Paths.child(_PLUGIN.path, 'Runtime'), 'pythonw.exe')
-                local pythonExe = FileUtils.exists(runtimePython) and runtimePython or 'python'
+                if FileUtils.exists(progressFile) then FileUtils.delete(progressFile) end
 
                 local stagerScript = Paths.child(_PLUGIN.path, 'Launch-InAppUpdate.py')
                 if not FileUtils.exists(stagerScript) then
@@ -232,52 +245,47 @@ Tasks.startAsyncTask(function()
 
                 Tasks.execute(wrapAsCmdLine(launchCmd))
 
-                local deadline = os.time() + 300
-                while os.time() < deadline do
-                    Tasks.sleep(0.15)
-                    local st = readLocalFile(progressFile)
-                    if st then
-                        if st.percent then
-                            progress:setPortionComplete(tonumber(st.percent) or 0, 1.0)
-                        end
-                        if st.message then
-                            progress:setCaption(tostring(st.message))
-                        end
-                        if st.stage == 'staged' then
-                            stageSuccess = true
-                            stagedPluginPath = st.stagedPluginPath
-                            stagedArchivePath = st.stagedArchivePath
-                            break
-                        elseif st.stage == 'error' then
-                            stageErrorMsg = st.message or 'Erro desconhecido.'
-                            break
-                        end
-                    end
+                local ok, st = follow(progress, progressFile, 0, 0.5, 'staged', 600)
+                if not ok then failureMsg = st.message or 'Erro desconhecido.'; return end
+                stageSuccess = true
+                stagedArchivePath = st.stagedArchivePath
+
+                local installFile = Paths.child(tempDir, 'crispix_install_progress.json')
+                if FileUtils.exists(installFile) then FileUtils.delete(installFile) end
+                progress:setCaption('Instalando a nova versao...')
+                local installCmd = quote(pythonExe) .. ' -I ' ..
+                    quote(Paths.child(_PLUGIN.path, 'Launch-CrispixUpdate.py')) ..
+                    ' --plugin ' .. quote(_PLUGIN.path) ..
+                    ' --in-place --progress-file ' .. quote(installFile) ..
+                    ' --prestaged-archive ' .. quote(tostring(stagedArchivePath)) ..
+                    ' --prestaged-version ' .. quote(remoteVersion) ..
+                    ' --prestaged-build ' .. tostring(remoteBuild) ..
+                    ' --prestaged-sha256 ' .. quote(archiveSha256)
+                local started, code = Tasks.pcall(function() return Tasks.execute(wrapAsCmdLine(installCmd)) end)
+                if not started or code ~= 0 then
+                    failureMsg = 'Nao foi possivel iniciar o instalador (' .. tostring(code) .. ').'
+                    return
                 end
+                ok, st = follow(progress, installFile, 0.5, 0.5, 'done', 900)
+                if not ok then failureMsg = st.message or 'Erro desconhecido.'; return end
+                installSuccess = true
             end)
 
-            if not stageSuccess then
+            if not installSuccess then
                 Dialogs.message('CRISPIX - Falha na Atualizacao',
-                    'Nao foi possivel baixar ou validar a atualizacao:\n' ..
-                    tostring(stageErrorMsg or 'Tempo limite esgotado.') .. '\n\n' ..
-                    'Nada foi alterado na instalacao atual.\n' ..
+                    (stageSuccess and 'Nao foi possivel instalar a atualizacao:\n' or
+                        'Nao foi possivel baixar ou validar a atualizacao:\n') ..
+                    tostring(failureMsg or 'Tempo limite esgotado.') .. '\n\n' ..
+                    'A versao instalada continua funcionando (qualquer troca parcial foi desfeita).\n' ..
                     'Voce tambem pode atualizar executando Atualizar-CRISPIX.cmd na pasta do plugin.',
                     'critical')
                 return
             end
 
-            -- Marca para LearningInit.lua mostrar a janela de conclusao com a marca
-            -- assim que o Lightroom reabrir (o processo atual sera encerrado antes disso).
-            local marker = Paths.child(localDataRoot(), 'pending-update-notice.json')
-            FileUtils.createAllDirectories(localDataRoot())
-            local mf = io.open(marker, 'wb')
-            if mf then
-                mf:write(Json.encode({ fromVersion = currentVersion, toVersion = remoteVersion }))
-                mf:close()
-            end
-
-            -- Janela 3: Aviso honesto de que o Lightroom vai fechar agora para concluir.
-            local closingContents = f:column {
+            -- Janela 3: conclusao com a marca. Os comandos do CRISPIX ja usam a versao nova
+            -- (cada item de menu carrega o codigo com dofile a cada uso); menus novos e o
+            -- painel do Gerenciador de Plug-ins so mudam quando o Lightroom reinicia.
+            local finishContents = f:column {
                 spacing = f:control_spacing(),
                 f:row {
                     fill_horizontal = 1,
@@ -287,45 +295,35 @@ Tasks.startAsyncTask(function()
                     f:spacer { fill_horizontal = 1 },
                 },
                 f:static_text {
-                    title = 'Pacote baixado e conferido com sucesso!',
+                    title = 'Atualizacao concluida com sucesso!',
                     font = '<system/bold>',
                     alignment = 'center',
                     fill_horizontal = 1,
                 },
                 f:static_text {
-                    title = 'Para instalar a versao ' .. remoteVersion .. ', o Lightroom Classic\n' ..
-                            'vai fechar agora (se aparecer a janela de backup do catalogo, conclua-a)\n' ..
-                            'e reabrir sozinho em seguida, ja atualizado.',
-                    height_in_lines = 3,
+                    title = 'O CRISPIX foi atualizado para a versao ' .. remoteVersion .. '.\n' ..
+                            'Os comandos do CRISPIX ja usam a versao nova. Para atualizar tambem os\n' ..
+                            'menus e o painel do plugin, reinicie o Lightroom Classic.\n' ..
+                            'Seus estilos aprendidos, acervo e historico foram mantidos intactos.',
+                    height_in_lines = 4,
                     fill_horizontal = 1,
                 },
             }
-            Dialogs.presentModalDialog {
-                title = 'CRISPIX - Instalando Atualizacao',
-                contents = closingContents,
-                actionVerb = 'Continuar',
-                cancelVerb = '<exclude>',
+            local finishChoice = Dialogs.presentModalDialog {
+                title = 'CRISPIX - Atualizacao Concluida',
+                contents = finishContents,
+                actionVerb = 'Reiniciar o Lightroom agora',
+                cancelVerb = 'Continuar trabalhando',
             }
-
-            local runtimePython = Paths.child(Paths.child(_PLUGIN.path, 'Runtime'), 'pythonw.exe')
-            local pythonExe = FileUtils.exists(runtimePython) and runtimePython or 'python'
-
-            -- Hands off to the already-proven one-click path (closes Lightroom, backs up,
-            -- swaps files, reopens): the risky part never runs from inside this process.
-            local launchCmd = quote(pythonExe) .. ' -I ' ..
-                quote(Paths.child(_PLUGIN.path, 'Launch-CrispixUpdate.py')) ..
-                ' --plugin ' .. quote(_PLUGIN.path) ..
-                ' --prestaged-archive ' .. quote(stagedArchivePath) ..
-                ' --prestaged-version ' .. quote(remoteVersion) ..
-                ' --prestaged-build ' .. tostring(remoteBuild) ..
-                ' --prestaged-sha256 ' .. quote(archiveSha256)
-
-            local ok, code = Tasks.pcall(function() return Tasks.execute(wrapAsCmdLine(launchCmd)) end)
-            if not ok or code ~= 0 then
-                FileUtils.delete(marker)
-                Dialogs.message('CRISPIX - atualizacoes',
-                    'Nao foi possivel iniciar o atualizador.\n' .. tostring(code) ..
-                    '\nExecute Atualizar-CRISPIX.cmd na pasta do plugin.', 'critical')
+            if finishChoice == 'ok' then
+                local restartCmd = quote(pythonExe) .. ' -I ' ..
+                    quote(Paths.child(_PLUGIN.path, 'Launch-CrispixUpdate.py')) .. ' --restart-lightroom'
+                local started, code = Tasks.pcall(function() return Tasks.execute(wrapAsCmdLine(restartCmd)) end)
+                if not started or code ~= 0 then
+                    Dialogs.message('CRISPIX - atualizacoes',
+                        'A atualizacao ja esta instalada, mas nao foi possivel reiniciar automaticamente.\n' ..
+                        'Feche e abra o Lightroom quando for conveniente.', 'info')
+                end
             end
         end
     else

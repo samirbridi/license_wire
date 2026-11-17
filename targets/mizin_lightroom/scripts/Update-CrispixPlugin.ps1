@@ -43,6 +43,17 @@
 .PARAMETER PrestagedBuild
 .PARAMETER PrestagedSha256
     Metadados do pacote pre-baixado, exigidos junto com -PrestagedArchive.
+
+.PARAMETER InPlace
+    Instala com o Lightroom ABERTO, como o Neurapix: nao fecha nem reabre o Lightroom.
+    Troca arquivo por arquivo (so os que mudaram), guarda os originais em um backup ao
+    lado da pasta do plugin e desfaz tudo se qualquer copia falhar. BuildInfo.json e
+    gravado por ultimo: uma troca interrompida nunca anuncia a versao nova.
+    Funciona porque este instalador e PowerShell: nenhum arquivo do plugin esta em uso
+    (o Runtime Python do plugin nao roda durante a troca).
+
+.PARAMETER ProgressFile
+    Arquivo JSON {stage, percent, message} lido pela barra de progresso do Lightroom.
 #>
 
 [CmdletBinding()]
@@ -56,7 +67,9 @@ param(
     [string]$PrestagedArchive = '',
     [string]$PrestagedVersion = '',
     [int]$PrestagedBuild = 0,
-    [string]$PrestagedSha256 = ''
+    [string]$PrestagedSha256 = '',
+    [switch]$InPlace,
+    [string]$ProgressFile = ''
 )
 
 Set-StrictMode -Version Latest
@@ -79,8 +92,9 @@ function Remove-UpdaterTemp([string]$path) {
     Remove-Item -LiteralPath $full -Recurse -Force -ErrorAction SilentlyContinue
 }
 
+$script:clock = [Diagnostics.Stopwatch]::StartNew()
 function Write-Step([string]$msg) {
-    Write-Host "[CRISPIX] $msg" -ForegroundColor Cyan
+    Write-Host ("[CRISPIX {0,6:N1}s] {1}" -f $script:clock.Elapsed.TotalSeconds, $msg) -ForegroundColor Cyan
 }
 
 function Write-Success([string]$msg) {
@@ -93,6 +107,131 @@ function Write-Warn([string]$msg) {
 
 function Write-Err([string]$msg) {
     Write-Host "[CRISPIX] ERRO: $msg" -ForegroundColor Red
+}
+
+# Progresso para a barra nativa do Lightroom (CheckUpdates.lua le este JSON a cada 150 ms).
+# Grava em arquivo temporario e substitui: o Lua nunca le um JSON pela metade.
+function Write-UpdateProgress([string]$stage, [double]$percent, [string]$message) {
+    if (-not $ProgressFile) { return }
+    try {
+        $payload = @{ stage = $stage; percent = [Math]::Round([Math]::Max(0, [Math]::Min(1, $percent)), 3); message = $message } |
+            ConvertTo-Json -Compress
+        $tmp = "$ProgressFile.tmp-$PID"
+        [IO.File]::WriteAllText($tmp, $payload, (New-Object Text.UTF8Encoding($false)))
+        # [NullString]::Value: um $null comum chega ao .NET como "" e Replace() rejeita o caminho.
+        if ([IO.File]::Exists($ProgressFile)) { [IO.File]::Replace($tmp, $ProgressFile, [NullString]::Value) }
+        else { [IO.File]::Move($tmp, $ProgressFile) }
+    } catch { }
+}
+
+function Get-RelativeFiles([string]$root) {
+    $prefix = $root.TrimEnd('\') + '\'
+    $map = @{}
+    foreach ($file in [IO.Directory]::EnumerateFiles($root, '*', [IO.SearchOption]::AllDirectories)) {
+        $map[$file.Substring($prefix.Length)] = $file
+    }
+    return $map
+}
+
+# Um unico SHA-256 do .NET reaproveitado: Get-FileHash custa ~15 ms por chamada so de
+# overhead, o que somava dezenas de segundos nos ~3.500 arquivos comparados.
+$script:sha = [Security.Cryptography.SHA256]::Create()
+function Get-Sha([string]$path) {
+    $stream = [IO.File]::OpenRead($path)
+    try { return [BitConverter]::ToString($script:sha.ComputeHash($stream)) } finally { $stream.Dispose() }
+}
+
+# Mesmo tamanho e data de gravacao EXATAMENTE igual = mesmo arquivo. O pacote preserva as
+# datas reais (build_lightroom_local.py usa copy2/ZipFile.write) e toda instalacao sai de um
+# ZIP, entao um arquivo intocado entre dois builds recebe a mesma data exata do ZIP nos dois
+# lados: o Runtime inalterado e reconhecido sem abrir ~1.700 arquivos (medido 26 s -> ~2 s; o
+# antivirus inspeciona cada .dll/.pyd aberto). Qualquer diferenca de data, mesmo de 1 ms, cai
+# no SHA-256. Uma tolerancia de 2 s chegou a declarar iguais dois arquivos diferentes do
+# mesmo tamanho gravados no mesmo instante (pego por test_in_place_install_*).
+function Test-SameFile([string]$a, [string]$b) {
+    $fa, $fb = (New-Object IO.FileInfo($a)), (New-Object IO.FileInfo($b))
+    if ($fa.Length -ne $fb.Length) { return $false }
+    if ($fa.LastWriteTimeUtc.Ticks -eq $fb.LastWriteTimeUtc.Ticks) { return $true }
+    return (Get-Sha $a) -eq (Get-Sha $b)
+}
+
+# Copia com novas tentativas: o processo Python que lancou este instalador pode levar
+# alguns instantes para terminar e liberar um arquivo do Runtime.
+function Copy-WithRetry([string]$source, [string]$target) {
+    [IO.Directory]::CreateDirectory([IO.Path]::GetDirectoryName($target)) | Out-Null
+    for ($attempt = 1; ; $attempt++) {
+        try { [IO.File]::Copy($source, $target, $true); return }
+        catch {
+            if ($attempt -ge 20) { throw "Arquivo em uso, nao foi possivel substituir: $target ($($_.Exception.Message))" }
+            Start-Sleep -Milliseconds 500
+        }
+    }
+}
+
+function Install-InPlace([string]$sourceRoot, [string]$targetRoot, [string]$backupRoot) {
+    $new = Get-RelativeFiles $sourceRoot
+    $old = if (Test-Path -LiteralPath $targetRoot) { Get-RelativeFiles $targetRoot } else { @{} }
+    $replace = New-Object Collections.Generic.List[string]
+    $add = New-Object Collections.Generic.List[string]
+    $checked = 0
+    foreach ($rel in $new.Keys) {
+        $checked++
+        if ($checked % 100 -eq 0) {
+            Write-UpdateProgress 'installing' (0.30 + 0.25 * $checked / $new.Count) "Comparando arquivos ($checked de $($new.Count))..."
+        }
+        if ($old.ContainsKey($rel)) {
+            if (-not (Test-SameFile $new[$rel] $old[$rel])) { $replace.Add($rel) }
+        } else { $add.Add($rel) }
+    }
+    $remove = @($old.Keys | Where-Object { -not $new.ContainsKey($_) })
+    # BuildInfo.json por ultimo: se algo falhar no meio, a versao instalada continua a antiga.
+    $ordered = @($replace | Where-Object { $_ -ne 'BuildInfo.json' }) + @($add | Where-Object { $_ -ne 'BuildInfo.json' })
+    $total = [Math]::Max(1, $ordered.Count + $remove.Count + 1)
+    Write-Step "Arquivos alterados: $($replace.Count); novos: $($add.Count); removidos: $($remove.Count); iguais: $($new.Count - $replace.Count - $add.Count)."
+    $done = New-Object Collections.Generic.List[object]
+    $step = 0
+    try {
+        foreach ($rel in $ordered) {
+            $target = Join-Path $targetRoot $rel
+            if ($replace.Contains($rel)) {
+                Copy-WithRetry $target (Join-Path $backupRoot $rel)
+                $done.Add(@('replace', $rel))
+            } else { $done.Add(@('add', $rel)) }
+            Copy-WithRetry $new[$rel] $target
+            $step++
+            if ($step % 25 -eq 0) { Write-UpdateProgress 'installing' (0.55 + 0.40 * $step / $total) "Instalando arquivos ($step de $total)..." }
+        }
+        foreach ($rel in $remove) {
+            $target = Join-Path $targetRoot $rel
+            $saved = Join-Path $backupRoot $rel
+            [IO.Directory]::CreateDirectory([IO.Path]::GetDirectoryName($saved)) | Out-Null
+            [IO.File]::Move($target, $saved)
+            $done.Add(@('remove', $rel))
+            $step++
+        }
+        if ($new.ContainsKey('BuildInfo.json')) {
+            $target = Join-Path $targetRoot 'BuildInfo.json'
+            if ($old.ContainsKey('BuildInfo.json')) { Copy-WithRetry $target (Join-Path $backupRoot 'BuildInfo.json'); $done.Add(@('replace', 'BuildInfo.json')) }
+            else { $done.Add(@('add', 'BuildInfo.json')) }
+            Copy-WithRetry $new['BuildInfo.json'] $target
+        }
+    } catch {
+        $failure = $_
+        Write-Warn "Falha durante a troca; desfazendo $($done.Count) alteracoes..."
+        Write-UpdateProgress 'installing' 0.5 'Falha na troca; restaurando a versao anterior...'
+        for ($i = $done.Count - 1; $i -ge 0; $i--) {
+            $kind, $rel = $done[$i]
+            $target = Join-Path $targetRoot $rel
+            $saved = Join-Path $backupRoot $rel
+            try {
+                if ($kind -eq 'add') { [IO.File]::Delete($target) }
+                elseif ($kind -eq 'replace') { [IO.File]::Copy($saved, $target, $true) }
+                else { [IO.File]::Move($saved, $target) }
+            } catch { Write-Err "Nao foi possivel restaurar ${rel}: $($_.Exception.Message)" }
+        }
+        Write-Warn 'Backup restaurado. O plugin continua na versao anterior.'
+        throw $failure
+    }
 }
 
 try {
@@ -186,6 +325,7 @@ try {
 
     if (-not $Force -and ($installedBuild -ge $remoteBuild) -and ($installedBuild -gt 0)) {
         Write-Success "O CRISPIX ja esta na versao mais recente ($installedVersion). Nenhuma atualizacao necessaria."
+        Write-UpdateProgress 'done' 1.0 "O CRISPIX ja esta na versao $installedVersion."
         return
     }
 
@@ -229,6 +369,7 @@ try {
     }
 
     # Validar integridade do ZIP antes de tocar em qualquer coisa
+    Write-UpdateProgress 'installing' 0.05 'Conferindo o pacote (SHA-256)...'
     Write-Step "Validando hash SHA-256 do pacote obtido..."
     $computedSha = (Get-FileHash -LiteralPath $archivePath -Algorithm SHA256).Hash.ToLower()
     if ($computedSha -ne $archiveSha256.ToLower()) {
@@ -240,7 +381,8 @@ try {
     $lrProcesses = Get-Process -Name 'Lightroom' -ErrorAction SilentlyContinue
     # Reabre o mesmo executavel que estava aberto (instalacoes fora do caminho padrao).
     $runningLrExe = @($lrProcesses | ForEach-Object { try { $_.Path } catch { $null } } | Where-Object { $_ }) | Select-Object -First 1
-    if ($lrProcesses) {
+    # -InPlace: o Lightroom continua aberto (nada do plugin esta em uso por este processo).
+    if ($lrProcesses -and -not $InPlace) {
         Write-Step "Lightroom Classic em execucao. Fechando de forma limpa para liberar os arquivos..."
         $lrProcesses | ForEach-Object {
             $_.CloseMainWindow() | Out-Null
@@ -272,7 +414,12 @@ try {
 
     try {
         Write-Step "Extraindo $archiveName para pasta temporaria..."
-        Expand-Archive -LiteralPath $archivePath -DestinationPath $tempExtract -Force
+        Write-UpdateProgress 'installing' 0.12 'Extraindo o pacote...'
+        # ZipFile nativo do .NET: o Expand-Archive do PowerShell 5.1 levava dezenas de segundos
+        # nos ~1.750 arquivos do pacote. A pasta de destino e nova e vazia; o .NET recusa
+        # entradas que sairiam dela (../).
+        Add-Type -AssemblyName System.IO.Compression.FileSystem
+        [IO.Compression.ZipFile]::ExtractToDirectory($archivePath, $tempExtract)
 
         # Exact extraction root, never a computed arbitrary folder.
         $plugins = @(Get-ChildItem -LiteralPath $tempExtract -Directory -Filter '*.lrplugin')
@@ -285,20 +432,30 @@ try {
             throw 'A versao do pacote nao corresponde ao manifesto.'
         }
 
-        # Backup da instalacao anterior
-        if (Test-Path -LiteralPath $InstallDirectory) {
+        if ($InPlace) {
+            # Backup so dos arquivos substituidos/removidos, ao lado da pasta do plugin.
             $backupPath = "$InstallDirectory.bak-$([Guid]::NewGuid().ToString('n'))"
-            Write-Step "Criando backup da versao anterior em $backupPath ..."
-            Move-Item -LiteralPath $InstallDirectory -Destination $backupPath -Force
-            $backupCreated = $true
+            Write-Step "Instalando com o Lightroom aberto (backup dos arquivos trocados em $backupPath) ..."
+            Write-UpdateProgress 'installing' 0.30 'Comparando arquivos...'
+            Install-InPlace $extractedPlugin.FullName $InstallDirectory $backupPath
+            Write-Success "Nova versao instalada com sucesso!"
+            if (Test-Path -LiteralPath $backupPath) { Write-Step "Arquivos anteriores preservados em $backupPath" }
+        } else {
+            # Backup da instalacao anterior
+            if (Test-Path -LiteralPath $InstallDirectory) {
+                $backupPath = "$InstallDirectory.bak-$([Guid]::NewGuid().ToString('n'))"
+                Write-Step "Criando backup da versao anterior em $backupPath ..."
+                Move-Item -LiteralPath $InstallDirectory -Destination $backupPath -Force
+                $backupCreated = $true
+            }
+
+            # Mover a nova versao para a pasta fixa de instalacao
+            Write-Step "Instalando nova versao em $InstallDirectory ..."
+            Move-Item -LiteralPath $extractedPlugin.FullName -Destination $InstallDirectory -Force
+            Write-Success "Nova versao instalada com sucesso!"
+
+            if ($backupCreated) { Write-Step "Backup anterior preservado em $backupPath" }
         }
-
-        # Mover a nova versao para a pasta fixa de instalacao
-        Write-Step "Instalando nova versao em $InstallDirectory ..."
-        Move-Item -LiteralPath $extractedPlugin.FullName -Destination $InstallDirectory -Force
-        Write-Success "Nova versao instalada com sucesso!"
-
-        if ($backupCreated) { Write-Step "Backup anterior preservado em $backupPath" }
     } finally {
         Remove-UpdaterTemp $tempExtract
         Remove-UpdaterTemp $downloadDir
@@ -308,9 +465,10 @@ try {
     Write-Success "Atualizacao concluida com sucesso para o CRISPIX $remoteVersion!"
     Write-Host "Seus dados de aprendizado e configuracoes em AppData foram preservados intactos." -ForegroundColor Green
     Write-Host ""
+    Write-UpdateProgress 'done' 1.0 "CRISPIX atualizado para $remoteVersion."
 
-    # Perguntar se quer reabrir o Lightroom
-    if ($Reopen -or -not $NonInteractive) {
+    # Perguntar se quer reabrir o Lightroom (no modo -InPlace ele nunca foi fechado)
+    if (-not $InPlace -and ($Reopen -or -not $NonInteractive)) {
         $reopenAnswer = if ($Reopen) { 'S' } else { Read-Host "Deseja reabrir o Lightroom Classic agora? (S/N)" }
         if ($reopenAnswer -match '^[sSyY]') {
             $lrExe = if ($runningLrExe) { $runningLrExe } else { "C:\Program Files\Adobe\Adobe Lightroom Classic\Lightroom.exe" }
@@ -330,6 +488,7 @@ try {
         Move-Item -LiteralPath $backupPath -Destination $InstallDirectory -Force
         Write-Warn "Backup restaurado. O Lightroom continua na versao anterior."
     }
+    Write-UpdateProgress 'error' 0 ("$($_.Exception.Message)" + ' Nada foi alterado na versao instalada.')
     throw
 } finally {
     if ($ownsMutex) { $mutex.ReleaseMutex() }

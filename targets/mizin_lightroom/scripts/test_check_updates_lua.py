@@ -1,10 +1,8 @@
-"""Contract tests for CheckUpdates.lua: offer with visual identity -> native progress
-dialog while Lightroom stays open (download+validate+extract to a TEMP staging folder
-only) -> honest "Lightroom will close now" notice -> handoff to the already-proven
-Update-CrispixPlugin.ps1 (via Launch-CrispixUpdate.py -PrestagedArchive) which closes
-Lightroom, backs up, swaps files and reopens. The post-restart "update complete" window
-is tested separately in test_learning_init_lua.py, since it only makes sense to show
-after the new plugin has actually loaded."""
+"""Contract tests for CheckUpdates.lua: offer with visual identity -> ONE native progress
+dialog while Lightroom stays open (stage: download+validate+extract to TEMP; then install:
+Launch-CrispixUpdate.py --in-place, PowerShell swaps changed files with backup/rollback)
+-> branded "update complete" window offering a restart, like Neurapix. Lightroom is never
+asked to close in order to install."""
 import json
 import tempfile
 import unittest
@@ -68,27 +66,78 @@ class CheckUpdatesLuaTests(unittest.TestCase):
             self.assertIn('Disponivel', offer['title'])
             self.assertEqual(offer['actionVerb'], 'Atualizar agora')
 
-            # Progress dialog shown during staging (Lightroom stays open).
+            # One progress dialog for download AND install (Lightroom stays open).
             self.assertEqual(len(runtime.globals().progressDialogs), 1)
-            self.assertIn('Baixando', runtime.globals().progressDialogs[1]['title'])
+            self.assertIn('Atualizando', runtime.globals().progressDialogs[1]['title'])
 
-            # Honest "closing now" notice, not a false "already done" claim.
-            closing = runtime.globals().modals[2]
-            self.assertIn('Instalando', closing['title'])
+            # Install runs in place from the staged archive; cmd line wrapped in outer quotes.
+            install_cmd = runtime.globals().revealed[1]
+            self.assertIn('Launch-CrispixUpdate.py', install_cmd)
+            self.assertIn('--in-place', install_cmd)
+            self.assertIn('crispix_install_progress.json', install_cmd)
+            self.assertIn('--prestaged-archive', install_cmd)
+            self.assertIn('--prestaged-sha256', install_cmd)
+            self.assertTrue(install_cmd.startswith('""'))
 
-            # Handoff command references the prestaged archive and Launch-CrispixUpdate.py
-            # (the proven installer path), not a direct write into the plugin directory.
+            # Branded completion window offers the restart; 'ok' launches the restart helper.
+            done = runtime.globals().modals[2]
+            self.assertIn('Concluida', done['title'])
+            self.assertEqual(done['actionVerb'], 'Reiniciar o Lightroom agora')
+            self.assertEqual(len(runtime.globals().revealed), 2)
+            self.assertIn('--restart-lightroom', runtime.globals().revealed[2])
+            self.assertEqual(len(runtime.globals().messages), 0)
+
+    def test_install_failure_reports_rollback_and_shows_no_completion(self):
+        with tempfile.TemporaryDirectory() as temp:
+            runtime = self.setup(Path(temp) / 'plugin', local_version='v0.21.0 (build 0034)')
+            runtime.globals().http_response = json.dumps({
+                'version': 'v0.22.0 (build 0040)', 'build': 40,
+                'archiveSha256': 'a' * 64, 'downloadUrl': 'https://crispixlr.pages.dev/x.zip'})
+            runtime.globals().modal_answer = 'ok'
+            temp_dir = Path(temp) / 'temp_dir'
+            temp_dir.mkdir()
+            runtime.globals().mock_temp_dir = temp_dir.as_posix()
+            runtime.globals().install_result = json.dumps(
+                {'stage': 'error', 'percent': 0, 'message': 'Arquivo em uso: Runtime/python313.dll'})
+            self.patch_network_channel(runtime, Path(temp) / 'unused-network-channel')
+            self.assertEqual(len(runtime.globals().modals), 1)
+            self.assertNotIn('--restart-lightroom', ' '.join(runtime.globals().revealed.values()))
+            message = runtime.globals().messages[1]
+            self.assertIn('instalar', message['body'])
+            self.assertIn('python313.dll', message['body'])
+            self.assertIn('desfeita', message['body'])
+
+    def test_worker_that_never_reports_times_out_instead_of_hanging(self):
+        with tempfile.TemporaryDirectory() as temp:
+            runtime = self.setup(Path(temp) / 'plugin', local_version='v0.21.0 (build 0034)')
+            runtime.globals().http_response = json.dumps({
+                'version': 'v0.22.0 (build 0040)', 'build': 40,
+                'archiveSha256': 'a' * 64, 'downloadUrl': 'https://crispixlr.pages.dev/x.zip'})
+            runtime.globals().modal_answer = 'ok'
+            runtime.globals().mock_temp_dir = None  # workers write nothing
+            self.patch_network_channel(runtime, Path(temp) / 'unused-network-channel')
+            self.assertIn('Tempo limite', runtime.globals().messages[1]['body'])
+
+    def test_continuing_to_work_after_update_does_not_restart(self):
+        with tempfile.TemporaryDirectory() as temp:
+            runtime = self.setup(Path(temp) / 'plugin', local_version='v0.21.0 (build 0034)')
+            runtime.globals().http_response = json.dumps({
+                'version': 'v0.22.0 (build 0040)', 'build': 40,
+                'archiveSha256': 'a' * 64, 'downloadUrl': 'https://crispixlr.pages.dev/x.zip'})
+            temp_dir = Path(temp) / 'temp_dir'
+            temp_dir.mkdir()
+            runtime.globals().mock_temp_dir = temp_dir.as_posix()
+            runtime.execute('''
+                local answers = {'ok', 'cancel'}
+                local original = modules.LrDialogs.presentModalDialog
+                modules.LrDialogs.presentModalDialog = function(opts)
+                    original(opts)
+                    return table.remove(answers, 1)
+                end''')
+            self.patch_network_channel(runtime, Path(temp) / 'unused-network-channel')
+            self.assertEqual(len(runtime.globals().modals), 2)
             self.assertEqual(len(runtime.globals().revealed), 1)
-            handoff_cmd = runtime.globals().revealed[1]
-            self.assertIn('Launch-CrispixUpdate.py', handoff_cmd)
-            self.assertIn('--prestaged-archive', handoff_cmd)
-            self.assertIn('--prestaged-sha256', handoff_cmd)
-
-            # Marker for LearningInit.lua to show the post-restart welcome window.
-            marker = Path(temp_dir) / 'MizinLightroomLocal' / 'pending-update-notice.json'
-            self.assertTrue(marker.is_file())
-            info = json.loads(marker.read_text(encoding='utf-8'))
-            self.assertEqual(info['toVersion'], 'v0.22.0 (build 0040)')
+            self.assertIn('--in-place', runtime.globals().revealed[1])
 
     def test_staging_failure_reports_error_and_never_hands_off(self):
         with tempfile.TemporaryDirectory() as temp:
@@ -258,18 +307,20 @@ class CheckUpdatesLuaTests(unittest.TestCase):
                     sleep = function() end,
                     startAsyncTask = function(fn) fn() end,
                     execute = function(command)
-                        -- Distinguish the staging launch (writes stage_result to the
-                        -- progress file before CheckUpdates.lua starts polling it) from
-                        -- the final handoff to Launch-CrispixUpdate.py (just recorded).
-                        if command:find('Launch%-InAppUpdate') and mock_temp_dir then
-                            local p = mock_temp_dir .. '/crispix_update_progress.json'
-                            local f = io.open(p, 'wb')
-                            if f then
-                                f:write(stage_result or '{"stage":"staged","percent":1.0,"message":"Pronto","stagedPluginPath":"x","stagedArchivePath":"y"}')
-                                f:close()
-                            end
+                        -- Plays the detached workers: the stager writes stage_result, the
+                        -- in-place installer writes install_result (both before polling).
+                        local function emit(name, text)
+                            if not mock_temp_dir then return end
+                            local f = io.open(mock_temp_dir .. '/' .. name, 'wb')
+                            if f then f:write(text); f:close() end
+                        end
+                        if command:find('Launch%-InAppUpdate') then
+                            emit('crispix_update_progress.json', stage_result or '{"stage":"staged","percent":1.0,"message":"Pronto","stagedPluginPath":"x","stagedArchivePath":"y"}')
                         else
                             revealed[#revealed+1] = command
+                            if command:find('%-%-in%-place') then
+                                emit('crispix_install_progress.json', install_result or '{"stage":"done","percent":1.0,"message":"ok"}')
+                            end
                         end
                         return launchCode or 0
                     end,
@@ -277,6 +328,9 @@ class CheckUpdatesLuaTests(unittest.TestCase):
             }
             import = function(name) assert(modules[name], name); return modules[name] end
             _PLUGIN = { path = plugin_path }
+            -- Tasks.sleep is a no-op here, so a fake clock keeps any timeout loop finite.
+            local clock = 0
+            os.time = function() clock = clock + 1; return clock end
         ''')
         return runtime
 
