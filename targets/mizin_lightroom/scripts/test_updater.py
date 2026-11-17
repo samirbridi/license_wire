@@ -28,7 +28,26 @@ class UpdaterTests(unittest.TestCase):
             self.assertIn(launcher.ps_literal(plugin.resolve()), source)
             self.assertIn('-NonInteractive -Reopen', source)
             self.assertIn('finally', source)
+            self.assertNotIn('-PrestagedArchive', source)
             self.assertEqual((work / 'Update-CrispixPlugin.ps1').read_text(), '# fixture')
+
+    def test_launcher_passes_prestaged_archive_metadata_when_given(self):
+        with tempfile.TemporaryDirectory() as temp:
+            plugin = Path(temp) / 'CRISPIX.lrplugin'
+            plugin.mkdir()
+            (plugin / 'BuildInfo.json').write_text('{}')
+            (plugin / 'Update-CrispixPlugin.ps1').write_text('# fixture')
+            staged = Path(temp) / 'staged.zip'
+            staged.write_bytes(b'fake zip')
+            work = Path(temp) / 'worker'
+            source = base64.b64decode(launcher.prepare(
+                plugin, work, prestaged_archive=staged, prestaged_version='v1.0.0 (build 0005)',
+                prestaged_build=5, prestaged_sha256='a' * 64)).decode('utf-16le')
+            self.assertIn('-PrestagedArchive', source)
+            self.assertIn(launcher.ps_literal(staged.resolve()), source)
+            self.assertIn(launcher.ps_literal('v1.0.0 (build 0005)'), source)
+            self.assertIn('-PrestagedBuild 5', source)
+            self.assertIn(launcher.ps_literal('a' * 64), source)
 
     class FakeProcess:
         def __init__(self, marker=None, exit_code=None):
@@ -153,6 +172,78 @@ function Move-Item {{
                     self.assertEqual(json.loads((plugin / 'BuildInfo.json').read_text()), old)
                     if mode == 'move':
                         self.assertIn('Backup restaurado', run.stdout)
+
+    @unittest.skipUnless(os.name == 'nt', 'Windows PowerShell integration')
+    def test_prestaged_archive_skips_manifest_and_installs_real_powershell(self):
+        # Mirrors the handoff CheckUpdates.lua performs after the in-Lightroom progress
+        # dialog finishes staging: no manifest query, no download -- just the already
+        # SHA-256-validated archive, re-validated here, swapped in with backup as usual.
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp)
+            plugin = root / "Cris & Ávila.lrplugin"
+            plugin.mkdir()
+            old = {'version': 'v0.0.1 (build 0001)'}
+            (plugin / 'BuildInfo.json').write_text(json.dumps(old))
+            (plugin / 'old.txt').write_text('preserve me')
+
+            staged_archive = root / 'staged.zip'
+            version = 'v0.1.0 (build 0002)'
+            with zipfile.ZipFile(staged_archive, 'w') as z:
+                z.writestr('CRISPIX.lrplugin/BuildInfo.json', json.dumps({'version': version}))
+                z.writestr('CRISPIX.lrplugin/Info.lua', 'return {}')
+                z.writestr('CRISPIX.lrplugin/new.txt', 'installed')
+            digest = hashlib.sha256(staged_archive.read_bytes()).hexdigest()
+
+            wrapper = root / 'test.ps1'
+            text = rf"""$ErrorActionPreference='Stop'
+function Invoke-WebRequest {{ throw 'Must not contact the network when prestaged' }}
+function Get-Process {{ return @() }}
+function Start-Process {{ throw 'Unexpected application launch' }}
+& {launcher.ps_literal(SCRIPTS / 'Update-CrispixPlugin.ps1')} -InstallDirectory {launcher.ps_literal(plugin)} -NonInteractive `
+    -PrestagedArchive {launcher.ps_literal(staged_archive)} -PrestagedVersion {launcher.ps_literal(version)} `
+    -PrestagedBuild 2 -PrestagedSha256 {launcher.ps_literal(digest)}
+"""
+            wrapper.write_text(text, encoding='utf-8-sig')
+            ps = Path(os.environ['SystemRoot']) / 'System32/WindowsPowerShell/v1.0/powershell.exe'
+            env = {k: v for k, v in os.environ.items() if k.lower() != 'psmodulepath'}
+            run = subprocess.run([str(ps), '-NoProfile', '-ExecutionPolicy', 'Bypass', '-File', str(wrapper)],
+                                 capture_output=True, text=True, errors='replace', timeout=30, env=env)
+            self.assertEqual(run.returncode, 0, run.stdout + run.stderr)
+            self.assertTrue((plugin / 'new.txt').exists())
+            backups = list(root.glob('*.bak-*'))
+            self.assertEqual(len(backups), 1)
+            self.assertEqual((backups[0] / 'old.txt').read_text(), 'preserve me')
+
+    @unittest.skipUnless(os.name == 'nt', 'Windows PowerShell integration')
+    def test_prestaged_archive_with_wrong_hash_is_rejected_real_powershell(self):
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp)
+            plugin = root / "Cris.lrplugin"
+            plugin.mkdir()
+            old = {'version': 'v0.0.1 (build 0001)'}
+            (plugin / 'BuildInfo.json').write_text(json.dumps(old))
+            (plugin / 'old.txt').write_text('preserve me')
+
+            staged_archive = root / 'staged.zip'
+            with zipfile.ZipFile(staged_archive, 'w') as z:
+                z.writestr('CRISPIX.lrplugin/BuildInfo.json', json.dumps({'version': 'v0.1.0 (build 0002)'}))
+                z.writestr('CRISPIX.lrplugin/Info.lua', 'return {}')
+
+            wrapper = root / 'test.ps1'
+            text = rf"""$ErrorActionPreference='Stop'
+function Get-Process {{ return @() }}
+& {launcher.ps_literal(SCRIPTS / 'Update-CrispixPlugin.ps1')} -InstallDirectory {launcher.ps_literal(plugin)} -NonInteractive `
+    -PrestagedArchive {launcher.ps_literal(staged_archive)} -PrestagedVersion 'v0.1.0 (build 0002)' `
+    -PrestagedBuild 2 -PrestagedSha256 {'0' * 64}
+"""
+            wrapper.write_text(text, encoding='utf-8-sig')
+            ps = Path(os.environ['SystemRoot']) / 'System32/WindowsPowerShell/v1.0/powershell.exe'
+            env = {k: v for k, v in os.environ.items() if k.lower() != 'psmodulepath'}
+            run = subprocess.run([str(ps), '-NoProfile', '-ExecutionPolicy', 'Bypass', '-File', str(wrapper)],
+                                 capture_output=True, text=True, errors='replace', timeout=30, env=env)
+            self.assertNotEqual(run.returncode, 0, run.stdout + run.stderr)
+            self.assertEqual((plugin / 'old.txt').read_text(), 'preserve me')
+            self.assertEqual(json.loads((plugin / 'BuildInfo.json').read_text()), old)
 
     def test_cmd_policy_is_scoped_to_process_and_uses_own_installation(self):
         cmd = (SCRIPTS / 'Atualizar-CRISPIX.cmd').read_text()

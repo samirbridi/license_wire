@@ -29,7 +29,7 @@ def populate_engine(plugin, runtime_base, model_folder, version):
         shutil.copytree(sources, plugin / 'ThirdPartySources')
     engine = plugin / 'Engine'
     engine.mkdir()
-    for name in ('local_engine.py', 'run_local.py', 'learning_store.py','culling_engine.py'):
+    for name in ('local_engine.py', 'run_local.py', 'learning_store.py','culling_engine.py', 'gpu_detector.py'):
         shutil.copy2(ROOT / 'reconstructed/local-engine' / name, engine / name)
     for name in ('raw_features.py', 'train_numeric_pilot.py', 'import_approved_references.py', 'develop_targets.py', 'horizon_analysis.py'):
         shutil.copy2(ROOT / 'scripts' / name, engine / name)
@@ -98,7 +98,8 @@ def build(runtime_base, model_folder, dataset, manifest):
     shutil.copytree(ROOT / 'reconstructed/branding/plugin-assets', plugin / 'Branding')
     # Copy the updater scripts directly into the plugin root, so CheckUpdates.lua can reveal
     # them via LrShell and the user can run them directly from inside the plugin folder.
-    for name in ('Atualizar-CRISPIX.cmd', 'Update-CrispixPlugin.ps1', 'Launch-CrispixUpdate.py'):
+    for name in ('Atualizar-CRISPIX.cmd', 'Update-CrispixPlugin.ps1', 'Launch-CrispixUpdate.py',
+                 'InApp-UpdatePlugin.py', 'Launch-InAppUpdate.py', 'Restart-Lightroom.py'):
         shutil.copy2(ROOT / 'scripts' / name, plugin / name)
     entries = saved_entries(dataset, manifest, model_folder)
     (plugin / 'PilotData.lua').write_text('return ' + lua_literal({

@@ -33,6 +33,16 @@
 
 .PARAMETER NonInteractive
     Nao pede confirmacao; fecha o Lightroom e atualiza direto.
+
+.PARAMETER PrestagedArchive
+    Caminho de um pacote .zip ja baixado e com hash conferido (pelo atualizador dentro
+    do Lightroom, InApp-UpdatePlugin.py). Quando informado, pula a consulta ao manifesto
+    e o download: ainda assim confere o SHA-256 de novo antes de tocar em qualquer coisa.
+
+.PARAMETER PrestagedVersion
+.PARAMETER PrestagedBuild
+.PARAMETER PrestagedSha256
+    Metadados do pacote pre-baixado, exigidos junto com -PrestagedArchive.
 #>
 
 [CmdletBinding()]
@@ -42,7 +52,11 @@ param(
     [string]$InstallDirectory = "$env:USERPROFILE\Documents\CRISPIX.lrplugin",
     [switch]$Force,
     [switch]$NonInteractive,
-    [switch]$Reopen
+    [switch]$Reopen,
+    [string]$PrestagedArchive = '',
+    [string]$PrestagedVersion = '',
+    [int]$PrestagedBuild = 0,
+    [string]$PrestagedSha256 = ''
 )
 
 Set-StrictMode -Version Latest
@@ -93,46 +107,64 @@ try {
     $mutex = New-Object Threading.Mutex($false, 'Local\CRISPIX.PluginUpdater')
     $ownsMutex = $mutex.WaitOne(0)
     if (-not $ownsMutex) { throw 'Ja existe uma atualizacao em andamento.' }
-    Write-Step "Consultando canal de atualizacao pela internet ($ManifestUrl) ..."
+
+    $usingPrestaged = -not [string]::IsNullOrWhiteSpace($PrestagedArchive)
     $manifest = $null
     $usingInternet = $false
-    try {
-        $response = Invoke-WebRequest -Uri $ManifestUrl -TimeoutSec 15 -UseBasicParsing
-        # Decodifica os bytes como UTF-8 e remove um BOM eventual: o PowerShell 5.1 le o corpo
-        # como ISO-8859-1 e o BOM vira "ï»¿", que fazia o ConvertFrom-Json falhar e o canal de
-        # internet nunca ser usado (medido na publicacao do build 0037).
-        $text = [System.Text.Encoding]::UTF8.GetString($response.RawContentStream.ToArray()).TrimStart([char]0xFEFF)
-        $manifest = $text | ConvertFrom-Json
-        $usingInternet = $true
-        Write-Success "Canal de internet acessivel."
-    } catch {
-        Write-Warn "Canal de internet indisponivel ($($_.Exception.Message)). Tentando rede local..."
+
+    if ($usingPrestaged) {
+        # The in-Lightroom progress dialog (InApp-UpdatePlugin.py) already downloaded and
+        # SHA-256-validated this exact file; we re-validate below before touching anything,
+        # but skip re-downloading and re-querying the manifest.
+        if (-not (Test-Path -LiteralPath $PrestagedArchive)) { throw "Pacote pre-baixado nao encontrado: $PrestagedArchive" }
+        if ($PrestagedBuild -le 0 -or $PrestagedSha256 -notmatch '^[a-fA-F0-9]{64}$' -or [string]::IsNullOrWhiteSpace($PrestagedVersion)) {
+            throw 'Metadados do pacote pre-baixado incompletos ou invalidos.'
+        }
+        Write-Step "Usando pacote ja baixado e validado pelo Lightroom: $PrestagedArchive"
+        $remoteVersion = $PrestagedVersion
+        $remoteBuild = $PrestagedBuild
+        $archiveSha256 = $PrestagedSha256
+        $archiveName = Split-Path -Leaf $PrestagedArchive
+    } else {
+        Write-Step "Consultando canal de atualizacao pela internet ($ManifestUrl) ..."
+        try {
+            $response = Invoke-WebRequest -Uri $ManifestUrl -TimeoutSec 15 -UseBasicParsing
+            # Decodifica os bytes como UTF-8 e remove um BOM eventual: o PowerShell 5.1 le o corpo
+            # como ISO-8859-1 e o BOM vira "ï»¿", que fazia o ConvertFrom-Json falhar e o canal de
+            # internet nunca ser usado (medido na publicacao do build 0037).
+            $text = [System.Text.Encoding]::UTF8.GetString($response.RawContentStream.ToArray()).TrimStart([char]0xFEFF)
+            $manifest = $text | ConvertFrom-Json
+            $usingInternet = $true
+            Write-Success "Canal de internet acessivel."
+        } catch {
+            Write-Warn "Canal de internet indisponivel ($($_.Exception.Message)). Tentando rede local..."
+        }
+
+        if (-not $manifest) {
+            Write-Step "Consultando canal de rede local em $ChannelPath ..."
+            if (-not (Test-Path -LiteralPath $ChannelPath)) {
+                throw "Nenhum canal disponivel: internet indisponivel e pasta de rede inacessivel ($ChannelPath)."
+            }
+            $manifestPath = Join-Path $ChannelPath 'latest.json'
+            if (-not (Test-Path -LiteralPath $manifestPath)) {
+                throw "Nenhum manifesto latest.json encontrado nem pela internet nem em $ChannelPath."
+            }
+            $manifest = Get-Content -LiteralPath $manifestPath -Raw -Encoding UTF8 | ConvertFrom-Json
+        }
+
+        $remoteVersion = $manifest.version
+        $remoteBuild   = [int]$manifest.build
+        $archiveName   = $manifest.archiveName
+        $archiveSha256 = $manifest.archiveSha256
+        $deliveryFolder = $manifest.deliveryFolder
+        $downloadUrl   = if ($manifest.PSObject.Properties['downloadUrl']) { $manifest.downloadUrl } else { $null }
+        if ($remoteBuild -le 0 -or $archiveSha256 -notmatch '^[a-fA-F0-9]{64}$' -or
+            $archiveName -notmatch '^[\w.-]+\.zip$' -or $deliveryFolder -notmatch '^[\w.-]+$' -or
+            $deliveryFolder -in @('.', '..')) { throw 'Manifesto de atualizacao invalido.' }
+        if ($usingInternet -and ([string]$downloadUrl -notmatch '^https://')) { throw 'Download HTTPS ausente no manifesto.' }
     }
 
-    if (-not $manifest) {
-        Write-Step "Consultando canal de rede local em $ChannelPath ..."
-        if (-not (Test-Path -LiteralPath $ChannelPath)) {
-            throw "Nenhum canal disponivel: internet indisponivel e pasta de rede inacessivel ($ChannelPath)."
-        }
-        $manifestPath = Join-Path $ChannelPath 'latest.json'
-        if (-not (Test-Path -LiteralPath $manifestPath)) {
-            throw "Nenhum manifesto latest.json encontrado nem pela internet nem em $ChannelPath."
-        }
-        $manifest = Get-Content -LiteralPath $manifestPath -Raw -Encoding UTF8 | ConvertFrom-Json
-    }
-
-    $remoteVersion = $manifest.version
-    $remoteBuild   = [int]$manifest.build
-    $archiveName   = $manifest.archiveName
-    $archiveSha256 = $manifest.archiveSha256
-    $deliveryFolder = $manifest.deliveryFolder
-    $downloadUrl   = if ($manifest.PSObject.Properties['downloadUrl']) { $manifest.downloadUrl } else { $null }
-    if ($remoteBuild -le 0 -or $archiveSha256 -notmatch '^[a-fA-F0-9]{64}$' -or
-        $archiveName -notmatch '^[\w.-]+\.zip$' -or $deliveryFolder -notmatch '^[\w.-]+$' -or
-        $deliveryFolder -in @('.', '..')) { throw 'Manifesto de atualizacao invalido.' }
-    if ($usingInternet -and ([string]$downloadUrl -notmatch '^https://')) { throw 'Download HTTPS ausente no manifesto.' }
-
-    Write-Step "Versao mais recente disponivel: $remoteVersion (build $remoteBuild) via $(if ($usingInternet) {'internet'} else {'rede local'})"
+    Write-Step "Versao mais recente disponivel: $remoteVersion (build $remoteBuild) via $(if ($usingPrestaged) {'pacote pre-baixado'} elseif ($usingInternet) {'internet'} else {'rede local'})"
 
     # Checar versao instalada
     $installedVersion = 'nenhuma (primeira instalacao)'
@@ -171,11 +203,15 @@ try {
         }
     }
 
-    # Obter o pacote: baixar por HTTP quando o manifesto veio da internet (downloadUrl
-    # aponta para o bucket R2 publico), ou copiar da pasta de rede como antes.
+    # Obter o pacote: ja em staging (download feito pelo dialogo dentro do Lightroom),
+    # baixar por HTTP quando o manifesto veio da internet (downloadUrl aponta para o
+    # bucket R2 publico), ou copiar da pasta de rede como antes.
     $downloadDir = Join-Path $env:TEMP ("crispix-download-" + [Guid]::NewGuid().ToString('n'))
     New-Item -ItemType Directory -Path $downloadDir -Force | Out-Null
-    if ($usingInternet -and $downloadUrl) {
+    if ($usingPrestaged) {
+        $archivePath = Join-Path $downloadDir $archiveName
+        Copy-Item -LiteralPath $PrestagedArchive -Destination $archivePath -Force
+    } elseif ($usingInternet -and $downloadUrl) {
         Write-Step "Baixando $archiveName pela internet ($downloadUrl) ..."
         $archivePath = Join-Path $downloadDir $archiveName
         Invoke-WebRequest -Uri $downloadUrl -OutFile $archivePath -TimeoutSec 600

@@ -14,7 +14,7 @@ def ps_literal(value):
     return "'" + str(value).replace("'", "''") + "'"
 
 
-def prepare(plugin, work):
+def prepare(plugin, work, prestaged_archive=None, prestaged_version=None, prestaged_build=None, prestaged_sha256=None):
     plugin, work = Path(plugin).resolve(), Path(work).resolve()
     if plugin.suffix.lower() != '.lrplugin' or not (plugin / 'BuildInfo.json').is_file():
         raise ValueError('Instalacao do plugin invalida')
@@ -23,11 +23,20 @@ def prepare(plugin, work):
     shutil.copy2(plugin / script.name, script)
     # Copy is outside the plugin: replacing that folder cannot remove our running script.
     log = work / 'update.log'
+    extra_args = ''
+    if prestaged_archive:
+        # The staged archive lives in %TEMP%\crispix-stage-<build>\, created by the
+        # in-Lightroom progress dialog (InApp-UpdatePlugin.py); it is outside the plugin
+        # directory, so copying/reading it here never conflicts with Runtime/ in use.
+        extra_args = (f' -PrestagedArchive {ps_literal(Path(prestaged_archive).resolve())}'
+                      f' -PrestagedVersion {ps_literal(prestaged_version)}'
+                      f' -PrestagedBuild {int(prestaged_build)}'
+                      f' -PrestagedSha256 {ps_literal(prestaged_sha256)}')
     source = f"""$ErrorActionPreference='Stop'
 $code=1
 try {{
     Start-Transcript -LiteralPath {ps_literal(log)} -Force | Out-Null
-    & {ps_literal(script)} -InstallDirectory {ps_literal(plugin)} -NonInteractive -Reopen
+    & {ps_literal(script)} -InstallDirectory {ps_literal(plugin)} -NonInteractive -Reopen{extra_args}
     $code=0
 }} catch {{ Write-Output $_ }} finally {{
     try {{ Stop-Transcript | Out-Null }} catch {{}}
@@ -82,17 +91,21 @@ def start(encoded, work, started_marker, timeout=25.0, popen=subprocess.Popen, c
     raise RuntimeError('O atualizador nao confirmou o inicio a tempo.')
 
 
-def launch(plugin):
+def launch(plugin, prestaged_archive=None, prestaged_version=None, prestaged_build=None, prestaged_sha256=None):
     work = Path(tempfile.mkdtemp(prefix='crispix-updater-'))
-    encoded = prepare(plugin, work)
+    encoded = prepare(plugin, work, prestaged_archive, prestaged_version, prestaged_build, prestaged_sha256)
     return start(encoded, work, work / 'update.log')
 
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--plugin', required=True, type=Path)
+    parser.add_argument('--prestaged-archive', required=False, type=Path, default=None)
+    parser.add_argument('--prestaged-version', required=False, type=str, default=None)
+    parser.add_argument('--prestaged-build', required=False, type=int, default=None)
+    parser.add_argument('--prestaged-sha256', required=False, type=str, default=None)
     args = parser.parse_args()
     try:
-        launch(args.plugin)
+        launch(args.plugin, args.prestaged_archive, args.prestaged_version, args.prestaged_build, args.prestaged_sha256)
     except Exception as error:  # pythonw has no console: the exit code is what Lightroom sees
         sys.exit(f'CRISPIX: {error}')
