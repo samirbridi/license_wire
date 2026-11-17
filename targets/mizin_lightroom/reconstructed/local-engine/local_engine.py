@@ -235,11 +235,15 @@ def sensor_swapped(extracted):
     return (raw_w > raw_h) != (width > height)
 
 
-def horizon_for(image, swapped=None, face_detector=None):
-    """Horizon proposal on the oriented technical render; failures never block the photo."""
+def horizon_for(image, swapped=None, face_detector=None, camera_roll=None):
+    """Horizon proposal on the oriented technical render; failures never block the photo.
+
+    camera_roll: the camera's electronic level (MakerNotes RollAngle); when present it is
+    fused with the scene axes (horizon_analysis.apply_camera_level, note 48).
+    """
     try:
-        from horizon_analysis import analyze_image
-        result = analyze_image(image, face_detector=face_detector)
+        from horizon_analysis import analyze_image, apply_camera_level
+        result = apply_camera_level(analyze_image(image, face_detector=face_detector), camera_roll)
         if isinstance(swapped, bool):
             result['sensorSwapped'] = swapped
         return result
@@ -258,9 +262,12 @@ def worker_count(total):
     return max(1, min(total, 8, cpus - 2 if cpus > 4 else cpus))
 
 
-METADATA_OPTIONS = ['-fast2', '-json', '-charset', 'filename=UTF8',
-                    '-FileName', '-FileType', '-EXIF:Model', '-ISO', '-ExposureTime#', '-FNumber', '-FocalLength#',
-                    '-EXIF:DateTimeOriginal', '-SubSecDateTimeOriginal']
+# -fast (not -fast2) so Canon MakerNotes are read for the electronic level (RollAngle, note 48).
+# Every model input is pinned to the EXIF group: unqualified, -fast let MakerNotes override
+# FocalLength on 12 of 546 real RAWs. Pinned, all 546 matched the former -fast2 output exactly.
+METADATA_OPTIONS = ['-fast', '-json', '-charset', 'filename=UTF8',
+                    '-FileName', '-FileType', '-EXIF:Model', '-EXIF:ISO', '-EXIF:ExposureTime#', '-EXIF:FNumber',
+                    '-EXIF:FocalLength#', '-EXIF:DateTimeOriginal', '-SubSecDateTimeOriginal', '-MakerNotes:RollAngle#']
 
 
 class ExifToolSession:
@@ -662,7 +669,7 @@ def run_job(job, bundle):
                     all(k in extracted['features'] for k in appearance['requiredFeatures']) else 'GLOBAL_MODEL')
                 row['captureTimeExif'] = capture_time
                 if geometry.get('horizon') is True:
-                    row['geometry'] = horizon_for(image, sensor_swapped(extracted), thread_detector())
+                    row['geometry'] = horizon_for(image, sensor_swapped(extracted), thread_detector(), meta.get('RollAngle'))
 
         workers = 1 if collecting else worker_count(len(photos))
         report['parallelWorkers'] = workers

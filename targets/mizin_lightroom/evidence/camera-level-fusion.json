@@ -1,0 +1,59 @@
+{
+  "schema": "mizin-lightroom.camera-level-fusion/1",
+  "dataset": "private/raw-datasets/20261029T172842Z-c6cf2182",
+  "photos": 544,
+  "policyOutcomes": {
+    "ALREADY_LEVEL": 125,
+    "CAMERA_LEVEL": 378,
+    "LIKELY_INTENTIONAL_TILT": 3,
+    "SCENE_CONFIRMED_BY_CAMERA_LEVEL": 38
+  },
+  "development": {
+    "currentDetector": {
+      "photos": 358,
+      "proposals": 26,
+      "closer": 12,
+      "farther": 12,
+      "unchangedWithinThresholds": 2,
+      "meanErrorDoNothing": 0.8241,
+      "meanError": 0.8353,
+      "medianError": 0.66,
+      "withinHalfDegree": 141
+    },
+    "cameraLevelFusion": {
+      "photos": 358,
+      "proposals": 268,
+      "closer": 185,
+      "farther": 62,
+      "unchangedWithinThresholds": 21,
+      "meanErrorDoNothing": 0.8241,
+      "meanError": 0.5977,
+      "medianError": 0.4739,
+      "withinHalfDegree": 186
+    }
+  },
+  "holdout": {
+    "currentDetector": {
+      "photos": 186,
+      "proposals": 0,
+      "closer": 0,
+      "farther": 0,
+      "unchangedWithinThresholds": 0,
+      "meanErrorDoNothing": 0.9961,
+      "meanError": 0.9961,
+      "medianError": 0.8744,
+      "withinHalfDegree": 58
+    },
+    "cameraLevelFusion": {
+      "photos": 186,
+      "proposals": 148,
+      "closer": 101,
+      "farther": 37,
+      "unchangedWithinThresholds": 10,
+      "meanErrorDoNothing": 0.9961,
+      "meanError": 0.7103,
+      "medianError": 0.5421,
+      "withinHalfDegree": 85
+    }
+  }
+}

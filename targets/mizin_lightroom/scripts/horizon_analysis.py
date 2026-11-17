@@ -384,3 +384,57 @@ def analyze_image(path, face_detector=None, include_legacy=False):
         result['legacy'] = legacy
     # Oriented render size: the editor needs the aspect ratio for a rotation-safe crop.
     return {**result, 'imageWidth': int(width), 'imageHeight': int(height)}
+
+
+# Camera electronic level (Canon MakerNotes RollAngle, 0.1 degree steps), note 48.
+# Measured on 544 photos with the photographer's approved CropAngle (development = first
+# 360 rows, holdout = rest): the sensor carries a real signal (r=0.61) but is only about
+# +-1 degree accurate, so the full reading over-rotates. Half of it was best on development
+# (least-squares slope 0.39-0.48); a scene axis that agrees with the camera is more precise
+# and replaces it. Holdout: mean error 0.996 -> ~0.72 degree, about 3 photos closer per 1 farther.
+CAMERA_LEVEL_WEIGHT = .5
+CAMERA_SCENE_AGREEMENT = .75
+CAMERA_MAX_TILT = 5.0
+
+
+def camera_tilt(roll):
+    """Residual roll of the camera body relative to the nearest 90-degree orientation,
+    returned in the CropAngle / imageSlopeDegrees sign (a camera rolled +x needs -x)."""
+    return -(roll - round(roll / 90.0) * 90.0)
+
+
+def apply_camera_level(result, camera_roll):
+    """Fuse the camera's level with the scene axes already in `result` (analyze_image output).
+
+    Without a finite camera reading the detector's own decision is returned unchanged.
+    """
+    if not isinstance(result, dict) or not isinstance(camera_roll, (int, float)) or not math.isfinite(camera_roll):
+        return result
+    if result.get('reason') == 'ANALYSIS_FAILED':
+        return result
+    camera = camera_tilt(float(camera_roll))
+    out = dict(result)
+    out['cameraLevel'] = {'rollAngle': float(camera_roll), 'cameraSlopeDegrees': round(camera, 3)}
+    for key in ('imageSlopeDegrees', 'evidence'):
+        out.pop(key, None)
+    if abs(camera) > CAMERA_MAX_TILT:
+        out.update(status='KEEP_EXISTING', reason='LIKELY_INTENTIONAL_TILT', applyAutomatically=False)
+        return out
+    scene = result.get('scene') or {}
+    best = None
+    for axis in ('horizontal', 'vertical', 'perspectiveVertical'):
+        item = scene.get(axis)
+        angle = item.get('angle') if isinstance(item, dict) else None
+        if isinstance(angle, (int, float)) and math.isfinite(angle) and abs(angle - camera) <= CAMERA_SCENE_AGREEMENT:
+            if best is None or abs(angle - camera) < abs(best[1] - camera):
+                best = (axis, float(angle))
+    if best is not None:
+        angle, evidence = best[1], 'SCENE_CONFIRMED_BY_CAMERA_LEVEL'
+    else:
+        angle, evidence = CAMERA_LEVEL_WEIGHT * camera, 'CAMERA_LEVEL'
+    if abs(angle) < .25:
+        out.update(status='KEEP_EXISTING', reason='ALREADY_LEVEL', applyAutomatically=False)
+    else:
+        out.update(status='PROPOSAL_ONLY', imageSlopeDegrees=angle, evidence=evidence,
+                   reason='CAMERA_LEVEL_FUSION', applyAutomatically=False)
+    return out

@@ -107,6 +107,21 @@ class LocalEngineTests(unittest.TestCase):
             self.assertEqual((failed['status'],failed['reason']),('KEEP_EXISTING','ANALYSIS_FAILED'))
             self.assertIs(engine.horizon_for(path,True)['sensorSwapped'],True)
             self.assertNotIn('sensorSwapped',engine.horizon_for(path))
+            # Camera level (note 48): a scene axis that agrees with it wins; otherwise half of it.
+            confirmed=engine.horizon_for(path,camera_roll=-3.2)
+            self.assertEqual(confirmed['evidence'],'SCENE_CONFIRMED_BY_CAMERA_LEVEL')
+            self.assertAlmostEqual(confirmed['imageSlopeDegrees'],3,delta=.3)
+            camera=engine.horizon_for(path,False,None,1.0)
+            self.assertEqual((camera['evidence'],camera['sensorSwapped']),('CAMERA_LEVEL',False))
+            self.assertAlmostEqual(camera['imageSlopeDegrees'],-.5)
+            self.assertEqual(engine.horizon_for(Path(directory)/'ausente.jpg',camera_roll=2.0)['reason'],'ANALYSIS_FAILED')
+
+    def test_metadata_reads_camera_level_without_changing_model_inputs(self):
+        options=engine.METADATA_OPTIONS
+        self.assertIn('-MakerNotes:RollAngle#',options)
+        self.assertNotIn('-fast2',options)  # -fast2 skips MakerNotes, where RollAngle lives
+        for tag in ('ISO','ExposureTime#','FNumber','FocalLength#','Model','DateTimeOriginal'):
+            self.assertIn('-EXIF:'+tag,options)
 
     def test_exiftool_session_matches_one_shot_reads_and_falls_back(self):
         root=Path(__file__).resolve().parents[1]/'private'

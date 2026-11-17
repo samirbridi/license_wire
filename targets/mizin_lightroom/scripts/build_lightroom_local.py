@@ -111,7 +111,20 @@ def build(runtime_base, model_folder, dataset, manifest):
         'schema': 'mizin-lightroom.saved-pilot/1', 'version': version, 'automaticEditing': False, 'entries': entries}) + '\n', encoding='utf-8')
     readme = f'''# CRISPIX - motor local experimental
 
-## {version}: Atualizar agora volta a funcionar dentro do Lightroom
+## {version}: nivelamento em quase todas as fotos e erro de atualizacao corrigido
+
+NIVELAR FOTO agora usa o nivel eletronico que a camera Canon grava em cada RAW, junto
+com as linhas do ambiente. Antes so as poucas fotos com linhas retas fortes eram niveladas
+(no teste: 0 de 186). Medido contra o angulo aprovado pelo fotografo em 544 fotos: cerca
+de 3 de cada 4 fotos passam a receber correcao; erro medio de 1,00 para 0,71 grau no
+conjunto de teste; cerca de 3 fotos ficam mais perto do angulo do fotografo para cada 1
+que fica mais longe. Fotos com mais de 5 graus continuam intocadas (inclinacao intencional).
+
+Corrigido o erro "attempt to call method 'defaultFactory'" ao procurar atualizacoes.
+Quem esta no 0044, 0045 ou 0046 precisa atualizar UMA vez pelo Atualizar-CRISPIX.cmd da
+pasta do plugin (com o Lightroom fechado); dai em diante o menu volta a funcionar.
+
+## Build 0043: Atualizar agora volta a funcionar dentro do Lightroom
 
 Ate o build 0042, ATUALIZAR AGORA nao fazia nada: o instalador era iniciado sem console
 e o Windows o encerrava antes da primeira linha, sem nenhum aviso. Agora ele roda

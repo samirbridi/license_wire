@@ -4,7 +4,7 @@ import os
 import unittest
 from pathlib import Path
 
-from horizon_analysis import propose_from_lines
+from horizon_analysis import apply_camera_level, camera_tilt, propose_from_lines
 
 
 def segments(angle):
@@ -100,6 +100,67 @@ class HorizonTests(unittest.TestCase):
         # Conservative by design: expect a small minority, never zero and never most photos.
         self.assertGreater(proposals, 0)
         self.assertLess(proposals, len(seen) * 0.5)
+
+
+class CameraLevelTests(unittest.TestCase):
+    """Camera electronic level fused with scene axes (note 48)."""
+    def keep(self, **scene):
+        return {'status':'KEEP_EXISTING','reason':'INSUFFICIENT_AGREEMENT','applyAutomatically':False,
+                'scene':{'horizontal':scene.get('h'),'vertical':scene.get('v'),'perspectiveVertical':None},
+                'imageWidth':1024,'imageHeight':684}
+
+    def test_without_camera_reading_detector_decision_is_unchanged(self):
+        result=self.keep()
+        for roll in (None, float('nan'), float('inf'), 'x'):
+            self.assertIs(apply_camera_level(result, roll), result)
+        failed={'status':'KEEP_EXISTING','reason':'ANALYSIS_FAILED'}
+        self.assertIs(apply_camera_level(failed, 1.0), failed)
+
+    def test_tilt_sign_and_orientation(self):
+        # CRI_0005: camera rolled -0.6, photographer CropAngle positive.
+        self.assertAlmostEqual(camera_tilt(-0.6), .6)
+        self.assertAlmostEqual(camera_tilt(91.0), -1.0)
+        self.assertAlmostEqual(camera_tilt(-89.5), -.5)
+        self.assertAlmostEqual(camera_tilt(179.0), 1.0)
+
+    def test_scene_axis_agreeing_with_camera_is_used(self):
+        result=apply_camera_level(self.keep(h={'angle':.69}, v={'angle':2.5}), -0.6)
+        self.assertEqual((result['status'],result['evidence'],result['reason']),
+                         ('PROPOSAL_ONLY','SCENE_CONFIRMED_BY_CAMERA_LEVEL','CAMERA_LEVEL_FUSION'))
+        self.assertAlmostEqual(result['imageSlopeDegrees'], .69)
+        self.assertFalse(result['applyAutomatically'])
+        self.assertEqual(result['cameraLevel'], {'rollAngle':-0.6,'cameraSlopeDegrees':.6})
+        self.assertEqual((result['imageWidth'],result['imageHeight']), (1024,684))
+
+    def test_without_agreeing_axis_half_the_camera_angle(self):
+        result=apply_camera_level(self.keep(h={'angle':-1.5}), -2.0)
+        self.assertEqual((result['status'],result['evidence']), ('PROPOSAL_ONLY','CAMERA_LEVEL'))
+        self.assertAlmostEqual(result['imageSlopeDegrees'], 1.0)
+        # A conflicting detector proposal is replaced, not kept beside the fused one.
+        proposal={'status':'PROPOSAL_ONLY','imageSlopeDegrees':-3.0,'evidence':'SCENE_AXES_AGREE','scene':{}}
+        replaced=apply_camera_level(proposal, 91.0)
+        self.assertAlmostEqual(replaced['imageSlopeDegrees'], -.5)
+        self.assertEqual(replaced['evidence'], 'CAMERA_LEVEL')
+
+    def test_small_and_large_camera_tilts(self):
+        level=apply_camera_level(self.keep(), .4)
+        self.assertEqual((level['status'],level['reason']), ('KEEP_EXISTING','ALREADY_LEVEL'))
+        self.assertNotIn('imageSlopeDegrees', level)
+        tilted=apply_camera_level({'status':'PROPOSAL_ONLY','imageSlopeDegrees':6.5,'evidence':'X','scene':{}}, -6.5)
+        self.assertEqual((tilted['status'],tilted['reason']), ('KEEP_EXISTING','LIKELY_INTENTIONAL_TILT'))
+        self.assertNotIn('imageSlopeDegrees', tilted)
+        self.assertNotIn('evidence', tilted)
+
+    def test_measured_fusion_receipt_keeps_more_photos_closer_than_farther(self):
+        receipt=Path(__file__).resolve().parents[1]/'evidence'/'camera-level-fusion.json'
+        if not receipt.exists():
+            self.skipTest('receipt not present')
+        import json
+        data=json.loads(receipt.read_text(encoding='utf-8'))
+        for split in ('development','holdout'):
+            fused=data[split]['cameraLevelFusion']
+            self.assertGreater(fused['closer'], 2*fused['farther'])
+            self.assertLess(fused['meanError'], fused['meanErrorDoNothing'])
 
 
 if __name__=='__main__':

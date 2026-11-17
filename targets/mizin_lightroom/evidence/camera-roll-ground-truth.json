@@ -1,0 +1,196 @@
+{
+  "schema": "mizin-lightroom.camera-roll-evaluation/1",
+  "dataset": "private/raw-datasets/20261029T172842Z-c6cf2182",
+  "photosWithRollAndCropAngle": 544,
+  "rowsInDataset": 546,
+  "models": [
+    "Canon EOS R6m2"
+  ],
+  "correlation_cropAngle_vs_minusTilt_all": 0.6131,
+  "count_all": 544,
+  "correlation_cropAngle_vs_minusTilt_horizontal": 0.6464,
+  "count_horizontal": 469,
+  "correlation_cropAngle_vs_minusTilt_vertical": 0.3245,
+  "count_vertical": 75,
+  "rules": {
+    "minus_tilt": {
+      "development": {
+        "photos": 358,
+        "proposals": 349,
+        "closer": 178,
+        "farther": 110,
+        "maeDoNothing": 0.8241,
+        "maeRule": 0.8009,
+        "withinHalfDegree": 164
+      },
+      "holdout": {
+        "photos": 186,
+        "proposals": 182,
+        "closer": 84,
+        "farther": 76,
+        "maeDoNothing": 0.9961,
+        "maeRule": 1.0152,
+        "withinHalfDegree": 52
+      }
+    },
+    "minus_tilt_deadband_0.2": {
+      "development": {
+        "photos": 358,
+        "proposals": 328,
+        "closer": 178,
+        "farther": 110,
+        "maeDoNothing": 0.8241,
+        "maeRule": 0.7984,
+        "withinHalfDegree": 168
+      },
+      "holdout": {
+        "photos": 186,
+        "proposals": 174,
+        "closer": 84,
+        "farther": 76,
+        "maeDoNothing": 0.9961,
+        "maeRule": 1.0152,
+        "withinHalfDegree": 53
+      }
+    },
+    "minus_tilt_deadband_0.3": {
+      "development": {
+        "photos": 358,
+        "proposals": 300,
+        "closer": 162,
+        "farther": 110,
+        "maeDoNothing": 0.8241,
+        "maeRule": 0.8011,
+        "withinHalfDegree": 166
+      },
+      "holdout": {
+        "photos": 186,
+        "proposals": 161,
+        "closer": 79,
+        "farther": 73,
+        "maeDoNothing": 0.9961,
+        "maeRule": 1.012,
+        "withinHalfDegree": 53
+      }
+    },
+    "minus_tilt_max_5": {
+      "development": {
+        "photos": 358,
+        "proposals": 347,
+        "closer": 178,
+        "farther": 108,
+        "maeDoNothing": 0.8241,
+        "maeRule": 0.7454,
+        "withinHalfDegree": 165
+      },
+      "holdout": {
+        "photos": 186,
+        "proposals": 181,
+        "closer": 84,
+        "farther": 75,
+        "maeDoNothing": 0.9961,
+        "maeRule": 0.998,
+        "withinHalfDegree": 52
+      }
+    },
+    "minus_tilt_deadband_0.2_max_5": {
+      "development": {
+        "photos": 358,
+        "proposals": 326,
+        "closer": 178,
+        "farther": 108,
+        "maeDoNothing": 0.8241,
+        "maeRule": 0.7429,
+        "withinHalfDegree": 169
+      },
+      "holdout": {
+        "photos": 186,
+        "proposals": 173,
+        "closer": 84,
+        "farther": 75,
+        "maeDoNothing": 0.9961,
+        "maeRule": 0.998,
+        "withinHalfDegree": 53
+      }
+    }
+  },
+  "photographerMinusCamera": {
+    "median": -0.1024,
+    "mean": -0.1185,
+    "stdev": 1.302
+  },
+  "largestDisagreements": [
+    {
+      "index": 73,
+      "cropAngle": 0.124931,
+      "roll": -10.5,
+      "vertical": false
+    },
+    {
+      "index": 74,
+      "cropAngle": -0.557876,
+      "roll": -99.6,
+      "vertical": true
+    },
+    {
+      "index": 272,
+      "cropAngle": 2.90065,
+      "roll": 2.6,
+      "vertical": false
+    },
+    {
+      "index": 75,
+      "cropAngle": -1.51245,
+      "roll": -93.5,
+      "vertical": true
+    },
+    {
+      "index": 15,
+      "cropAngle": 3.87919,
+      "roll": -89.3,
+      "vertical": true
+    },
+    {
+      "index": 510,
+      "cropAngle": 1.30257,
+      "roll": -95.8,
+      "vertical": true
+    },
+    {
+      "index": 537,
+      "cropAngle": 0.03745,
+      "roll": 4.3,
+      "vertical": false
+    },
+    {
+      "index": 506,
+      "cropAngle": 0.053097,
+      "roll": 3.7,
+      "vertical": false
+    },
+    {
+      "index": 380,
+      "cropAngle": 0.245679,
+      "roll": 3.4,
+      "vertical": false
+    },
+    {
+      "index": 13,
+      "cropAngle": -0.839187,
+      "roll": -2.6,
+      "vertical": false
+    },
+    {
+      "index": 498,
+      "cropAngle": -1.23536,
+      "roll": 4.6,
+      "vertical": false
+    },
+    {
+      "index": 503,
+      "cropAngle": -0.103276,
+      "roll": -86.6,
+      "vertical": true
+    }
+  ]
+}

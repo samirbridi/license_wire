@@ -467,7 +467,7 @@ local function options(count,inPlace)
             f:group_box{title='OPÇÕES DE ESTILO',spacing=f:control_spacing(),
                 f:checkbox{title='Acrescentar curvas e tonalidade do acervo aprovado',value=UI.bind('base')},
                 f:checkbox{title='Equilibrar balanço de branco entre fotos da mesma cena (sequências)',value=UI.bind('scene')},
-                f:checkbox{title='Nivelar foto: analisar ambiente e linha dos olhos (experimental)',value=UI.bind('horizon')},
+                f:checkbox{title='Nivelar foto: nivel eletronico da camera + linhas do ambiente',value=UI.bind('horizon')},
                 f:static_text{title='Analisa todas as fotos do lote. Olhos ajudam a confirmar o ambiente;\ncabecas inclinadas ou sinais conflitantes nao devem forcar uma rotacao.',width=480,height_in_lines=2},
                 f:static_text{title='Máscara de pessoa/céu: preset adaptativo do Lightroom (somente em novas cópias; ignorada ao aplicar na seleção atual)'},
                 f:popup_menu{value=UI.bind('mask'),items=presets,width=470},
