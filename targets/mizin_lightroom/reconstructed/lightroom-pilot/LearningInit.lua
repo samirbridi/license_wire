@@ -4,28 +4,13 @@
 local Paths=import 'LrPathUtils'
 local ok=pcall(function() dofile(Paths.child(_PLUGIN.path,'AutoEdit.lua')).resumeIfEnabled() end)
 
--- Refreshes the informational GPU/hardware detection shown in PluginInfoProvider.lua.
--- Detached, non-blocking, best-effort: a failure here must never affect plugin startup.
--- gpu_detector.py only writes gpu_status.json; it does not touch anything else and is
--- not wired into culling/inference yet (see note 45 and PluginInfoProvider.lua).
+-- Escolha da aceleracao por IA (NVIDIA CUDA > DirectML > CPU), em segundo plano e sem bloquear
+-- a abertura. Usa o cache; so testa a GPU de novo quando placa, driver, componentes ou
+-- preferencia mudaram (Engine/accelerator.py). Uma falha aqui nunca afeta o plugin.
 pcall(function()
     local Tasks=import 'LrTasks'
-    local FileUtils=import 'LrFileUtils'
     Tasks.startAsyncTask(function()
-        local function quote(path)
-            if path:find('[%%!"%z\1-\31]') then error('Caminho incompativel com o Windows.') end
-            return '"'..path..'"'
-        end
-        local runtimePython=Paths.child(Paths.child(_PLUGIN.path,'Runtime'),'pythonw.exe')
-        if not FileUtils.exists(runtimePython) then return end
-        local detector=Paths.child(Paths.child(_PLUGIN.path,'Engine'),'gpu_detector.py')
-        if not FileUtils.exists(detector) then return end
-        local cacheFile=Paths.child(Paths.child(Paths.getStandardFilePath('appData'),'MizinLightroomLocal'),'gpu_status.json')
-        -- Whole command line wrapped in one extra outer pair of quotes: cmd.exe needs
-        -- this when the executable's own path contains a space (see CheckUpdates.lua's
-        -- wrapAsCmdLine for the confirmed failure mode without it).
-        local cmd='"'..quote(runtimePython)..' -I '..quote(detector)..' --cache-file '..quote(cacheFile)..'"'
-        Tasks.pcall(function() Tasks.execute(cmd) end)
+        Tasks.pcall(function() dofile(Paths.child(_PLUGIN.path,'Acceleration.lua')).refresh(false) end)
     end)
 end)
 

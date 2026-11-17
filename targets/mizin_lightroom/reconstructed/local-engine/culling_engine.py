@@ -388,7 +388,7 @@ def run_culling(request,job,bundle,info,report,progress):
     if not all(isinstance(i,str) and 0<len(i)<=128 for i in ids) or len(set(ids))!=len(ids):raise ValueError('Identificadores de fotos invalidos')
     maximum=options.get('maxPerGroup',4)
     if type(maximum)!=int or not 1<=maximum<=4:raise ValueError('Limite de repetidas deve ser de 1 a 4')
-    preview_source=options.get('previewSource','raw')
+    preview_source=options.get('previewSource','embedded')
     if preview_source not in PREVIEW_SOURCES:raise ValueError('Origem da previa invalida')
     create_detector(bundle,info)  # fail fast on a missing/altered model before reading any photo
     executable=bundle/'Tools/ExifTool/exiftool.exe'

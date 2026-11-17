@@ -23,13 +23,18 @@ def populate_engine(plugin, runtime_base, model_folder, version):
     plugin.mkdir(parents=True, exist_ok=False)
     runtime = json.loads((runtime_base / 'runtime.json').read_text(encoding='utf-8'))
     shutil.copytree(runtime_base / 'Runtime', plugin / 'Runtime')
+    # ONNX Runtime + DirectML (any DirectX 12 GPU, plus the CPU provider), built by
+    # build_accel_packs.py. The NVIDIA CUDA pack (~1 GB) is an optional download, never shipped here.
+    directml = ROOT / 'private/runtime/accel/directml'
+    if (directml / 'accel-pack.json').is_file():
+        shutil.copytree(directml, plugin / 'Runtime/accel/directml')
     shutil.copytree(runtime_base / 'Tools', plugin / 'Tools')
     sources = runtime_base / 'ThirdPartySources'
     if sources.exists():
         shutil.copytree(sources, plugin / 'ThirdPartySources')
     engine = plugin / 'Engine'
     engine.mkdir()
-    for name in ('local_engine.py', 'run_local.py', 'learning_store.py','culling_engine.py', 'gpu_detector.py'):
+    for name in ('local_engine.py', 'run_local.py', 'learning_store.py','culling_engine.py', 'gpu_detector.py', 'accelerator.py'):
         shutil.copy2(ROOT / 'reconstructed/local-engine' / name, engine / name)
     for name in ('raw_features.py', 'train_numeric_pilot.py', 'import_approved_references.py', 'develop_targets.py', 'horizon_analysis.py'):
         shutil.copy2(ROOT / 'scripts' / name, engine / name)
@@ -99,7 +104,7 @@ def build(runtime_base, model_folder, dataset, manifest):
     # Copy the updater scripts directly into the plugin root, so CheckUpdates.lua can reveal
     # them via LrShell and the user can run them directly from inside the plugin folder.
     for name in ('Atualizar-CRISPIX.cmd', 'Update-CrispixPlugin.ps1', 'Launch-CrispixUpdate.py',
-                 'InApp-UpdatePlugin.py', 'Launch-InAppUpdate.py', 'Restart-Lightroom.py'):
+                 'InApp-UpdatePlugin.py', 'Launch-InAppUpdate.py', 'Restart-Lightroom.py', 'Install-AccelPack.py'):
         shutil.copy2(ROOT / 'scripts' / name, plugin / name)
     entries = saved_entries(dataset, manifest, model_folder)
     (plugin / 'PilotData.lua').write_text('return ' + lua_literal({

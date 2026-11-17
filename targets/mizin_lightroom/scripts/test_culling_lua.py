@@ -85,16 +85,16 @@ class CullingLuaTests(unittest.TestCase):
             self.assertEqual(received[0]['photos'][0]['id'],'44')
             self.assertFalse(received[0]['photos'][0]['isVirtualCopy'])
             self.assertEqual(received[0]['cullingOptions']['maxPerGroup'],4)
-            # Default stays the RAW render (measured: same decisions as before), remembered for next time.
-            self.assertEqual(received[0]['cullingOptions']['previewSource'],'raw')
-            self.assertEqual(runtime.globals().prefs.cullPreviewSource,'raw')
+            # Default: the RAW's embedded JPEG (Bridge/Neurapix style), remembered for next time.
+            self.assertEqual(received[0]['cullingOptions']['previewSource'],'embedded')
+            self.assertEqual(runtime.globals().prefs.cullPreviewSource,'embedded')
             self.assertEqual(runtime.globals().catalogWrites,0)
 
-    def test_culling_remembers_embedded_preview_choice(self):
+    def test_culling_remembers_full_raw_render_choice(self):
         with tempfile.TemporaryDirectory() as directory:
             runtime,_=self.setup(Path(directory))
             runtime.execute('''
-                prefs.cullPreviewSource='embedded'
+                prefs.cullPreviewSource='raw'
                 modules.LrDialogs.presentModalDialog=function(props)
                     if props.title=='Mizin Lightroom - selecao local' then return 'ok' end
                     return 'cancel'
@@ -107,7 +107,7 @@ class CullingLuaTests(unittest.TestCase):
                     'status':'COMPLETED','jobId':request['jobId'],'catalogIdentity':request['catalogIdentity'],'results':[]}))
             runtime.globals().mock_execute=execute
             runtime.execute((LUA/'LocalAnalysis.lua').read_text()).run('cull')
-            self.assertEqual(received[0]['cullingOptions']['previewSource'],'embedded')
+            self.assertEqual(received[0]['cullingOptions']['previewSource'],'raw')
 
     def test_declining_options_does_not_launch_engine(self):
         with tempfile.TemporaryDirectory() as directory:
