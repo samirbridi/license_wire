@@ -1,5 +1,24 @@
 # CHANGELOG - mizin_lightroom
 
+## v0.32.0 (build 0047) - 2026-11-17
+
+### 💥 Breaking Changes
+
+- Nenhum.
+
+### ✨ Features
+
+- feat: nivela quase todas as fotos pelo nivel eletronico da camera combinado com as linhas do ambiente (commit `5dae85b35c233c8889412e3786ee46eda33031f6`)
+
+### 🐛 Fixes
+
+- fix: corrige erro "defaultFactory" ao verificar atualizacoes no Lightroom (commit `f856c8a96de49199c5f6c46ba5e7bd5de122c5a7`)
+
+### ⚡ Improvements
+
+- improve: atualiza textos do site para o build 0046 e publica manifesto CUDA (commit `d411b38c99357ed16b62e8a5359d68551c15c626`)
+- improve: registra publicacao verificada do build 0046 e do componente CUDA (commit `eecd1ed702dd43a8c13b02ec02803ef06ec4fc41`)
+
 ## v0.31.0 (build 0046) - 2026-11-17
 
 ### 💥 Breaking Changes

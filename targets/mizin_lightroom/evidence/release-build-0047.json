@@ -1,0 +1,35 @@
+{
+  "previous": "v0.31.0 (build 0046)",
+  "version": "v0.32.0 (build 0047)",
+  "date": "2026-11-17",
+  "timezone": "America/Sao_Paulo",
+  "baseline": "cde1b1870082d0536f5daf0c41cd7c47b653ea92",
+  "sourceHead": "5dae85b35c233c8889412e3786ee46eda33031f6",
+  "increment": "feat",
+  "commits": [
+    {
+      "hash": "d411b38c99357ed16b62e8a5359d68551c15c626",
+      "subject": "improve: atualiza textos do site para o build 0046 e publica manifesto CUDA",
+      "type": "improve",
+      "breaking": false
+    },
+    {
+      "hash": "eecd1ed702dd43a8c13b02ec02803ef06ec4fc41",
+      "subject": "improve: registra publicacao verificada do build 0046 e do componente CUDA",
+      "type": "improve",
+      "breaking": false
+    },
+    {
+      "hash": "f856c8a96de49199c5f6c46ba5e7bd5de122c5a7",
+      "subject": "fix: corrige erro \"defaultFactory\" ao verificar atualizacoes no Lightroom",
+      "type": "fix",
+      "breaking": false
+    },
+    {
+      "hash": "5dae85b35c233c8889412e3786ee46eda33031f6",
+      "subject": "feat: nivela quase todas as fotos pelo nivel eletronico da camera combinado com as linhas do ambiente",
+      "type": "feat",
+      "breaking": false
+    }
+  ]
+}
