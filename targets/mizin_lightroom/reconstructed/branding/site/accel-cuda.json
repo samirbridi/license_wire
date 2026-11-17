@@ -1,0 +1,47 @@
+{
+  "schema": "crispix.accel-component/1",
+  "name": "cuda",
+  "onnxruntime": "1.32.0",
+  "requiresCudaDriverMajor": 13,
+  "archiveName": "CRISPIX-accel-cuda-ort1.32.0.zip",
+  "archiveSha256": "7521fd9585f3d6791254d6e5d77a0cf96375d8fb2f1b36ea9787a73c0676d91d",
+  "bytes": 1327269231,
+  "parts": [
+    {
+      "name": "CRISPIX-accel-cuda-ort1.32.0.zip.001",
+      "bytes": 262144000,
+      "sha256": "77e19d8677f7c1041f8cf95964f3f14e98afe3447795a9d4c11f9e6719bb5866",
+      "url": "https://pub-739d5fceaa824a6c8c84e39bb74ec917.r2.dev/accel/CRISPIX-accel-cuda-ort1.32.0.zip.001"
+    },
+    {
+      "name": "CRISPIX-accel-cuda-ort1.32.0.zip.002",
+      "bytes": 262144000,
+      "sha256": "4f863ea10841932461d98e8a5e5f735bcfa9650f8996a31c985d5ab7a51c4cc6",
+      "url": "https://pub-739d5fceaa824a6c8c84e39bb74ec917.r2.dev/accel/CRISPIX-accel-cuda-ort1.32.0.zip.002"
+    },
+    {
+      "name": "CRISPIX-accel-cuda-ort1.32.0.zip.003",
+      "bytes": 262144000,
+      "sha256": "505070f6f328720a480df4ab394520bba65d06cd88b1dc37b3057287e3c68104",
+      "url": "https://pub-739d5fceaa824a6c8c84e39bb74ec917.r2.dev/accel/CRISPIX-accel-cuda-ort1.32.0.zip.003"
+    },
+    {
+      "name": "CRISPIX-accel-cuda-ort1.32.0.zip.004",
+      "bytes": 262144000,
+      "sha256": "43e7a8cd305221386a0fd0ac8e898093203f75317a178d2898a4ae08503f4e28",
+      "url": "https://pub-739d5fceaa824a6c8c84e39bb74ec917.r2.dev/accel/CRISPIX-accel-cuda-ort1.32.0.zip.004"
+    },
+    {
+      "name": "CRISPIX-accel-cuda-ort1.32.0.zip.005",
+      "bytes": 262144000,
+      "sha256": "c34a5eaf5f8850c6fbff69ac32c335207538162086e7cd98a34d4d13759773a1",
+      "url": "https://pub-739d5fceaa824a6c8c84e39bb74ec917.r2.dev/accel/CRISPIX-accel-cuda-ort1.32.0.zip.005"
+    },
+    {
+      "name": "CRISPIX-accel-cuda-ort1.32.0.zip.006",
+      "bytes": 16549231,
+      "sha256": "16619b1667dfee1f19012155645a6165b5f406a1c6af547a430fd2ad4f70adda",
+      "url": "https://pub-739d5fceaa824a6c8c84e39bb74ec917.r2.dev/accel/CRISPIX-accel-cuda-ort1.32.0.zip.006"
+    }
+  ]
+}
