@@ -1,0 +1,45 @@
+{
+  "schema": "mizin-lightroom.publication/1",
+  "version": "v0.29.0 (build 0044)",
+  "date": "2026-11-16",
+  "featureCommit": "c1fa235",
+  "releaseCommit": "ba12cfd",
+  "siteTextCommit": "41beb6a",
+  "archive": {
+    "name": "CRISPIX-0.29.0-build0044-motor-local.zip",
+    "bytes": 84206250,
+    "sha256": "29060f3bc40387b636b4d23f296544aa7e125b0ea6dccbad97f98ddc1764d449",
+    "publicUrl": "https://pub-739d5fceaa824a6c8c84e39bb74ec917.r2.dev/CRISPIX-0.29.0-build0044-motor-local.zip",
+    "publicDownloadSizeAndHashMatch": true
+  },
+  "networkChannel": {
+    "path": "\\192.168.1.58\\Users\\Public\\Documents\\MizinLightroomPilot",
+    "manifestVersion": "v0.29.0 (build 0044)",
+    "manifestUtf8WithoutBom": true,
+    "archiveHashMatch": true
+  },
+  "pages": {
+    "project": "crispixlr",
+    "deployment": "https://b954ce87.crispixlr.pages.dev",
+    "publishedBy": "scripts/Publish-CrispixBuild.ps1",
+    "filesVerifiedByteForByteOnProductionVsRepository": {
+      "index.html": "7e602299e971a0678c1d8b7d9ca1c072aee92675a2882e2a930ba341a470f6a9",
+      "showcase.js": "d59ae25a25a58fa949e04b27afd1320d3d752fdd1ed25463e3092895197712ac"
+    },
+    "unchangedAssetsVerifiedByHash": [
+      "apple-touch-icon.png", "brand/crispix-logo-fundo-claro.svg", "brand/crispix-logo-fundo-escuro.svg",
+      "brand/crispix-simbolo.svg", "brand/crispix-social-1200x630.png", "comparisons.json",
+      "favicon.ico", "favicon.svg", "showcase.css"
+    ],
+    "manifestUtf8WithoutBom": true
+  },
+  "manifestReadByPluginJsonLua": true,
+  "liveSiteQa": "evidence/site-identidade-cx/qa.json (9 verificacoes, 0 erros de JavaScript, Playwright/Chrome real)",
+  "pluginQa": "evidence/editing-plugin-qa-0044.json",
+  "unitTestsPassed": 240,
+  "unitTestsFilesRun": 27,
+  "newUnitTestFilesThisRelease": ["test_gpu_detector.py", "test_inapp_updater.py", "test_learning_init_lua.py"],
+  "manualUpdaterEndToEnd": false,
+  "nativeLightroomUpdateExercised": false,
+  "notes": "Fluxo in-app (download+validacao+extracao com o Lightroom aberto) coberto por testes Lua simulados (lupa) e testes de integracao reais do PowerShell de instalacao (-PrestagedArchive, 2 modos: sucesso e hash incorreto). A deteccao de GPU foi testada ao vivo nesta maquina (NVIDIA GeForce GTX 1660 Ti, CUDA 13.1 detectado) e contra o wheel opencv-python-headless 4.13.0.92 real, confirmando que cv2.dnn nao tem CUDA compilado; por isso a aceleracao nao foi ligada ao motor nesta versao. Pendente: primeira execucao real dentro do Lightroom Classic (LrDialogs.showModalProgressDialog e o handoff para Update-CrispixPlugin.ps1 ao vivo)."
+}

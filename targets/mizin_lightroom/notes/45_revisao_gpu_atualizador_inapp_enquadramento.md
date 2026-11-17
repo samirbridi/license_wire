@@ -47,3 +47,32 @@ Caminhos com potencial (ja previstos na nota 37):
 - Configuracoes avancadas: pasta de dados, log, CUDA device, batch size, timeout.
 - "Prepare photos for culling after editing" (pre-processamento em segundo plano).
 - Assistente de criacao de estilo: Kickstart (20 RAW editados) x Regular (500 fotos), e "Ajustar estilo" selecionando ate 9 fotos.
+
+## 5. Correcoes aplicadas (build 0044, 2026-11-16 a noite)
+
+As duas falhas bloqueantes da secao 2 foram corrigidas:
+
+1. **Aspas do cmd:** `wrapAsCmdLine()` em `CheckUpdates.lua` envolve a linha inteira num
+   par extra de aspas antes de `Tasks.execute`. Reproduzido o bug e a correcao com
+   `os.system` fora do Lightroom: sem o invólucro, rc=1 e nada roda; com ele, rc=0.
+2. **Sobrescrita do runtime em uso:** o atualizador in-app foi dividido em duas etapas.
+   `InApp-UpdatePlugin.py` agora SO baixa, confere SHA-256 e extrai para uma pasta de
+   staging em `%TEMP%` — nunca escreve na pasta do plugin instalado. A troca de
+   arquivos continua 100% a cargo do `Update-CrispixPlugin.ps1` ja comprovado (fecha o
+   Lightroom, faz backup, extrai, reabre), agora com um parametro novo
+   `-PrestagedArchive` que pula o download/consulta ao manifesto e usa o pacote ja
+   validado. A janela "atualizacao concluida" foi movida para `LearningInit.lua`, pois
+   so faz sentido depois que o Lightroom reabre com o plugin novo carregado de verdade.
+
+GPU: a secao 1 continua valendo como diagnostico. `gpu_detector.py` ganhou
+`opencv_cuda_actually_available()`, que consulta `cv2.dnn.getAvailableTargets()` em vez
+de confiar em `setPreferableBackend()` (que nao lanca erro mesmo sem suporte real).
+`PluginInfoProvider.lua` foi reescrito para mostrar a GPU detectada como informacao,
+sem checkbox "usar GPU" nem campos de prefs que nao chegam a lugar nenhum — a UI para
+de prometer algo que o motor ainda nao faz. A aceleracao de verdade (onnxruntime com
+CUDA ou DirectML) continua como trabalho futuro, nao incluido neste build.
+
+Publicado nos dois canais; recibo completo em `evidence/publication-0044.json`.
+Pendente (igual ao 0043): validacao nativa dentro do Lightroom real da maquina de
+edicao -- o codigo cobre o fluxo, mas `showModalProgressDialog` e o handoff completo
+para `Update-CrispixPlugin.ps1` nunca rodaram dentro do aplicativo de verdade.
