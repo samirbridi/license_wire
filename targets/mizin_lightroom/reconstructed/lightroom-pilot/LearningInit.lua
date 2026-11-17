@@ -34,7 +34,7 @@ pcall(function()
     Tasks.startAsyncTask(function()
         local View=import 'LrView'
         local headerPath=Paths.child(_PLUGIN.path,'Branding/crispix-header.png')
-        local f=View:defaultFactory()
+        local f=View.osFactory()
         local contents=f:column{spacing=f:control_spacing(),
             f:row{fill_horizontal=1,alignment='center',
                 f:spacer{fill_horizontal=1},

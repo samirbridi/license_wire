@@ -91,7 +91,7 @@ class LearningInitLuaTests(unittest.TestCase):
                     getStandardFilePath = function(name) return appdata_path end,
                 },
                 LrView = {
-                    defaultFactory = function()
+                    osFactory = function()
                         return {
                             control_spacing = function() return 8 end,
                             row = function(t) return t end,

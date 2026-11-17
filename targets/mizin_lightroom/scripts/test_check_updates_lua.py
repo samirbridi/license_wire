@@ -270,7 +270,7 @@ class CheckUpdatesLuaTests(unittest.TestCase):
                     end,
                 },
                 LrView = {
-                    defaultFactory = function() return viewFactory end,
+                    osFactory = function() return viewFactory end,
                 },
                 LrFileUtils = {
                     exists = function(p)

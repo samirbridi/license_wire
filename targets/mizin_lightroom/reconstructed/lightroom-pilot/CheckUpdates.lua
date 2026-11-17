@@ -78,7 +78,7 @@ Tasks.startAsyncTask(function()
     end
 
     local headerPath = Paths.child(_PLUGIN.path, 'Branding/crispix-header.png')
-    local f = View:defaultFactory()
+    local f = View.osFactory()
 
     if not remoteManifest then
         local contents = f:column {
