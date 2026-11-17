@@ -17,6 +17,7 @@ import traceback
 import unicodedata
 import uuid
 import zipfile
+from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 
 # Leave capacity for Lightroom's previews and foreground interaction.
@@ -245,6 +246,16 @@ def horizon_for(image, swapped=None, face_detector=None):
     except Exception as error:
         return {'status': 'KEEP_EXISTING', 'reason': 'ANALYSIS_FAILED', 'error': str(error)[:300],
                 'applyAutomatically': False}
+
+
+class CancelledBeforeStart(Exception):
+    """A queued photo saw cancel.request before touching its RAW; it is left out of the report."""
+
+
+def worker_count(total):
+    """Photos analysed at once; leaves cores for Lightroom itself (i7-11800H: 16 threads -> 8)."""
+    cpus = os.cpu_count() or 4
+    return max(1, min(total, 8, cpus - 2 if cpus > 4 else cpus))
 
 
 METADATA_OPTIONS = ['-fast2', '-json', '-charset', 'filename=UTF8',
@@ -572,74 +583,121 @@ def run_job(job, bundle):
         ids = [row.get('id') for row in photos]
         if not all(isinstance(i, str) and 0 < len(i) <= 128 for i in ids) or len(set(ids)) != len(ids):
             raise ValueError('Identificadores de fotos invalidos')
-        for index, photo in enumerate(photos):
+        # Photos are analysed in parallel (decode + features + horizon dominate: ~1.4 s each on
+        # one core). Shared resources: the single persistent ExifTool process (serialized with a
+        # lock, ~0.2 s/photo), the lazily loaded monochrome model (lock) and the YuNet detector
+        # (not thread-safe: one per worker). Reference collection stays sequential because its
+        # duplicate-RAW refusal depends on photo order. Results keep the request order.
+        exif_lock, mono_lock, detectors = threading.Lock(), threading.Lock(), threading.local()
+
+        def thread_detector():
+            if face_detector is None:
+                return None
+            if not hasattr(detectors, 'value'):
+                try:
+                    from culling_engine import create_detector
+                    detectors.value = create_detector(bundle, info)
+                except Exception:
+                    detectors.value = None
+            return detectors.value
+
+        def locked_monochrome_model():
+            with mono_lock:
+                return monochrome_model()
+
+        def analyze(index, photo, row):
+            # No photo starts reading its RAW after the user asked to cancel.
             if (job / 'cancel.request').exists():
-                report['status'] = 'CANCELLED'
-                break
-            path_text = photo.get('path', '')
-            row = {'id': photo['id'], 'path': path_text, 'filename': Path(path_text).name,
-                   'status': 'FAILED', 'current': {k: v for k, v in photo.get('current', {}).items()
-                                                  if k in TARGETS and finite_number(v)}}
-            report['results'].append(row)
-            progress('PROCESSING', index, len(photos), row['filename'])
-            try:
-                path = Path(path_text)
-                if not path.is_absolute() or path.suffix.lower() != '.cr3' or not path.is_file():
-                    raise ValueError('RAW CR3 original indisponivel neste caminho')
-                treatment = photo.get('treatment')
-                if treatment not in ('color', 'monochrome'):
-                    raise ValueError('Tratamento da foto desconhecido')
-                row['styleVariant'] = treatment
-                active = monochrome_model() if treatment == 'monochrome' and not collecting else model
-                if collecting and (photo.get('isVirtualCopy') is not False or any(k not in row['current'] for k in TARGETS)):
-                    raise ValueError('Referencia requer RAW original e os dez controles atuais disponiveis')
-                before = path.stat()
-                with source_reader(path):
-                    digest = sha256_file(path)
+                raise CancelledBeforeStart()
+            path_text = row['path']
+            path = Path(path_text)
+            if not path.is_absolute() or path.suffix.lower() != '.cr3' or not path.is_file():
+                raise ValueError('RAW CR3 original indisponivel neste caminho')
+            treatment = photo.get('treatment')
+            if treatment not in ('color', 'monochrome'):
+                raise ValueError('Tratamento da foto desconhecido')
+            row['styleVariant'] = treatment
+            active = locked_monochrome_model() if treatment == 'monochrome' and not collecting else model
+            if collecting and (photo.get('isVirtualCopy') is not False or any(k not in row['current'] for k in TARGETS)):
+                raise ValueError('Referencia requer RAW original e os dez controles atuais disponiveis')
+            before = path.stat()
+            with source_reader(path):
+                digest = sha256_file(path)
+                with exif_lock:
                     meta = metadata_for(path, executable, job / f'metadata-{index:04}.args', exif_session)
-                    if meta.get('Model', '').strip() not in active['supportedCameraModels']:
-                        raise ValueError('Camera nao suportada por este modelo: ' + meta.get('Model', 'desconhecida'))
-                    capture_time = meta.get('SubSecDateTimeOriginal') or meta.get('DateTimeOriginal')
-                    if collecting and (not isinstance(capture_time, str) or not capture_time.strip()):
-                        raise ValueError('Referencia sem data/hora de captura EXIF')
-                    if collecting and digest in seen_hashes:
-                        raise ValueError('RAW duplicado nesta coleta; mantenha somente uma referencia por arquivo')
-                    image = job / f'input-{index:04}.jpg'
-                    extracted = technical_render(path, image, meta, face_detector)
-                    if sha256_file(path) != digest:
-                        raise ValueError('Arquivo original alterado durante a analise')
-                    after = path.stat()
-                    if (before.st_size, before.st_mtime_ns) != (after.st_size, after.st_mtime_ns):
-                        raise ValueError('Metadados do arquivo mudaram durante a analise')
-                missing = [k for k in active['featureNames'] if k not in extracted['features']]
-                if collecting and missing:
-                    raise ValueError('Referencia com atributos de entrada incompletos')
-                row.update({'status': 'REFERENCE_COLLECTED' if collecting else 'COMPUTED', 'computedUtc': utc_now(),
-                            'sourceSha256': digest, 'sourceMetadataStable': True, 'cameraModel': meta['Model'],
-                            'inputDomain': extracted['inputDomain'], 'technicalInputRelative': image.name,
-                            'technicalInputSha256': extracted['jpegSha256'],
-                            'missingFeatures': missing})
-                if collecting:
-                    from develop_targets import extended_labels
-                    row['extendedParameters'] = extended_labels(photo.get('current', {}), treatment)
-                    from import_approved_references import APPEARANCE_BOUNDS
-                    row['appearanceFeatures'] = {k: v for k, v in extracted['features'].items() if k in APPEARANCE_BOUNDS}
-                    row.update({'features': {k: extracted['features'][k] for k in model['featureNames']},
-                                'captureTimeExif': capture_time})
-                    seen_hashes.add(digest)
-                else:
-                    row['predictions'] = predict_features(active, extracted['features'])
-                    appearance = active.get('appearanceWhiteBalance')
-                    row['whiteBalanceSource'] = ('APPEARANCE_AND_SCENE' if appearance and
-                        all(k in extracted['features'] for k in appearance['requiredFeatures']) else 'GLOBAL_MODEL')
-                    row['captureTimeExif'] = capture_time
-                    if geometry.get('horizon') is True:
-                        row['geometry'] = horizon_for(image, sensor_swapped(extracted), face_detector)
-            except Exception as error:
-                row['status'] = 'FAILED'
-                row['error'] = str(error)[:1500]
-            progress('PROCESSING', index + 1, len(photos), row['filename'])
+                if meta.get('Model', '').strip() not in active['supportedCameraModels']:
+                    raise ValueError('Camera nao suportada por este modelo: ' + meta.get('Model', 'desconhecida'))
+                capture_time = meta.get('SubSecDateTimeOriginal') or meta.get('DateTimeOriginal')
+                if collecting and (not isinstance(capture_time, str) or not capture_time.strip()):
+                    raise ValueError('Referencia sem data/hora de captura EXIF')
+                if collecting and digest in seen_hashes:
+                    raise ValueError('RAW duplicado nesta coleta; mantenha somente uma referencia por arquivo')
+                image = job / f'input-{index:04}.jpg'
+                extracted = technical_render(path, image, meta, thread_detector())
+                if sha256_file(path) != digest:
+                    raise ValueError('Arquivo original alterado durante a analise')
+                after = path.stat()
+                if (before.st_size, before.st_mtime_ns) != (after.st_size, after.st_mtime_ns):
+                    raise ValueError('Metadados do arquivo mudaram durante a analise')
+            missing = [k for k in active['featureNames'] if k not in extracted['features']]
+            if collecting and missing:
+                raise ValueError('Referencia com atributos de entrada incompletos')
+            row.update({'status': 'REFERENCE_COLLECTED' if collecting else 'COMPUTED', 'computedUtc': utc_now(),
+                        'sourceSha256': digest, 'sourceMetadataStable': True, 'cameraModel': meta['Model'],
+                        'inputDomain': extracted['inputDomain'], 'technicalInputRelative': image.name,
+                        'technicalInputSha256': extracted['jpegSha256'],
+                        'missingFeatures': missing})
+            if collecting:
+                from develop_targets import extended_labels
+                row['extendedParameters'] = extended_labels(photo.get('current', {}), treatment)
+                from import_approved_references import APPEARANCE_BOUNDS
+                row['appearanceFeatures'] = {k: v for k, v in extracted['features'].items() if k in APPEARANCE_BOUNDS}
+                row.update({'features': {k: extracted['features'][k] for k in model['featureNames']},
+                            'captureTimeExif': capture_time})
+                seen_hashes.add(digest)
+            else:
+                row['predictions'] = predict_features(active, extracted['features'])
+                appearance = active.get('appearanceWhiteBalance')
+                row['whiteBalanceSource'] = ('APPEARANCE_AND_SCENE' if appearance and
+                    all(k in extracted['features'] for k in appearance['requiredFeatures']) else 'GLOBAL_MODEL')
+                row['captureTimeExif'] = capture_time
+                if geometry.get('horizon') is True:
+                    row['geometry'] = horizon_for(image, sensor_swapped(extracted), thread_detector())
+
+        workers = 1 if collecting else worker_count(len(photos))
+        report['parallelWorkers'] = workers
+        cancelled = (job / 'cancel.request').exists()
+        if cancelled:
+            report['status'] = 'CANCELLED'
         else:
+            with ThreadPoolExecutor(max_workers=workers, thread_name_prefix='crispix-photo') as pool:
+                pending = []
+                for index, photo in enumerate(photos):
+                    path_text = photo.get('path', '')
+                    row = {'id': photo['id'], 'path': path_text, 'filename': Path(path_text).name,
+                           'status': 'FAILED', 'current': {k: v for k, v in photo.get('current', {}).items()
+                                                          if k in TARGETS and finite_number(v)}}
+                    pending.append((row, pool.submit(analyze, index, photo, row)))
+                progress('PROCESSING', 0, len(photos), pending[0][0]['filename'] if pending else '')
+                for row, future in pending:
+                    if not cancelled and (job / 'cancel.request').exists():
+                        cancelled = True
+                        report['status'] = 'CANCELLED'
+                    # After a cancel, photos not started are dropped; one already running is kept.
+                    if cancelled and future.cancel():
+                        continue
+                    try:
+                        future.result()
+                    except CancelledBeforeStart:
+                        cancelled = True
+                        report['status'] = 'CANCELLED'
+                        continue
+                    except Exception as error:
+                        row['status'] = 'FAILED'
+                        row['error'] = str(error)[:1500]
+                    report['results'].append(row)
+                    progress('PROCESSING', len(report['results']), len(photos), row['filename'])
+        if not cancelled:
             report['status'] = ('COMPLETED_WITH_ERRORS' if any(r['status'] == 'FAILED' for r in report['results']) else
                                 'COMPLETED_WITH_SKIPS' if any(r['status'] == 'SKIPPED' for r in report['results']) else 'COMPLETED')
         if collecting:

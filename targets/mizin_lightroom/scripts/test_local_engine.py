@@ -234,9 +234,39 @@ class LocalEngineTests(unittest.TestCase):
                 destination.write_bytes(b'input')
                 (job / 'cancel.request').write_text('cancel')
                 return {'features': {'redMean': .2, 'captureISO': 100}, 'inputDomain': engine.DOMAIN, 'jpegSha256': engine.sha256_file(destination)}
-            report = self.run_fixture(bundle, job, render=render)
+            # One worker: the original sequential guarantee, exactly.
+            with unittest.mock.patch.object(engine, 'worker_count', return_value=1):
+                report = self.run_fixture(bundle, job, render=render)
             self.assertEqual((report['status'], report['computedPhotos'], len(report['results'])), ('CANCELLED', 1, 1))
             self.assertEqual(report['requestedPhotos'], 2)
+
+    def test_parallel_cancellation_never_starts_a_raw_after_the_request(self):
+        with tempfile.TemporaryDirectory() as directory:
+            bundle, job, raw = self.fixture(Path(directory), count=6)
+            started = []
+            def render(path, destination, metadata, face_detector=None):
+                started.append(destination.name)
+                destination.write_bytes(b'input')
+                (job / 'cancel.request').write_text('cancel')
+                return {'features': {'redMean': .2, 'captureISO': 100}, 'inputDomain': engine.DOMAIN, 'jpegSha256': engine.sha256_file(destination)}
+            with unittest.mock.patch.object(engine, 'worker_count', return_value=2):
+                report = self.run_fixture(bundle, job, render=render)
+            self.assertEqual(report['status'], 'CANCELLED')
+            # At most the photos already in flight (one per worker) finish; all are kept, none fabricated.
+            self.assertLessEqual(len(started), 2)
+            self.assertEqual(report['computedPhotos'], len(started))
+            self.assertEqual(len(report['results']), len(started))
+
+    def test_parallel_results_keep_request_order_and_match_sequential(self):
+        with tempfile.TemporaryDirectory() as directory:
+            reports = []
+            for workers in (1, 4):
+                bundle, job, raw = self.fixture(Path(directory) / str(workers), count=12)
+                with unittest.mock.patch.object(engine, 'worker_count', return_value=workers):
+                    reports.append(self.run_fixture(bundle, job))
+            strip = lambda r: [(x['id'], x['status'], x.get('predictions')) for x in r['results']]
+            self.assertEqual(strip(reports[0]), strip(reports[1]))
+            self.assertEqual(reports[1]['parallelWorkers'], 4)
 
     def test_changed_model_fails_before_raw_processing(self):
         with tempfile.TemporaryDirectory() as directory:

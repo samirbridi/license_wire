@@ -1,0 +1,36 @@
+{
+  "photos": 120,
+  "workers": 8,
+  "seconds": {
+    "raw_sequential": 210.1,
+    "raw_parallel": 63.7,
+    "embedded_parallel": 56.0
+  },
+  "secondsPerPhoto": {
+    "raw_sequential": 1.751,
+    "raw_parallel": 0.531,
+    "embedded_parallel": 0.467
+  },
+  "parallelIdenticalToSequential": true,
+  "embeddedVsRaw": {
+    "keepAgreement": 0.9833333333333333,
+    "faceCountAgreement": 0.9916666666666667,
+    "groupCount": {
+      "raw": 106,
+      "embedded": 104
+    },
+    "focusSpearman": 0.7663518299881935,
+    "reasons": {
+      "POSSIBLE_DEFOCUS_OR_MOTION": {
+        "raw": 6,
+        "embedded": 5,
+        "both": 4
+      },
+      "SOME_FACES_TOO_SMALL_TO_EVALUATE": {
+        "raw": 11,
+        "embedded": 8,
+        "both": 7
+      }
+    }
+  }
+}

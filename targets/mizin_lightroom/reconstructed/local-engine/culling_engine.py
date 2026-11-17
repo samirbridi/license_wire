@@ -5,12 +5,15 @@ exposure and focus metrics indicate review risks, not guaranteed recoverability.
 """
 from __future__ import annotations
 import csv
+from concurrent.futures import ThreadPoolExecutor
 import datetime as dt
 import hashlib
+import io
 import json
 import math
 import os
 from pathlib import Path
+import threading
 
 import numpy as np
 from PIL import Image,ImageOps
@@ -49,13 +52,47 @@ def sensor_statistics(raw):
             'perCfaChannel':per,'blackLevels':black.tolist(),'whiteLevels':white.tolist()}
 
 
-def load_image(path):
-    """RAW linear RGB for exposure, independent technical display for focus/grouping."""
+# LibRaw flip code -> PIL transpose that turns the sensor-oriented embedded JPEG upright,
+# matching what raw.postprocess() returns for the same file.
+EMBEDDED_FLIP={3:Image.Transpose.ROTATE_180,5:Image.Transpose.ROTATE_90,6:Image.Transpose.ROTATE_270}
+PREVIEW_SOURCES=('raw','embedded')
+
+
+def embedded_preview(raw):
+    """The camera's own full-size JPEG inside the RAW (Neurapix: 'Embedded thumbnails').
+
+    ~5 ms instead of ~0.5 s of demosaicing. None when the RAW has no usable JPEG preview, so
+    the caller falls back to the RAW render."""
+    import rawpy
+    try:
+        thumb=raw.extract_thumb()
+    except Exception:
+        return None
+    if thumb.format!=rawpy.ThumbFormat.JPEG:return None
+    with Image.open(io.BytesIO(thumb.data)) as original:
+        original.draft('RGB',(1600,1600))  # DCT-domain downscale: decodes only what is needed
+        image=original.convert('RGB')
+    if raw.sizes.flip in EMBEDDED_FLIP:image=image.transpose(EMBEDDED_FLIP[raw.sizes.flip])
+    image.thumbnail((1600,1600),Image.Resampling.LANCZOS)
+    if min(image.size)<400:return None  # a tiny thumbnail cannot judge focus
+    return np.array(image)
+
+
+def load_image(path,preview='raw'):
+    """RAW linear RGB for exposure, independent technical display for focus/grouping.
+
+    preview='embedded' takes display/linear from the camera JPEG inside the RAW; the exposure
+    risk still reads the sensor itself (sensor_statistics), never the JPEG histogram."""
     cv=cv_module()
     if path.suffix.lower() in RAW_EXTENSIONS:
         import rawpy
         with rawpy.imread(str(path)) as raw:
             sensor=sensor_statistics(raw)
+            if preview=='embedded':
+                display=embedded_preview(raw)
+                if display is not None:
+                    linear=(display.astype(np.float32)/255)**2.2
+                    return display,linear,{**sensor,'previewSource':'EMBEDDED_JPEG'}
             rgb=raw.postprocess(half_size=True,use_camera_wb=True,use_auto_wb=False,no_auto_bright=True,
                 output_color=rawpy.ColorSpace.sRGB,output_bps=16,gamma=(1,1),bright=1.0,exp_shift=1.0,
                 demosaic_algorithm=rawpy.DemosaicAlgorithm.LINEAR)
@@ -287,6 +324,61 @@ def assign_groups(rows,max_per_group=4):
     return summaries
 
 
+METADATA_TAGS=['-Model','-BodySerialNumber','-DateTimeOriginal','-SubSecDateTimeOriginal','-FocalLength#',
+               '-FocalLengthIn35mmFormat#']
+METADATA_CHUNK=250
+
+
+def worker_count(total):
+    """Photos analysed at once. Leaves cores for Lightroom itself (i7-11800H: 16 threads -> 8)."""
+    cpus=os.cpu_count() or 4
+    return max(1,min(total,8,cpus-2 if cpus>4 else cpus))
+
+
+def read_metadata(executable,job,paths):
+    """One ExifTool process per 250 photos instead of one per photo (~1.6 s of Perl start-up
+    each). Returns {normcase(abspath): tags}; a photo ExifTool could not read is simply absent
+    and fails on its own, the others continue."""
+    import subprocess
+    found={}
+    for start in range(0,len(paths),METADATA_CHUNK):
+        chunk=[p for p in paths[start:start+METADATA_CHUNK] if p is not None]
+        if not chunk:continue
+        argument=job/f'cull-metadata-{start:04}.args'
+        argument.write_text('--\n'+''.join(str(p).replace('\\','/')+'\n' for p in chunk),encoding='utf-8')
+        cmd=[str(executable),'-config','','-fast2','-json','-charset','filename=UTF8',*METADATA_TAGS,'-@',str(argument)]
+        result=subprocess.run(cmd,capture_output=True,encoding='utf-8',errors='strict',timeout=90+2*len(chunk),
+                              creationflags=getattr(subprocess,'CREATE_NO_WINDOW',0))
+        # ExifTool exits non-zero when ANY file failed; the JSON still has every readable one.
+        try:metadata=json.loads(result.stdout) if result.stdout.strip() else []
+        except json.JSONDecodeError:metadata=[]
+        for meta in metadata if isinstance(metadata,list) else []:
+            if isinstance(meta,dict) and isinstance(meta.get('SourceFile'),str) and not meta.get('Error'):
+                found[os.path.normcase(os.path.abspath(meta['SourceFile']))]=meta
+    return found
+
+
+def analyze_photo(index,photo,path,meta,metadata_stat,job,bundle,info,preview_source,detectors):
+    """Everything for one photo; runs on a worker thread. Same checks as the sequential engine:
+    the original is locked against writes, hashed before/after and must not change since its
+    metadata was read."""
+    if meta is None:raise ValueError('Metadados indisponiveis')
+    detector=getattr(detectors,'value',None)
+    if detector is None:detector=detectors.value=create_detector(bundle,info)  # YuNet is not thread-safe
+    with source_reader(path):
+        source_hash=sha256_file(path)
+        image,linear,sensor=load_image(path,preview_source);vision=image_features(image,linear,sensor,detector,meta)
+        after=path.stat()
+        if (metadata_stat.st_size,metadata_stat.st_mtime_ns)!=(after.st_size,after.st_mtime_ns) or source_hash!=sha256_file(path):
+            raise ValueError('Original mudou durante a selecao')
+    thumbnail=Image.fromarray(image);thumbnail.thumbnail((480,480));preview=f'cull-{index:04}.jpg';thumbnail.save(job/preview,quality=85)
+    capture=meta.get('SubSecDateTimeOriginal') or meta.get('DateTimeOriginal');time,clock=capture_seconds(capture)
+    return {'status':'CULL_ANALYZED','sourceSha256':source_hash,'sourceMetadataStable':True,'cameraModel':meta.get('Model'),
+            'captureTimeExif':capture,'technicalPreviewRelative':preview,'previewSource':sensor.get('previewSource','RAW_RENDER'),
+            'focalLength':meta.get('FocalLength'),'focalLength35':meta.get('FocalLengthIn35mmFormat'),'_time':time,'_clockType':clock,
+            '_scope':(os.path.normcase(str(path.parent)),meta.get('Model') or '',meta.get('BodySerialNumber') or ''),'_vision':vision}
+
+
 def run_culling(request,job,bundle,info,report,progress):
     photos=request.get('photos');options=request.get('cullingOptions',{})
     identity=request.get('catalogIdentity')
@@ -296,49 +388,51 @@ def run_culling(request,job,bundle,info,report,progress):
     if not all(isinstance(i,str) and 0<len(i)<=128 for i in ids) or len(set(ids))!=len(ids):raise ValueError('Identificadores de fotos invalidos')
     maximum=options.get('maxPerGroup',4)
     if type(maximum)!=int or not 1<=maximum<=4:raise ValueError('Limite de repetidas deve ser de 1 a 4')
-    detector=create_detector(bundle,info)
+    preview_source=options.get('previewSource','raw')
+    if preview_source not in PREVIEW_SOURCES:raise ValueError('Origem da previa invalida')
+    create_detector(bundle,info)  # fail fast on a missing/altered model before reading any photo
     executable=bundle/'Tools/ExifTool/exiftool.exe'
-    import subprocess
+    workers=worker_count(len(photos))
     report.update({'operation':'cull','algorithm':ALGORITHM,'requestedPhotos':len(photos),'catalogIdentity':request.get('catalogIdentity'),
                    'maximumPerSimilarGroup':maximum,'automaticDeletion':False,'automaticFlagChanges':False,
-                   'recoveryAssessment':'RAW_SIGNAL_RISK_NOT_A_GUARANTEE','cullingQualityValidated':False})
-    for i,photo in enumerate(photos):
-        if (job/'cancel.request').exists():report['status']='CANCELLED';break
-        path=Path(photo.get('path',''));row={'id':photo['id'],'path':str(path),'filename':path.name,'status':'FAILED'}
-        report['results'].append(row);progress('CULL_PROCESSING',i,len(photos),path.name)
-        try:
-            if not path.is_absolute() or not path.is_file() or path.suffix.lower() not in RAW_EXTENSIONS|RASTER_EXTENSIONS:
-                raise ValueError('Original indisponivel ou formato fora da selecao desta versao')
-            if photo.get('isVirtualCopy') is not False:raise ValueError('Selecione originais; copias virtuais nao entram nesta triagem')
-            before=path.stat()
-            with source_reader(path):
-                source_hash=sha256_file(path)
-                argument=job/f'cull-metadata-{i:04}.args'
-                text=str(path).replace('\\','/')
-                if any(ord(c)<32 for c in text):raise ValueError('Caminho com caracteres de controle')
-                argument.write_text('--\n'+text+'\n',encoding='utf-8')
-                cmd=[str(executable),'-config','','-fast2','-json','-charset','filename=UTF8','-Model','-BodySerialNumber',
-                     '-DateTimeOriginal','-SubSecDateTimeOriginal','-FocalLength#','-FocalLengthIn35mmFormat#','-@',str(argument)]
-                result=subprocess.run(cmd,capture_output=True,encoding='utf-8',errors='strict',timeout=90,
-                                      creationflags=getattr(subprocess,'CREATE_NO_WINDOW',0))
-                if result.returncode:raise ValueError('Falha ao ler metadados: '+result.stderr[:300])
-                metadata=json.loads(result.stdout)
-                if len(metadata)!=1 or metadata[0].get('Error'):raise ValueError('Metadados indisponiveis')
-                meta=metadata[0]
-                if os.path.normcase(os.path.abspath(meta['SourceFile']))!=os.path.normcase(str(path)):raise ValueError('Metadados de outra foto')
-                image,linear,sensor=load_image(path);vision=image_features(image,linear,sensor,detector,meta)
-                after=path.stat()
-                if (before.st_size,before.st_mtime_ns)!=(after.st_size,after.st_mtime_ns) or source_hash!=sha256_file(path):
-                    raise ValueError('Original mudou durante a selecao')
-            thumbnail=Image.fromarray(image);thumbnail.thumbnail((480,480));preview=f'cull-{i:04}.jpg';thumbnail.save(job/preview,quality=85)
-            capture=meta.get('SubSecDateTimeOriginal') or meta.get('DateTimeOriginal');time,clock=capture_seconds(capture)
-            row.update({'status':'CULL_ANALYZED','sourceSha256':source_hash,'sourceMetadataStable':True,'cameraModel':meta.get('Model'),
-                'captureTimeExif':capture,'technicalPreviewRelative':preview,'focalLength':meta.get('FocalLength'),
-                'focalLength35':meta.get('FocalLengthIn35mmFormat'),'_time':time,'_clockType':clock,
-                '_scope':(os.path.normcase(str(path.parent)),meta.get('Model') or '',meta.get('BodySerialNumber') or ''),'_vision':vision})
-        except Exception as error:row['error']=str(error)[:1500]
-        progress('CULL_PROCESSING',i+1,len(photos),path.name)
-    else:report['status']='COMPLETED'
+                   'recoveryAssessment':'RAW_SIGNAL_RISK_NOT_A_GUARANTEE','cullingQualityValidated':False,
+                   'previewSource':preview_source,'parallelWorkers':workers})
+    if (job/'cancel.request').exists():
+        report['status']='CANCELLED'
+    else:
+        rows,paths,stats,early={},[],{},{}
+        for i,photo in enumerate(photos):
+            path=Path(photo.get('path',''));rows[i]={'id':photo['id'],'path':str(path),'filename':path.name,'status':'FAILED'}
+            try:
+                if not path.is_absolute() or not path.is_file() or path.suffix.lower() not in RAW_EXTENSIONS|RASTER_EXTENSIONS:
+                    raise ValueError('Original indisponivel ou formato fora da selecao desta versao')
+                if photo.get('isVirtualCopy') is not False:raise ValueError('Selecione originais; copias virtuais nao entram nesta triagem')
+                if any(ord(c)<32 for c in str(path)):raise ValueError('Caminho com caracteres de controle')
+                stats[i]=path.stat();paths.append(path)
+            except Exception as error:early[i]=str(error)[:1500];paths.append(None)
+        progress('CULL_METADATA',0,len(photos))
+        metadata=read_metadata(executable,job,paths) if any(paths) else {}
+        detectors=threading.local();done=0;cancelled=False
+        with ThreadPoolExecutor(max_workers=workers,thread_name_prefix='crispix-cull') as pool:
+            futures={}
+            for i,photo in enumerate(photos):
+                if i in early:continue
+                path=paths[i];meta=metadata.get(os.path.normcase(os.path.abspath(str(path))))
+                futures[i]=pool.submit(analyze_photo,i,photo,path,meta,stats[i],job,bundle,info,preview_source,detectors)
+            for i,photo in enumerate(photos):
+                if i in early:rows[i]['error']=early[i]
+                elif cancelled or (job/'cancel.request').exists():
+                    # Photos not started are dropped; one already running finishes and is kept.
+                    if not cancelled:cancelled=True;report['status']='CANCELLED'
+                    if futures[i].cancel():rows.pop(i);continue
+                    try:rows[i].update(futures[i].result())
+                    except Exception as error:rows[i]['error']=str(error)[:1500]
+                else:
+                    try:rows[i].update(futures[i].result())
+                    except Exception as error:rows[i]['error']=str(error)[:1500]
+                if i in rows:done+=1;progress('CULL_PROCESSING',done,len(photos),rows[i]['filename'])
+        report['results'].extend(rows[i] for i in sorted(rows))
+        if not cancelled:report['status']='COMPLETED'
     progress('CULL_GROUPING',len(report['results']),len(photos))
     try:
         report['groups']=assign_groups(report['results'],maximum)

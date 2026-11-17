@@ -20,16 +20,29 @@ function M.options(count)
     local result=nil
     LrFunctionContext.callWithContext('MizinCullingOptions',function(context)
         local props=LrBinding.makePropertyTable(context);props.maximum=4
+        -- Origem das previas (como "Load thumbnails and previews from" do Neurapix), lembrada entre usos.
+        local prefs=LrPrefs.prefsForPlugin()
+        -- Padrao: revelacao do RAW (mesmas decisoes de antes). Medido em 120 RAWs reais
+        -- (evidence/culling-preview-benchmark-0045.json): a previa embutida foi so 12% mais
+        -- rapida no motor paralelo e concordou em 98,3% das escolhidas.
+        props.previewSource=(prefs.cullPreviewSource=='raw' or prefs.cullPreviewSource=='embedded') and prefs.cullPreviewSource or 'raw'
         local f=LrView.osFactory()
         local action=LrDialogs.presentModalDialog{title='Mizin Lightroom - selecao local',
             contents=f:column{bind_to_object=props,spacing=f:control_spacing(),
                 f:static_text{title=tostring(count)..' fotos selecionadas. A analise considera repeticao visual,\norientacao, enquadramento, rostos, nitidez e risco de exposicao.',width_in_chars=95,height_in_lines=2},
                 f:row{f:static_text{title='Maximo por grupo semelhante:'},f:popup_menu{value=LrView.bind('maximum'),
                     items={{title='4 fotos',value=4},{title='3 fotos',value=3},{title='2 fotos',value=2},{title='1 foto',value=1}}}},
+                f:static_text{title='Carregar previas a partir de:'},
+                f:radio_button{title='Revelacao tecnica do RAW (recomendado; analise mais precisa)',value=LrView.bind('previewSource'),checked_value='raw'},
+                f:radio_button{title='Previa JPEG embutida no RAW (um pouco mais rapido)',value=LrView.bind('previewSource'),checked_value='embedded'},
                 f:static_text{title='Prefere variacoes horizontal/vertical e aberta/fechada quando ha qualidade.\nFotos identicas podem resultar em apenas uma escolhida. Casos duvidosos ficam para revisao.\nA recuperacao depende do RAW; a analise sinaliza riscos e preserva todos os originais.',width_in_chars=95,height_in_lines=3},
                 f:static_text{title='Ao terminar, revise as escolhidas e organize o resultado em colecoes no Lightroom.',width_in_chars=95,height_in_lines=2}},
             actionVerb='Analisar selecao',cancelVerb='Cancelar'}
-        if action=='ok' then result={maxPerGroup=props.maximum} end
+        if action=='ok' then
+            local source=props.previewSource=='embedded' and 'embedded' or 'raw'
+            prefs.cullPreviewSource=source
+            result={maxPerGroup=props.maximum,previewSource=source}
+        end
     end)
     return result
 end
