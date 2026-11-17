@@ -1,0 +1,23 @@
+{
+  "previous": "v0.28.1 (build 0043)",
+  "version": "v0.29.0 (build 0044)",
+  "date": "2026-11-16",
+  "timezone": "America/Sao_Paulo",
+  "baseline": "0a63998d20b6e0a9fdd0839c4ba6e7f2555aa3d6",
+  "sourceHead": "c1fa235667449323092991489d7fdd92124fe0c9",
+  "increment": "feat",
+  "commits": [
+    {
+      "hash": "5a2a758d107619a18d1d768d72fd05a3c9eaf751",
+      "subject": "improve: registra publicacao verificada do build 0043 na internet e rede",
+      "type": "improve",
+      "breaking": false
+    },
+    {
+      "hash": "c1fa235667449323092991489d7fdd92124fe0c9",
+      "subject": "feat: atualiza plugin dentro do Lightroom e detecta GPU com honestidade",
+      "type": "feat",
+      "breaking": false
+    }
+  ]
+}

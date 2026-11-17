@@ -1,5 +1,23 @@
 # CHANGELOG - mizin_lightroom
 
+## v0.29.0 (build 0044) - 2026-11-16
+
+### 💥 Breaking Changes
+
+- Nenhum.
+
+### ✨ Features
+
+- feat: atualiza plugin dentro do Lightroom e detecta GPU com honestidade (commit `c1fa235667449323092991489d7fdd92124fe0c9`)
+
+### 🐛 Fixes
+
+- Nenhum.
+
+### ⚡ Improvements
+
+- improve: registra publicacao verificada do build 0043 na internet e rede (commit `5a2a758d107619a18d1d768d72fd05a3c9eaf751`)
+
 ## v0.28.1 (build 0043) - 2026-11-16
 
 ### 💥 Breaking Changes
