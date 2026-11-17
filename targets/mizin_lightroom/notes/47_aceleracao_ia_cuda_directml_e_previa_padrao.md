@@ -36,6 +36,6 @@
 
 ## 4. Pendente
 - Nenhum modelo do motor usa o ONNX Runtime ainda: a infraestrutura escolhe e prova a GPU, mas o ganho real vem com o primeiro modelo de IA pesado (recorte/enquadramento inteligente, olhos fechados, estetica). `session_for` ja e o ponto de entrada.
-- Publicar: subir as 6 partes em `r2://crispix-updates/accel/` e publicar `accel-cuda.json` no Pages (`https://crispixlr.pages.dev/accel-cuda.json`, URL fixa em `Acceleration.lua`). Antes disso o botao de instalar mostra erro de download e nada muda.
+- ~~Publicar~~ FEITO no build 0046 (`evidence/publication-0046.json`): 6 partes em `r2://crispix-updates/accel/`; `accel-cuda.json` vive em `reconstructed/branding/site/` e sai junto com o site em todo `Publish-CrispixBuild.ps1`. Instalacao real a partir do R2 publico: 106 s, todos os SHA-256 conferidos, escolha "NVIDIA CUDA". Uma nova versao do componente exige novo nome de arquivo (`ort<versao>`) nas partes e novo `accel-cuda.json` no site.
 - Maquina de edicao atual (RTX 3060, driver 572.16 = CUDA 12.8): CUDA aparece como "driver NVIDIA antigo" e o CRISPIX usa DirectML ate o driver ser atualizado. RTX 4090 com driver atual: CUDA.
 - Nao testado no Lightroom real (painel, botoes, barra de progresso).

@@ -1,0 +1,62 @@
+{
+  "schema": "mizin-lightroom.publication/1",
+  "version": "v0.31.0 (build 0046)",
+  "date": "2026-11-17",
+  "featureCommit": "575b6cc",
+  "releaseCommit": "cde1b18",
+  "siteTextCommit": "d411b38",
+  "archive": {
+    "name": "CRISPIX-0.31.0-build0046-motor-local.zip",
+    "bytes": 110008858,
+    "sha256": "518945cf88f4e1311a0a804036b5799b1a4f4130c34c39340d06b9d750324b15",
+    "publicUrl": "https://pub-739d5fceaa824a6c8c84e39bb74ec917.r2.dev/CRISPIX-0.31.0-build0046-motor-local.zip",
+    "publicDownloadSizeAndHashMatch": true,
+    "includesDirectmlPack": "Runtime/accel/directml (onnxruntime-directml 1.24.4)"
+  },
+  "cudaComponent": {
+    "manifestUrl": "https://crispixlr.pages.dev/accel-cuda.json",
+    "manifestLiveMatchesRepository": true,
+    "archiveName": "CRISPIX-accel-cuda-ort1.32.0.zip",
+    "archiveSha256": "7521fd9585f3d6791254d6e5d77a0cf96375d8fb2f1b36ea9787a73c0676d91d",
+    "bytes": 1327269231,
+    "parts": 6,
+    "r2Prefix": "r2://crispix-updates/accel/",
+    "publicPartSizesMatch": true,
+    "endToEndInstallFromPublicR2": {
+      "installer": "Install-AccelPack.py do pacote 0046, Python empacotado, pasta de dados isolada",
+      "seconds": 106,
+      "allPartHashesAndArchiveHashVerifiedByInstaller": true,
+      "chosen": "NVIDIA CUDA",
+      "medianMs": {"cuda": 4.14, "directml": 2.48, "cpu": 6.07},
+      "machine": "GTX 1660 Ti 6 GB, driver 591.74 (CUDA 13.1)"
+    }
+  },
+  "packagedAcceleratorWithoutCuda": {"chosen": "DirectML (GPU DirectX 12)", "medianMs": {"directml": 2.85, "cpu": 6.51}, "cuda": "NOT_INSTALLED"},
+  "networkChannel": {
+    "path": "\\\\192.168.1.58\\Users\\Public\\Documents\\MizinLightroomPilot",
+    "manifestVersion": "v0.31.0 (build 0046)",
+    "manifestUtf8WithoutBom": true,
+    "archiveHashMatch": true,
+    "verifiedWith": "PowerShell"
+  },
+  "pages": {
+    "project": "crispixlr",
+    "deployment": "https://aa1af617.crispixlr.pages.dev",
+    "publishedBy": "scripts/Publish-CrispixBuild.ps1",
+    "filesVerifiedByteForByteOnProductionVsRepository": {
+      "index.html": "4210475559d9c85b (prefixo SHA-256)",
+      "showcase.js": "f336613c5a5c3ac3 (prefixo SHA-256)",
+      "accel-cuda.json": "eca728e44ffc7ac1 (prefixo SHA-256)"
+    },
+    "manifestUtf8WithoutBom": true,
+    "productionManifestPropagationSeconds": "ate ~10 s apos o deploy (o endereco do deploy ja servia o 0046)"
+  },
+  "manifestReadByPluginJsonLua": true,
+  "liveSiteQa": "evidence/site-identidade-cx/qa.json (9 verificacoes, 0 erros de JavaScript, Playwright/Chrome real, copia local antes do deploy)",
+  "pluginQa": "evidence/editing-plugin-qa-0046.json",
+  "unitTestsPassed": 267,
+  "inPlaceUpdateEndToEnd": "0045->0046 com o ZIP real, pasta com espaco, -InPlace: 18 s, 7 alterados, 444 novos, 105 removidos, plugin identico ao pacote",
+  "nativeLightroomUpdateExercised": false,
+  "nativeLightroomAccelerationPanelExercised": false,
+  "gpuUsedByAnyEngineStep": false
+}
