@@ -131,34 +131,58 @@ class AcervoLuaTests(unittest.TestCase):
     def lua_int_array(values):
         return '{' + ','.join(str(int(v)) for v in values) + '}'
 
-    def setup_collections(self, runtime, members):
-        """members: list of (name, parent_name_or_None, photo_ids)."""
+    def setup_collections(self, runtime, members, active=None):
+        """members: list of (name, 'Set / Subset' path or None, photo_ids).
+
+        Mirrors the real Lightroom Classic SDK: the catalog and each LrCollectionSet expose
+        only getChildCollections()/getChildCollectionSets() (one level each). There is NO
+        catalog:getCollections() -- the real Lightroom does not have it, so neither does the mock.
+        """
         runtime.execute('''
-            function newCollectionSet(name) return {getName=function() return name end,getParent=function() return nil end} end
+            byLocalId={};for _,p in ipairs(fixturePhotos) do byLocalId[p.localIdentifier]=p end
+            function newContainer(name, parent)
+                local s={children={},sets={}}
+                s.getName=function() return name end
+                s.getParent=function() return parent end
+                s.getChildCollections=function() return s.children end
+                s.getChildCollectionSets=function() return s.sets end
+                return s
+            end
+            rootContainer=newContainer('catalog', nil)
+            collectionCounter=0
             function newCollection(name, parent, photoIds)
-                local c={}
+                collectionCounter=collectionCounter+1
+                local c={localIdentifier=9000+collectionCounter}
                 c.getName=function() return name end
-                c.getParent=function() return parent end
+                c.getParent=function() if parent==rootContainer then return nil end return parent end
+                c.isSmartCollection=function() return false end
                 c.getPhotos=function() local out={};for _,id in ipairs(photoIds) do out[#out+1]=byLocalId[id] end;return out end
+                parent.children[#parent.children+1]=c
                 return c
             end
-            byLocalId={};for _,p in ipairs(fixturePhotos) do byLocalId[p.localIdentifier]=p end
-            allCollections={}
+            function setAt(path)
+                local node=rootContainer
+                for part in string.gmatch(path, '[^/]+') do
+                    part=part:gsub('^%s+',''):gsub('%s+$','')
+                    local found=nil
+                    for _,s in ipairs(node.sets) do if s:getName()==part then found=s end end
+                    if not found then found=newContainer(part, node~=rootContainer and node or nil);node.sets[#node.sets+1]=found end
+                    node=found
+                end
+                return node
+            end
+            catalog.getCollections=nil
+            catalog.getChildCollections=function(self) return rootContainer.children end
+            catalog.getChildCollectionSets=function(self) return rootContainer.sets end
+            catalog.getActiveSources=function(self) return activeSources or {} end
+            namedCollections={}
         ''')
-        parents = {}
-        for name, parent_name, photo_ids in members:
-            if parent_name is not None and parent_name not in parents:
-                runtime.execute(f"parent_{len(parents)}=newCollectionSet({json.dumps(parent_name)})")
-                parents[parent_name] = f"parent_{len(parents)}"
-        for index, (name, parent_name, photo_ids) in enumerate(members):
-            parent_ref = parents.get(parent_name, 'nil')
-            runtime.execute(
-                f"allCollections[#allCollections+1]=newCollection({json.dumps(name)},{parent_ref},{self.lua_int_array(photo_ids)})"
-            )
-        runtime.execute('''
-            for i,c in ipairs(allCollections) do c.localIdentifier=9000+i end
-            catalog.getCollections=function(self) return allCollections end
-        ''')
+        for name, parent_path, photo_ids in members:
+            parent = 'rootContainer' if parent_path is None else f'setAt({json.dumps(parent_path)})'
+            runtime.execute(f"namedCollections[{json.dumps(name)}]=newCollection({json.dumps(name)},{parent},{self.lua_int_array(photo_ids)})")
+        if active is not None:
+            # Lightroom may hand back a different Lua object for the same collection.
+            runtime.execute(f"activeSources={{'kTemporaryImages',{{localIdentifier=namedCollections[{json.dumps(active)}].localIdentifier}}}}")
 
     def test_collection_scope_lists_full_parent_path_and_learns_its_photos(self):
         with tempfile.TemporaryDirectory() as directory:
@@ -218,8 +242,53 @@ class AcervoLuaTests(unittest.TestCase):
     def test_no_collections_in_catalog_is_a_clear_error_not_a_crash(self):
         with tempfile.TemporaryDirectory() as directory:
             runtime, module, calls = self.setup(Path(directory), count=3)
-            runtime.execute('catalog.getCollections=function(self) return {} end')
+            self.setup_collections(runtime, [])
             with self.assertRaisesRegex(Exception, 'Nenhuma colecao'):
+                module['import']('collection')
+            self.assertEqual(calls, [])
+
+    def picker_runtime(self, runtime):
+        runtime.execute('''
+            modules.LrDialogs.presentModalDialog=function(props)
+                dialogs[#dialogs+1]=props
+                if props.title=='Mizin Lightroom - escolher colecao para aprender' then return 'ok' end
+                referenceProps.approved=true;return 'ok'
+            end
+        ''')
+
+    def test_collections_inside_nested_sets_are_listed_and_learned(self):
+        with tempfile.TemporaryDirectory() as directory:
+            runtime, module, calls = self.setup(Path(directory), count=12)
+            self.setup_collections(runtime, [
+                ('Solta', None, [1]),
+                ('Finais', 'Formaturas 2026 / Turma A', [2, 3, 4, 5]),
+                ('Finais', 'Formaturas 2026 / Turma B', [6, 7]),
+            ], active='Finais')
+            runtime.execute("namedCollections['Finais']=nil")  # keep the last 'Finais' (Turma B) as active
+            self.picker_runtime(runtime)
+            module['import']('collection')
+            picker = runtime.globals().dialogs[1]
+            items = picker['contents'][2]['items']
+            titles = [items[i]['title'] for i in range(1, len(items) + 1)]
+            self.assertEqual(titles, ['Formaturas 2026 / Turma A / Finais', 'Formaturas 2026 / Turma B / Finais', 'Solta'])
+            batches = [r for r in calls if r['operation'] == 'collect']
+            self.assertEqual(sum(len(r['photos']) for r in batches), 2)  # Turma B, preselected from the left panel
+
+    def test_collection_selected_in_left_panel_is_preselected(self):
+        with tempfile.TemporaryDirectory() as directory:
+            runtime, module, calls = self.setup(Path(directory), count=12)
+            self.setup_collections(runtime, [('A primeira', None, [1, 2]), ('Escolhida', 'Eventos', [3, 4, 5])], active='Escolhida')
+            self.picker_runtime(runtime)
+            module['import']('collection')
+            batches = [r for r in calls if r['operation'] == 'collect']
+            self.assertEqual(sum(len(r['photos']) for r in batches), 3)
+
+    def test_listing_failure_is_reported_not_hidden_as_no_collections(self):
+        with tempfile.TemporaryDirectory() as directory:
+            runtime, module, calls = self.setup(Path(directory), count=3)
+            self.setup_collections(runtime, [('X', None, [1])])
+            runtime.execute("catalog.getChildCollectionSets=function(self) error('falha simulada') end")
+            with self.assertRaisesRegex(Exception, 'Nao foi possivel listar as colecoes'):
                 module['import']('collection')
             self.assertEqual(calls, [])
 

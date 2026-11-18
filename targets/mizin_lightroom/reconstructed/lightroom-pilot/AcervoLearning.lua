@@ -121,47 +121,72 @@ local function approve(rows,scope)
     end)
     return approved
 end
--- Lists every collection in the catalog (including inside collection sets), named with
--- its full parent path for disambiguation (e.g. "CRISPIX - Edicao automatica / Auto ...").
--- Recurses through LrCollectionSet explicitly rather than relying on LrCatalog:getCollections()
--- being flat or nested, so the listing is correct either way.
+-- Lists every collection in the catalog, walking collection sets at any depth, named with
+-- its full parent path (e.g. "Formaturas 2026 / Turma A / Finais"). Uses only the real SDK
+-- calls getChildCollections()/getChildCollectionSets() on the catalog and on each set.
+-- LrCatalog:getCollections() does NOT exist in Lightroom Classic (an old SDK doc mistake);
+-- it used to be called here inside a pcall, so the real Lightroom always answered
+-- "Nenhuma colecao encontrada" while the test mock pretended it existed.
+-- Returns the menu items and a key -> LrCollection map, so the chosen key resolves to the
+-- exact object that was listed (no second lookup that could miss).
+local MAX_COLLECTIONS=2000
 local function collectionChoices(catalog)
-    local items={}
-    local function path(collection)
-        local parts={tostring(collection:getName())};local parent=collection:getParent()
-        while parent do parts[#parts+1]=tostring(parent:getName());parent=parent:getParent() end
-        local reversed={};for i=#parts,1,-1 do reversed[#reversed+1]=parts[i] end
-        return table.concat(reversed,' / ')
+    local items,byKey={},{}
+    local function walk(container,prefix,depth)
+        if depth>32 then return end
+        for _,collection in ipairs(container:getChildCollections() or {}) do
+            if #items>=MAX_COLLECTIONS then return end
+            local key='c'..(#items+1)
+            local title=prefix..tostring(collection:getName())
+            local okSmart,smart=LrTasks.pcall(function() return collection:isSmartCollection() end)
+            if okSmart and smart then title=title..'  (inteligente)' end
+            items[#items+1]={title=title,value=key};byKey[key]=collection
+        end
+        for _,set in ipairs(container:getChildCollectionSets() or {}) do
+            if #items>=MAX_COLLECTIONS then return end
+            walk(set,prefix..tostring(set:getName())..' / ',depth+1)
+        end
     end
-    local ok=LrTasks.pcall(function()
-        for _,collection in ipairs(catalog:getCollections() or {}) do
-            if #items>=600 then return end
-            items[#items+1]={title=path(collection),value=tostring(collection.localIdentifier)}
+    local ok,problem=LrTasks.pcall(walk,catalog,'',0)
+    if not ok then error('Nao foi possivel listar as colecoes deste catalogo: '..tostring(problem)) end
+    table.sort(items,function(a,b) return a.title<b.title end)
+    return items,byKey
+end
+-- Key of the collection currently selected in the Library's left panel, if any.
+local function activeCollectionKey(catalog,byKey)
+    local ok,key=LrTasks.pcall(function()
+        for _,source in ipairs(catalog:getActiveSources() or {}) do
+            if type(source)=='table' then
+                for candidate,collection in pairs(byKey) do
+                    if source==collection or (source.localIdentifier~=nil and source.localIdentifier==collection.localIdentifier) then
+                        return candidate
+                    end
+                end
+            end
         end
     end)
-    table.sort(items,function(a,b) return a.title<b.title end)
-    return items
+    return ok and key or nil
 end
--- Opens the collection picker and returns its photos, or nil if the user cancels/none exist.
+-- Opens the collection picker and returns its photos, or nil if the user cancels.
 local function chooseCollection(catalog)
-    local choices=collectionChoices(catalog)
-    if #choices==0 then error('Nenhuma colecao encontrada neste catalogo.') end
-    local chosenId=nil
+    local choices,byKey=collectionChoices(catalog)
+    if #choices==0 then error('Nenhuma colecao encontrada neste catalogo. Crie uma colecao com as fotos finais (Biblioteca > Colecoes > +) e tente de novo.') end
+    local active=activeCollectionKey(catalog,byKey)
+    local chosenKey=nil
     LrFunctionContext.callWithContext('MizinChooseAcervoCollection',function(context)
-        local props=LrBinding.makePropertyTable(context);props.collection=choices[1].value
+        local props=LrBinding.makePropertyTable(context);props.collection=active or choices[1].value
         local f=LrView.osFactory()
         local action=LrDialogs.presentModalDialog{title='Mizin Lightroom - escolher colecao para aprender',
             contents=f:column{bind_to_object=props,spacing=f:control_spacing(),
-                f:static_text{title='Escolha a colecao com suas edicoes finais e aprovadas.\nRepita este comando para aprender com outra colecao depois.',width_in_chars=90,height_in_lines=2},
+                f:static_text{title='Escolha a colecao com suas edicoes finais e aprovadas. A colecao selecionada no painel\nda esquerda ja vem escolhida. Repita este comando para aprender com outra colecao depois.',width_in_chars=90,height_in_lines=2},
                 f:popup_menu{value=LrView.bind('collection'),items=choices,width_in_chars=70}},
             actionVerb='Continuar',cancelVerb='Cancelar'}
-        if action=='ok' then chosenId=props.collection end
+        if action=='ok' then chosenKey=props.collection end
     end)
-    if not chosenId then return nil end
-    for _,collection in ipairs(catalog:getCollections() or {}) do
-        if tostring(collection.localIdentifier)==chosenId then return collection:getPhotos() or {} end
-    end
-    error('A colecao escolhida nao foi encontrada; o catalogo pode ter mudado.')
+    if not chosenKey then return nil end
+    local collection=byKey[chosenKey]
+    if not collection then error('A colecao escolhida nao foi encontrada; o catalogo pode ter mudado.') end
+    return collection:getPhotos() or {}
 end
 local function remember(path,catalog)
     local prefs=LrPrefs.prefsForPlugin();local queues=prefs.learningQueues or {}
