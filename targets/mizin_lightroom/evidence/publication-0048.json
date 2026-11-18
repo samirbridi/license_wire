@@ -1,0 +1,25 @@
+{
+  "schema": "mizin-lightroom.publication/1",
+  "version": "v0.32.1 (build 0048)",
+  "date": "2026-11-18",
+  "fixCommit": "16bad3e",
+  "packageNotesCommit": "30ffb3d",
+  "releaseCommit": "efdcb64",
+  "siteTextCommit": "f4b469d",
+  "changes": ["Aprender com colecao: LrCatalog:getCollections() (inexistente no SDK) trocado por getChildCollections/getChildCollectionSets recursivo; colecao ativa no painel pre-selecionada; guarda de API do LrCatalog"],
+  "archive": {
+    "name": "CRISPIX-0.32.1-build0048-motor-local.zip",
+    "bytes": 110010960,
+    "sha256": "4848c81e777a79afa12ae96f9d7f6ef595158cfb9c6e2f1ab4d39cf01e9462c8",
+    "publicUrl": "https://pub-739d5fceaa824a6c8c84e39bb74ec917.r2.dev/CRISPIX-0.32.1-build0048-motor-local.zip",
+    "publicDownloadSizeAndHashMatch": true
+  },
+  "networkChannel": {"manifestVersion": "v0.32.1 (build 0048)", "manifestUtf8WithoutBom": true, "archiveHashMatch": true, "verifiedWith": "PowerShell"},
+  "pages": {"project": "crispixlr", "deployment": "https://104f8db8.crispixlr.pages.dev", "indexHtmlByteForByte": "328f508252f404b0 (prefixo SHA-256)", "manifestUtf8WithoutBom": true, "productionManifestLiveOnFirstRequest": true},
+  "manifestReadByPluginJsonLua": true,
+  "liveSiteQa": "scripts/verify_site_showcase.py na copia local antes do deploy: 0 erros de JavaScript",
+  "pluginQa": "evidence/editing-plugin-qa-0048.json",
+  "unitTestsPassed": 279,
+  "inPlaceUpdateEndToEnd": "0047 (extraido do ZIP publicado) -> 0048 com o Update-CrispixPlugin.ps1 do 0047 e o ZIP real, -InPlace: 20 s, plugin identico ao pacote",
+  "nativeLightroomCollectionPickerExercised": false
+}
