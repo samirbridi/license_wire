@@ -1,0 +1,35 @@
+{
+  "previous": "v0.32.0 (build 0047)",
+  "version": "v0.32.1 (build 0048)",
+  "date": "2026-11-17",
+  "timezone": "America/Sao_Paulo",
+  "baseline": "9ee497c514a17ccce95a88f7779ceb34f1882877",
+  "sourceHead": "30ffb3db2beecaea744078b40df59187e630e063",
+  "increment": "fix",
+  "commits": [
+    {
+      "hash": "b16c96e2b0a9c6efb0c4930b3d935f530519971b",
+      "subject": "improve: atualiza textos do site para o build 0047 (nivelamento pela camera e erro de atualizacao)",
+      "type": "improve",
+      "breaking": false
+    },
+    {
+      "hash": "f4733aff1bcd331047c2f99ef198ada637b2c9ec",
+      "subject": "improve: registra publicacao verificada do build 0047",
+      "type": "improve",
+      "breaking": false
+    },
+    {
+      "hash": "16bad3ec1ab9035798a19f720f5ca110b755dacd",
+      "subject": "fix: aprender com colecao listava nenhuma colecao no Lightroom real",
+      "type": "fix",
+      "breaking": false
+    },
+    {
+      "hash": "30ffb3db2beecaea744078b40df59187e630e063",
+      "subject": "improve: notas do pacote para o build 0048 (aprender com colecao)",
+      "type": "improve",
+      "breaking": false
+    }
+  ]
+}

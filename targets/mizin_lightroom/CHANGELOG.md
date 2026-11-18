@@ -1,5 +1,25 @@
 # CHANGELOG - mizin_lightroom
 
+## v0.32.1 (build 0048) - 2026-11-17
+
+### 💥 Breaking Changes
+
+- Nenhum.
+
+### ✨ Features
+
+- Nenhum.
+
+### 🐛 Fixes
+
+- fix: aprender com colecao listava nenhuma colecao no Lightroom real (commit `16bad3ec1ab9035798a19f720f5ca110b755dacd`)
+
+### ⚡ Improvements
+
+- improve: atualiza textos do site para o build 0047 (nivelamento pela camera e erro de atualizacao) (commit `b16c96e2b0a9c6efb0c4930b3d935f530519971b`)
+- improve: registra publicacao verificada do build 0047 (commit `f4733aff1bcd331047c2f99ef198ada637b2c9ec`)
+- improve: notas do pacote para o build 0048 (aprender com colecao) (commit `30ffb3db2beecaea744078b40df59187e630e063`)
+
 ## v0.32.0 (build 0047) - 2026-11-17
 
 ### 💥 Breaking Changes
