@@ -1,0 +1,47 @@
+{
+  "schema": "mizin-lightroom.publication/1",
+  "version": "v0.32.0 (build 0047)",
+  "date": "2026-11-17",
+  "fixCommit": "f856c8a",
+  "featureCommit": "5dae85b",
+  "releaseCommit": "9ee497c",
+  "siteTextCommit": "b16c96e",
+  "changes": [
+    "CheckUpdates.lua/LearningInit.lua: View:defaultFactory() -> LrView.osFactory(); guard test test_lrview_api_lua.py",
+    "Nivelamento: nivel eletronico da camera (MakerNotes RollAngle) + eixos da cena (nota 48, evidence/camera-level-fusion.json)"
+  ],
+  "archive": {
+    "name": "CRISPIX-0.32.0-build0047-motor-local.zip",
+    "bytes": 110010342,
+    "sha256": "fddf650d74c9a8d25234ce3b435b5204b43fafba30247cf54f74ed6ad74f2845",
+    "publicUrl": "https://pub-739d5fceaa824a6c8c84e39bb74ec917.r2.dev/CRISPIX-0.32.0-build0047-motor-local.zip",
+    "publicDownloadSizeAndHashMatch": true
+  },
+  "networkChannel": {
+    "path": "\\192.168.1.58\Users\Public\Documents\MizinLightroomPilot",
+    "manifestVersion": "v0.32.0 (build 0047)",
+    "manifestUtf8WithoutBom": true,
+    "archiveHashMatch": true,
+    "verifiedWith": "PowerShell"
+  },
+  "pages": {
+    "project": "crispixlr",
+    "deployment": "https://997591f9.crispixlr.pages.dev",
+    "publishedBy": "scripts/Publish-CrispixBuild.ps1",
+    "filesVerifiedByteForByteOnProductionVsRepository": {
+      "index.html": "ad71af269bfa54de (prefixo SHA-256)",
+      "showcase.js": "2b912509b8658d36 (prefixo SHA-256)"
+    },
+    "manifestUtf8WithoutBom": true,
+    "productionManifestLiveOnFirstRequest": true
+  },
+  "manifestReadByPluginJsonLua": true,
+  "liveSiteQa": "scripts/verify_site_showcase.py na copia local antes do deploy: 9 verificacoes, 0 erros de JavaScript",
+  "pluginQa": "evidence/editing-plugin-qa-0047.json",
+  "unitTestsPassed": 275,
+  "packagedEngineOnRealRaws": "8 CR3 reais com o Python, ExifTool e motor do pacote: RollAngle lido e propostas identicas ao replay",
+  "inPlaceUpdateEndToEnd": "0046->0047 com o Update-CrispixPlugin.ps1 do 0046 e o ZIP real, pasta com espaco, -InPlace: 60 s, 8 alterados, 0 novos, 114 removidos (so __pycache__ gerado por testes na pasta do 0046), plugin identico ao pacote",
+  "usersOn0044to0046MustRunAtualizarCrispixCmdOnce": true,
+  "nativeLightroomUpdateExercised": false,
+  "nativeLightroomLevelingExercised": false
+}
