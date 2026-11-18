@@ -111,7 +111,15 @@ def build(runtime_base, model_folder, dataset, manifest):
         'schema': 'mizin-lightroom.saved-pilot/1', 'version': version, 'automaticEditing': False, 'entries': entries}) + '\n', encoding='utf-8')
     readme = f'''# CRISPIX - motor local experimental
 
-## {version}: nivelamento em quase todas as fotos e erro de atualizacao corrigido
+## {version}: aprender com uma colecao volta a funcionar
+
+APRENDER COM COLECAO dizia que nao havia nenhuma colecao no catalogo: o plugin usava uma
+funcao que o Lightroom nao tem. Agora lista todas as colecoes, inclusive dentro de conjuntos
+de colecoes (em qualquer nivel), e ja vem escolhida a colecao que estiver selecionada no
+painel da esquerda. Assim da para aprender aos poucos, uma colecao de cada vez, sem precisar
+do catalogo inteiro.
+
+## Build 0047: nivelamento em quase todas as fotos e erro de atualizacao corrigido
 
 NIVELAR FOTO agora usa o nivel eletronico que a camera Canon grava em cada RAW, junto
 com as linhas do ambiente. Antes so as poucas fotos com linhas retas fortes eram niveladas
