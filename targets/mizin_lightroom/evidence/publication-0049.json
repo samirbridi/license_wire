@@ -1,0 +1,25 @@
+{
+  "schema": "mizin-lightroom.publication/1",
+  "version": "v0.32.2 (build 0049)",
+  "date": "2026-11-19",
+  "fixCommit": "574c4f7",
+  "archive": {
+    "name": "CRISPIX-0.32.2-build0049-motor-local.zip",
+    "bytes": 110011770,
+    "sha256": "f2c751d2f80be630491e64224220b9aa379bd7793f604cfca505f187096150cc",
+    "publicUrl": "https://pub-739d5fceaa824a6c8c84e39bb74ec917.r2.dev/CRISPIX-0.32.2-build0049-motor-local.zip",
+    "publicDownloadSizeAndHashMatch": true
+  },
+  "zipCrcPassed": true,
+  "fixInPublishedPackage": true,
+  "manifestUtf8WithoutBom": true,
+  "siteShowsVersion": true,
+  "networkChannel": {
+    "manifestVersion": "v0.32.2 (build 0049)",
+    "archiveHashMatch": true,
+    "verifiedWith": "PowerShell"
+  },
+  "unitTestsPassed": 285,
+  "nativeLightroomEditingValidated": false,
+  "inPlaceUpdateEndToEndExercised": false
+}
