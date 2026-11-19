@@ -111,7 +111,14 @@ def build(runtime_base, model_folder, dataset, manifest):
         'schema': 'mizin-lightroom.saved-pilot/1', 'version': version, 'automaticEditing': False, 'entries': entries}) + '\n', encoding='utf-8')
     readme = f'''# CRISPIX - motor local experimental
 
-## {version}: aprender com uma colecao volta a funcionar
+## {version}: edicao nao trava mais com "Controle atual indisponivel: Tint"
+
+Algumas fotos tem balanco de branco com nome (Luz do dia, Como fotografado) sem os numeros de
+Temperatura e Matiz. Antes uma unica foto assim impedia a edicao do lote inteiro. Agora essas
+fotos sao editadas normalmente e continuam podendo ser restauradas. Com a intensidade abaixo
+de 100, elas mantem o balanco de branco original e recebem os demais ajustes.
+
+## Build 0048: aprender com uma colecao volta a funcionar
 
 APRENDER COM COLECAO dizia que nao havia nenhuma colecao no catalogo: o plugin usava uma
 funcao que o Lightroom nao tem. Agora lista todas as colecoes, inclusive dentro de conjuntos
