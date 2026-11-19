@@ -38,3 +38,11 @@ button, input { font: inherit; }
 @media (max-width: 560px) { .demo-panel { padding: 20px 16px; min-height: 470px; }.demo-bar { padding-inline: 14px; }.demo-dots { display: none; }.screen-navigation button { flex-direction: column; }.screen-navigation strong { font-size: 12px; }.screen-number { font-size: 11px; }.demo-caption { padding-inline: 16px; }.mock-adjust { gap: 15px; }.download-panel { grid-template-columns: 1fr; padding: 25px; }.log-row { grid-template-columns: 90px 1fr; }.comparison-control { display: block; }.comparison-control input { display: block; width: 100%; }.demo-heading { gap: 5px; }.result-line { font-size: 11px; }.hero { padding-top: 45px; }.mark-stage { max-width: 220px; } }
 @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
 .photo-compare { touch-action: pan-y; cursor: ew-resize; user-select: none; }
+.download-access { width: 100%; max-width: 300px; display: flex; flex-direction: column; gap: 8px; text-align: left; }
+.download-access[hidden] { display: none; }
+.download-access label { font-size: 13px; color: var(--fg-dim); }
+.download-access-row { display: flex; gap: 8px; }
+.download-access input { flex: 1; min-width: 0; padding: 10px 12px; font: inherit; color: var(--fg); background: var(--bg); border: 1px solid var(--line); border-radius: 10px; }
+.download-access input:focus-visible { border-color: var(--accent); }
+.download-access .btn { padding-inline: 16px; }
+#download-access-status { min-height: 1em; margin: 0; font-size: 12px; color: var(--fg-dim); }

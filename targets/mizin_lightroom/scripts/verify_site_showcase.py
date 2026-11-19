@@ -47,6 +47,27 @@ def verify(url, output):
             target=link.get_attribute('href')[1:]
             assert page.locator(f'[id="{target}"]').count()==1, target
         checks += ['page semantics and section links','three screen tabs and keyboard navigation','empty gallery hidden','official release link']
+        # Download password: the form appears, a wrong password is refused, the right one starts the download.
+        def access(route):
+            if route.request.method=='GET':
+                return route.fulfill(content_type='application/json',body='{"authorized":false}')
+            if json.loads(route.request.post_data or '{}').get('password')=='certa':
+                return route.fulfill(content_type='application/json',body='{"ok":true}')
+            return route.fulfill(status=401,content_type='application/json',body='{"ok":false}')
+        page.route('**/api/download-access',access)
+        page.route('**/downloads/**',lambda route:route.fulfill(content_type='text/plain',body='pacote de teste'))
+        href=page.locator('#download-link').get_attribute('href')
+        assert href==f"/downloads/{release['archiveName']}",href
+        assert page.locator('#download-access').is_hidden()
+        page.locator('#download-link').click()
+        page.locator('#download-access').wait_for(state='visible')
+        page.locator('#download-password').fill('errada');page.locator('#download-access button').click()
+        page.wait_for_function("document.getElementById('download-access-status').textContent.includes('incorreta')")
+        page.locator('#download-password').fill('certa')
+        with page.expect_navigation():page.locator('#download-access button').click()
+        assert page.url.endswith(href),page.url
+        page.goto(url, wait_until='networkidle')
+        checks.append('download password: wrong password refused, right one opens the published package')
         for width,scheme in ((1440,'light'),(390,'light'),(390,'dark')):
             page.set_viewport_size({'width':width,'height':1000})
             page.emulate_media(color_scheme=scheme)

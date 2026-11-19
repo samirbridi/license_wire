@@ -196,13 +196,30 @@ try {
     [System.IO.File]::WriteAllText($manifestStagePath, ($internetManifest | ConvertTo-Json -Depth 5), (New-Object System.Text.UTF8Encoding $false))
 
     Write-Host "  Publicando site + manifesto em https://$PagesProject.pages.dev/ ..."
-    & npx --no-install "wrangler@$WranglerVersion" pages deploy $manifestStageDir --project-name=$PagesProject --branch=main --commit-dirty=true
-    if ($LASTEXITCODE -ne 0) {
+    # O wrangler compila a pasta 'functions' do diretorio atual: a senha dos downloads do site
+    # (functions/_middleware.js) vive em reconstructed\branding, fora da pasta publicada.
+    $functionsRoot = Join-Path $targetRoot 'reconstructed\branding'
+    if (-not (Test-Path -LiteralPath (Join-Path $functionsRoot 'functions\_middleware.js'))) {
+        throw "functions\_middleware.js ausente em $functionsRoot. Sem ele o download do site ficaria sem senha. Abortado antes de publicar."
+    }
+    Push-Location -LiteralPath $functionsRoot
+    try {
+        & npx --no-install "wrangler@$WranglerVersion" pages deploy $manifestStageDir --project-name=$PagesProject --branch=main --commit-dirty=true
+        $deployExit = $LASTEXITCODE
+    } finally { Pop-Location }
+    if ($deployExit -ne 0) {
         throw "Falha ao publicar no Cloudflare Pages. O arquivo ja esta no R2, mas o site ainda aponta para a versao anterior."
     }
 } finally {
     if (Test-Path -LiteralPath $manifestStageDir) { Remove-Item -LiteralPath $manifestStageDir -Recurse -Force -ErrorAction SilentlyContinue }
 }
+
+# A senha precisa estar ativa no ar: sem cookie, /downloads/ volta para o formulario.
+$gate = Invoke-WebRequest -Uri "https://$PagesProject.pages.dev/api/download-access" -UseBasicParsing -TimeoutSec 60
+if (($gate.Content | ConvertFrom-Json).authorized -ne $false) {
+    throw "A protecao por senha dos downloads do site nao respondeu como esperado. Verifique o deploy das Functions."
+}
+Write-Host "  Senha dos downloads do site ativa (o plugin continua atualizando sem senha)." -ForegroundColor Green
 
 Write-Host ""
 Write-Host "[PUBLICACAO] Concluido com sucesso nos dois canais!" -ForegroundColor Green

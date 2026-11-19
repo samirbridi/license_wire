@@ -20,6 +20,50 @@ tabs.forEach((tab, index) => {
   });
 });
 
+// Site downloads need the password (functions/_middleware.js); the installed plugin never does.
+const downloadLink = document.getElementById('download-link');
+const accessForm = document.getElementById('download-access');
+const accessInput = document.getElementById('download-password');
+const accessStatus = document.getElementById('download-access-status');
+const PACKAGE = /^CRISPIX-\d+\.\d+\.\d+-build\d{4}-motor-local\.zip$/;
+function askPassword(message) {
+  accessForm.hidden = false;
+  accessStatus.textContent = message;
+  accessInput.focus();
+}
+async function downloadAuthorized() {
+  try {
+    const response = await fetch('/api/download-access', {cache: 'no-store', credentials: 'same-origin'});
+    return response.ok && (await response.json()).authorized === true;
+  } catch { return false; }
+}
+downloadLink.addEventListener('click', async event => {
+  event.preventDefault();
+  if (await downloadAuthorized()) location.href = downloadLink.getAttribute('href');
+  else askPassword('Digite a senha para baixar o plugin.');
+});
+accessForm.addEventListener('submit', async event => {
+  event.preventDefault();
+  const password = accessInput.value.trim();
+  if (!password) { askPassword('Digite a senha.'); return; }
+  accessStatus.textContent = 'Verificando...';
+  let response;
+  try {
+    response = await fetch('/api/download-access', {method: 'POST', credentials: 'same-origin',
+      headers: {'Content-Type': 'application/json'}, body: JSON.stringify({password})});
+  } catch {
+    accessStatus.textContent = 'Não foi possível verificar a senha agora. Tente novamente.';
+    return;
+  }
+  if (response.status === 401) { accessInput.value = ''; askPassword('Senha incorreta.'); return; }
+  if (!response.ok) { accessStatus.textContent = 'Download pelo site indisponível no momento.'; return; }
+  accessInput.value = '';
+  accessForm.hidden = true;
+  location.href = downloadLink.getAttribute('href');
+});
+// Arriving from a protected link without the password: show the form right away.
+if (/^\/downloads\/CRISPIX-/.test(new URLSearchParams(location.search).get('next') || '')) askPassword('Digite a senha para baixar o plugin.');
+
 // The published plugin manifest remains authoritative; website edits never change its version.
 fetch('latest.json', {cache: 'no-store'}).then(response => {
   if (!response.ok) throw new Error('Manifest unavailable');
@@ -28,11 +72,11 @@ fetch('latest.json', {cache: 'no-store'}).then(response => {
   const url = new URL(release.downloadUrl);
   if (!/^v\d+\.\d+\.\d+ \(build \d+\)$/.test(release.version) ||
       url.origin !== 'https://pub-739d5fceaa824a6c8c84e39bb74ec917.r2.dev' ||
-      !/^\/CRISPIX-[\w.-]+\.zip$/.test(url.pathname) || url.search || url.hash ||
+      url.pathname !== `/${release.archiveName}` || !PACKAGE.test(release.archiveName || '') || url.search || url.hash ||
       !Number.isFinite(release.archiveBytes) || release.archiveBytes <= 0) throw new Error('Invalid manifest');
   document.getElementById('verAtual').textContent = release.version;
   document.getElementById('download-version').textContent = release.version;
-  document.getElementById('download-link').href = url.href;
+  downloadLink.href = `/downloads/${release.archiveName}`;
   document.getElementById('download-size').textContent = `ZIP · ${(release.archiveBytes / 1e6).toLocaleString('pt-BR', {maximumFractionDigits: 1})} MB · Windows`;
   document.getElementById('release-status').textContent = 'Versão consultada no canal oficial de atualização.';
 }).catch(() => {
