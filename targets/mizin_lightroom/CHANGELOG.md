@@ -1,5 +1,25 @@
 # CHANGELOG - mizin_lightroom
 
+## v0.32.2 (build 0049) - 2026-11-19
+
+### 💥 Breaking Changes
+
+- Nenhum.
+
+### ✨ Features
+
+- Nenhum.
+
+### 🐛 Fixes
+
+- fix: edicao travava em fotos com balanco de branco sem Temperatura ou Matiz (commit `574c4f730d5a3be1ac9c0959dea0e32af894b082`)
+
+### ⚡ Improvements
+
+- improve: atualiza textos do site para o build 0048 (aprender com colecao) (commit `f4b469de4aa1e6a37b2ac3b85b319f1935e872af`)
+- improve: registra publicacao verificada do build 0048 (commit `9d2804fc3e167fdd25b428a3bee2aabb52040836`)
+- improve: notas do pacote para o build 0049 (edicao sem Temperatura ou Matiz) (commit `3bdc79526cc8de194c89ba5140241a66416b9c8d`)
+
 ## v0.32.1 (build 0048) - 2026-11-17
 
 ### 💥 Breaking Changes

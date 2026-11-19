@@ -1,0 +1,35 @@
+{
+  "previous": "v0.32.1 (build 0048)",
+  "version": "v0.32.2 (build 0049)",
+  "date": "2026-11-19",
+  "timezone": "America/Sao_Paulo",
+  "baseline": "efdcb64500f1c085c4af3e75a921d1113f1fd8a1",
+  "sourceHead": "3bdc79526cc8de194c89ba5140241a66416b9c8d",
+  "increment": "fix",
+  "commits": [
+    {
+      "hash": "f4b469de4aa1e6a37b2ac3b85b319f1935e872af",
+      "subject": "improve: atualiza textos do site para o build 0048 (aprender com colecao)",
+      "type": "improve",
+      "breaking": false
+    },
+    {
+      "hash": "9d2804fc3e167fdd25b428a3bee2aabb52040836",
+      "subject": "improve: registra publicacao verificada do build 0048",
+      "type": "improve",
+      "breaking": false
+    },
+    {
+      "hash": "574c4f730d5a3be1ac9c0959dea0e32af894b082",
+      "subject": "fix: edicao travava em fotos com balanco de branco sem Temperatura ou Matiz",
+      "type": "fix",
+      "breaking": false
+    },
+    {
+      "hash": "3bdc79526cc8de194c89ba5140241a66416b9c8d",
+      "subject": "improve: notas do pacote para o build 0049 (edicao sem Temperatura ou Matiz)",
+      "type": "improve",
+      "breaking": false
+    }
+  ]
+}
