@@ -37,7 +37,8 @@ def utc_now():
     return dt.datetime.now(dt.timezone.utc).isoformat()
 
 
-def read_json(path, limit=8 * 1024 * 1024):
+# Same ceiling as Json.MAX_BYTES in the plugin: request/result files grow with the selection.
+def read_json(path, limit=512 * 1024 * 1024):
     with Path(path).open('rb') as stream:
         content = stream.read(limit + 1)
     if len(content) > limit:

@@ -1,5 +1,7 @@
 -- Small data-only JSON codec. Never evaluates Lua or invokes a shell.
-local Json = { null = {} }
+-- Size ceiling for the plugin's own job/session files. Large enough for any real selection
+-- (hundreds of thousands of photos); it only rejects corrupted or runaway files.
+local Json = { null = {}, MAX_BYTES = 512 * 1024 * 1024 }
 
 local function utf8(code)
     if code < 128 then return string.char(code) end
@@ -51,7 +53,7 @@ function Json.encode(value)
 end
 
 function Json.decode(text)
-    if type(text) ~= 'string' or #text > 8 * 1024 * 1024 then error('JSON invalido ou muito grande') end
+    if type(text) ~= 'string' or #text > Json.MAX_BYTES then error('JSON invalido ou muito grande') end
     local position = 1
     local function skip()
         while text:sub(position, position):match('[ \t\r\n]') do position = position + 1 end
@@ -70,6 +72,10 @@ function Json.decode(text)
         expect('"')
         local parts = {}
         while position <= #text do
+            -- Copy plain runs at once: big job files are decoded in seconds, not minutes.
+            local stop = text:find('["\\%z\1-\31]', position)
+            if not stop then break end
+            if stop > position then parts[#parts + 1] = text:sub(position, stop - 1); position = stop end
             local c = text:sub(position, position)
             position = position + 1
             if c == '"' then return table.concat(parts) end

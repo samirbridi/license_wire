@@ -168,6 +168,15 @@ class LocalEngineTests(unittest.TestCase):
             path.write_text('﻿{"operation":"analyze","photos":[]}', encoding='utf-8')
             self.assertEqual(engine.read_json(path), {'operation': 'analyze', 'photos': []})
 
+    def test_request_for_thousands_of_photos_is_read(self):
+        # A large selection makes request.json grow past the former 8 MiB ceiling.
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / 'request.json'
+            photos = [{'id': str(i), 'path': 'D:/fotos/' + 'x' * 900 + f'{i}.CR3'} for i in range(10000)]
+            path.write_text(json.dumps({'operation': 'analyze', 'photos': photos}), encoding='utf-8')
+            self.assertGreater(path.stat().st_size, 8 * 1024 * 1024)
+            self.assertEqual(len(engine.read_json(path)['photos']), 10000)
+
     def test_inference_preserves_log_transform_units_and_bounds(self):
         model = engine.validate_model(fixture_model())
         values = engine.predict_features(model, {'redMean': 0.2, 'captureISO': 100})

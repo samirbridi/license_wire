@@ -25,13 +25,13 @@ local function queueRoot() return child(child(LrPathUtils.getStandardFilePath('a
 local function catalogPath(catalog) return catalog:getPath() end
 local function writeJson(path,value)
     local text = Json.encode(value)
-    if #text > 8*1024*1024 then error('A fila excede o limite desta versao; importe uma selecao menor.') end
+    if #text > Json.MAX_BYTES then error('A fila excede o limite de seguranca; importe uma selecao menor.') end
     local f,e = io.open(path,'wb'); if not f then error(tostring(e)) end
     local ok,err=f:write(text);f:close();if not ok then error(tostring(err)) end
 end
 local function readJson(path)
     local f=io.open(path,'rb');if not f then return nil end
-    local text=f:read(8*1024*1024+1);f:close();return Json.decode(text)
+    local text=f:read(Json.MAX_BYTES+1);f:close();return Json.decode(text)
 end
 local function readQueue(path)
     local queue=readJson(path)

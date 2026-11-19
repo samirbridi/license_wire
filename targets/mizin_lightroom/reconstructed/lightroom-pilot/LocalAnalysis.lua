@@ -35,7 +35,7 @@ end
 local function readJson(path)
     local file = io.open(path, 'rb')
     if not file then return nil end
-    local text = file:read(8 * 1024 * 1024 + 1)
+    local text = file:read(Json.MAX_BYTES + 1)
     file:close()
     return Json.decode(text)
 end

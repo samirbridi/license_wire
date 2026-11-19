@@ -170,6 +170,34 @@ class PhotoEditorLuaTests(unittest.TestCase):
             restored,skipped,_=runtime.globals().editor.restoreSession(directory.as_posix())
             self.assertEqual((restored,skipped),(1,0))
 
+    def test_selection_far_above_old_file_limits_edits_every_photo(self):
+        # 3,000 photos with realistic row sizes push results.json past the former 8 MiB ceiling.
+        count=3000
+        with tempfile.TemporaryDirectory() as temp:
+            folder=Path(temp);runtime=self.setup_editor(folder);runtime.globals().row_padding=3000
+            runtime.execute('''masters={};selected={};modules.LrDialogs.confirm=function() return 'ok' end
+                for i=1,COUNT do
+                    local p=newMaster(i)
+                    if i%7==0 then p.settings.WhiteBalance='Daylight';p.settings.Temperature=nil;p.settings.Tint=nil end
+                    p.applyDevelopSettings=function(self,settings) assert(inGate);for k,v in pairs(settings) do self.settings[k]=clone(v) end end
+                    masters[i]=p;selected[i]=p
+                end'''.replace('COUNT',str(count)))
+            directory=Path(runtime.globals().editor.edit(True))
+            results=next((folder/'MizinLightroomLocal/jobs').glob('*/results.json'))
+            self.assertGreater(results.stat().st_size,8*1024*1024)
+            outcome=json.loads((directory/'outcome.json').read_text())
+            self.assertEqual(outcome['status'],'COMPLETED')
+            self.assertEqual((outcome['application']['completed'],outcome['application']['failed']),(count,0))
+            self.assertEqual(runtime.eval('masters[%d].settings.WhiteBalance'%count),'Custom')
+
+    def test_json_codec_reads_documents_above_eight_mebibytes(self):
+        with tempfile.TemporaryDirectory() as temp:
+            runtime=self.setup_editor(Path(temp))
+            runtime.globals().big_json=json.dumps({'rows':['y'*1000]*10000,'name':'Maçã \\"ok\\"'})
+            self.assertGreater(len(runtime.globals().big_json),8*1024*1024)
+            self.assertEqual(runtime.eval('#codec.decode(big_json).rows'),10000)
+            self.assertEqual(runtime.eval('codec.decode(big_json).name'),'Maçã \\"ok\\"')
+
     def test_virtual_source_is_resolved_by_identity_not_path_alone(self):
         with tempfile.TemporaryDirectory() as temp:
             runtime=self.setup_editor(Path(temp))
@@ -273,6 +301,9 @@ class PhotoEditorLuaTests(unittest.TestCase):
             predictions=self.predictions()
             if runtime.globals().invalid_prediction:predictions['Temperature']=1
             results=[{'id':p['id'],'path':p['path'],'status':'COMPUTED','predictions':predictions} for p in request['photos']]
+            if runtime.globals().row_padding:
+                # Real rows carry extended predictions, geometry and provenance; this only adds bytes.
+                for row in results:row['diagnostic']='x'*int(runtime.globals().row_padding)
             if request.get('geometry',{}).get('horizon'):
                 for row in results:row['geometry']={'status':'PROPOSAL_ONLY','imageSlopeDegrees':3.0,'imageWidth':1024,'imageHeight':683,'applyAutomatically':False}
                 if runtime.globals().only_first_geometry:

@@ -18,7 +18,7 @@ local function editor() return dofile(Paths.child(_PLUGIN.path,'PhotoEditor.lua'
 
 function M.load()
     local f=io.open(statePath(),'rb');if not f then return nil end
-    local text=f:read(8*1024*1024+1);f:close()
+    local text=f:read(Json.MAX_BYTES+1);f:close()
     local ok,state=pcall(Json.decode,text)
     if not ok or type(state)~='table' or state.schema~=SCHEMA then return nil end
     for _,key in ipairs({'sightings','processed','skipped','runs'}) do if type(state[key])~='table' then state[key]={} end end
@@ -28,7 +28,7 @@ end
 function M.save(state)
     Files.createAllDirectories(root())
     local text=Json.encode(state)
-    if #text>8*1024*1024 then error('Registro da pasta vigiada excede 8 MiB; desligue e ligue novamente a vigilancia.') end
+    if #text>Json.MAX_BYTES then error('Registro da pasta vigiada excede o limite de seguranca; desligue e ligue novamente a vigilancia.') end
     local temporary=statePath()..'.tmp'
     local f,e=io.open(temporary,'wb');if not f then error(tostring(e)) end
     local ok,err=f:write(text);local closed=f:close()

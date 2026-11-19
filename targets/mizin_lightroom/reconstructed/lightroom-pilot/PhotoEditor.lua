@@ -61,11 +61,11 @@ local function normal(p)return tostring(p):gsub('\\','/'):lower() end
 local function editingRoot()return child(child(Paths.getStandardFilePath('appData'),'MizinLightroomLocal'),'editing') end
 local function read(path)
     local f=io.open(path,'rb');if not f then return nil end
-    local text=f:read(8*1024*1024+1);f:close();return Json.decode(text)
+    local text=f:read(Json.MAX_BYTES+1);f:close();return Json.decode(text)
 end
 local function writeNew(path,value)
     if Files.exists(path) then error('Registro de edicao ja existe: '..path) end
-    local text=Json.encode(value);if #text>8*1024*1024 then error('Registro de edicao excede o limite de seguranca de 8 MiB') end
+    local text=Json.encode(value);if #text>Json.MAX_BYTES then error('Registro de edicao excede o limite de seguranca') end
     local f,e=io.open(path,'wb');if not f then error(tostring(e)) end
     local ok,err=f:write(text);local flushed,flushError=f:flush();local closed,closeError=f:close()
     if not ok or not flushed or not closed then error(tostring(err or flushError or closeError)) end
