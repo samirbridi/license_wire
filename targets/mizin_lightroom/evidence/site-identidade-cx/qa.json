@@ -5,6 +5,7 @@
     "three screen tabs and keyboard navigation",
     "empty gallery hidden",
     "official release link",
+    "download password: wrong password refused, right one opens the published package",
     "desktop/mobile light/dark without horizontal overflow",
     "manifest failure preserves known download",
     "before/after image loading, selection and keyboard slider endpoints",

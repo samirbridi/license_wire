@@ -1,0 +1,35 @@
+{
+  "schema": "mizin-lightroom.publication/1",
+  "version": "v0.33.0 (build 0050)",
+  "date": "2026-11-19",
+  "archive": {
+    "name": "CRISPIX-0.33.0-build0050-motor-local.zip",
+    "bytes": 110012274,
+    "sha256": "616ac1ca60d0be759a402c9abc83e942e98f5e2611c48c07ee0b706333feff5a",
+    "publicUrl": "https://pub-739d5fceaa824a6c8c84e39bb74ec917.r2.dev/CRISPIX-0.33.0-build0050-motor-local.zip",
+    "publicDownloadSizeAndHashMatch": true
+  },
+  "zipCrcPassed": true,
+  "noJsonCeilingInPublishedPackage": true,
+  "manifestUtf8WithoutBom": true,
+  "manifestPublicForPlugin": true,
+  "siteShowsVersion": true,
+  "siteDownloadLinkProtected": true,
+  "downloadGate": {
+    "apiStatus": 200,
+    "apiBody": {
+      "authorized": false
+    },
+    "downloadWithoutPasswordStatus": 302,
+    "downloadWithoutPasswordLocation": "https://crispixlr.pages.dev/?next=%2Fdownloads%2FCRISPIX-0.33.0-build0050-motor-local.zip#atualizar",
+    "wrongPasswordStatus": 503,
+    "secretConfigured": false
+  },
+  "networkChannel": {
+    "manifestVersion": "v0.33.0 (build 0050)",
+    "archiveHashMatch": true,
+    "verifiedWith": "PowerShell"
+  },
+  "unitTestsPassed": 289,
+  "nativeLightroomEditingValidated": false
+}
