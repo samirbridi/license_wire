@@ -18,6 +18,8 @@ local Engine=dofile(Paths.child(_PLUGIN.path,'LocalAnalysis.lua'))
 local M={}
 local limits={Exposure2012={-5,5},Temperature={2000,50000},Tint={-150,150},Contrast2012={-100,100},
     Highlights2012={-100,100},Shadows2012={-100,100},Whites2012={-100,100},Blacks2012={-100,100},Saturation={-100,100},Vibrance={-100,100}}
+-- Lightroom can omit these for a white balance it derives itself (As Shot, Daylight...).
+local whiteBalanceNumbers={Temperature=true,Tint=true}
 local baseNumbers={SplitToningBalance={-100,100},SplitToningHighlightHue={0,360},SplitToningHighlightSaturation={0,100},
     SplitToningShadowHue={0,360},SplitToningShadowSaturation={0,100},ColorGradeBlending={0,100},ColorGradeGlobalHue={0,360},
     ColorGradeGlobalLum={-100,100},ColorGradeGlobalSat={0,100},ColorGradeHighlightLum={-100,100},ColorGradeMidtoneHue={0,360},
@@ -101,7 +103,18 @@ function M.canonical(value)
     end
     local result=encode(value,0);if #result>2*1024*1024 then error('Ajustes excedem o limite de verificacao') end;return result
 end
-function M.fingerprint(value)return Digest.SHA256.digest(M.canonical(value)) end
+-- Outside Custom the Kelvin/Tint numbers are derived: Lightroom may omit them or fill them in
+-- later, and moving either slider turns the white balance into Custom, which is still detected.
+local function photoState(value)
+    if type(value)~='table' or value.WhiteBalance=='Custom' then return value end
+    local out={};for key,item in pairs(value) do out[key]=item end
+    out.Temperature,out.Tint,out.CustomTemperature,out.CustomTint=nil,nil,nil,nil
+    if out.WhiteBalance=='As Shot' then out.WhiteBalance=nil end
+    return out
+end
+function M.fingerprint(value)return Digest.SHA256.digest(M.canonical(photoState(value))) end
+-- Sessions and watcher sightings recorded up to build 0048 hold hashes of the exact settings.
+function M.matches(value,hash)return M.fingerprint(value)==hash or Digest.SHA256.digest(M.canonical(value))==hash end
 local function without(settings,excluded)
     local output={};for k,v in pairs(settings) do if excluded[k]==nil then output[k]=v end end;return output
 end
@@ -142,11 +155,20 @@ end
 
 function M.settings(predictions,base,before)
     local settings={WhiteBalance='Custom'};local omitted={}
+    -- Without the previous numbers a Custom white balance could not be restored exactly,
+    -- and a partial intensity has nothing to blend with: the photo keeps its white balance.
+    local unknown=before~=nil and (not finite(before.Temperature) or not finite(before.Tint))
+    local planned=predictions or {}
+    local keepWhiteBalance=unknown and (before.WhiteBalance=='Custom' or planned.Temperature==nil or planned.Tint==nil)
+    if keepWhiteBalance then settings.WhiteBalance=nil end
     for key,bound in pairs(limits) do
-        local n=predictions and predictions[key]
-        if not finite(n) or n<bound[1] or n>bound[2] then error('Sugestao invalida ou ausente: '..key) end
-        local scale=key=='Exposure2012' and 100 or 1
-        settings[key]=math.floor(n*scale+.5)/scale
+        if keepWhiteBalance and whiteBalanceNumbers[key] then omitted[#omitted+1]=key
+        else
+            local n=predictions and predictions[key]
+            if not finite(n) or n<bound[1] or n>bound[2] then error('Sugestao invalida ou ausente: '..key) end
+            local scale=key=='Exposure2012' and 100 or 1
+            settings[key]=math.floor(n*scale+.5)/scale
+        end
     end
     for key,n in pairs(predictions or {}) do
         if extra[key] then
@@ -185,9 +207,12 @@ function M.adjust(predictions,before,adjust)
     local intensity=adjust.intensity==nil and 100 or adjust.intensity
     if not finite(intensity) or intensity<0 or intensity>100 then error('Intensidade da edicao invalida') end
     local k=intensity/100;local out={}
+    local unknown=not finite(before.Temperature) or not finite(before.Tint)
     for key,value in pairs(predictions or {}) do
-        out[key]=value
-        if finite(value) and finite(before[key]) then out[key]=before[key]+k*(value-before[key]) end
+        if not (unknown and k<1 and whiteBalanceNumbers[key]) then
+            out[key]=value
+            if finite(value) and finite(before[key]) then out[key]=before[key]+k*(value-before[key]) end
+        end
     end
     for _,control in ipairs(styleControls) do
         local offset=adjust[control.name]
@@ -544,7 +569,11 @@ function M.capturePhotos(selected,progress)
             -- P&B photos are computed by the separate P&B model; without one, the engine fails only them.
             local treatment=settings.ConvertToGrayscale==true and 'monochrome' or 'color'
             if treatment=='monochrome' then skipped.monochrome=skipped.monochrome+1 end
-            local current={};for key in pairs(limits) do if not finite(settings[key]) then error('Controle atual indisponivel: '..key) end;current[key]=settings[key] end
+            local current={}
+            for key in pairs(limits) do
+                if finite(settings[key]) then current[key]=settings[key]
+                elseif not whiteBalanceNumbers[key] then error('Controle atual indisponivel: '..key) end
+            end
             records[#records+1]={id=id,path=path,beforeHash=M.fingerprint(settings),current=current,treatment=treatment}
             photos[#photos+1]={id=id,path=path,current=current,treatment=treatment,isVirtualCopy=photo:getRawMetadata('isVirtualCopy')}
         end
@@ -905,17 +934,22 @@ function M.restoreInPlace(catalog,dir,manifest)
             local ok,err=Tasks.pcall(function()
                 sameCatalog(catalog,manifest.catalogPath)
                 local photo=sourceFor(catalog,record)
-                local hash=M.fingerprint(photo:getDevelopSettings())
+                local current=photo:getDevelopSettings();local hash=M.fingerprint(current)
                 local applied=recorded(dir,index,'applied')
-                if hash~=ready.beforeHash then
+                if not M.matches(current,ready.beforeHash) then
                     local failed=recorded(dir,index,'failed')
                     local expected=(applied and applied.afterHash) or (failed and failed.observedHash)
-                    if not expected or hash~=expected then error('Foto com alteracoes posteriores ou estado nao confirmado: preservada para recuperacao manual pelo registro before.') end
+                    if not expected or not M.matches(current,expected) then error('Foto com alteracoes posteriores ou estado nao confirmado: preservada para recuperacao manual pelo registro before.') end
+                    -- Numbers absent from the record come back through the white balance itself.
+                    local previous=ready.before
+                    if previous.WhiteBalance==nil and (not finite(previous.Temperature) or not finite(previous.Tint)) then
+                        previous=deepCopy(previous);previous.WhiteBalance='As Shot'
+                    end
                     gate(catalog,'Mizin: restaurar edicao na grade',function()
                         if M.fingerprint(photo:getDevelopSettings())~=hash then error('Foto alterada durante restauracao') end
-                        photo:applyDevelopSettings(ready.before,'Mizin - restaurar edicao na grade',false)
+                        photo:applyDevelopSettings(previous,'Mizin - restaurar edicao na grade',false)
                     end)
-                    if M.fingerprint(photo:getDevelopSettings())~=ready.beforeHash then error('Restauracao completa nao confirmada') end
+                    if not M.matches(photo:getDevelopSettings(),ready.beforeHash) then error('Restauracao completa nao confirmada') end
                 end
                 checkpoint(dir,index,'restored',{restored=true});restored=restored+1
             end)
@@ -944,11 +978,11 @@ function M.restoreSession(dir)
                 local copy,source=copyFor(catalog,record,ready.copyId)
                 local sourceHash=M.fingerprint(source:getDevelopSettings())
                 local actual=copy:getDevelopSettings();local currentHash=M.fingerprint(actual)
-                if currentHash~=ready.beforeHash then
+                if not M.matches(actual,ready.beforeHash) then
                     local applied=recorded(dir,index,'applied');local failed=recorded(dir,index,'failed')
                     local expected=(applied and applied.afterHash) or (failed and failed.observedHash)
                     local planned=exactlyPlanned(actual,record.settings,skipSet(record.presetKeys))
-                    if currentHash~=expected and not (expected==nil and planned and M.fingerprint(without(actual,affected(record.settings)))==ready.untouchedHash) then
+                    if not (expected and M.matches(actual,expected)) and not (expected==nil and planned and M.matches(without(actual,affected(record.settings)),ready.untouchedHash)) then
                         error('A copia recebeu outras alteracoes; restauracao automatica preservou essas mudancas.')
                     end
                     if snapshotId(source,ready.snapshotName)~=ready.snapshotId then error('Snapshot anterior nao confere') end
@@ -960,7 +994,7 @@ function M.restoreSession(dir)
                         copy:applyDevelopSnapshot(ready.snapshotId)
                     end)
                     Tasks.yield()
-                    if M.fingerprint(copy:getDevelopSettings())~=ready.beforeHash then error('Lightroom nao confirmou a restauracao completa') end
+                    if not M.matches(copy:getDevelopSettings(),ready.beforeHash) then error('Lightroom nao confirmou a restauracao completa') end
                 end
                 if M.fingerprint(source:getDevelopSettings())~=sourceHash then error('Os ajustes da origem mudaram externamente durante a restauracao') end
                 checkpoint(dir,index,'restored',{copyId=ready.copyId,restored=true});restored=restored+1

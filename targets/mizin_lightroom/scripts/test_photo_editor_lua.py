@@ -95,6 +95,81 @@ class PhotoEditorLuaTests(unittest.TestCase):
             self.assertEqual(skipped.monochrome,1)
             self.assertTrue(runtime.globals().other.settings.ConvertToGrayscale)
 
+    NAMED_WHITE_BALANCE=("source.settings.WhiteBalance='Daylight';source.settings.Temperature=nil;source.settings.Tint=nil;"
+                         "source.settings.CustomTemperature=nil;source.settings.CustomTint=nil")
+
+    def test_capture_accepts_named_white_balance_without_numbers(self):
+        with tempfile.TemporaryDirectory() as temp:
+            runtime=self.setup_editor(Path(temp));runtime.execute(self.NAMED_WHITE_BALANCE)
+            records,photos,_=runtime.globals().editor.capture(runtime.globals().catalog)
+            self.assertEqual(len(records),1)
+            current=dict(photos[1]['current'].items())
+            self.assertNotIn('Tint',current);self.assertNotIn('Temperature',current)
+            self.assertEqual(len(current),8)
+
+    def test_capture_still_rejects_other_missing_controls(self):
+        with tempfile.TemporaryDirectory() as temp:
+            runtime=self.setup_editor(Path(temp));runtime.execute('source.settings.Contrast2012=nil')
+            with self.assertRaisesRegex(Exception,'Controle atual indisponivel: Contrast2012'):
+                runtime.globals().editor.capture(runtime.globals().catalog)
+
+    def test_named_white_balance_without_numbers_edits_and_restores(self):
+        # Lightroom may either keep omitting the numbers after the restore or start reporting them.
+        for refills in (False,True):
+            with self.subTest(refills=refills),tempfile.TemporaryDirectory() as temp:
+                folder=Path(temp);runtime=self.setup_editor(folder);runtime.execute(self.NAMED_WHITE_BALANCE)
+                directory=self.plan(runtime,folder)
+                runtime.execute('''progress.setCaption=function() end;manifest.mode='IN_PLACE'
+                    source.applyDevelopSettings=function(self,settings)
+                        assert(inGate);for k,v in pairs(settings) do self.settings[k]=clone(v) end
+                        if settings.WhiteBalance~='Custom' then
+                            self.settings.Temperature=REFILL;self.settings.Tint=REFILL and 7 or nil
+                        end
+                    end'''.replace('REFILL','5500' if refills else 'nil'))
+                (directory/'session.json').write_text(runtime.globals().codec.encode(runtime.globals().manifest))
+                status,_,_=runtime.globals().editor.applyInPlace(runtime.globals().catalog,directory.as_posix(),runtime.globals().manifest,runtime.globals().progress)
+                self.assertEqual(status,'COMPLETED')
+                self.assertEqual(runtime.eval('source.settings.WhiteBalance'),'Custom')
+                self.assertEqual(runtime.eval('source.settings.Tint'),-3)
+                restored,skipped,_=runtime.globals().editor.restoreSession(directory.as_posix())
+                self.assertEqual((restored,skipped),(1,0))
+                self.assertEqual(runtime.eval('source.settings.WhiteBalance'),'Daylight')
+
+    def test_lightroom_filling_derived_numbers_is_not_a_photo_change(self):
+        with tempfile.TemporaryDirectory() as temp:
+            runtime=self.setup_editor(Path(temp));runtime.execute(self.NAMED_WHITE_BALANCE)
+            editor=runtime.globals().editor;source=runtime.globals().source
+            before=editor.fingerprint(source.settings)
+            runtime.execute('source.settings.Temperature=5500;source.settings.Tint=7')
+            self.assertEqual(editor.fingerprint(source.settings),before)
+            runtime.execute("source.settings.WhiteBalance='Custom'")
+            custom=editor.fingerprint(source.settings)
+            self.assertNotEqual(custom,before)
+            runtime.execute('source.settings.Tint=8')
+            self.assertNotEqual(editor.fingerprint(source.settings),custom)
+
+    def test_partial_intensity_keeps_white_balance_it_cannot_blend(self):
+        with tempfile.TemporaryDirectory() as temp:
+            runtime=self.setup_editor(Path(temp));runtime.execute(self.NAMED_WHITE_BALANCE)
+            runtime.globals().predictions_json=json.dumps(self.predictions())
+            settings,omitted=runtime.eval('editor.settings(editor.adjust(codec.decode(predictions_json),source.settings,{intensity=50}),nil,source.settings)')
+            for key in ('WhiteBalance','Temperature','Tint'):self.assertIsNone(settings[key])
+            self.assertEqual(sorted(omitted.values()),['Temperature','Tint'])
+            self.assertIsNotNone(settings['Exposure2012'])
+
+    def test_sessions_recorded_with_exact_hashes_still_restore(self):
+        with tempfile.TemporaryDirectory() as temp:
+            folder=Path(temp);runtime=self.setup_editor(folder);directory=self.plan(runtime,folder)
+            runtime.execute("progress.setCaption=function() end;manifest.mode='IN_PLACE';source.applyDevelopSettings=function(self,settings) assert(inGate);for k,v in pairs(settings) do self.settings[k]=clone(v) end end")
+            (directory/'session.json').write_text(runtime.globals().codec.encode(runtime.globals().manifest))
+            exact=runtime.eval('modules.LrDigest.SHA256.digest(editor.canonical(source:getDevelopSettings()))')
+            status,_,_=runtime.globals().editor.applyInPlace(runtime.globals().catalog,directory.as_posix(),runtime.globals().manifest,runtime.globals().progress)
+            self.assertEqual(status,'COMPLETED')
+            ready=json.loads((directory/'001-ready.json').read_text());ready['beforeHash']=exact
+            (directory/'001-ready.json').write_text(json.dumps(ready))
+            restored,skipped,_=runtime.globals().editor.restoreSession(directory.as_posix())
+            self.assertEqual((restored,skipped),(1,0))
+
     def test_virtual_source_is_resolved_by_identity_not_path_alone(self):
         with tempfile.TemporaryDirectory() as temp:
             runtime=self.setup_editor(Path(temp))

@@ -74,10 +74,10 @@ function M.scan(state,catalog)
             if photo:getRawMetadata('isVirtualCopy')==true then state.skipped[id]='VIRTUAL_COPY'
             elseif not isRaw(photo:getRawMetadata('path')) then state.skipped[id]='NOT_CR3'
             else
-                local hash=Editor.fingerprint(photo:getDevelopSettings())
+                local settings=photo:getDevelopSettings();local hash=Editor.fingerprint(settings)
                 local seen=state.sightings[id]
                 if not seen then state.sightings[id]={hash=hash}
-                elseif seen.hash~=hash then state.skipped[id]='CHANGED_BEFORE_AUTOMATIC_EDIT';state.sightings[id]=nil
+                elseif not Editor.matches(settings,seen.hash) then state.skipped[id]='CHANGED_BEFORE_AUTOMATIC_EDIT';state.sightings[id]=nil
                 elseif #ready<M.MAX_BATCH then ready[#ready+1]=photo;expected[id]=hash end
             end
         end
