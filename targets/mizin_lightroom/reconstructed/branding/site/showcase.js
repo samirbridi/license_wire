@@ -80,7 +80,7 @@ fetch('latest.json', {cache: 'no-store'}).then(response => {
   document.getElementById('download-size').textContent = `ZIP · ${(release.archiveBytes / 1e6).toLocaleString('pt-BR', {maximumFractionDigits: 1})} MB · Windows`;
   document.getElementById('release-status').textContent = 'Versão consultada no canal oficial de atualização.';
 }).catch(() => {
-  document.getElementById('release-status').textContent = 'Canal indisponível no momento. O link acima é do build 0049 já publicado.';
+  document.getElementById('release-status').textContent = 'Canal indisponível no momento. O link acima é do build 0050 já publicado.';
 });
 
 // Only approved real pairs belong in comparisons.json. Empty galleries stay out of navigation.
