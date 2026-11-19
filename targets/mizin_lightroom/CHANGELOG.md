@@ -1,5 +1,25 @@
 # CHANGELOG - mizin_lightroom
 
+## v0.33.0 (build 0050) - 2026-11-19
+
+### 💥 Breaking Changes
+
+- Nenhum.
+
+### ✨ Features
+
+- feat: senha para baixar o plugin pelo site (atualizacao pelo plugin segue sem senha) (commit `6c7c4120aaa55a76f0af4abed436f69fb45fd3aa`)
+
+### 🐛 Fixes
+
+- fix: edicao de selecoes grandes sem teto de 8 MiB nos arquivos de tarefa (commit `30ca441fefe2fd0e53041fdb0f16bff34ec8beb5`)
+
+### ⚡ Improvements
+
+- improve: atualiza textos do site para o build 0049 (edicao sem Temperatura ou Matiz) (commit `d5a014c1f5cb5989652c8ccaf3bd5a90c971b122`)
+- improve: registra publicacao verificada do build 0049 (commit `a08b5555131010f5544dd91db00b48fcb05e1607`)
+- improve: notas do pacote para o build 0050 (selecoes grandes e senha no site) (commit `06d95104cba8031df141c01ace19a157a4419187`)
+
 ## v0.32.2 (build 0049) - 2026-11-19
 
 ### 💥 Breaking Changes

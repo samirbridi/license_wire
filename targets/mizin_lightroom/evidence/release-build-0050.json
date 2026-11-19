@@ -1,0 +1,41 @@
+{
+  "previous": "v0.32.2 (build 0049)",
+  "version": "v0.33.0 (build 0050)",
+  "date": "2026-11-19",
+  "timezone": "America/Sao_Paulo",
+  "baseline": "553b605ad9374da6332a65ba0a6b307ec49b272a",
+  "sourceHead": "06d95104cba8031df141c01ace19a157a4419187",
+  "increment": "feat",
+  "commits": [
+    {
+      "hash": "d5a014c1f5cb5989652c8ccaf3bd5a90c971b122",
+      "subject": "improve: atualiza textos do site para o build 0049 (edicao sem Temperatura ou Matiz)",
+      "type": "improve",
+      "breaking": false
+    },
+    {
+      "hash": "a08b5555131010f5544dd91db00b48fcb05e1607",
+      "subject": "improve: registra publicacao verificada do build 0049",
+      "type": "improve",
+      "breaking": false
+    },
+    {
+      "hash": "30ca441fefe2fd0e53041fdb0f16bff34ec8beb5",
+      "subject": "fix: edicao de selecoes grandes sem teto de 8 MiB nos arquivos de tarefa",
+      "type": "fix",
+      "breaking": false
+    },
+    {
+      "hash": "6c7c4120aaa55a76f0af4abed436f69fb45fd3aa",
+      "subject": "feat: senha para baixar o plugin pelo site (atualizacao pelo plugin segue sem senha)",
+      "type": "feat",
+      "breaking": false
+    },
+    {
+      "hash": "06d95104cba8031df141c01ace19a157a4419187",
+      "subject": "improve: notas do pacote para o build 0050 (selecoes grandes e senha no site)",
+      "type": "improve",
+      "breaking": false
+    }
+  ]
+}
