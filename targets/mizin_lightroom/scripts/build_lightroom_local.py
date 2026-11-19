@@ -111,7 +111,16 @@ def build(runtime_base, model_folder, dataset, manifest):
         'schema': 'mizin-lightroom.saved-pilot/1', 'version': version, 'automaticEditing': False, 'entries': entries}) + '\n', encoding='utf-8')
     readme = f'''# CRISPIX - motor local experimental
 
-## {version}: edicao nao trava mais com "Controle atual indisponivel: Tint"
+## {version}: selecoes de qualquer tamanho e senha para baixar pelo site
+
+EDITAR FOTOS aceita a quantidade que voce selecionar. Antes, selecoes muito grandes (alguns
+milhares de fotos) esbarravam no limite de tamanho dos arquivos internos da tarefa e a
+edicao parava. Agora uma selecao de 3.000 fotos e editada inteira nos testes, sem dividir.
+
+O download do plugin pelo site passou a pedir senha. A atualizacao pelo menu do plugin
+(Verificar atualizacoes) continua funcionando sem senha.
+
+## Build 0049: edicao nao trava mais com "Controle atual indisponivel: Tint"
 
 Algumas fotos tem balanco de branco com nome (Luz do dia, Como fotografado) sem os numeros de
 Temperatura e Matiz. Antes uma unica foto assim impedia a edicao do lote inteiro. Agora essas
