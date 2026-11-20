@@ -26,10 +26,9 @@ const accessForm = document.getElementById('download-access');
 const accessInput = document.getElementById('download-password');
 const accessStatus = document.getElementById('download-access-status');
 const PACKAGE = /^CRISPIX-\d+\.\d+\.\d+-build\d{4}-motor-local\.zip$/;
-function askPassword(message) {
-  accessForm.hidden = false;
+function say(message, error) {
   accessStatus.textContent = message;
-  accessInput.focus();
+  accessStatus.classList.toggle('is-error', Boolean(error));
 }
 async function downloadAuthorized() {
   try {
@@ -37,32 +36,34 @@ async function downloadAuthorized() {
     return response.ok && (await response.json()).authorized === true;
   } catch { return false; }
 }
-downloadLink.addEventListener('click', async event => {
-  event.preventDefault();
-  if (await downloadAuthorized()) location.href = downloadLink.getAttribute('href');
-  else askPassword('Digite a senha para baixar o plugin.');
-});
+// The password field is always shown; "Baixar plugin" only downloads after it is accepted.
 accessForm.addEventListener('submit', async event => {
   event.preventDefault();
   const password = accessInput.value.trim();
-  if (!password) { askPassword('Digite a senha.'); return; }
-  accessStatus.textContent = 'Verificando...';
+  if (!password) {
+    // Already unlocked in this browser (12 h): no need to type it again.
+    if (await downloadAuthorized()) { location.href = downloadLink.getAttribute('href'); return; }
+    say('Digite a senha para baixar o plugin.', true); accessInput.focus(); return;
+  }
+  say('Verificando a senha...');
   let response;
   try {
     response = await fetch('/api/download-access', {method: 'POST', credentials: 'same-origin',
       headers: {'Content-Type': 'application/json'}, body: JSON.stringify({password})});
   } catch {
-    accessStatus.textContent = 'Não foi possível verificar a senha agora. Tente novamente.';
+    say('Não foi possível verificar a senha agora. Tente novamente.', true);
     return;
   }
-  if (response.status === 401) { accessInput.value = ''; askPassword('Senha incorreta.'); return; }
-  if (!response.ok) { accessStatus.textContent = 'Download pelo site indisponível no momento.'; return; }
+  if (response.status === 401) { accessInput.value = ''; say('Senha incorreta.', true); accessInput.focus(); return; }
+  if (!response.ok) { say('Download pelo site indisponível no momento.', true); return; }
   accessInput.value = '';
-  accessForm.hidden = true;
+  say('Senha aceita. O download vai começar.');
   location.href = downloadLink.getAttribute('href');
 });
-// Arriving from a protected link without the password: show the form right away.
-if (/^\/downloads\/CRISPIX-/.test(new URLSearchParams(location.search).get('next') || '')) askPassword('Digite a senha para baixar o plugin.');
+// Arriving from a protected link without the password.
+if (/^\/downloads\/CRISPIX-/.test(new URLSearchParams(location.search).get('next') || '')) {
+  say('Digite a senha para baixar o plugin.'); accessInput.focus();
+}
 
 // The published plugin manifest remains authoritative; website edits never change its version.
 fetch('latest.json', {cache: 'no-store'}).then(response => {

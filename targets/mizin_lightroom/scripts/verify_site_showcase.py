@@ -58,9 +58,12 @@ def verify(url, output):
         page.route('**/downloads/**',lambda route:route.fulfill(content_type='text/plain',body='pacote de teste'))
         href=page.locator('#download-link').get_attribute('href')
         assert href==f"/downloads/{release['archiveName']}",href
-        assert page.locator('#download-access').is_hidden()
-        page.locator('#download-link').click()
-        page.locator('#download-access').wait_for(state='visible')
+        # The password field is visible from the start and the button never downloads without it.
+        assert page.locator('#download-password').is_visible()
+        assert page.locator('#download-access button').is_visible()
+        page.locator('#download-access button').click()
+        page.wait_for_function("document.getElementById('download-access-status').textContent.includes('Digite a senha')")
+        assert not page.url.endswith(href)
         page.locator('#download-password').fill('errada');page.locator('#download-access button').click()
         page.wait_for_function("document.getElementById('download-access-status').textContent.includes('incorreta')")
         page.locator('#download-password').fill('certa')
