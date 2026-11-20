@@ -22,8 +22,10 @@
     },
     "downloadWithoutPasswordStatus": 302,
     "downloadWithoutPasswordLocation": "https://crispixlr.pages.dev/?next=%2Fdownloads%2FCRISPIX-0.33.0-build0050-motor-local.zip#atualizar",
-    "wrongPasswordStatus": 503,
-    "secretConfigured": false
+    "wrongPasswordStatus": 401,
+    "secretConfigured": true,
+    "secretActivatedBy": "republicacao do mesmo build 0050 (deploy 402aa03c) depois de definir DOWNLOAD_PASSWORD",
+    "rightPasswordCheckedLive": false
   },
   "networkChannel": {
     "manifestVersion": "v0.33.0 (build 0050)",

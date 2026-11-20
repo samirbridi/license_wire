@@ -20,5 +20,6 @@
 - Testes: `scripts/test_download_gate.mjs` (8 casos, via `test_download_gate.py`) e `verify_site_showcase.py` (formulario, senha errada, senha certa).
 
 ## Pendente
-- O usuario precisa definir a senha: `npx wrangler pages secret put DOWNLOAD_PASSWORD --project-name crispixlr` (pasta reconstructed/branding). Ao definir, validar no ar com a senha certa.
+- Senha definida pelo usuario em 2026-11-19. O Pages so aplica um segredo novo na PROXIMA publicacao: foi preciso republicar o 0050 (deploy 402aa03c). Depois disso, senha errada -> 401. A senha certa nao foi testada por mim (so o usuario a conhece).
+- Trocar a senha no futuro: `npx wrangler pages secret put DOWNLOAD_PASSWORD --project-name crispixlr` e republicar.
 - Validar no Lightroom real uma selecao grande (milhares de fotos) e a atualizacao 0049 -> 0050 pelo menu.
