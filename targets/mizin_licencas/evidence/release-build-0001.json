@@ -1,0 +1,17 @@
+{
+  "previous": "v0.0.0 (build 0000)",
+  "version": "v0.1.0 (build 0001)",
+  "date": "2026-11-22",
+  "timezone": "America/Sao_Paulo",
+  "baseline": null,
+  "sourceHead": "a15f39a0ac5f50440e576561ad2f26717adf2d28",
+  "increment": "feat",
+  "commits": [
+    {
+      "hash": "a15f39a0ac5f50440e576561ad2f26717adf2d28",
+      "subject": "feat: cria central de compra e ativação de licenças Mizin",
+      "type": "feat",
+      "breaking": false
+    }
+  ]
+}
