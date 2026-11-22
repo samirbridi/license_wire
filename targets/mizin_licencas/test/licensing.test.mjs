@@ -1,0 +1,88 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import { createHmac, randomBytes } from 'node:crypto';
+import { catalog, openStore, verifyOffline, digest } from '../licensing.mjs';
+import { fulfillStripe, stripeEvent } from '../payments.mjs';
+
+function fixture(t) {
+  const clock={ms:Date.UTC(2026,10,22,12)};
+  const s=openStore(':memory:',()=>clock.ms);
+  t.after(()=>s.db.close());
+  for (const user of ['a','b']) s.db.prepare('INSERT INTO users VALUES(?,?,?)').run(user,user+'@test.invalid','test');
+  const order = (args={}) => s.order('a',{offer:'playout',quantity:1,...args});
+  const pay = o => s.settle(o.id,o.total,'BRL');
+  return {s,clock,order,pay};
+}
+test('pagamento confirmado uma vez, preços calculados no servidor e contas isoladas',t=>{
+  const {s,order,pay}=fixture(t);
+  const o=order({quantity:2,total:1});
+  assert.equal(o.total,70200);
+  assert.deepEqual(s.dashboard('a'),[]);
+  assert.throws(()=>s.settle(o.id,1,'BRL'));
+  const serial=pay(o);
+  assert.equal(pay(o),serial);
+  assert.equal(s.dashboard('a').length,1);
+  assert.deepEqual(s.dashboard('b'),[]);
+  assert.throws(()=>s.releaseDevice('b',serial,'anything'));
+  assert.equal(s.order('a',{offer:'playout',quantity:2},o.id).id,o.id);
+  assert.throws(()=>s.order('b',{offer:'playout',quantity:2},o.id));
+});
+test('vagas compartilhadas no pacote, vínculo da autorização e expiração no dia 30',t=>{
+  const {s,clock,order,pay}=fixture(t);
+  const serial=pay(order({offer:'studio'}));
+  const device={serial,product:'playout',release:'preview-1',installationKey:randomBytes(32).toString('hex'),label:'Estúdio'};
+  const token=s.authorize(device,true);
+  const ok=(token,d=device,ms=clock.ms)=>verifyOffline(token,s.publicKey,d,ms);
+  assert.ok(ok(token));
+  assert.ok(ok(token,device,clock.ms+30*86400000-1));
+  assert.equal(ok(token,device,clock.ms+30*86400000),false);
+  assert.equal(ok('a'+token),false);
+  assert.equal(ok(token,{...device,release:'outra'}),false);
+  const second={...device,installationKey:randomBytes(32).toString('hex')};
+  assert.equal(ok(token,second),false);
+  assert.throws(()=>s.authorize(second,true),/Limite/);
+  s.authorize({...device,product:'outliner'},true);
+  assert.equal(s.dashboard('a')[0].devices.length,1);
+  s.releaseDevice('a',serial,digest(device.installationKey));
+  assert.throws(()=>s.authorize(device,false),/desativada/);
+  s.authorize(second,true);
+  assert.ok(ok(token));
+});
+test('direito perpétuo às versões elegíveis e extensão de cobertura no mesmo serial',t=>{
+  const {s,clock,order,pay}=fixture(t);
+  const serial=pay(order());
+  const args={serial,product:'playout',release:'preview-1',installationKey:'a'.repeat(64),label:'Teste'};
+  clock.ms=Date.UTC(2028,0,31);
+  s.authorize(args,true);
+  const releases=catalog.products[0].releases;
+  releases['test-next']='2028-01-15';
+  t.after(()=>delete releases['test-next']);
+  assert.throws(()=>s.authorize({...args,release:'test-next'},false),/renovação/);
+  assert.throws(()=>s.authorize({...args,product:'outliner'},true),/não habilitada/);
+  assert.equal(pay(order({action:'renew',serial})),serial);
+  assert.equal(s.dashboard('a')[0].rights.playout.until,'2029-01-31');
+  s.authorize({...args,release:'test-next'},false);
+  const before=s.dashboard('a')[0].rights;
+  const upgrade=order({action:'expand',serial,quantity:2});
+  pay(upgrade);pay(upgrade);
+  assert.equal(s.dashboard('a')[0].seats,3);
+  assert.deepEqual(s.dashboard('a')[0].rights,before);
+  const unlimited=pay(order({offer:'outliner'}));
+  assert.throws(()=>order({action:'renew',serial:unlimited}));
+});
+test('webhook Stripe assinado, valor, ambiente e estado do pagamento',t=>{
+  const {s,order}=fixture(t);
+  const o=order();
+  const event={type:'checkout.session.completed',livemode:false,data:{object:{metadata:{mizin_order:o.id},amount_total:o.total,currency:'brl',mode:'payment',payment_status:'paid'}}};
+  const raw=Buffer.from(JSON.stringify(event)), sec='test-only', time=Math.floor(Date.now()/1000);
+  const sig=createHmac('sha256',sec).update(time+'.').update(raw).digest('hex');
+  const header='t='+time+',v1='+sig;
+  assert.throws(()=>stripeEvent(raw,header,'wrong'));
+  assert.throws(()=>stripeEvent(raw,header,sec,(time+301)*1000));
+  const authenticated=stripeEvent(raw,header,sec);
+  fulfillStripe(s,authenticated,true);
+  fulfillStripe(s,{...event,data:{object:{...event.data.object,payment_status:'unpaid'}}},false);
+  assert.equal(s.dashboard('a').length,0);
+  fulfillStripe(s,authenticated,false);fulfillStripe(s,authenticated,false);
+  assert.equal(s.dashboard('a').length,1);
+});

@@ -1,0 +1,86 @@
+{
+  "currency": "BRL",
+  "tiers": [
+    {
+      "from": 1,
+      "discount": 0
+    },
+    {
+      "from": 2,
+      "discount": 10
+    },
+    {
+      "from": 5,
+      "discount": 20
+    }
+  ],
+  "products": [
+    {
+      "id": "playout",
+      "name": "Mizin Playout",
+      "kind": "Aplicativo",
+      "terms": 12,
+      "releases": {
+        "preview-1": "2026-11-22"
+      }
+    },
+    {
+      "id": "pdt-to-ppt",
+      "name": "PDT-to-PPT",
+      "kind": "Aplicativo",
+      "terms": 12,
+      "releases": {
+        "preview-1": "2026-11-22"
+      }
+    },
+    {
+      "id": "outliner",
+      "name": "Easy Outliner",
+      "kind": "Plugin · DLL e Wire",
+      "terms": null,
+      "releases": {
+        "preview-1": "2026-11-22"
+      }
+    }
+  ],
+  "offers": [
+    {
+      "id": "playout",
+      "name": "Mizin Playout",
+      "items": [
+        "playout"
+      ],
+      "price": 39000,
+      "renew": 9900
+    },
+    {
+      "id": "pdt-to-ppt",
+      "name": "PDT-to-PPT",
+      "items": [
+        "pdt-to-ppt"
+      ],
+      "price": 14900,
+      "renew": 4900
+    },
+    {
+      "id": "outliner",
+      "name": "Easy Outliner",
+      "items": [
+        "outliner"
+      ],
+      "price": 7900,
+      "renew": 0
+    },
+    {
+      "id": "studio",
+      "name": "Pacote de estúdio",
+      "items": [
+        "playout",
+        "pdt-to-ppt",
+        "outliner"
+      ],
+      "price": 49500,
+      "renew": 13900
+    }
+  ]
+}
