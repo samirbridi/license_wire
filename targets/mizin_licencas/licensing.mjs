@@ -102,7 +102,7 @@ export function openStore(file, now = Date.now) {
       return serial;
     });
   }
-  function authorize({serial, product, release, installationKey, label}, activate) {
+  function authorize({serial, product, release, installationKey, label}, activate, wireOwner = null) {
     if (typeof installationKey !== 'string' || !/^[a-f0-9]{64}$/.test(installationKey)) fail('Identidade de instalação inválida.');
     const device = digest(installationKey);
     return transaction(db, () => {
@@ -110,6 +110,9 @@ export function openStore(file, now = Date.now) {
       const rights = record && JSON.parse(record.rights);
       const item = catalog.products.find(x => x.id === product);
       if (!item || !rights || !Object.hasOwn(rights,product)) fail('Licença não habilitada para o produto.',403);
+      if (item.wireReleases?.includes(release)) {
+        if (wireOwner !== record.owner) fail('Entre no Gerenciador Mizin para ativar a edição Wire.',403);
+      } else if (wireOwner !== null) fail('A edição selecionada usa ativação direta.',400);
       if (!Object.hasOwn(item.releases,release)) fail('Versão desconhecida.');
       const until = rights[product].until;
       if (until && item.releases[release] > until) fail('Esta versão requer renovação das atualizações.',403);

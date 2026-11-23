@@ -35,10 +35,12 @@
     },
     {
       "id": "outliner",
-      "name": "Easy Outliner",
+      "name": "Mizin Outliner",
       "kind": "Plugin · DLL e Wire",
+      "wireReleases": ["wire-preview-1"],
       "terms": null,
       "releases": {
+        "wire-preview-1": "2026-11-22",
         "preview-1": "2026-11-22"
       }
     }
@@ -64,7 +66,7 @@
     },
     {
       "id": "outliner",
-      "name": "Easy Outliner",
+      "name": "Mizin Outliner",
       "items": [
         "outliner"
       ],

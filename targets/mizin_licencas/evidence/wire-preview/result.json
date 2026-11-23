@@ -1,0 +1,21 @@
+{
+  "wire": "7.29.0.33052",
+  "compilerSha256": "2AD5E368D5FC9FC56AE324CE7F4C998AFDEF7EB76E5EADC98BA93C037580BE1E",
+  "patchId": "c792fbec-b7ae-4219-8f65-abf594803692",
+  "test": "pulso de teste no envelope pela API REST do Wire",
+  "capture": "480x270",
+  "roi": [
+    66,
+    111,
+    410,
+    154
+  ],
+  "pixelsDifferentFromInput": {
+    "locked": 5607,
+    "opened": 0,
+    "timeout": 5607
+  },
+  "connections": 7,
+  "udpToHost": "pendente",
+  "arena": "pendente"
+}

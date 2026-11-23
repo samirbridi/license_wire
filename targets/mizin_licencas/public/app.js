@@ -53,12 +53,17 @@ function header(page,title,intro) {
   $('title').textContent=title;
   $('intro').textContent=intro;
 }
+function wireInfo(items) {
+  if (!items.some(item=>item.wireReleases?.length)) return '';
+  const download=state.managerAvailable?' <a href="/downloads/mizin-wire.zip">Baixar gerenciador para Windows</a>':'';
+  return '<p class="detail">Na edição Wire, entre no Gerenciador Mizin com a conta da compra. A DLL usa ativação direta.'+download+'</p>';
+}
 function shop() {
   header('shop','Loja de software','Escolha os produtos e a quantidade de máquinas para o seu estúdio.');
   $('content').innerHTML='<h2>Catálogo</h2><div class="grid">'+state.catalog.offers.map(p=>{
     const items=p.items.map(product);
     const detail=items.length>1?items.map(i=>i.name).join(' · '):items[0].terms===null?'Atualizações incluídas por tempo indeterminado.':items[0].terms+' meses de atualizações incluídos.';
-    return '<article class="card"><p class="kind">'+escapeHtml(items.length>1?'Pacote de programas e plugins':items[0].kind)+'</p><h3>'+escapeHtml(p.name)+'</h3><p class="detail">'+escapeHtml(detail)+'</p><div class="bottom"><span class="price">'+money(p.price)+'</span><button data-buy="'+escapeHtml(p.id)+'">Configurar licença</button></div></article>';
+    return '<article class="card"><p class="kind">'+escapeHtml(items.length>1?'Pacote de programas e plugins':items[0].kind)+'</p><h3>'+escapeHtml(p.name)+'</h3><p class="detail">'+escapeHtml(detail)+'</p>'+wireInfo(items)+'<div class="bottom"><span class="price">'+money(p.price)+'</span><button data-buy="'+escapeHtml(p.id)+'">Configurar licença</button></div></article>';
   }).join('')+'</div>';
 }
 async function library() {
@@ -69,7 +74,7 @@ async function library() {
     const terms=Object.entries(l.rights).map(([id,r])=>'<li>'+escapeHtml(product(id).name)+' · '+(r.until?'versões até '+date(r.until):'atualizações sem prazo')+'</li>').join('');
     const devices=l.devices.map(d=>'<div class="row"><span>'+escapeHtml(d.label)+'</span><button data-free="'+d.device+'" data-serial="'+l.serial+'">Liberar máquina</button></div>').join('');
     const renewable=Object.values(l.rights).some(r=>r.months>0);
-    return '<article class="panel"><div class="row"><h3>'+escapeHtml(plan(l.offer).name)+'</h3><span>'+l.devices.length+' de '+l.seats+' máquinas em uso</span></div><p><code>'+l.serial+'</code></p><ul>'+terms+'</ul>'+devices+'<div class="actions"><button data-expand="'+l.serial+'">Adicionar máquinas</button>'+(renewable?'<button data-renew="'+l.serial+'">Renovar atualizações</button>':'')+'</div></article>';
+    return '<article class="panel"><div class="row"><h3>'+escapeHtml(plan(l.offer).name)+'</h3><span>'+l.devices.length+' de '+l.seats+' máquinas em uso</span></div><p><code>'+l.serial+'</code></p><ul>'+terms+'</ul>'+wireInfo(Object.keys(l.rights).map(product))+devices+'<div class="actions"><button data-expand="'+l.serial+'">Adicionar máquinas</button>'+(renewable?'<button data-renew="'+l.serial+'">Renovar atualizações</button>':'')+'</div></article>';
   });
   const orders=account.orders.map(o=>'<div class="row"><span>'+escapeHtml(plan(o.offer).name)+' · '+({buy:'Compra',expand:'Máquinas',renew:'Atualizações'}[o.action])+'</span><span>'+money(o.total)+' · '+(o.paid?'Pago':'Pendente')+'</span>'+(!o.paid?'<button data-pay="'+o.id+'">'+ (state.sandbox?'Simular pagamento':'Retomar checkout') +'</button>':'')+'</div>').join('');
   $('content').innerHTML='<div class="stack">'+(cards.join('')||'<div class="panel"><h3>Nenhuma licença nesta conta</h3><p>Os seriais aparecem aqui após a confirmação do pagamento.</p><button data-catalog>Ver catálogo</button></div>')+'</div>'+(orders?'<section class="orders"><h2>Pedidos</h2><div class="panel">'+orders+'</div></section>':'');

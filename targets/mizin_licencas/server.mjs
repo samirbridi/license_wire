@@ -1,11 +1,12 @@
 import { createServer } from 'node:http';
 import { randomBytes, randomUUID, scrypt, timingSafeEqual } from 'node:crypto';
 import { promisify } from 'node:util';
-import { mkdirSync, readFileSync } from 'node:fs';
+import { createReadStream, existsSync, mkdirSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { catalog, digest, fail, openStore } from './licensing.mjs';
 import { stripeCheckout, stripeEvent, fulfillStripe } from './payments.mjs';
+import { wireManager } from './wire-manager.mjs';
 
 const derive = promisify(scrypt);
 const assets = new Map([['/',['index.html','text/html']],['/app.js',['app.js','text/javascript']],['/style.css',['style.css','text/css']]]);
@@ -23,6 +24,8 @@ const dir = process.env.LICENSE_DATA || fileURLToPath(new URL('./runtime/',impor
 mkdirSync(dir,{recursive:true,mode:0o700});
 const store = openStore(join(dir,sandbox?'local.sqlite':live?'live.sqlite':'stripe-test.sqlite'));
 const db = store.db;
+const wire = wireManager(store);
+const managerFile = join(dir,'Mizin-Wire-'+digest(origin.origin+'|'+wire.publicBlob)+'.zip');
 const sessionAttributes = '; HttpOnly; SameSite=Lax; Path=/'+(origin.protocol === 'https:'?'; Secure':'');
 const attempts = new Map();
 function limit(ip) {
@@ -87,7 +90,15 @@ const server = createServer(async (req,res) => {
     const hashed = digest(cookie);
     const user = db.prepare('SELECT u.id,u.email FROM sessions s JOIN users u ON u.id=s.owner WHERE s.token=? AND s.expires>?').get(hashed,Date.now());
     if (req.method === 'GET') {
-      if (path === '/api/catalog') return send({catalog,sandbox,test:!live,email:user?.email});
+      if (path === '/api/catalog') return send({catalog,sandbox,test:!live,email:user?.email,managerAvailable:existsSync(managerFile)});
+      if (path === '/api/wire/issuer') return send({publicBlob:wire.publicBlob});
+      if (path === '/api/wire/library' && user) return send({plugins:wire.library(user.id)});
+      if (path === '/downloads/mizin-wire.zip') {
+        if (!existsSync(managerFile)) fail('Gerenciador ainda não empacotado para este ambiente.',404);
+        res.setHeader('Content-Type','application/zip');
+        res.setHeader('Content-Disposition','attachment; filename="Mizin-Wire.zip"');
+        return res.end(readFileSync(managerFile));
+      }
       if (path === '/api/public-key') return send({algorithm:'Ed25519',key:store.publicKey});
       if (path === '/api/account' && user) return send({licenses:store.dashboard(user.id),orders:db.prepare('SELECT id,action,offer,total,quantity,paid FROM orders WHERE owner=? ORDER BY rowid DESC LIMIT 50').all(user.id)});
       fail('Recurso indisponível.',user?404:401);
@@ -109,6 +120,22 @@ const server = createServer(async (req,res) => {
       return send({token:store.authorize(data,path === '/api/activate')});
     }
     if (!user) fail('Entre para continuar.',401);
+    if (path === '/api/wire/download') {
+      wire.grant(user.id,data,false);
+      if (![data.product,data.release].every(value => typeof value === 'string' && /^[a-z0-9_-]+$/.test(value))) fail('Identificador de distribuição inválido.');
+      const filename = data.product+'--'+data.release+'.cwired';
+      const file = join(dir,'wire-plugins',filename);
+      if (!existsSync(file)) fail('Build Wire ainda não publicado neste ambiente.',404);
+      res.setHeader('Content-Type','application/octet-stream');
+      res.setHeader('Content-Disposition','attachment; filename="'+filename+'"');
+      const stream = createReadStream(file);
+      stream.on('error',()=>res.destroy());
+      res.on('close',()=>stream.destroy());
+      return stream.pipe(res);
+    }
+    if (path === '/api/wire/activate' || path === '/api/wire/verify') {
+      return send(wire.grant(user.id,data,path === '/api/wire/activate'));
+    }
     if (path === '/api/logout') {
       db.prepare('DELETE FROM sessions WHERE token=?').run(hashed);
       res.setHeader('Set-Cookie','session=; Max-Age=0'+sessionAttributes);

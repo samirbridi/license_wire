@@ -1,0 +1,17 @@
+Mizin · Gerenciador Wire para Windows
+
+Extraia o ZIP, abra Mizin Wire.exe e entre com o e-mail e a senha da loja.
+Escolha uma compra Wire e clique em Ativar nesta máquina. Baixar plugin
+salva o .cwired para instalação no Resolume. Contas com pacote veem
+os plugins incluídos. O portal da loja permite liberar a vaga.
+
+Para o efeito de homologação, habilite OSC Input nas preferências do
+Wire ou Arena e informe a mesma porta no gerenciador. Mantenha o app
+aberto. O efeito exibe MIZIN DEMO quando deixa de receber o sinal.
+A loja local fornece um efeito de teste no build wire-preview-1.
+
+Uma autorização válida funciona offline por até 30 dias. O gerenciador
+guarda o acesso protegido pelo usuário Windows e tenta renovar a
+autorização enquanto estiver conectado. Sair encerra o acesso local.
+O instalador desta homologação é vinculado à origem e à chave da loja
+que o gerou. Use o pacote fornecido pela sua própria loja Mizin.

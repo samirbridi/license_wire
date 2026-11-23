@@ -32,6 +32,14 @@ Produção usa um catálogo comercial explícito, origem HTTPS e banco próprio.
 
 A homologação cobre cadastro, login, compra de programas e pacotes, máquinas, renovação de atualizações, confirmação de pagamento e API de ativação. O teste HTTP usa armazenamento temporário e reinicia o servidor para verificar persistência. O adaptador Stripe foi testado com eventos sintéticos. Antes da abertura comercial, faltam a homologação com a conta do vendedor, o catálogo definitivo, recuperação de conta, tratamento de estornos e hospedagem.
 
-Na etapa de integração, os aplicativos e DLLs próprios poderão consumir a API. Para plugins Wire próprios, o gerenciador deverá obter a autorização e o patch precisará de uma forma comprovada de aplicá-la na renderização. A marca-d'água proposta pertence ao nosso plugin. A viabilidade desse vínculo no Wire requer um protótipo no host.
+O Gerenciador Mizin para Windows permite entrar com a conta da loja, ativar uma compra Wire e baixar a edição correspondente. O catálogo de demonstração usa o ID histórico `outliner` para o Mizin Outliner. O build de homologação entrega um efeito de teste da marca-d’água. O produto comercial completo ainda precisa incorporar a integração. Os aplicativos e as DLLs conservam a ativação por serial.
+
+Com a loja local em execução, gere o pacote da mesma origem e chave com PowerShell 7 em Windows, .NET Framework e Wire instalados:
+
+```powershell
+.\manager\package.ps1 -IncludeTestEffect
+```
+
+A loja oferece o ZIP nas ofertas que incluem Wire e em Minhas licenças. Extraia e abra `Mizin Wire.exe`. O download do patch requer compra e máquina ativada. Para publicar outro build, coloque o arquivo autorizado em `LICENSE_DATA/wire-plugins/<produto>--<release>.cwired` e cadastre o identificador em `releases` e `wireReleases`. A arte de demonstração e os limites do transporte estão documentados no [estudo do Wire](notes/05_wire.md).
 
 O contrato para os clientes está em [API de licenciamento](notes/03_protocols_apis.md). Para gerar a versão após um commit estruturado do alvo, execute `node scripts/version-from-commits.mjs --write`.
