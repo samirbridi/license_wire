@@ -97,6 +97,7 @@ namespace Mizin.Wire {
             page=key;bool store=key=="store",account=key=="account";
             foreach(var item in pages) {item.Value.BackColor=item.Key==key?Surface:Rail;item.Value.ForeColor=item.Key==key?Lime:Muted;}
             collectionPage.Visible=!account;accountPage.Visible=account;list.Visible=!store;storeList.Visible=store;
+            authorized.Visible=key=="library";
             heading.Text=store?"Explorar plugins":account?"Conta e conexão":"Minha biblioteca";
             subtitle.Text=store?"Plugins Wire disponíveis na loja Mizin.":account?"Use a mesma conta da sua compra.":profile.email??"Entre para sincronizar suas compras.";
             AcceptButton=account?login:null;status.Text="";UpdateActions();
@@ -128,7 +129,7 @@ namespace Mizin.Wire {
             if(e.Index<0 || e.Index>=box.Items.Count)return;
             var p=(Plugin)box.Items[e.Index];bool selected=(e.State&DrawItemState.Selected)!=0;
             var r=e.Bounds; r.Inflate(-2,-4);
-            e.Graphics.Clear(Canvas);
+            using(var background=new SolidBrush(Canvas)) e.Graphics.FillRectangle(background,e.Bounds);
             using(var bg=new SolidBrush(selected?Color.FromArgb(44,59,54):Surface)) e.Graphics.FillRectangle(bg,r);
             var tile=new Rectangle(r.X+8,r.Y+8,75,r.Height-16);
             bool cool=p.product=="slice-refine";
