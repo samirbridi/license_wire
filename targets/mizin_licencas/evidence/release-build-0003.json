@@ -1,0 +1,17 @@
+{
+  "previous": "v0.2.0 (build 0002)",
+  "version": "v0.3.0 (build 0003)",
+  "date": "2026-11-22",
+  "timezone": "America/Sao_Paulo",
+  "baseline": "0d9a08d6ad0a9e13ad7e91e82bff22c6aa29ce06",
+  "sourceHead": "b4e8ad8c1c7227e41e863552a43f7097cbb736c8",
+  "increment": "feat",
+  "commits": [
+    {
+      "hash": "b4e8ad8c1c7227e41e863552a43f7097cbb736c8",
+      "subject": "feat: adiciona catálogo ao painel e compila edições Wire para a loja",
+      "type": "feat",
+      "breaking": false
+    }
+  ]
+}

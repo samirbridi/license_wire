@@ -1,5 +1,23 @@
 # Changelog da Central de Licenças Mizin
 
+## v0.3.0 (build 0003) - 2026-11-22
+
+### 💥 Breaking Changes
+
+- Nenhum.
+
+### ✨ Features
+
+- feat: adiciona catálogo ao painel e compila edições Wire para a loja (commit `b4e8ad8c1c7227e41e863552a43f7097cbb736c8`)
+
+### 🐛 Fixes
+
+- Nenhum.
+
+### ⚡ Improvements
+
+- Nenhum.
+
 ## v0.2.0 (build 0002) - 2026-11-22
 
 ### 💥 Breaking Changes
