@@ -1,5 +1,23 @@
 # Changelog da Central de Licenças Mizin
 
+## v0.3.1 (build 0004) - 2026-11-22
+
+### 💥 Breaking Changes
+
+- Nenhum.
+
+### ✨ Features
+
+- Nenhum.
+
+### 🐛 Fixes
+
+- fix: preserva cartões vizinhos ao desenhar o catálogo nativo (commit `bd2f880699c878447b2de059eb2799444d471d73`)
+
+### ⚡ Improvements
+
+- Nenhum.
+
 ## v0.3.0 (build 0003) - 2026-11-22
 
 ### 💥 Breaking Changes

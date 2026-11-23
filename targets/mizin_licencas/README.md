@@ -1,6 +1,6 @@
 # Central de licenças Mizin
 
-> **Versão da plataforma**: `v0.3.0 (build 0003)`
+> **Versão da plataforma**: `v0.3.1 (build 0004)`
 
 Loja e portal do cliente para programas e plugins próprios. A mesma conta reúne pedidos, seriais, máquinas e direitos de atualização. Cada site de produto pode direcionar o comprador para `/?produto=playout`, por exemplo.
 

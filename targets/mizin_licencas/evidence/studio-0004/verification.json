@@ -1,0 +1,20 @@
+{
+  "platform": "v0.3.1 (build 0004)",
+  "sourceCommit": "bd2f880699c878447b2de059eb2799444d471d73",
+  "wireCompiler": "7.29.0.33052",
+  "product": "slice-refine",
+  "release": "studio-1",
+  "sourceSha256": "3213A72528670C3FE9DF6C4CE3E26A7BDEED79A6B62BBFBDF87147207E4662E4",
+  "demoSha256": "F37200ECF41DE4FA873C0C456C8A1F38A50CB8F7659340E99409AA3425F6B877",
+  "licensedSha256": "BE10B51CC736DB7E397C947300ED269C3D22EB7724B4705321BC68A80725A593",
+  "managerZipSha256": "ABD456E86A05AB43330996619575D4DE0AB6A73B896F0B26EE7C0F52B6CAFC48",
+  "filesInManagerZip": [
+    "Mizin Wire.exe",
+    "USO.txt"
+  ],
+  "nativeGrantAndDeviceBinding": "pass",
+  "publicDemoDigest": "pass",
+  "authenticatedDownloadDigest": "pass",
+  "sourceUnchanged": "pass",
+  "arenaPlayback": "not verified"
+}

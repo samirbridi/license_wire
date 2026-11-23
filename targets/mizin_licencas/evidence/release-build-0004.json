@@ -1,0 +1,17 @@
+{
+  "previous": "v0.3.0 (build 0003)",
+  "version": "v0.3.1 (build 0004)",
+  "date": "2026-11-22",
+  "timezone": "America/Sao_Paulo",
+  "baseline": "e9ea979018929c3d72887d4d10cd07a5194b10ad",
+  "sourceHead": "bd2f880699c878447b2de059eb2799444d471d73",
+  "increment": "fix",
+  "commits": [
+    {
+      "hash": "bd2f880699c878447b2de059eb2799444d471d73",
+      "subject": "fix: preserva cartões vizinhos ao desenhar o catálogo nativo",
+      "type": "fix",
+      "breaking": false
+    }
+  ]
+}
