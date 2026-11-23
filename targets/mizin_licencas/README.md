@@ -43,3 +43,17 @@ Com a loja local em execução, gere o pacote da mesma origem e chave com PowerS
 A loja oferece o ZIP nas ofertas que incluem Wire e em Minhas licenças. Extraia e abra `Mizin Wire.exe`. O download do patch requer compra e máquina ativada. Para publicar outro build, coloque o arquivo autorizado em `LICENSE_DATA/wire-plugins/<produto>--<release>.cwired` e cadastre o identificador em `releases` e `wireReleases`. A arte de demonstração e os limites do transporte estão documentados no [estudo do Wire](notes/05_wire.md).
 
 O contrato para os clientes está em [API de licenciamento](notes/03_protocols_apis.md). Para gerar a versão após um commit estruturado do alvo, execute `node scripts/version-from-commits.mjs --write`.
+
+## Publicar um projeto Wire próprio
+
+O Mizin Studio tem catálogo público com demos, biblioteca de compras e configurações de conta e conexão. Para homologação, Slice Refine Pro usa valores demonstrativos. A conta que comprou uma edição pode ativá-la na máquina e baixar o arquivo na biblioteca.
+
+Em PowerShell 7, a partir deste alvo, a ferramenta recebe um projeto editável e o identificador do build cadastrado no catálogo:
+
+```powershell
+.\manager\compile-for-mizin.ps1 -Project '..\slice_refiner\reconstructed\Slice Refine Pro by Mizin\Slice Refine Pro by Mizin.wire' -Product slice-refine -Release studio-1
+```
+
+Cada saída de textura precisa ter um sinal de entrada. A compilação preserva o grafo e os recursos do autor, cria fontes temporárias ao lado do projeto para resolver recursos relativos e usa o compilador Wire instalado. As duas edições são publicadas juntas em `runtime/wire-releases/<produto>/<release>/`. Cada release é imutável. A demo recebe identidade própria e marca permanente. A edição comprada conserva a identidade do projeto original. Para substituir a demo em uma composição, selecione a edição comprada no host.
+
+O servidor serve apenas a demo na rota pública. O download da edição comprada exige sessão, direito ao build e vaga ativa. O manifesto privado contém o canal da edição e os hashes dos artefatos. O gerenciador atualizado recebe o canal dentro da autorização assinada e envia pulsos locais enquanto a licença for válida. Um observador local que consiga reproduzir o sinal ainda pode simular a autorização visual da edição comprada. O sistema não reivindica resistência a cópia ou a replay dentro do host.

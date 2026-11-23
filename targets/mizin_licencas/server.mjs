@@ -24,7 +24,17 @@ const dir = process.env.LICENSE_DATA || fileURLToPath(new URL('./runtime/',impor
 mkdirSync(dir,{recursive:true,mode:0o700});
 const store = openStore(join(dir,sandbox?'local.sqlite':live?'live.sqlite':'stripe-test.sqlite'));
 const db = store.db;
-const wire = wireManager(store);
+function editionPath(product,release,file) {
+  if (![product,release].every(v=>typeof v==='string' && /^[a-z0-9_-]+$/.test(v))) fail('Build inválido.');
+  return join(dir,'wire-releases',product,release,file);
+}
+const wire = wireManager(store,(product,release)=>{
+  const path=editionPath(product,release,'manifest.json');
+  if (!existsSync(path)) return null;
+  const manifest=JSON.parse(readFileSync(path,'utf8'));
+  if (manifest.product!==product || manifest.release!==release || !/^[0-9a-f]{32}$/.test(manifest.channel)) fail('Manifesto de edição inválido.',503);
+  return manifest.channel;
+});
 const managerFile = join(dir,'Mizin-Wire-'+digest(origin.origin+'|'+wire.publicBlob)+'.zip');
 const sessionAttributes = '; HttpOnly; SameSite=Lax; Path=/'+(origin.protocol === 'https:'?'; Secure':'');
 const attempts = new Map();
@@ -45,6 +55,14 @@ async function body(req) {
     chunks.push(chunk);
   }
   return Buffer.concat(chunks);
+}
+function attachment(res,file,filename) {
+  res.setHeader('Content-Type','application/octet-stream');
+  res.setHeader('Content-Disposition','attachment; filename="'+filename+'"');
+  const stream=createReadStream(file);
+  stream.on('error',()=>res.destroy());
+  res.on('close',()=>stream.destroy());
+  return stream.pipe(res);
 }
 function parse(raw) {
   let data;
@@ -90,6 +108,20 @@ const server = createServer(async (req,res) => {
     const hashed = digest(cookie);
     const user = db.prepare('SELECT u.id,u.email FROM sessions s JOIN users u ON u.id=s.owner WHERE s.token=? AND s.expires>?').get(hashed,Date.now());
     if (req.method === 'GET') {
+      if (path === '/api/wire/store') {
+        const plugins=catalog.products.flatMap(p=>(p.wireReleases||[]).map(release=>{
+          const offer=catalog.offers.find(o=>o.items.length===1 && o.items[0]===p.id) || catalog.offers.find(o=>o.items.includes(p.id));
+          return {name:p.name,product:p.id,release,offer:offer?.id,hasDemo:existsSync(editionPath(p.id,release,'demo.cwired'))};
+        }));
+        return send({plugins});
+      }
+      if (path === '/api/wire/demo') {
+        const product=url.searchParams.get('product'),release=url.searchParams.get('release');
+        if (!catalog.products.find(p=>p.id===product)?.wireReleases?.includes(release)) fail('Demo indisponível.',404);
+        const file=editionPath(product,release,'demo.cwired');
+        if (!existsSync(file)) fail('Demo indisponível.',404);
+        return attachment(res,file,product+'--'+release+'--demo.cwired');
+      }
       if (path === '/api/catalog') return send({catalog,sandbox,test:!live,email:user?.email,managerAvailable:existsSync(managerFile)});
       if (path === '/api/wire/issuer') return send({publicBlob:wire.publicBlob});
       if (path === '/api/wire/library' && user) return send({plugins:wire.library(user.id)});
@@ -124,14 +156,10 @@ const server = createServer(async (req,res) => {
       wire.grant(user.id,data,false);
       if (![data.product,data.release].every(value => typeof value === 'string' && /^[a-z0-9_-]+$/.test(value))) fail('Identificador de distribuição inválido.');
       const filename = data.product+'--'+data.release+'.cwired';
-      const file = join(dir,'wire-plugins',filename);
+      const edition = editionPath(data.product,data.release,'licensed.cwired');
+      const file = existsSync(edition) ? edition : join(dir,'wire-plugins',filename);
       if (!existsSync(file)) fail('Build Wire ainda não publicado neste ambiente.',404);
-      res.setHeader('Content-Type','application/octet-stream');
-      res.setHeader('Content-Disposition','attachment; filename="'+filename+'"');
-      const stream = createReadStream(file);
-      stream.on('error',()=>res.destroy());
-      res.on('close',()=>stream.destroy());
-      return stream.pipe(res);
+      return attachment(res,file,filename);
     }
     if (path === '/api/wire/activate' || path === '/api/wire/verify') {
       return send(wire.grant(user.id,data,path === '/api/wire/activate'));

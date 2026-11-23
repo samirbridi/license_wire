@@ -15,15 +15,16 @@ using System.Windows.Forms;
 
 namespace Mizin.Wire {
     public sealed class Plugin {
-        public string name, product, release, licenseId;
+        public string name, product, release, licenseId, offer;
+        public bool hasDemo;
         public int used, seats;
-        public override string ToString() { return name + "  ·  " + release + "  ·  " + used + "/" + seats + " máquinas  ·  " + licenseId.Substring(0, 6); }
+        public override string ToString() { return name + " · " + release; }
     }
     public sealed class Library { public Plugin[] plugins; }
     public sealed class Proof { public string payload, signature; }
     public sealed class Claims {
         public int v;
-        public string scope, product, release, device, licenseId;
+        public string scope, product, release, device, licenseId, channel;
         public long issued, expires;
     }
     public sealed class Entry { public Plugin plugin; public Proof proof; }
@@ -71,8 +72,8 @@ namespace Mizin.Wire {
                 return c;
             } catch(FormatException) {return null;} catch(CryptographicException) {return null;}
         }
-        internal static byte[] Osc(Plugin p) {
-            byte[] address=Encoding.ASCII.GetBytes("/mizin/wire/"+p.product+"/"+p.release);
+        internal static byte[] Osc(Plugin p, string channel) {
+            byte[] address=Encoding.ASCII.GetBytes("/mizin/wire/"+p.product+"/"+p.release+(String.IsNullOrEmpty(channel)?"":"/"+channel));
             int pad=(address.Length+4)&~3;
             var bytes=new byte[pad+8]; Array.Copy(address,bytes,address.Length);
             bytes[pad]=44; bytes[pad+1]=102; bytes[pad+4]=63; bytes[pad+5]=128;
@@ -80,7 +81,7 @@ namespace Mizin.Wire {
         }
     }
 
-    internal sealed class Manager : Form {
+    internal sealed partial class Manager : Form {
         readonly Profile profile;
         CookieContainer cookies=new CookieContainer();
         readonly HttpClient http;
@@ -98,33 +99,17 @@ namespace Mizin.Wire {
             profile=Local.Load();
             if(!String.IsNullOrEmpty(profile.session)) cookies.Add(Local.Origin,new Cookie("session",profile.session,"/"));
             http=new HttpClient(new HttpClientHandler {CookieContainer=cookies,AllowAutoRedirect=false}) {BaseAddress=Local.Origin,Timeout=TimeSpan.FromSeconds(8)};
-            Text="Mizin · Gerenciador Wire"; Font=new Font("Segoe UI",10); MinimumSize=new Size(610,540); Size=new Size(700,580);
-            var panel=new TableLayoutPanel {Dock=DockStyle.Fill,Padding=new Padding(22),ColumnCount=1,RowCount=0,AutoScroll=true};
-            Controls.Add(panel);
-            Action<Control> add=delegate(Control control){control.Dock=DockStyle.Top;panel.RowStyles.Add(new RowStyle(SizeType.AutoSize));panel.Controls.Add(control,0,panel.RowCount++);};
-            add(new Label { Text="Plugins Wire",AutoSize=true,Font=new Font(Font.FontFamily,20,FontStyle.Bold)});
-            add(new Label { Text="Entre com a conta usada na loja Mizin.",AutoSize=true});
-            add(new Label {Text="E-mail",AutoSize=true}); add(email); email.Text=profile.email;
-            add(new Label {Text="Senha",AutoSize=true}); password.UseSystemPasswordChar=true; add(password);
-            var buttons=new FlowLayoutPanel {AutoSize=true}; add(buttons);
-            login.Text="Entrar"; logout.Text="Sair"; refresh.Text="Sincronizar"; activate.Text="Ativar nesta máquina";
-            download.Text="Baixar plugin";
-            foreach(var b in new[]{login,logout,refresh,activate,download}) { b.AutoSize=true;buttons.Controls.Add(b); }
-            list.Height=100;add(list); authorized.AutoSize=true;add(authorized);
-            add(new Label {Text="Porta de entrada OSC do Wire ou Arena (localhost)",AutoSize=true});
-            port.Minimum=1;port.Maximum=65535;port.Value=profile.port;add(port);
-            port.ValueChanged+=delegate { profile.port=(int)port.Value; Local.Save(profile); };
-            status.AutoSize=true;add(status);
+            BuildPanel();
             login.Click+=async delegate {await Run(Login);};
             logout.Click+=async delegate {await Run(SignOut);};
             refresh.Click+=async delegate {await Run(Sync);};
-            activate.Click+=async delegate {await Run(Activate);};
+            activate.Click+=async delegate {await Run(ActivatePlugin);};
             download.Click+=async delegate {await Run(Download);};
             timer.Tick+=async delegate {
                 var active=new List<string>();
                 foreach(var entry in profile.entries) {
                     var c=Local.Check(entry,profile.key); if(c==null) continue;
-                    var packet=Local.Osc(entry.plugin);
+                    var packet=Local.Osc(entry.plugin,c.channel);
                     try {udp.Send(packet,packet.Length,new IPEndPoint(IPAddress.Loopback,profile.port));}
                     catch(SocketException){status.Text="Porta OSC indisponível.";}
                     active.Add(entry.plugin.name+" até "+DateTimeOffset.FromUnixTimeMilliseconds(c.expires).LocalDateTime.ToString("g"));
@@ -132,20 +117,20 @@ namespace Mizin.Wire {
                 authorized.Text=active.Count==0?"Nenhuma autorização offline válida.":"Ativos: "+String.Join(", ",active);
                 if(!busy && !String.IsNullOrEmpty(profile.session) && DateTime.UtcNow>=nextCheck) await Run(Sync);
             };
-            Shown+=delegate {timer.Start();};
+            Shown+=async delegate {timer.Start(); if (String.IsNullOrEmpty(profile.session)) await Run(LoadStore);};
             FormClosed+=delegate {timer.Stop();http.Dispose();udp.Dispose();};
         }
         async Task Run(Func<Task> task) {
             if(busy) return;
-            busy=true; login.Enabled=logout.Enabled=refresh.Enabled=activate.Enabled=download.Enabled=false;
+            busy=true; UpdateActions();
             try {await task();}
             catch(ApiError e) {
-                if(e.Status==401) {profile.session=null;list.Items.Clear();Local.Save(profile);}
+                if(e.Status==401) {profile.session=null;ShowCached();Local.Save(profile);}
                 status.Text=e.Message;
             } catch(HttpRequestException) {status.Text="Loja indisponível. Consulte a validade offline acima.";}
             catch(TaskCanceledException) {status.Text="A loja não respondeu a tempo.";}
             catch(Exception e) {status.Text=e.Message;}
-            finally {busy=false;login.Enabled=logout.Enabled=refresh.Enabled=activate.Enabled=download.Enabled=true;}
+            finally {busy=false;UpdateActions();}
         }
         async Task<T> Call<T>(string path,object data=null) {
             using(var req=new HttpRequestMessage(data==null?HttpMethod.Get:HttpMethod.Post,path)) {
@@ -168,15 +153,16 @@ namespace Mizin.Wire {
             profile.email=loginEmail;
             profile.session=cookies.GetCookies(Local.Origin)["session"].Value;
             Local.Save(profile);
+            ShowPage("library");
             await Sync();
         }
         async Task SignOut() {
             // Stop heartbeats immediately, including when the network is down.
-            profile.entries.Clear();profile.email=null;profile.session=null;list.Items.Clear();Local.Save(profile);
+            profile.entries.Clear();profile.email=null;profile.session=null;ShowCached();Local.Save(profile);
             try {await Call<object>("/api/logout",new {});}
             finally {
                 var c=cookies.GetCookies(Local.Origin)["session"];if(c!=null)c.Expired=true;
-                email.Clear();password.Clear();status.Text="Sessão local encerrada.";
+                email.Clear();password.Clear();ShowPage("account");status.Text="Sessão local encerrada.";
             }
         }
         async Task<Entry> Grant(Plugin plugin,bool newSeat) {
@@ -224,15 +210,16 @@ namespace Mizin.Wire {
                 catch(ApiError e) {if(e.Status!=403 && e.Status!=404)throw;profile.entries.Remove(old);}
                 Local.Save(profile);
             }
+            list.Invalidate(); UpdateActions();
             nextCheck=DateTime.UtcNow.AddHours(1);
             status.Text=library.plugins.Length==0?"Nenhuma compra Wire disponível nesta conta.":"Compras sincronizadas.";
         }
-        async Task Activate() {
+        async Task ActivatePlugin() {
             var plugin=list.SelectedItem as Plugin;
             if(plugin==null) throw new InvalidOperationException("Entre e selecione um plugin comprado.");
             var entry=await Grant(plugin,true);
             profile.entries.RemoveAll(e=>Same(e.plugin,plugin));profile.entries.Add(entry);Local.Save(profile);
-            status.Text="Ativado. Mantenha este gerenciador aberto enquanto usar o efeito de teste.";
+            list.Invalidate(); status.Text="Máquina ativada. O plugin está disponível para download.";
         }
     }
     internal static class Program {

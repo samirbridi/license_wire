@@ -54,7 +54,7 @@ test('direito perpétuo às versões elegíveis e extensão de cobertura no mesm
   const args={serial,product:'playout',release:'preview-1',installationKey:'a'.repeat(64),label:'Teste'};
   clock.ms=Date.UTC(2028,0,31);
   s.authorize(args,true);
-  const releases=catalog.products[0].releases;
+  const releases=catalog.products.find(p=>p.id==='playout').releases;
   releases['test-next']='2028-01-15';
   t.after(()=>delete releases['test-next']);
   assert.throws(()=>s.authorize({...args,release:'test-next'},false),/renovação/);

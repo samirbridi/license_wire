@@ -1,6 +1,8 @@
 Mizin · Gerenciador Wire para Windows
 
-Extraia o ZIP, abra Mizin Wire.exe e entre com o e-mail e a senha da loja.
+Extraia o ZIP e abra Mizin Wire.exe. Em Explorar plugins você pode baixar
+demos e abrir a oferta na loja. Entre em Conta e conexão com seu e-mail
+e senha. As compras aparecem em Minha biblioteca.
 Escolha uma compra Wire e clique em Ativar nesta máquina. Baixar plugin
 salva o .cwired para instalação no Resolume. Contas com pacote veem
 os plugins incluídos. O portal da loja permite liberar a vaga.

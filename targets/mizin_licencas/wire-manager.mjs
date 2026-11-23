@@ -1,7 +1,7 @@
 import { createPublicKey, generateKeyPairSync, sign } from 'node:crypto';
 import { catalog, digest, fail } from './licensing.mjs';
 
-export function wireManager(store) {
+export function wireManager(store, channelFor = () => null) {
   const db = store.db;
   const lookup = db.prepare("SELECT value FROM config WHERE name='wire-signing-key'");
   if (!lookup.get()) {
@@ -31,7 +31,8 @@ export function wireManager(store) {
     if (!license) fail('Compra não encontrada nesta conta.',403);
     const token = store.authorize({...data,serial:license.serial},activate,owner);
     const claims = JSON.parse(Buffer.from(token.split('.')[0],'base64url'));
-    const payload = Buffer.from(JSON.stringify({...claims,scope:'mizin-wire',licenseId:data.licenseId})).toString('base64');
+    const channel = channelFor(data.product,data.release);
+    const payload = Buffer.from(JSON.stringify({...claims,scope:'mizin-wire',licenseId:data.licenseId,channel})).toString('base64');
     const signature = sign('sha256',Buffer.from(payload),{key:privateKey,dsaEncoding:'ieee-p1363'}).toString('base64');
     return {payload,signature};
   }

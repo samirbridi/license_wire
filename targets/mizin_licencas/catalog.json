@@ -16,6 +16,14 @@
   ],
   "products": [
     {
+      "id": "slice-refine",
+      "name": "Slice Refine Pro",
+      "kind": "Plugin Wire",
+      "terms": 12,
+      "wireReleases": ["studio-1"],
+      "releases": {"studio-1": "2026-11-22"}
+    },
+    {
       "id": "playout",
       "name": "Mizin Playout",
       "kind": "Aplicativo",
@@ -46,6 +54,7 @@
     }
   ],
   "offers": [
+    {"id":"slice-refine","name":"Slice Refine Pro","items":["slice-refine"],"price":7900,"renew":2900},
     {
       "id": "playout",
       "name": "Mizin Playout",

@@ -31,7 +31,7 @@ namespace Mizin.Wire {
 "@ | Set-Content -LiteralPath $config -Encoding utf8
 $out=Join-Path $work 'Mizin Wire.exe'
 $csc=Join-Path $env:WINDIR 'Microsoft.NET/Framework64/v4.0.30319/csc.exe'
-& $csc /nologo /utf8output /target:winexe /optimize+ /r:System.Net.Http.dll /r:System.Security.dll /r:System.Web.Extensions.dll /r:System.Windows.Forms.dll /r:System.Drawing.dll "/out:$out" $config (Join-Path $PSScriptRoot 'Manager.cs')
+& $csc /nologo /utf8output /target:winexe /optimize+ /r:System.Net.Http.dll /r:System.Security.dll /r:System.Web.Extensions.dll /r:System.Windows.Forms.dll /r:System.Drawing.dll "/out:$out" $config (Join-Path $PSScriptRoot 'Manager.cs') (Join-Path $PSScriptRoot 'ManagerPanel.cs')
 if ($LASTEXITCODE -ne 0) {throw 'Falha ao compilar o gerenciador.'}
 $guide=Join-Path $PSScriptRoot 'USO.txt'
 $tempZip=Join-Path $work 'manager.zip'
