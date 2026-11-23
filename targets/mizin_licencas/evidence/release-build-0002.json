@@ -1,0 +1,17 @@
+{
+  "previous": "v0.1.0 (build 0001)",
+  "version": "v0.2.0 (build 0002)",
+  "date": "2026-11-22",
+  "timezone": "America/Sao_Paulo",
+  "baseline": "736220ae1ee8ba08d3923c9a70d360713398e613",
+  "sourceHead": "2db2ace848a1753c028dfa097168bda569dd3217",
+  "increment": "feat",
+  "commits": [
+    {
+      "hash": "2db2ace848a1753c028dfa097168bda569dd3217",
+      "subject": "feat: integra gerenciador Windows e compras Wire à central Mizin",
+      "type": "feat",
+      "breaking": false
+    }
+  ]
+}

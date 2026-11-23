@@ -1,0 +1,16 @@
+{
+  "version": "v0.2.0 (build 0002)",
+  "source": "2db2ace848a1753c028dfa097168bda569dd3217",
+  "managerZipBytes": 18103,
+  "managerZipSha256": "FC3B1CA59B64BA9D9AC75CA9A176977CC1A5F89AA2511FC2B095991652FC109D",
+  "compiledPatchBytes": 7031,
+  "compiledPatchSha256": "1FA9332A405E47600AAB36F67711BFB1858AC573B012E2DAC6B46FB7036DA29D",
+  "windowsGrantVerification": "pass",
+  "rejectedWrongInstallation": "pass",
+  "rejectedModifiedSignature": "pass",
+  "authenticatedBuildDownload": "pass",
+  "anonymousOrOtherAccountDenied": "pass",
+  "localStoreDownload": "pass",
+  "udpPort7000ToWire": "pulse not observed on this host configuration",
+  "arenaPlayback": "pending"
+}

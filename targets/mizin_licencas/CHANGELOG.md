@@ -1,5 +1,23 @@
 # Changelog da Central de Licenças Mizin
 
+## v0.2.0 (build 0002) - 2026-11-22
+
+### 💥 Breaking Changes
+
+- Nenhum.
+
+### ✨ Features
+
+- feat: integra gerenciador Windows e compras Wire à central Mizin (commit `2db2ace848a1753c028dfa097168bda569dd3217`)
+
+### 🐛 Fixes
+
+- Nenhum.
+
+### ⚡ Improvements
+
+- Nenhum.
+
 ## v0.1.0 (build 0001) - 2026-11-22
 
 ### 💥 Breaking Changes
