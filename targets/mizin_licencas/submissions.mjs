@@ -60,12 +60,12 @@ function parseMultipart(req) {
 }
 
 function readCatalog() {
-  const path = join(fileURLToPath(new URL('.',import.meta.url)),'..','catalog.json');
+  const path = join(dir,'catalog.json');
   return JSON.parse(readFileSync(path,'utf8'));
 }
 
 function writeCatalog(cat) {
-  const path = join(fileURLToPath(new URL('.',import.meta.url)),'..','catalog.json');
+  const path = join(dir,'catalog.json');
   writeFileSync(path,JSON.stringify(cat,null,2)+'\n','utf8');
 }
 
@@ -224,7 +224,9 @@ export function initSubmissions(db) {
       p.releases[row.release] = new Date().toISOString().slice(0,10);
       const targetDir = join(dir,'wire-releases',row.product_id,row.release);
       mkdirSync(targetDir,{recursive:true});
-      console.log('[APPROVE] wire_path:', row.wire_path, 'exists:', existsSync(row.wire_path));
+      console.log('[APPROVE] row:', JSON.stringify({id:row.id, serial:row.wire_path, status:row.status}));
+      console.log('[APPROVE] wire_path exists:', existsSync(row.wire_path));
+      console.log('[APPROVE] targetDir:', targetDir, 'exists:', existsSync(targetDir));
       let result;
       try {
         result = await compileWire(row.product_id,row.release,randomBytes(16).toString('hex'),row.wire_path,targetDir);
