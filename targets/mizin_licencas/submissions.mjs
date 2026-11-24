@@ -106,12 +106,19 @@ function compileWire(product, release, channel, wireSourcePath, targetDir) {
     const absLicensedOut = licensedOut;
     const absWireSource = wireSourcePath;
 
+    console.log('[COMPILE] wireSource:', absWireSource, 'exists:', existsSync(absWireSource));
+    console.log('[COMPILE] probe:', absProbe);
+    console.log('[COMPILE] demoSource:', absDemoSource);
+    console.log('[COMPILE] licensedSource:', absLicensedSource);
+    console.log('[COMPILE] wireExe:', absWireExe, 'exists:', existsSync(absWireExe));
+
     const ps = spawn('powershell.exe',['-ExecutionPolicy','Bypass','-File',absMakeProbe,'-OutputPath',absProbe]);
     let psOut='';
     ps.stdout.on('data',c=>psOut+=c.toString());
     ps.stderr.on('data',c=>psOut+=c.toString());
     ps.on('close',async code=>{
       if (code!==0) { reject(fail('Falha ao gerar probe do Wire: '+psOut,500)); return; }
+      console.log('[COMPILE] Probe gerado:', absProbe, 'exists:', existsSync(absProbe));
       try {
         const args=[absWireSource,absProbe,product,release,channel,absDemoSource,absLicensedSource];
         const node = spawn(process.execPath,[absPrepareEdition,...args]);
@@ -120,6 +127,7 @@ function compileWire(product, release, channel, wireSourcePath, targetDir) {
         node.stderr.on('data',c=>nodeErr+=c.toString());
         node.on('close',async ncode=>{
           if (ncode!==0) { reject(fail('Falha ao preparar edições: '+nodeErr,500)); return; }
+          console.log('[COMPILE] Edições geradas:', absDemoSource, 'exists:', existsSync(absDemoSource), '|', absLicensedSource, 'exists:', existsSync(absLicensedSource));
           const compile = (input,output)=>new Promise((res,rej)=>{
             const proc = spawn('powershell.exe',['-ExecutionPolicy','Bypass','-Command',
               `& '${wireExe}' compile '${input}' --output '${output}'`]);
@@ -127,6 +135,7 @@ function compileWire(product, release, channel, wireSourcePath, targetDir) {
             proc.stdout.on('data',c=>out+=c.toString());
             proc.stderr.on('data',c=>err+=c.toString());
             proc.on('close',c=>{
+              console.log('[COMPILE] Wire.exe exit:', c, 'output exists:', existsSync(output));
               if (c!==0 || !existsSync(output)) rej(fail('Falha ao compilar '+input+': '+err,500));
               else res();
             });
@@ -215,10 +224,12 @@ export function initSubmissions(db) {
       p.releases[row.release] = new Date().toISOString().slice(0,10);
       const targetDir = join(dir,'wire-releases',row.product_id,row.release);
       mkdirSync(targetDir,{recursive:true});
+      console.log('[APPROVE] wire_path:', row.wire_path, 'exists:', existsSync(row.wire_path));
       let result;
       try {
         result = await compileWire(row.product_id,row.release,randomBytes(16).toString('hex'),row.wire_path,targetDir);
       } catch(e) {
+        console.log('[APPROVE] compileWire error:', e.message);
         db.prepare('UPDATE submissions SET status=?, updated_at=? WHERE id=?').run('error',Date.now(),id);
         throw e;
       }
