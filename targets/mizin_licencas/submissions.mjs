@@ -95,25 +95,34 @@ function compileWire(product, release, channel, wireSourcePath, targetDir) {
     const licensedOut = join(targetDir,'licensed.cwired');
     const manifestOut = join(targetDir,'manifest.json');
 
-    const makeProbe = join(fileURLToPath(new URL('.',import.meta.url)),'..','manager','make-probe.ps1');
-    const prepareEdition = join(fileURLToPath(new URL('.',import.meta.url)),'..','manager','prepare-edition.mjs');
+    // Caminhos absolutos são obrigatórios para o Wire.exe funcionar no Windows
+    const absWireExe = 'C:\\Program Files\\Resolume Wire\\Wire.exe';
+    const absMakeProbe = join(fileURLToPath(new URL('.',import.meta.url)),'..','manager','make-probe.ps1');
+    const absPrepareEdition = join(fileURLToPath(new URL('.',import.meta.url)),'..','manager','prepare-edition.mjs');
+    const absProbe = probe;
+    const absDemoSource = demoSource;
+    const absLicensedSource = licensedSource;
+    const absDemoOut = demoOut;
+    const absLicensedOut = licensedOut;
+    const absWireSource = wireSourcePath;
 
-    const ps = spawn('powershell.exe',['-ExecutionPolicy','Bypass','-File',makeProbe,'-OutputPath',probe]);
+    const ps = spawn('powershell.exe',['-ExecutionPolicy','Bypass','-File',absMakeProbe,'-OutputPath',absProbe]);
     let psOut='';
     ps.stdout.on('data',c=>psOut+=c.toString());
     ps.stderr.on('data',c=>psOut+=c.toString());
     ps.on('close',async code=>{
       if (code!==0) { reject(fail('Falha ao gerar probe do Wire: '+psOut,500)); return; }
       try {
-        const args=[wireSourcePath,probe,product,release,channel,demoSource,licensedSource];
-        const node = spawn(process.execPath,[prepareEdition,...args]);
+        const args=[absWireSource,absProbe,product,release,channel,absDemoSource,absLicensedSource];
+        const node = spawn(process.execPath,[absPrepareEdition,...args]);
         let nodeOut='', nodeErr='';
         node.stdout.on('data',c=>nodeOut+=c.toString());
         node.stderr.on('data',c=>nodeErr+=c.toString());
         node.on('close',async ncode=>{
           if (ncode!==0) { reject(fail('Falha ao preparar edições: '+nodeErr,500)); return; }
           const compile = (input,output)=>new Promise((res,rej)=>{
-            const proc = spawn(wireExe,['compile','"'+input+'"','--output','"'+output+'"'],{shell:true});
+            const proc = spawn('powershell.exe',['-ExecutionPolicy','Bypass','-Command',
+              `& '${wireExe}' compile '${input}' --output '${output}'`]);
             let out='',err='';
             proc.stdout.on('data',c=>out+=c.toString());
             proc.stderr.on('data',c=>err+=c.toString());
@@ -123,19 +132,19 @@ function compileWire(product, release, channel, wireSourcePath, targetDir) {
             });
           });
           try {
-            await compile(demoSource,demoOut);
-            await compile(licensedSource,licensedOut);
+            await compile(absDemoSource,absDemoOut);
+            await compile(absLicensedSource,absLicensedOut);
             const crypto = await import('node:crypto');
             const manifest = {
               product, release, channel,
-              sourceSha256: createHash('sha256').update(readFileSync(wireSourcePath)).digest('hex'),
+              sourceSha256: createHash('sha256').update(readFileSync(absWireSource)).digest('hex'),
               compiler: execFileSync('powershell.exe',['-Command','(Get-Item "'+wireExe+'").VersionInfo.FileVersion'],{encoding:'utf8'}).trim(),
-              demoSha256: createHash('sha256').update(readFileSync(demoOut)).digest('hex'),
-              licensedSha256: createHash('sha256').update(readFileSync(licensedOut)).digest('hex')
+              demoSha256: createHash('sha256').update(readFileSync(absDemoOut)).digest('hex'),
+              licensedSha256: createHash('sha256').update(readFileSync(absLicensedOut)).digest('hex')
             };
             writeFileSync(manifestOut,JSON.stringify(manifest,null,2)+'\n','utf8');
             for (const f of [probe,demoSource,licensedSource]) { if (existsSync(f)) { try{unlinkSync(f);}catch{} } }
-            resolve({demo:demoOut,licensed:licensedOut,manifest:manifestOut});
+            resolve({demo:absDemoOut,licensed:absLicensedOut,manifest:manifestOut});
           } catch(e) { reject(fail(e.message||'Erro na compilação',500)); }
         });
       } catch(e) { reject(fail(e.message||'Erro na preparação',500)); }

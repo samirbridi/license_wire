@@ -206,6 +206,18 @@ const server = createServer(async (req,res) => {
       store.releaseDevice(user.id,data.serial,data.device);
       return send({ok:true});
     }
+    if (path === '/api/submissions/download') {
+      if (!user) fail('Entre para continuar.',401);
+      const {id,type} = data;
+      if (!id || !/^[0-9a-f-]{36}$/.test(id)) fail('Identificador de submissão inválido.');
+      const row = db.prepare('SELECT cwired_licensed_path,cwired_demo_path,status,author_email FROM submissions WHERE id=?').get(id);
+      if (!row) fail('Submissão não encontrada.',404);
+      if (!isAdmin(user) && row.author_email!==user.email) fail('Acesso negado.',403);
+      if (row.status!=='approved') fail('Submissão não aprovada.',403);
+      const file = type==='demo'?row.cwired_demo_path:row.cwired_licensed_path;
+      if (!file || !existsSync(file)) fail('Arquivo não encontrado.',404);
+      return attachment(res,file,file.split('\\').pop()||file.split('/').pop());
+    }
     if (path === '/api/submissions') {
       if (req.method === 'GET') return send({submissions:submissions.list(user)});
       fail('Método inválido.',405);
