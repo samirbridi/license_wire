@@ -7,6 +7,7 @@ import { fileURLToPath } from 'node:url';
 import { catalog, digest, fail, openStore } from './licensing.mjs';
 import { stripeCheckout, stripeEvent, fulfillStripe } from './payments.mjs';
 import { wireManager } from './wire-manager.mjs';
+import { initSubmissions } from './submissions.mjs';
 
 const derive = promisify(scrypt);
 const assets = new Map([['/',['index.html','text/html']],['/app.js',['app.js','text/javascript']],['/style.css',['style.css','text/css']]]);
@@ -24,6 +25,7 @@ const dir = process.env.LICENSE_DATA || fileURLToPath(new URL('./runtime/',impor
 mkdirSync(dir,{recursive:true,mode:0o700});
 const store = openStore(join(dir,sandbox?'local.sqlite':live?'live.sqlite':'stripe-test.sqlite'));
 const db = store.db;
+const submissions = initSubmissions(db);
 function editionPath(product,release,file) {
   if (![product,release].every(v=>typeof v==='string' && /^[a-z0-9_-]+$/.test(v))) fail('Build inválido.');
   return join(dir,'wire-releases',product,release,file);
@@ -133,10 +135,18 @@ const server = createServer(async (req,res) => {
       }
       if (path === '/api/public-key') return send({algorithm:'Ed25519',key:store.publicKey});
       if (path === '/api/account' && user) return send({licenses:store.dashboard(user.id),orders:db.prepare('SELECT id,action,offer,total,quantity,paid FROM orders WHERE owner=? ORDER BY rowid DESC LIMIT 50').all(user.id)});
+      if (path === '/api/submissions') {
+        if (req.method === 'GET') return send({submissions:submissions.list(user)});
+        fail('Método inválido.',405);
+      }
       fail('Recurso indisponível.',user?404:401);
     }
     if (req.method !== 'POST') fail('Método inválido.',405);
     if (req.headers.origin && req.headers.origin !== origin.origin) fail('Origem inválida.',403);
+    if (path === '/api/submissions/upload' && req.method === 'POST') {
+      if (!user) fail('Entre para continuar.',401);
+      return send(await submissions.upload(user,req));
+    }
     const raw = await body(req);
     if (path === '/api/stripe/webhook' && !sandbox) {
       fulfillStripe(store,stripeEvent(raw,req.headers['stripe-signature'],webhook),live);
@@ -195,6 +205,19 @@ const server = createServer(async (req,res) => {
     if (path === '/api/release-machine') {
       store.releaseDevice(user.id,data.serial,data.device);
       return send({ok:true});
+    }
+    if (path === '/api/submissions') {
+      if (req.method === 'GET') return send({submissions:submissions.list(user)});
+      fail('Método inválido.',405);
+    }
+    const m = path.match(/^\/api\/submissions\/([0-9a-f-]{36})\/(approve|reject|delete)$/);
+    if (m && !user) fail('Entre para continuar.',401);
+    if (m) {
+      const [,id,action] = m;
+      if (req.method !== 'POST') fail('Método inválido.',405);
+      if (action==='approve') return send(await submissions.approve(user,id));
+      if (action==='reject') return send(await submissions.reject(user,id,data&&data.reason));
+      if (action==='delete') return send(await submissions.remove(user,id));
     }
     fail('Rota não encontrada.',404);
   } catch (e) {
