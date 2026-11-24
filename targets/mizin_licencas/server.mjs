@@ -10,7 +10,7 @@ import { wireManager } from './wire-manager.mjs';
 import { initSubmissions } from './submissions.mjs';
 
 const derive = promisify(scrypt);
-const assets = new Map([['/',['index.html','text/html']],['/app.js',['app.js','text/javascript']],['/style.css',['style.css','text/css']]]);
+const assets = new Map([['/',['index.html','text/html']],['/author',['author.html','text/html']],['/app.js',['app.js','text/javascript']],['/author.js',['author.js','text/javascript']],['/style.css',['style.css','text/css']]]);
 const port = Number(process.env.PORT || 4381);
 const origin = new URL(process.env.LICENSE_ORIGIN || 'http://127.0.0.1:'+port);
 const stripeKey = process.env.STRIPE_SECRET_KEY;
@@ -217,6 +217,28 @@ const server = createServer(async (req,res) => {
       const file = type==='demo'?row.cwired_demo_path:row.cwired_licensed_path;
       if (!file || !existsSync(file)) fail('Arquivo não encontrado.',404);
       return attachment(res,file,file.split('\\').pop()||file.split('/').pop());
+    }
+    if (path === '/api/submissions/download-licensed') {
+      if (!user) fail('Entre para continuar.',401);
+      const {id} = data;
+      if (!id || !/^[0-9a-f-]{36}$/.test(id)) fail('Identificador de submissão inválido.');
+      const row = db.prepare('SELECT cwired_licensed_path,status,author_email FROM submissions WHERE id=?').get(id);
+      if (!row) fail('Submissão não encontrada.',404);
+      if (!isAdmin(user) && row.author_email!==user.email) fail('Acesso negado.',403);
+      if (row.status!=='approved') fail('Submissão não aprovada.',403);
+      if (!row.cwired_licensed_path || !existsSync(row.cwired_licensed_path)) fail('Edição licenciada não encontrada.',404);
+      return attachment(res,row.cwired_licensed_path,row.cwired_licensed_path.split('\\').pop()||row.cwired_licensed_path.split('/').pop());
+    }
+    if (path === '/api/submissions/download-demo') {
+      if (!user) fail('Entre para continuar.',401);
+      const {id} = data;
+      if (!id || !/^[0-9a-f-]{36}$/.test(id)) fail('Identificador de submissão inválido.');
+      const row = db.prepare('SELECT cwired_demo_path,status,author_email FROM submissions WHERE id=?').get(id);
+      if (!row) fail('Submissão não encontrada.',404);
+      if (!isAdmin(user) && row.author_email!==user.email) fail('Acesso negado.',403);
+      if (row.status!=='approved') fail('Submissão não aprovada.',403);
+      if (!row.cwired_demo_path || !existsSync(row.cwired_demo_path)) fail('Demo não encontrada.',404);
+      return attachment(res,row.cwired_demo_path,row.cwired_demo_path.split('\\').pop()||row.cwired_demo_path.split('/').pop());
     }
     if (path === '/api/submissions') {
       if (req.method === 'GET') return send({submissions:submissions.list(user)});
