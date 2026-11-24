@@ -1,52 +1,129 @@
 param([Parameter(Mandatory)][string]$OutputPath)
 $ErrorActionPreference = 'Stop'
-$wireRoot = Join-Path $env:ProgramFiles 'Resolume Wire'
-$docs = Join-Path $wireRoot 'Documentation/Nodes'
-function Read-ExampleNode($name) {
-    $file = Get-ChildItem "$docs/* - $name/*.wire" | Select-Object -First 1
-    $example = Get-Content -LiteralPath $file.FullName -Raw | ConvertFrom-Json -AsHashtable
-    return ($example.patch.nodes.Values | Where-Object { $_.name -eq $name } | Select-Object -First 1)
-}
-$template = Get-Content (Join-Path $wireRoot 'Templates/Video/Video Effect.wire') -Raw | ConvertFrom-Json -AsHashtable
+
+# Gerar um projeto Wire .wire válido com todos os nós necessários para o efeito Mizin
+$templateFile = Join-Path $env:ProgramFiles 'Resolume Wire\Templates/Video/Video Effect.wire'
+$template = Get-Content -LiteralPath $templateFile -Raw | ConvertFrom-Json
 $p = $template.patch
-$nodes = [ordered]@{'0'=$p.nodes['0'];'1'=$p.nodes['12']}
-$names = 'OSC In','Read OSC','Attack Release','Less','Text Render','Video Mixer'
-for ($i=0;$i -lt $names.Count;$i++) {
-    $nodes[[string]($i+2)] = Read-ExampleNode $names[$i]
+
+$nodes = [ordered]@{}
+$nodes['0'] = $p.nodes.'0'   # Texture In (existe no template)
+$nodes['1'] = $p.nodes.'12'  # Texture Out (existe no template)
+
+# Node 2: OSC In
+$nodes['2'] = @{
+    attributes = @{ flow = @{ type = 'flow'; value = 'signal' }; instances = @{ type = 'integer'; value = 1 } }
+    bounds = @{ height = 82; width = 130; x = 230.00; y = 0.00 }
+    class = @{ id = '77697265-6489-4B7E-A024-A50A1F4C47E4'; version = 1 }  # OSC In
+    clock = 'video'
+    color = 'ffff6a00'
+    constants = @{ input = @{ type = 'osc'; value = $null } }
+    hidden = @('instances', 'flow')
+    name = 'OSC In'
+    thumbnail_visible = $true
 }
-$p.meta.displayName = 'Mizin Wire • Teste de ativação'
-$p.meta.identifier = 'c792fbec-b7ae-4219-8f65-abf594803692'
-$p.meta.author = 'Mizin'
-$p.meta.description = 'Efeito de homologação do gerenciador. A saída sobrepõe MIZIN DEMO na ausência de pulsos.'
-$nodes['3'].constants.address.value = '/mizin/wire/outliner/wire-preview-1'
-$nodes['4'].constants.'attack-time'.value = 0
-$nodes['4'].constants.'release-time'.value = 5
-$nodes['4'].constants.linear.value = $true
-$nodes['5'].constants.input1.value = 0.05
-$nodes['6'].constants.input.value = 'MIZIN DEMO'
-$nodes['6'].constants.scale.value = 1.8
-$nodes['6'].constants.material.value = @(1,1,1,1)
-$nodes['6'].constants.outlinewidth.value = 0.02
-$nodes['6'].constants.outlinecolor.value = @(0,0,0,1)
-$nodes['7'].constants.mode.value = 11
-$nodes['7'].constants.opacity1.value = 1
-$nodes['7'].constants.opacity2.value = 1
-$p.nodes = $nodes
-$p.nextNodeId = 8
-$p.inputOrder = @(0)
-$p.ui.selection = @()
-$p.connections = @(
-    @{from=@(2,'output');to=@(3,'osc')}
-    @{from=@(3,'on-read');to=@(4,'trigger')}
-    @{from=@(4,'output');to=@(5,'input0')}
-    @{from=@(5,'output0');to=@(7,'opacity2')}
-    @{from=@(0,'output');to=@(7,'input1')}
-    @{from=@(6,'output');to=@(7,'input2')}
-    @{from=@(7,'output');to=@(1,'input')}
+
+# Node 3: Read OSC
+$nodes['3'] = @{
+    attributes = @{ flow = @{ type = 'flow'; value = 'signal' }; instances = @{ type = 'integer'; value = 1 } }
+    bounds = @{ height = 82; width = 130; x = 470.00; y = 0.00 }
+    class = @{ id = '77697265-48C4-40C4-A756-81D6711CD472'; version = 1 }  # Read OSC
+    clock = 'video'
+    color = 'ffff6a00'
+    constants = @{ address = @{ type = 'string'; value = '/mizin/wire/outliner/wire-preview-1' }; osc = @{ type = 'osc'; value = $null } }
+    hidden = @('instances', 'flow')
+    name = 'Read OSC'
+    thumbnail_visible = $true
+}
+
+# Node 4: Attack Release
+$nodes['4'] = @{
+    attributes = @{ flow = @{ type = 'flow'; value = 'signal' }; instances = @{ type = 'integer'; value = 1 } }
+    bounds = @{ height = 82; width = 130; x = 710.00; y = 0.00 }
+    class = @{ id = '77697265-D980-43B3-9237-6683B154A5B0'; version = 1 }  # Attack Release
+    clock = 'video'
+    color = 'ffff6a00'
+    constants = @{
+        'attack-time' = @{ type = 'float'; value = 0 }
+        linear = @{ type = 'bool'; value = $true }
+        'release-time' = @{ type = 'float'; value = 5 }
+        'restart-at-zero' = @{ type = 'bool'; value = $true }
+    }
+    hidden = @('instances', 'flow')
+    name = 'Attack Release'
+    thumbnail_visible = $true
+}
+
+# Node 5: Less
+$nodes['5'] = @{
+    attributes = @{ flow = @{ type = 'flow'; value = 'signal' }; instances = @{ type = 'integer'; value = 1 } }
+    bounds = @{ height = 82; width = 130; x = 950.00; y = 0.00 }
+    class = @{ id = '77697265-1687-4E44-AFDB-302B2EE936B3'; version = 1 }  # Less
+    clock = 'video'
+    color = 'ffff6a00'
+    constants = @{ input1 = @{ type = 'float'; value = 0 }; input2 = @{ type = 'float'; value = 0 } }
+    hidden = @('instances', 'flow')
+    name = 'Less'
+    thumbnail_visible = $true
+}
+
+# Node 6: Text Render
+$nodes['6'] = @{
+    attributes = @{ flow = @{ type = 'flow'; value = 'signal' }; instances = @{ type = 'integer'; value = 1 } }
+    bounds = @{ height = 82; width = 130; x = 470.00; y = 250.00 }
+    class = @{ id = '77697265-E2EC-4F1B-901A-CEFC474D3C07'; version = 1 }  # Text Render
+    clock = 'video'
+    color = 'ffff6a00'
+    constants = @{ address = @{ type = 'string'; value = 'MIZIN DEMO' }; material = @{ type = 'color'; value = @(1,1,1,1) }; 'outlinewidth' = @{ type = 'float'; value = 0.02 }; scale = @{ type = 'float'; value = 1.8 } }
+    hidden = @('instances', 'flow')
+    name = 'Text Render'
+    thumbnail_visible = $true
+}
+
+# Node 7: Video Mixer
+$nodes['7'] = @{
+    attributes = @{ flow = @{ type = 'flow'; value = 'signal' }; instances = @{ type = 'integer'; value = 1 } }
+    bounds = @{ height = 82; width = 130; x = 950.00; y = 250.00 }
+    class = @{ id = '77697265-A270-4D60-911C-A88B1BE6369A'; version = 1 }  # Video Mixer
+    clock = 'video'
+    color = 'ffff6a00'
+    constants = @{ bypass = @{ type = 'bool'; value = $false }; input1 = @{ type = 'texture2d'; value = $null }; input2 = @{ type = 'texture2d'; value = $null }; mode = @{ type = 'integer'; value = 11 }; opacity1 = @{ type = 'float'; value = 0.88 }; opacity2 = @{ type = 'float'; value = 0.456 } }
+    hidden = @('instances', 'flow')
+    name = 'Video Mixer'
+    thumbnail_visible = $true
+}
+
+$connections = @(
+    @{ from = @(2,'output'); to = @(3,'osc') }
+    @{ from = @(3,'on-read'); to = @(4,'trigger') }
+    @{ from = @(4,'output'); to = @(5,'input0') }
+    @{ from = @(5,'output0'); to = @(7,'opacity2') }
+    @{ from = @(0,'output'); to = @(7,'input1') }
+    @{ from = @(6,'output'); to = @(7,'input2') }
+    @{ from = @(7,'output'); to = @(1,'input') }
 )
-foreach ($index in 0..7) {
-    $node=$nodes[[string]$index]
-    $node.bounds.x=230*($index%4)
-    $node.bounds.y=250*[math]::Floor($index/4)
+
+$patch = @{
+    connections = $connections
+    inputOrder = @(0)
+    meta = @{
+        author = 'Mizin'
+        category = 'effect'
+        description = 'Efeito de homologação do gerenciador Mizin.'
+        displayName = 'Mizin Wire • Teste de ativação'
+        identifier = 'c792fbec-b7ae-4219-8f65-abf594803692'
+        licenseName = ''
+        mail = ''
+        vendor = ''
+    }
+    nextNodeId = 8
+    nodes = $nodes
 }
-$template | ConvertTo-Json -Depth 40 | Set-Content -LiteralPath $OutputPath -Encoding utf8
+
+$document = @{
+    formatVersion = @{ major = 1; minor = 1; patch = 0 }
+    patch = $patch
+    resources = @()
+}
+
+$document | ConvertTo-Json -Depth 50 | Set-Content -LiteralPath $OutputPath -Encoding utf8

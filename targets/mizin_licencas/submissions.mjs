@@ -12,7 +12,7 @@ mkdirSync(subDir,{recursive:true,mode:0o700});
 const adminEmails = new Set((process.env.ADMIN_EMAILS||'').split(',').map(e=>e.trim().toLowerCase()).filter(Boolean));
 
 function isAdmin(user) {
-  return adminEmails.size>0 && adminEmails.has((user.email||'').toLowerCase());
+  return !!(user&&user.email) && adminEmails.size>0 && adminEmails.has(user.email.toLowerCase());
 }
 
 function requireAdmin(user) {
