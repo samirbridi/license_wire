@@ -7,6 +7,17 @@ estendida para cobrir compras de plugins **DLL** além de Wire, e reescrita em
 C++/Win32 nativo (sem dependência de runtime .NET) para reduzir a superfície
 de ataque e o tempo de inicialização.
 
+**Visual**: interface "Graphite Edition" — réplica funcional do protótipo em
+[`../../visual/plugnex.html`](../../visual/plugnex.html) (ver também
+[`../../visual/START_HERE_IDE.md`](../../visual/START_HERE_IDE.md)), desenhada
+à mão em GDI/GDI+ (sem framework de UI): 5 abas (Discover, My Plugins,
+Updates, Licenses, Settings) sobre um shell de 3 painéis (biblioteca ·
+tabela · inspector), tokens de cor exatos do protótipo (`src/theme.h`), logo
+PLUGNEX real embutido como recurso. Diferente do protótipo (que é só HTML
+estático com dados simulados em memória), aqui cada tela mostra dados reais
+da conta — catálogo, posse, ativação — e cada botão aciona o backend de
+verdade.
+
 ## O que o app faz
 
 - Login/logout na conta da central de licenças (mesma conta do site).
@@ -35,12 +46,15 @@ src/
   profile.h        Perfil local criptografado (DPAPI, CurrentUser) — chave de instalação, sessão, autorizações salvas.
   osc.h            Pulso UDP OSC idêntico byte-a-byte ao do Manager.cs original.
   catalog_logic.h  Regras de catálogo/licença em funções puras (sem Win32) — testável isoladamente.
-  main.cpp         Shell Win32 (janela, controles, fluxo assíncrono) que liga tudo.
+  theme.h          Tokens de cor/fonte/métrica "Graphite" (de visual/) + helpers de desenho GDI.
+  icons.h          Glifos genéricos de categoria (App/Plugin/Wire) para os tiles e o hero do inspector.
+  resource_ids.h   IDs de recurso compartilhados entre app.rc e main.cpp (ex.: o logo embutido).
+  main.cpp         Shell "Graphite" owner-drawn (GDI+) + poucos controles nativos (login, busca, porta OSC).
 vendor/
   json.hpp               nlohmann/json v3.11.3 (single header, MIT).
   ed25519/               orlp/ed25519 (domínio público) — verify.c é o único caminho usado em produção.
 resources/
-  app.rc, plugnex.ico    Ícone e VERSIONINFO do executável.
+  app.rc, plugnex.ico, logo-horizontal.png    Ícone, VERSIONINFO e logo PLUGNEX embutidos no executável.
 test/
   test_crypto.cpp         Valida crypto.h contra tokens REAIS emitidos por licensing.mjs/wire-manager.mjs.
   test_profile.cpp        Round-trip DPAPI real (não mockado).
@@ -49,12 +63,27 @@ test/
 build.ps1          Compila Plugnex.exe via MSVC (cl.exe), gerado por LICENSE_ORIGIN/VERSION do alvo.
 ```
 
-Cada header em `src/` foi validado isoladamente em `test/` **antes** de
-`main.cpp` ser escrito — a ordem foi: crypto → profile → osc → catalog_logic
-→ só então a GUI. Todos os testes usam dados reais (tokens assinados pelo
+Cada header de lógica/protocolo em `src/` (`crypto.h`, `profile.h`, `osc.h`,
+`catalog_logic.h`) foi validado isoladamente em `test/` **antes** de
+`main.cpp` usá-lo. Todos os testes usam dados reais (tokens assinados pelo
 `licensing.mjs`/`wire-manager.mjs` deste mesmo alvo, respostas reais de
 `/api/*` capturadas de uma instância real do servidor), nunca mocks da
-própria lógica sob teste.
+própria lógica sob teste. `theme.h`/`icons.h` são puramente de apresentação e
+não têm teste próprio — validados visualmente (ver "Testado manualmente"
+abaixo).
+
+### Por que GDI/GDI+ "manual" em vez de controles nativos para tudo
+
+O visual aprovado (`visual/plugnex.html`) usa abas retas com sublinhado,
+linhas de tabela com hover/seleção customizados, chips de estado coloridos e
+um inspector com hero/gradiente — nada disso existe como controle Win32
+padrão sem reescrever o estilo visual de cada um (`owner-draw` em todo
+lugar, de qualquer forma). A escolha foi desenhar a casca inteira
+(header/menu/abas/sidebar/tabela/inspector/footer) manualmente em `paint()`
+via GDI+ e usar controles nativos reais **só** onde há edição de texto de
+verdade (e-mail, senha, porta OSC, busca) — ali, reimplementar
+c‍ursor/seleção/IME à mão não vale a pena e o Win32 já resolve isso
+corretamente.
 
 ## Protocolo de confiança offline
 
@@ -80,6 +109,40 @@ Replicado do protocolo original (`notes/03_protocols_apis.md`,
   bytes) vem de `GET /api/wire/issuer`. O app verifica matematicamente
   **ambas** — diferente do JuiceBar, que apenas grava o carimbo do servidor
   sem verificação (ver `notes/06_juicebar_resolume_integration.md` seção 1).
+
+## Concorrência
+
+O app tem três threads: a UI (mensagens Win32 + `paint()`), um worker
+descartável por operação assíncrona (`runAsync()` — login, refresh,
+ativar, baixar) e o heartbeat (pulso OSC a cada 1s). Dois mutexes protegem
+todo o estado compartilhado:
+
+- `AppState::profileMutex` — guarda `profile` (chave de instalação, sessão,
+  autorizações salvas), tocado pela UI, pelos workers e pelo heartbeat.
+- `AppState::modelMutex` — guarda o "modelo da tela" (`catalog`, `rows`,
+  `signedIn`, `currentEmail`, as chaves públicas Ed25519/Wire), escrito
+  pelos workers (`loadCatalog`/`rebuildRows`/login/logout) e lido pela UI
+  (`paint()`, que o Windows pode chamar a qualquer momento via `WM_PAINT`,
+  não só logo após `InvalidateRect`) e pelo heartbeat.
+
+Todo acesso a esses campos passa por um dos métodos `snapshot*()` de
+`AppState` (`snapshotRows`, `snapshotModel`, `snapshotCatalog`,
+`snapshotKeys`) — cada um copia o dado sob o lock e devolve a cópia; o lock
+nunca fica seguro durante I/O de rede ou desenho. `paint()` tira **um**
+snapshot (`snapshotModel()`) no início e usa essa cópia consistente para o
+frame inteiro, em vez de reler `app->rows`/`app->signedIn` em pontos
+diferentes do desenho.
+
+Os dois mutexes nunca se aninham (nenhuma função que já segura um tenta
+adquirir o outro), então não há risco de deadlock entre eles.
+
+> Esse esquema de sincronização foi adicionado **depois** de um crash real
+> encontrado durante o teste manual desta sessão: `app->rows` (um
+> `std::vector`) era escrito por `rebuildRows()` numa thread de trabalho
+> enquanto `paint()` o lia na UI thread sem nenhum lock — uma corrida de
+> dados clássica, reproduzida de forma determinística ao fazer login pela
+> UI (que dispara `rebuildRows()` em background) enquanto o Windows
+> repintava a janela. Ver `notes/` para o relato completo da investigação.
 
 ## Compilar
 
@@ -126,13 +189,25 @@ desenvolvimento (ou peça para o agente/desenvolvedor atual regenerar).
 
 ## Testado manualmente (end-to-end, servidor real)
 
-Em 2026-11-25, contra uma instância isolada de `server.mjs` (porta de teste
-dedicada, dados em diretório descartável): cadastro → compra → pagamento
-simulado → login no app → ativar nesta máquina → baixar o build (conteúdo
-confirmado byte-a-byte contra o artefato publicado) → desautorizar máquina.
-Cada etapa foi confirmada tanto pela UI quanto por consulta direta a
-`/api/account` no servidor. Ver notas de desenvolvimento para o passo a
-passo completo.
+**Versão com controles Win32 simples** (2026-11-25, antes da reconstrução
+visual "Graphite"): contra uma instância isolada de `server.mjs`, dirigindo
+a GUI via mensagens Win32 — cadastro → compra → pagamento simulado → login
+no app → ativar nesta máquina → baixar o build (conteúdo confirmado
+byte-a-byte contra o artefato publicado) → desautorizar máquina. Cada etapa
+confirmada tanto pela UI quanto por consulta direta a `/api/account` no
+servidor.
+
+**Versão "Graphite" atual** (mesma data, logo em seguida): a interface foi
+inteiramente reconstruída para seguir `visual/plugnex.html` (ver seção
+"Visual" acima). Repetido o mesmo tipo de teste, agora contra a nova
+interface: login real pela tela de Settings, navegação pelas 5 abas,
+seleção de linha na tabela (My Plugins), clique em Activate no inspector —
+confirmado tanto visualmente (capturas de tela da janela real) quanto por
+consulta a `/api/account`, que mostrou o dispositivo (`DESKTOP-BBB9G7I`)
+realmente registrado no servidor após o clique. Também rodado um teste de
+estresse (dezenas de cliques de troca de aba e refresh em sequência rápida,
+disparando `rebuildRows()` em background repetidamente) para validar a
+correção de concorrência descrita abaixo.
 
 ## Pendências conhecidas
 
@@ -141,15 +216,28 @@ passo completo.
   Desktop/Menu Iniciar, isso é um passo adicional sobre o binário atual.
 - `plugnex.pages.dev` precisa de um backend real atrás dele antes de um
   build apontando para esse domínio funcionar de fato (ver seção "Compilar").
+- A lista "Updates" nunca mostra cardinalidade diferente de "0 updates" nos
+  dados de teste atuais (não há no catálogo de homologação um produto com
+  duas releases diretas distintas sob a mesma licença) — a lógica
+  (`computeInstallState`) está testada isoladamente em
+  `test_catalog_logic.cpp`, mas o caminho "update disponível" em `paint()`
+  em si ainda não foi observado visualmente contra dados reais, só por
+  teste unitário puro.
 
-### Corrigido durante a validação end-to-end
+### Bug real encontrado e corrigido durante a reconstrução "Graphite"
 
-- A lista de biblioteca perdia a seleção (`LB_GETCURSEL` voltava a -1)
-  sempre que o heartbeat de 5s redesenhava a lista (`LB_RESETCONTENT`)
-  enquanto o usuário tinha um item selecionado — encontrado ao dirigir a GUI
-  via Win32 messages durante o teste manual descrito abaixo. Não era um bug
-  de segurança (nenhuma autorização era afetada), mas forçava reselecionar o
-  item antes de Ativar/Baixar/Desautorizar se o heartbeat disparasse entre a
-  seleção e o clique. `renderLibraryList()` agora identifica o item
-  selecionado por `(product, release, isWire)` antes do reset e restaura a
-  seleção correspondente depois de repovoar a lista.
+Ao testar a nova interface manualmente, o processo morria silenciosamente
+(sem crash reportado no Visualizador de Eventos) logo depois do login. A
+causa raiz: `app->rows` (um `std::vector<Row>`) era reescrito do zero por
+`rebuildRows()` numa thread de trabalho (disparada pelo próprio login)
+enquanto `paint()`, na UI thread, podia estar no meio de uma iteração sobre
+o mesmo vetor — uma corrida de dados clássica sobre um `std::vector`, sem
+nenhuma sincronização. O mesmo valia para `catalog`, `signedIn`,
+`currentEmail` e as chaves públicas, todas lidas por `paint()`/pelo
+heartbeat e escritas pelos workers sem lock algum.
+
+Corrigido adicionando `AppState::modelMutex` e um conjunto de métodos
+`snapshot*()` (ver seção "Concorrência" acima) que todo leitor e escritor
+desses campos agora usa. Confirmado corrigido reproduzindo o cenário exato
+que crashava (login real pela UI) repetidas vezes, mais um teste de
+estresse de cliques rápidos — ambos sobreviveram sem queda após a correção.

@@ -63,7 +63,7 @@ call "$vcvars" x64 >nul
 if errorlevel 1 exit /b 1
 rc.exe $rcDefines /fo "$resFile" "$rcFile"
 if errorlevel 1 exit /b 1
-cl.exe /std:c++17 /EHsc /O2 /W4 /nologo $defines /DUNICODE /D_UNICODE "$(Join-Path $src 'main.cpp')" $($ed25519Sources -join ' ') "$resFile" bcrypt.lib crypt32.lib shell32.lib ole32.lib shlwapi.lib comdlg32.lib ws2_32.lib winhttp.lib user32.lib gdi32.lib /Fe:"$exe" /Fo:"$OutDir\\"
+cl.exe /std:c++17 /EHsc /O2 /W4 /nologo $defines /DUNICODE /D_UNICODE "$(Join-Path $src 'main.cpp')" $($ed25519Sources -join ' ') "$resFile" bcrypt.lib crypt32.lib shell32.lib ole32.lib shlwapi.lib comdlg32.lib ws2_32.lib winhttp.lib user32.lib gdi32.lib gdiplus.lib /Fe:"$exe" /Fo:"$OutDir\\"
 "@
 
 $batch = Join-Path $OutDir 'build.bat'

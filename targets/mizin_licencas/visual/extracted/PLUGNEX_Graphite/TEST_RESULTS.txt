@@ -1,0 +1,1 @@
+PASS: catalog, search, tab navigation, simulated installation, update, activation, no page errors. Captures 1440x900.

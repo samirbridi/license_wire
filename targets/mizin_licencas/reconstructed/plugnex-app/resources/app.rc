@@ -12,8 +12,14 @@
 // links fine but is then invisible to GetFileVersionInfo/.NET's
 // FileVersionInfo, which both look up the version resource by numeric ID.
 #include <winres.h>
+#include "../src/resource_ids.h"
 
 1 ICON "plugnex.ico"
+
+// Horizontal color logo (public/assets/brand/02_Logos/plugnex-horizontal-color.png),
+// embedded as raw PNG bytes and decoded at runtime via GDI+ for the header
+// bar, matching the prototype's <img class="logo"> (see visual/).
+IDR_LOGO_HORIZONTAL RCDATA "logo-horizontal.png"
 
 #ifndef PLUGNEX_VER_MAJOR
 #define PLUGNEX_VER_MAJOR 1

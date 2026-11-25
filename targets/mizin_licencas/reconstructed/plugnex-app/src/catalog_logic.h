@@ -130,4 +130,54 @@ inline bool offerIncludesWire(const json& catalogJson, const json& offer) {
     return false;
 }
 
+// One row for the "Discover" view (browse the full catalog, independent of
+// ownership) -- mirrors shop() in public/app.js, which iterates
+// catalog.offers the same way.
+struct StoreOffer {
+    std::string id, name, kind;
+    long long price = 0, renew = 0;
+    bool includesWire = false;
+};
+
+inline std::vector<StoreOffer> buildStoreOffers(const json& catalogJson) {
+    std::vector<StoreOffer> result;
+    for (const auto& offer : catalogJson.at("offers")) {
+        StoreOffer so;
+        so.id = offer.at("id").get<std::string>();
+        so.name = offer.at("name").get<std::string>();
+        so.price = offer.at("price").get<long long>();
+        so.renew = offer.value("renew", 0LL);
+        so.includesWire = offerIncludesWire(catalogJson, offer);
+        const auto& items = offer.at("items");
+        if (items.size() > 1) {
+            so.kind = "Pacote de programas e plugins";
+        } else {
+            std::string productId = items[0].get<std::string>();
+            auto productIt = std::find_if(catalogJson.at("products").begin(), catalogJson.at("products").end(),
+                                           [&](const json& p) { return p.at("id").get<std::string>() == productId; });
+            so.kind = productIt != catalogJson.at("products").end() ? productIt->value("kind", std::string("Produto")) : "Produto";
+        }
+        result.push_back(so);
+    }
+    return result;
+}
+
+// Install/update state for a library item, derived by comparing the
+// release currently resolved as "best under this license"
+// (ActivatableItem::release, from resolveDirectItems/fromWireLibraryEntry)
+// against the release recorded in the locally-saved, still-valid proof for
+// that same item (if any). This is a REAL distinction, not simulated data:
+// resolveDirectItems always returns the newest release the license's
+// `rights`/`until` currently allow, so if the user activated/downloaded an
+// older release and the license's coverage has since advanced to a newer
+// one, currentRelease != locallyActivatedRelease genuinely means "a newer
+// build is available under your existing rights."
+enum class InstallState { NotInstalled, Installed, UpdateAvailable };
+
+inline InstallState computeInstallState(const std::string& currentRelease,
+                                         const std::string* locallyActivatedRelease) {
+    if (!locallyActivatedRelease) return InstallState::NotInstalled;
+    return (*locallyActivatedRelease == currentRelease) ? InstallState::Installed : InstallState::UpdateAvailable;
+}
+
 } // namespace plugnex::catalog_logic

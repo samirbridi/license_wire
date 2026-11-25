@@ -12,3 +12,9 @@ test/*.pdb
 *.res
 *.ilk
 *.pdb
+
+# Manual-verification screenshots taken during development (see this
+# session's dev notes for what each round of screenshots checked) --
+# disposable, not reusable test fixtures like the test/*_fixture.json
+# files, which ARE committed.
+test/screenshot_*.png

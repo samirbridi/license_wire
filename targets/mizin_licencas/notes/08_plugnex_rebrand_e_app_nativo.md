@@ -1,8 +1,11 @@
 # PLUGNEX: rebrand e app nativo Windows (sessão de 2026-11-25)
 
 > Continuidade para quem pegar este alvo depois. Resumo do que foi feito,
-> por quê, e o que ficou pendente. Ver também [`CHANGELOG.md`](../CHANGELOG.md#v040-build-0005---2026-11-25)
-> para a lista formal de mudanças por categoria.
+> por quê, e o que ficou pendente. Ver também o `CHANGELOG.md` — entradas
+> [v0.4.0](../CHANGELOG.md#v040-build-0005---2026-11-25) (rebrand + primeira
+> versão do app) e [v0.4.1](../CHANGELOG.md#v041-build-0006---2026-11-25)
+> (reconstrução visual "Graphite" + correção de concorrência) — para a
+> lista formal de mudanças por categoria.
 
 ## Contexto
 
@@ -112,6 +115,78 @@ completa. Pontos que vale destacar para continuidade:
   Adicionei uma checagem explícita de versão no início do script com uma
   mensagem de erro clara, em vez de deixar falhar tarde com um erro confuso
   de método ausente.
+
+## Continuação na mesma sessão: reconstrução visual "Graphite"
+
+Logo depois do que está descrito acima, o usuário apontou para
+`targets/mizin_licencas/visual/` (um protótipo HTML/CSS/JS pré-existente,
+"PLUGNEX Graphite Edition", com capturas de tela de referência em
+`visual/extracted/PLUGNEX_Graphite/reference/`) e pediu para o app nativo
+seguir esse visual. Perguntei ao usuário o escopo (5 abas completas vs. um
+subconjunto) e ele escolheu as 5 abas completas (Discover, My Plugins,
+Updates, Licenses, Settings).
+
+### O que mudou
+
+- `main.cpp` foi reescrito do zero como shell owner-drawn (GDI+) seguindo o
+  layout do protótipo pixel a pixel (métricas de `design-tokens.json` e do
+  CSS do `plugnex.html`): header 43px, menu 29px, abas 45px, toolbar 48px,
+  shell de 3 painéis (sidebar 210px / tabela flexível / inspector 350px),
+  footer 28px. Toda a lógica de backend (`httpclient.h`, `crypto.h`,
+  `profile.h`, `osc.h`) ficou **intacta** — só a camada de desenho mudou.
+- Novos arquivos `src/theme.h` (tokens de cor/fonte exatos do kit) e
+  `src/icons.h` (glifos genéricos App/Plugin/Wire — **não** tentei recriar
+  os ícones ilustrativos de produtos fictícios do protótipo como "Web
+  Arena"/"SRT Receiver", já que nosso catálogo tem produtos reais
+  diferentes; um glifo por categoria é honesto, inventar um ícone
+  específico por produto não seria).
+- Logo horizontal PLUGNEX real embutido como recurso `RCDATA`
+  (`resources/logo-horizontal.png`, copiado de
+  `public/assets/brand/02_Logos/plugnex-horizontal-color.png`) e decodificado
+  via GDI+ — substitui o que antes era só texto "PLUGNEX".
+- `catalog_logic.h` ganhou `buildStoreOffers()` e `computeInstallState()`
+  (mais `InstallState` enum), testados em `test_catalog_logic.cpp` contra
+  as mesmas fixtures reais já existentes — 30 asserções, todas passando.
+
+### Dois bugs reais encontrados e corrigidos durante o teste manual desta parte
+
+1. **Esqueci de criar os controles de login.** Depois de reconstruir a UI,
+   percebi (olhando a própria captura de tela que tirei) que a aba Settings
+   não tinha nenhum campo de e-mail/senha nem botão — só texto estático.
+   O app ficou sem nenhuma forma de autenticar. Corrigido adicionando
+   controles `EDIT`/`BUTTON` nativos reais (login, senha, porta OSC, busca)
+   posicionados por uma função `layoutControls()` que espelha exatamente a
+   matemática de layout do `paint()`, mostrados/escondidos conforme a aba e
+   o estado de login.
+2. **Corrida de dados real, causando crash silencioso.** Ao testar o login
+   pela UI de verdade (preenchendo os campos e clicando em Entrar via
+   mensagens Win32), o processo morria sem aviso logo depois do clique —
+   sem nada no Visualizador de Eventos do Windows. Investigando
+   metodicamente (isolando cada mensagem Win32 enviada, uma de cada vez),
+   encontrei a causa: `rebuildRows()` (disparado pelo próprio login, numa
+   thread de trabalho) reescrevia `app->rows` enquanto `paint()`, na thread
+   da UI, podia estar no meio de uma leitura do mesmo vetor — sem nenhum
+   mutex protegendo isso. O mesmo valia para `catalog`, `signedIn`,
+   `currentEmail` e as chaves públicas. Corrigido com um novo
+   `AppState::modelMutex` e métodos `snapshot*()` que copiam o dado sob o
+   lock; `paint()` agora tira um único snapshot no início do frame inteiro
+   em vez de reler o estado compartilhado em pontos diferentes do desenho.
+   Confirmado corrigido reproduzindo o cenário exato do crash várias vezes
+   e com um teste de estresse (dezenas de cliques rápidos de troca de aba +
+   refresh em sequência). Ver seção "Concorrência" no
+   [README do app](../reconstructed/plugnex-app/README.md#concorrência)
+   para os detalhes técnicos completos.
+
+### Validação desta parte
+
+- `test_catalog_logic.exe`: 30/30 (incluindo os 9 novos casos de
+  `buildStoreOffers`/`computeInstallState`).
+- Build limpo com `/W4`, zero warnings.
+- Teste manual completo contra servidor real isolado: login pela tela de
+  Settings → navegação pelas 5 abas → seleção de linha em My Plugins →
+  clique em Activate no inspector → confirmado por captura de tela **e**
+  por consulta a `/api/account` (dispositivo `DESKTOP-BBB9G7I` realmente
+  registrado na licença `playout`).
 
 ## Pendente / próximos passos sugeridos
 

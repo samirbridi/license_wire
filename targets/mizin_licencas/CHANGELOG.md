@@ -1,5 +1,26 @@
 # Changelog da Central de Licenças PLUGNEX (ex-Mizin)
 
+## v0.4.1 (build 0006) - 2026-11-25
+
+### 💥 Breaking Changes
+
+- break: reconstrói a interface de `Plugnex.exe` do zero para seguir o visual "Graphite Edition" aprovado (`targets/mizin_licencas/visual/plugnex.html`) — remove o shell de controles Win32 simples (ListBox/Button nativos) em favor de um shell owner-drawn (GDI+) com 5 abas (Discover, My Plugins, Updates, Licenses, Settings) sobre layout de 3 painéis. Toda a lógica de backend (HTTP, criptografia, perfil local, OSC) permanece a mesma; apenas a camada de apresentação mudou.
+
+### ✨ Features
+
+- feat: adiciona `src/theme.h` (tokens de cor/fonte/métrica extraídos do design-tokens.json do kit Graphite) e `src/icons.h` (glifos genéricos de categoria App/Plugin/Wire desenhados em GDI+, sem reaproveitar os ícones ilustrativos de produtos fictícios do protótipo).
+- feat: embute o logotipo horizontal PLUGNEX real como recurso `RCDATA` (`resources/logo-horizontal.png`) e o decodifica via GDI+ no cabeçalho do app, substituindo o selo de texto da versão anterior.
+- feat: adiciona os controles nativos de login (e-mail, senha, botão Entrar/Sair) e configuração de porta OSC na aba Settings — a versão anterior desta sessão havia esquecido de criar esses controles, deixando o app sem nenhuma forma de autenticar.
+- feat: unifica a visualização de Discover/My Plugins/Updates/Licenses numa única estrutura de dados (`Row`) que combina catálogo, posse e estado de ativação local, com filtro por categoria (Sources/Plugins/Wire) e busca textual.
+
+### 🐛 Fixes
+
+- fix: corrige uma corrida de dados real (`app->rows`, `app->catalog`, `app->signedIn`, `app->currentEmail` e as chaves públicas Ed25519/Wire eram lidos por `paint()`/pelo heartbeat e escritos por threads de trabalho sem nenhuma sincronização) que derrubava o processo silenciosamente logo após o login — encontrada ao testar manualmente a nova interface. Corrigida com um mutex dedicado (`AppState::modelMutex`) e acessores `snapshot*()` usados por todo leitor/escritor desses campos; confirmada a correção reproduzindo o cenário exato do crash e com um teste de estresse de cliques repetidos.
+
+### ⚡ Improvements
+
+- improve: `build.ps1` agora linka `gdiplus.lib` e `resources/app.rc` inclui o novo recurso do logo.
+
 ## v0.4.0 (build 0005) - 2026-11-25
 
 ### 💥 Breaking Changes
