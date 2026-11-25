@@ -51,6 +51,11 @@ test('cadastro, compra, ativação concorrente, reinício, login e liberação v
   await stop();await start();
   assert.equal((await api('public-key')).key,key);
   assert.ok(verifyOffline(token,key,devices[winner]));
+  await mkdir(join(dir,'dll-plugins'),{recursive:true});
+  await writeFile(join(dir,'dll-plugins','playout--preview-1.zip'),'dll fixture');
+  const dllFile=await fetch(url+'download',{method:'POST',headers:{Cookie:cookie,'Content-Type':'application/json'},body:JSON.stringify(devices[winner])});
+  assert.equal(dllFile.status,200);assert.equal(await dllFile.text(),'dll fixture');
+  await api('download',{...devices[winner],serial:'MZ-0000-0000-0000-0000'},403);
   await api('logout',{});
   await api('login',user);
   const account=await api('account');

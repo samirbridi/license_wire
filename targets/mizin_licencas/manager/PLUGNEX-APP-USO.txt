@@ -1,0 +1,31 @@
+PLUGNEX · App para Windows
+
+Extraia o ZIP e abra Plugnex.exe. Em "Conta e conexão" entre com o e-mail e
+a senha da loja. Suas compras aparecem em "Minha biblioteca", já
+unificando plugins DLL e Wire numa única lista.
+
+Selecione um plugin e clique em "Ativar nesta máquina" para consumir uma
+vaga da licença. "Baixar plugin" salva o arquivo (.cwired para Wire, .zip
+para DLL) com um diálogo "Salvar como" nativo do Windows — só funciona
+depois de ativar nesta máquina. "Desautorizar máquina" libera a vaga para
+outra instalação; a ativação local anterior é descartada mesmo que a loja
+esteja indisponível no momento.
+
+Em "Explorar plugins" você vê o catálogo e pode clicar em "Ver na loja"
+para abrir a oferta no navegador — a compra em si acontece no site, o app
+não processa pagamento.
+
+Para o efeito de homologação de marca-d'água (plugins Wire), habilite OSC
+Input nas preferências do Wire ou Arena e informe a mesma porta em "Conta e
+conexão" (campo "Porta de entrada OSC"). Mantenha o app aberto: ele envia um
+pulso por segundo enquanto a autorização local for válida.
+
+Uma autorização válida funciona offline por até 30 dias e é verificada
+matematicamente a cada atualização de tela (assinatura Ed25519 para
+plugins diretos, ECDSA P-256 para edições Wire) — nenhuma chave privada
+fica no cliente. O app guarda o perfil local protegido pelo usuário Windows
+(DPAPI) e tenta renovar a autorização enquanto estiver conectado. Sair
+encerra o acesso local.
+
+Este pacote é vinculado à origem e à chave pública da loja que o gerou.
+Use o pacote fornecido pela sua própria central PLUGNEX.

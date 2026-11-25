@@ -1,0 +1,38 @@
+{
+  "name": "PLUGNEX",
+  "version": "1.0.0",
+  "color": {
+    "background": "#0A0B1E",
+    "surface": "#111B3D",
+    "surfaceElevated": "#172344",
+    "border": "#293859",
+    "primary": "#2F6BFF",
+    "cyan": "#00E5FF",
+    "violet": "#A855FF",
+    "text": "#F5F7FF",
+    "muted": "#A8B5D0",
+    "success": "#39D98A",
+    "warning": "#FFC857",
+    "danger": "#FF657A"
+  },
+  "font": {
+    "heading": "Exo 2",
+    "body": "Inter",
+    "fallback": "Segoe UI, system-ui, sans-serif"
+  },
+  "radius": {
+    "small": 6,
+    "medium": 10,
+    "large": 16
+  },
+  "spacing": [
+    4,
+    8,
+    12,
+    16,
+    24,
+    32,
+    48
+  ],
+  "gradient": "linear-gradient(120deg, #00E5FF 0%, #2F6BFF 50%, #A855FF 100%)"
+}

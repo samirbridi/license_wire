@@ -10,7 +10,9 @@ import { wireManager } from './wire-manager.mjs';
 import { initSubmissions } from './submissions.mjs';
 
 const derive = promisify(scrypt);
-const assets = new Map([['/',['index.html','text/html']],['/author',['author.html','text/html']],['/app.js',['app.js','text/javascript']],['/author.js',['author.js','text/javascript']],['/style.css',['style.css','text/css']]]);
+const assets = new Map([['/',['index.html','text/html']],['/author',['author.html','text/html']],['/user',['user.html','text/html']],['/app.js',['app.js','text/javascript']],['/author.js',['author.js','text/javascript']],['/user.js',['user.js','text/javascript']],['/style.css',['style.css','text/css']],['/favicon.png',['favicon.png','image/png']],['/favicon.ico',['favicon.ico','image/x-icon']]]);
+const brandAssetsRoot = fileURLToPath(new URL('./public/assets/brand/',import.meta.url));
+const brandMime = new Map([['.svg','image/svg+xml'],['.png','image/png'],['.ico','image/x-icon'],['.json','application/json'],['.css','text/css'],['.pdf','application/pdf'],['.md','text/plain; charset=utf-8']]);
 const port = Number(process.env.PORT || 4381);
 const origin = new URL(process.env.LICENSE_ORIGIN || 'http://127.0.0.1:'+port);
 const stripeKey = process.env.STRIPE_SECRET_KEY;
@@ -37,7 +39,7 @@ const wire = wireManager(store,(product,release)=>{
   if (manifest.product!==product || manifest.release!==release || !/^[0-9a-f]{32}$/.test(manifest.channel)) fail('Manifesto de edição inválido.',503);
   return manifest.channel;
 });
-const managerFile = join(dir,'Mizin-Wire-'+digest(origin.origin+'|'+wire.publicBlob)+'.zip');
+const managerFile = join(dir,'Plugnex-App-'+digest(origin.origin+'|'+wire.publicBlob)+'.zip');
 const sessionAttributes = '; HttpOnly; SameSite=Lax; Path=/'+(origin.protocol === 'https:'?'; Secure':'');
 const attempts = new Map();
 function limit(ip) {
@@ -98,13 +100,25 @@ const server = createServer(async (req,res) => {
   res.setHeader('Referrer-Policy','no-referrer');
   res.setHeader('Content-Security-Policy',"default-src 'self'; object-src 'none'; frame-ancestors 'none'; base-uri 'none'; form-action 'self'");
   try {
-    if (req.headers.host !== origin.host) fail('Host inválido.',403);
+    const allowedHosts = [origin.host, origin.host.replace('127.0.0.1', 'localhost'), origin.host.replace('localhost', '127.0.0.1')].filter((v, i, a) => a.indexOf(v) === i);
+    if (!allowedHosts.includes(req.headers.host)) fail('Host inválido.',403);
     const url = new URL(req.url,origin);
     const path = url.pathname;
     if (req.method === 'GET' && assets.has(path)) {
       const [file,mime] = assets.get(path);
-      res.setHeader('Content-Type',mime+'; charset=utf-8');
+      res.setHeader('Content-Type',mime+(mime.startsWith('text/')||mime.endsWith('javascript')?'; charset=utf-8':''));
       return res.end(readFileSync(new URL('./public/'+file,import.meta.url)));
+    }
+    if (req.method === 'GET' && path.startsWith('/assets/brand/')) {
+      const rel = path.slice('/assets/brand/'.length);
+      if (/\.\.|\\|\0/.test(rel) || !rel) fail('Recurso indisponível.',404);
+      const ext = rel.includes('.') ? rel.slice(rel.lastIndexOf('.')) : '';
+      const mime = brandMime.get(ext.toLowerCase());
+      if (!mime) fail('Recurso indisponível.',404);
+      const filePath = join(brandAssetsRoot,rel);
+      if (!filePath.startsWith(brandAssetsRoot) || !existsSync(filePath)) fail('Recurso indisponível.',404);
+      res.setHeader('Content-Type',mime+(mime.startsWith('text/')||mime==='application/json'?'; charset=utf-8':''));
+      return res.end(readFileSync(filePath));
     }
     const cookie = req.headers.cookie?.match(/(?:^|;\s*)session=([0-9a-f]{64})(?:;|$)/)?.[1] || '';
     const hashed = digest(cookie);
@@ -127,10 +141,10 @@ const server = createServer(async (req,res) => {
       if (path === '/api/catalog') return send({catalog,sandbox,test:!live,email:user?.email,managerAvailable:existsSync(managerFile)});
       if (path === '/api/wire/issuer') return send({publicBlob:wire.publicBlob});
       if (path === '/api/wire/library' && user) return send({plugins:wire.library(user.id)});
-      if (path === '/downloads/mizin-wire.zip') {
-        if (!existsSync(managerFile)) fail('Gerenciador ainda não empacotado para este ambiente.',404);
+      if (path === '/downloads/plugnex-app.zip') {
+        if (!existsSync(managerFile)) fail('App ainda não empacotado para este ambiente.',404);
         res.setHeader('Content-Type','application/zip');
-        res.setHeader('Content-Disposition','attachment; filename="Mizin-Wire.zip"');
+        res.setHeader('Content-Disposition','attachment; filename="PLUGNEX-App.zip"');
         return res.end(readFileSync(managerFile));
       }
       if (path === '/api/public-key') return send({algorithm:'Ed25519',key:store.publicKey});
@@ -173,6 +187,15 @@ const server = createServer(async (req,res) => {
     }
     if (path === '/api/wire/activate' || path === '/api/wire/verify') {
       return send(wire.grant(user.id,data,path === '/api/wire/activate'));
+    }
+    if (path === '/api/download') {
+      if (!store.dashboard(user.id).some(l => l.serial === data.serial)) fail('Licença não encontrada nesta conta.',403);
+      store.authorize(data,false);
+      if (![data.product,data.release].every(value => typeof value === 'string' && /^[a-z0-9_-]+$/.test(value))) fail('Identificador de distribuição inválido.');
+      const filename = data.product+'--'+data.release+'.zip';
+      const file = join(dir,'dll-plugins',filename);
+      if (!existsSync(file)) fail('Build ainda não publicado neste ambiente.',404);
+      return attachment(res,file,filename);
     }
     if (path === '/api/logout') {
       db.prepare('DELETE FROM sessions WHERE token=?').run(hashed);

@@ -1,0 +1,13 @@
+{
+  "publicKeyPem": "-----BEGIN PUBLIC KEY-----\nMCowBQYDK2VwAyEAX3QtOCB+jlHNYPvEIATOLRAu7Dtc+Zc1NIFt2nBljRE=\n-----END PUBLIC KEY-----\n",
+  "token": "eyJ2IjoxLCJkZXZpY2UiOiJmZmUwNTRmZTdhZTBjYjZkYzY1YzNhZjliNjFkNTIwOWY0Mzk4NTFkYjQzZDBiYTU5OTczMzdkZjE1NDY2OGViIiwicHJvZHVjdCI6InBsYXlvdXQiLCJyZWxlYXNlIjoicHJldmlldy0xIiwiaXNzdWVkIjoxNzk1NjE5MDI4MTI2LCJleHBpcmVzIjoxNzk4MjExMDI4MTI2fQ.U1O_FTNURXFbXLgVD6s97NST7gbjRm_LJuoD8mmlJ-tIpA57wYQDcgSzdgvFWfWpZweOeNljh1dckNzxZL8fBQ",
+  "device": {
+    "serial": "MZ-EBF4-DC7E-C645-19FF-2987-F47A-F295-3A9B",
+    "product": "playout",
+    "release": "preview-1",
+    "installationKey": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "label": "Test PC"
+  },
+  "deviceHash": "ffe054fe7ae0cb6dc65c3af9b61d5209f439851db43d0ba5997337df154668eb",
+  "nowMs": 1795619028132
+}

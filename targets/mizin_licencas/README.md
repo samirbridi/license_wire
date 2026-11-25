@@ -1,8 +1,11 @@
-# Central de licenças Mizin
+# Central de licenças PLUGNEX
 
-> **Versão da plataforma**: `v0.3.1 (build 0004)`
+> **Versão da plataforma**: `v0.4.0 (build 0005)`
+> Marca anterior: Mizin. O backend, o banco de dados e os identificadores de API (rotas, o campo `scope:"mizin-wire"` dentro dos tokens Wire assinados) permanecem como estavam para não invalidar licenças/tokens já emitidos — apenas a marca visível ao usuário (site, app, nomes de arquivo) foi renomeada. Ver [CHANGELOG.md](CHANGELOG.md#v040-build-0005---2026-11-25).
 
 Loja e portal do cliente para programas e plugins próprios. A mesma conta reúne pedidos, seriais, máquinas e direitos de atualização. Cada site de produto pode direcionar o comprador para `/?produto=playout`, por exemplo.
+
+Além do portal web, há um **app nativo para Windows** (`Plugnex.exe`, C++/Win32) em [`reconstructed/plugnex-app/`](reconstructed/plugnex-app/README.md) que permite ao usuário entrar na conta, ver a biblioteca de plugins comprados (DLL e Wire), autorizar/desautorizar a máquina atual e baixar os builds — sucessor funcional do antigo Gerenciador Mizin Wire (`manager/Manager.cs`), agora cobrindo também produtos DLL.
 
 ## Executar e testar
 
@@ -32,15 +35,17 @@ Produção usa um catálogo comercial explícito, origem HTTPS e banco próprio.
 
 A homologação cobre cadastro, login, compra de programas e pacotes, máquinas, renovação de atualizações, confirmação de pagamento e API de ativação. O teste HTTP usa armazenamento temporário e reinicia o servidor para verificar persistência. O adaptador Stripe foi testado com eventos sintéticos. Antes da abertura comercial, faltam a homologação com a conta do vendedor, o catálogo definitivo, recuperação de conta, tratamento de estornos e hospedagem.
 
-O Gerenciador Mizin para Windows permite entrar com a conta da loja, ativar uma compra Wire e baixar a edição correspondente. O catálogo de demonstração usa o ID histórico `outliner` para o Mizin Outliner. O build de homologação entrega um efeito de teste da marca-d’água. O produto comercial completo ainda precisa incorporar a integração. Os aplicativos e as DLLs conservam a ativação por serial.
+O app PLUGNEX para Windows (`Plugnex.exe`) permite entrar com a conta da loja, ver a biblioteca de plugins comprados (DLL e Wire, numa lista só), ativar/desautorizar a máquina atual e baixar o build correspondente. O catálogo de demonstração usa o ID histórico `outliner` para o Mizin Outliner. O build de homologação entrega um efeito de teste da marca-d’água. O produto comercial completo ainda precisa incorporar a integração. Os aplicativos e as DLLs conservam a ativação por serial.
 
-Com a loja local em execução, gere o pacote da mesma origem e chave com PowerShell 7 em Windows, .NET Framework e Wire instalados:
+Com a loja local em execução, gere o pacote da mesma origem e chave com PowerShell 7 em Windows e Wire instalados (o app em si compila com MSVC/`cl.exe`, não precisa mais de .NET Framework):
 
 ```powershell
 .\manager\package.ps1 -IncludeTestEffect
 ```
 
-A loja oferece o ZIP nas ofertas que incluem Wire e em Minhas licenças. Extraia e abra `Mizin Wire.exe`. O download do patch requer compra e máquina ativada. Para publicar outro build, coloque o arquivo autorizado em `LICENSE_DATA/wire-plugins/<produto>--<release>.cwired` e cadastre o identificador em `releases` e `wireReleases`. A arte de demonstração e os limites do transporte estão documentados no [estudo do Wire](notes/05_wire.md).
+`package.ps1` exige PowerShell 7+ (`pwsh`) por usar `[Convert]::ToHexString`, indisponível no Windows PowerShell 5.1 — o script verifica isso explicitamente e orienta a alternativa. Se só houver PowerShell 5.1 disponível, compile o app diretamente com `.\reconstructed\plugnex-app\build.ps1 -Origin <origem>` (sem o empacotamento em ZIP com o guia de uso).
+
+A loja oferece o ZIP nas ofertas que incluem Wire e em Minhas licenças. Extraia e abra `Plugnex.exe`. O download do patch requer compra e máquina ativada. Para publicar outro build, coloque o arquivo autorizado em `LICENSE_DATA/wire-plugins/<produto>--<release>.cwired` (Wire) ou `LICENSE_DATA/dll-plugins/<produto>--<release>.zip` (DLL, servido por `/api/download`) e cadastre o identificador em `releases` e `wireReleases`. A arte de demonstração e os limites do transporte estão documentados no [estudo do Wire](notes/05_wire.md).
 
 O contrato para os clientes está em [API de licenciamento](notes/03_protocols_apis.md). Para gerar a versão após um commit estruturado do alvo, execute `node scripts/version-from-commits.mjs --write`.
 

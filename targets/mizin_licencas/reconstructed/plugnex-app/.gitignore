@@ -1,0 +1,14 @@
+# Build byproducts of build.ps1 and the manual cl.exe invocations
+# documented in each test/*.cpp's header comment. *.exe is already
+# covered by the repo root .gitignore; this adds the intermediate
+# object/resource/debug files that compiling in-place under test/ and
+# build/ leaves behind.
+build/
+test/*.obj
+test/*.exe
+test/*.ilk
+test/*.pdb
+*.obj
+*.res
+*.ilk
+*.pdb

@@ -55,8 +55,8 @@ function header(page,title,intro) {
 }
 function wireInfo(items) {
   if (!items.some(item=>item.wireReleases?.length)) return '';
-  const download=state.managerAvailable?' <a href="/downloads/mizin-wire.zip">Baixar gerenciador para Windows</a>':'';
-  return '<p class="detail">Na edição Wire, entre no Gerenciador Mizin com a conta da compra. A DLL usa ativação direta.'+download+'</p>';
+  const download=state.managerAvailable?' <a href="/downloads/plugnex-app.zip">Baixar o app PLUGNEX para Windows</a>':'';
+  return '<p class="detail">Na edição Wire, entre no app PLUGNEX com a conta da compra. A DLL usa ativação direta.'+download+'</p>';
 }
 function shop() {
   header('shop','Loja de software','Escolha os produtos e a quantidade de máquinas para o seu estúdio.');
@@ -144,7 +144,7 @@ $('login').onclick=async()=>{
 };
 async function init() {
   state=await api('catalog');
-  $('environment').textContent=state.sandbox?'Homologação local · Preços demonstrativos e pagamentos simulados':state.test?'Homologação · Stripe em modo de teste':'Loja Mizin';
+  $('environment').textContent=state.sandbox?'Homologação local · Preços demonstrativos e pagamentos simulados':state.test?'Homologação · Stripe em modo de teste':'Loja PLUGNEX';
   $('login').textContent=state.email?'Sair':'Entrar';
   shop();
   const params=new URLSearchParams(location.search);

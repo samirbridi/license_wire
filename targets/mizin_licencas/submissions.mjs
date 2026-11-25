@@ -59,14 +59,17 @@ function parseMultipart(req) {
   });
 }
 
+const targetDir = fileURLToPath(new URL('.',import.meta.url));
 function readCatalog() {
-  const path = join(dir,'catalog.json');
+  const path = join(targetDir,'catalog.json');
+  console.log('[CATALOG] lendo:', path, 'existe:', existsSync(path));
   return JSON.parse(readFileSync(path,'utf8'));
 }
 
 function writeCatalog(cat) {
-  const path = join(dir,'catalog.json');
+  const path = join(targetDir,'catalog.json');
   writeFileSync(path,JSON.stringify(cat,null,2)+'\n','utf8');
+  console.log('[CATALOG] gravado:', path);
 }
 
 function ensureProduct(cat, productId, productName) {
@@ -95,7 +98,6 @@ function compileWire(product, release, channel, wireSourcePath, targetDir) {
     const licensedOut = join(targetDir,'licensed.cwired');
     const manifestOut = join(targetDir,'manifest.json');
 
-    // Caminhos absolutos são obrigatórios para o Wire.exe funcionar no Windows
     const absWireExe = 'C:\\Program Files\\Resolume Wire\\Wire.exe';
     const absMakeProbe = join(fileURLToPath(new URL('.',import.meta.url)),'..','manager','make-probe.ps1');
     const absPrepareEdition = join(fileURLToPath(new URL('.',import.meta.url)),'..','manager','prepare-edition.mjs');
@@ -118,7 +120,6 @@ function compileWire(product, release, channel, wireSourcePath, targetDir) {
     ps.stderr.on('data',c=>psOut+=c.toString());
     ps.on('close',async code=>{
       if (code!==0) { reject(fail('Falha ao gerar probe do Wire: '+psOut,500)); return; }
-      console.log('[COMPILE] Probe gerado:', absProbe, 'exists:', existsSync(absProbe));
       try {
         const args=[absWireSource,absProbe,product,release,channel,absDemoSource,absLicensedSource];
         const node = spawn(process.execPath,[absPrepareEdition,...args]);
@@ -127,7 +128,6 @@ function compileWire(product, release, channel, wireSourcePath, targetDir) {
         node.stderr.on('data',c=>nodeErr+=c.toString());
         node.on('close',async ncode=>{
           if (ncode!==0) { reject(fail('Falha ao preparar edições: '+nodeErr,500)); return; }
-          console.log('[COMPILE] Edições geradas:', absDemoSource, 'exists:', existsSync(absDemoSource), '|', absLicensedSource, 'exists:', existsSync(absLicensedSource));
           const compile = (input,output)=>new Promise((res,rej)=>{
             const proc = spawn('powershell.exe',['-ExecutionPolicy','Bypass','-Command',
               `& '${wireExe}' compile '${input}' --output '${output}'`]);
@@ -206,6 +206,8 @@ export function initSubmissions(db) {
       mkdirSync(subFolder,{recursive:true});
       const wirePath = join(subFolder, wireFile.filename);
       writeFileSync(wirePath, wireFile.data);
+      console.log('[UPLOAD] arquivo gravado em:', wirePath);
+      console.log('[UPLOAD] arquivo existe:', existsSync(wirePath));
       const now=Date.now();
       db.prepare('INSERT INTO submissions VALUES(?,?,?,?,?,?,?,?,?,?,?,?,NULL,NULL,NULL)')
         .run(id,user.email,projectName,productId,release,'pending',wirePath,null,null,null,now,now);
@@ -217,6 +219,7 @@ export function initSubmissions(db) {
       if (!row) fail('Submissão não encontrada.',404);
       if (row.status!=='pending') fail('Submissão já foi processada (status: '+row.status+').',409);
       const cat = readCatalog();
+      console.log('[APPROVE] cat.products:', cat.products.map(p=>p.id).join(', '));
       ensureProduct(cat, row.product_id, row.project_name);
       ensureOffer(cat, row.product_id, row.project_name);
       const p = cat.products.find(x=>x.id===row.product_id);
@@ -224,9 +227,10 @@ export function initSubmissions(db) {
       p.releases[row.release] = new Date().toISOString().slice(0,10);
       const targetDir = join(dir,'wire-releases',row.product_id,row.release);
       mkdirSync(targetDir,{recursive:true});
-      console.log('[APPROVE] row:', JSON.stringify({id:row.id, serial:row.wire_path, status:row.status}));
+      console.log('[APPROVE] row.id:', row.id);
+      console.log('[APPROVE] row.wire_path:', row.wire_path);
       console.log('[APPROVE] wire_path exists:', existsSync(row.wire_path));
-      console.log('[APPROVE] targetDir:', targetDir, 'exists:', existsSync(targetDir));
+      console.log('[APPROVE] targetDir:', targetDir);
       let result;
       try {
         result = await compileWire(row.product_id,row.release,randomBytes(16).toString('hex'),row.wire_path,targetDir);

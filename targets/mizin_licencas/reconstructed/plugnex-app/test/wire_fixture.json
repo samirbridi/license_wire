@@ -1,0 +1,13 @@
+{
+  "publicBlob": "RUNTMSAAAAD8gFFRDR/dDxLUq0YPY3KB7JGxsTQZ5MVT4Fun471xcBeAIbrMSR4kiK8EEG/x5ji4m96mmo1r3eDzzAuwXEqt",
+  "proof": {
+    "payload": "eyJ2IjoxLCJkZXZpY2UiOiJmZmUwNTRmZTdhZTBjYjZkYzY1YzNhZjliNjFkNTIwOWY0Mzk4NTFkYjQzZDBiYTU5OTczMzdkZjE1NDY2OGViIiwicHJvZHVjdCI6Im91dGxpbmVyIiwicmVsZWFzZSI6IndpcmUtcHJldmlldy0xIiwiaXNzdWVkIjoxNzk1NjE5MDI4MTQzLCJleHBpcmVzIjoxNzk4MjExMDI4MTQzLCJzY29wZSI6Im1pemluLXdpcmUiLCJsaWNlbnNlSWQiOiI0N2U3ZTc0YWE0ZWJlODFhN2UyMjMxNWI5OWFiNDFhZjhiYjBhNGMxMjQ5YTk1MzU0MjBiYzdiYjE1YjVlNmRhIiwiY2hhbm5lbCI6ImRlYWRiZWVmZGVhZGJlZWZkZWFkYmVlZmRlYWRiZWVmIn0=",
+    "signature": "E0ERvIfhC33dfXqe8m0DvLVgYaS2jRnpHhsddlhhXyOKPc5u5QioJgi7yIqxfXTBATmlBxOaH2kHYaA5WNil/w=="
+  },
+  "product": "outliner",
+  "release": "wire-preview-1",
+  "licenseId": "47e7e74aa4ebe81a7e22315b99ab41af8bb0a4c1249a9535420bc7bb15b5e6da",
+  "deviceHash": "ffe054fe7ae0cb6dc65c3af9b61d5209f439851db43d0ba5997337df154668eb",
+  "nowMs": 1795619028146,
+  "expectedChannel": "deadbeefdeadbeefdeadbeefdeadbeef"
+}

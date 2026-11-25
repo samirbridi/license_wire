@@ -1,8 +1,11 @@
 import { DatabaseSync } from 'node:sqlite';
 import { generateKeyPairSync, randomBytes, randomUUID, createHash, sign, verify } from 'node:crypto';
 import { readFileSync } from 'node:fs';
+import { fileURLToPath } from 'node:url';
+import { join } from 'node:path';
 
-export const catalog = JSON.parse(readFileSync(process.env.LICENSE_CATALOG || new URL('./catalog.json', import.meta.url)));
+const targetDir = fileURLToPath(new URL('.', import.meta.url));
+export const catalog = JSON.parse(readFileSync(join(targetDir,'catalog.json'),'utf8'));
 export const digest = value => createHash('sha256').update(value).digest('hex');
 export const fail = (message, status = 400) => { throw Object.assign(new Error(message), {status}); };
 const day = 86400000;
@@ -111,9 +114,9 @@ export function openStore(file, now = Date.now) {
       const item = catalog.products.find(x => x.id === product);
       if (!item || !rights || !Object.hasOwn(rights,product)) fail('Licença não habilitada para o produto.',403);
       if (item.wireReleases?.includes(release)) {
-        if (wireOwner !== record.owner) fail('Entre no Gerenciador Mizin para ativar a edição Wire.',403);
+        if (wireOwner !== record.owner) fail('Entre no app PLUGNEX para ativar a edição Wire.',403);
       } else if (wireOwner !== null) fail('A edição selecionada usa ativação direta.',400);
-      if (!Object.hasOwn(item.releases,release)) fail('Versão desconhecida.');
+      if (!Object.hasOwn(item.releases,release)) fail('Versão desconhecida.',403);
       const until = rights[product].until;
       if (until && item.releases[release] > until) fail('Esta versão requer renovação das atualizações.',403);
       const slot = db.prepare('SELECT 1 FROM devices WHERE serial=? AND device=?').get(serial,device);
@@ -121,7 +124,7 @@ export function openStore(file, now = Date.now) {
         if (!activate) fail('Instalação desativada.',403);
         const count = db.prepare('SELECT COUNT(*) AS n FROM devices WHERE serial=?').get(serial).n;
         if (count >= record.seats) fail('Limite de máquinas atingido.',409);
-        if (typeof label !== 'string' || !label.trim() || label.length > 100) fail('Informe o nome da máquina.');
+        if (typeof label !== 'string' || !label.trim() || label.length > 100) fail('Informe o nome da máquina.',400);
         db.prepare('INSERT INTO devices VALUES(?,?,?)').run(serial,device,label.trim());
       }
       const issued = now();
