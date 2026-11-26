@@ -84,12 +84,18 @@ struct Row {
 };
 
 enum class Tab { Discover, MyPlugins, Updates, Licenses, Settings };
-constexpr const wchar_t* kTabLabels[] = {L"Discover", L"My Plugins", L"Updates", L"Licenses", L"Settings"};
+// Nomes das abas em português, alinhados ao vocabulário já usado no portal
+// web (public/app.js, public/user.js): "Minhas licenças", "Entrar"/"Sair",
+// "Liberar máquina", "vagas" -- a mesma central de licenças, duas telas.
+constexpr const wchar_t* kTabLabels[] = {L"Explorar", L"Meus plugins", L"Atualizações", L"Minhas licenças", L"Configurações"};
 // Typed at BYTE from the start (never an int literal narrowed at the call
 // site) so Gdiplus::Color(kOpaque, r, g, b) never trips /W4's C4310 the way
 // Gdiplus::Color(255, r, g, b) or even Gdiplus::Color((BYTE)255, r, g, b) did.
 constexpr BYTE kOpaque = 255;
 constexpr Tab kTabOrder[] = {Tab::Discover, Tab::MyPlugins, Tab::Updates, Tab::Licenses, Tab::Settings};
+// Valor do filtro de categoria que significa "sem filtro" -- nomeado em vez
+// de repetir o literal L"Todos os plugins" em cada ponto de comparação.
+constexpr const wchar_t* kAllCategories = L"Todos os plugins";
 
 static std::wstring toWide(const std::string& s) {
     if (s.empty()) return {};
@@ -192,7 +198,7 @@ struct AppState {
     Tab tab = Tab::Discover;
     int selectedRow = -1;
     std::wstring searchQuery;
-    std::wstring statusText = L"Ready. Entre na conta em Settings para sincronizar suas compras.";
+    std::wstring statusText = L"Pronto. Entre na conta em Configurações para sincronizar suas compras.";
 
     std::atomic<bool> heartbeatRunning{false};
     std::thread heartbeatThread;
@@ -202,13 +208,18 @@ struct AppState {
     HWND btnLogin = nullptr, btnLogout = nullptr, btnSaveOscPort = nullptr;
     Gdiplus::Bitmap* logoBitmap = nullptr;
     theme::Fonts fonts;
+    // Pincel/fonte reaproveitados pelos handlers WM_CTLCOLOREDIT e
+    // WM_DRAWITEM para pintar os controles nativos (EDIT/BUTTON) no tema
+    // escuro Graphite -- sem isso eles ficam cinza-claro padrão do Windows,
+    // destoando do resto da tela desenhada à mão.
+    HBRUSH editBgBrush = nullptr;
 
     // Layout rects, recomputed on WM_SIZE / tab change; hit-tested in
     // WM_LBUTTONDOWN the same way the prototype's delegated onclick works.
     RECT rTabs[5]{};
     RECT rSidebarFilters[8]{}; int sidebarFilterCount = 0;
     std::vector<std::wstring> sidebarFilterLabels;
-    std::wstring activeFilter = L"All plugins";
+    std::wstring activeFilter = kAllCategories;
     RECT rRows[64]{}; int rowCount = 0; // row index -> on-screen rect, for click hit-testing.
     RECT rMainAction{}, rSecondaryAction{};
     RECT rRefreshButton{};
@@ -450,7 +461,7 @@ static void runAsync(AppState* app, HWND hwnd, std::function<void()> work, std::
     std::thread([app, hwnd, work = std::move(work), doneCopy]() {
         try { work(); }
         catch (const ApiError& e) { auto* m = new std::string(e.what()); PostMessageW(hwnd, WM_APP_ERROR, 0, (LPARAM)m); }
-        catch (const TransportError& e) { auto* m = new std::string(std::string("Loja indisponivel: ") + e.what()); PostMessageW(hwnd, WM_APP_ERROR, 0, (LPARAM)m); }
+        catch (const TransportError& e) { auto* m = new std::string(std::string("Loja indisponível: ") + e.what()); PostMessageW(hwnd, WM_APP_ERROR, 0, (LPARAM)m); }
         catch (const std::exception& e) { auto* m = new std::string(e.what()); PostMessageW(hwnd, WM_APP_ERROR, 0, (LPARAM)m); }
         PostMessageW(hwnd, WM_APP_WORK_DONE, 0, (LPARAM)doneCopy);
     }).detach();
@@ -499,7 +510,11 @@ static void layoutControls(AppState* app, RECT client) {
             ShowWindow(app->btnLogout, SW_HIDE);
         } else {
             sy += 40;
-            MoveWindow(app->btnLogout, tableLeft + 210, sy - 2, 140, 30, TRUE);
+            // Afastado do texto "Conta: <e-mail>" (que vai até
+            // tableLeft+460 em paint()), em vez de colado em
+            // tableLeft+210 como antes, que cortava/sobrepunha e-mails
+            // mais longos.
+            MoveWindow(app->btnLogout, tableLeft + 470, sy - 2, 140, 30, TRUE);
             ShowWindow(app->btnLogout, SW_SHOW);
             ShowWindow(app->editLoginEmail, SW_HIDE);
             ShowWindow(app->editLoginPassword, SW_HIDE);
@@ -555,10 +570,10 @@ static std::vector<int> visibleRowIndices(AppState* app, const std::vector<Row>&
         if (app->tab == Tab::MyPlugins && !r.owned) continue;
         if (app->tab == Tab::Updates && r.installState != catalog_logic::InstallState::UpdateAvailable) continue;
         if (app->tab == Tab::Licenses && !r.owned) continue;
-        if (app->activeFilter != L"All plugins") {
+        if (app->activeFilter != kAllCategories) {
             std::wstring kind = toWide(r.kindLabel);
             bool matchesCategory =
-                (app->activeFilter == L"Sources" && kind.find(L"Aplicativo") != std::wstring::npos) ||
+                (app->activeFilter == L"Aplicativos" && kind.find(L"Aplicativo") != std::wstring::npos) ||
                 (app->activeFilter == L"Wire" && r.includesWire) ||
                 (app->activeFilter == L"Plugins" && kind.find(L"Plugin") != std::wstring::npos);
             if (!matchesCategory) continue;
@@ -574,21 +589,24 @@ static std::vector<int> visibleRowIndices(AppState* app, const std::vector<Row>&
 }
 
 static std::wstring stateLabel(const Row& r) {
-    if (r.installState == catalog_logic::InstallState::Installed) return L"Installed";
-    if (r.installState == catalog_logic::InstallState::UpdateAvailable) return L"Update available";
-    return r.owned ? L"Available" : L"Not installed";
+    if (r.installState == catalog_logic::InstallState::Installed) return L"Ativado";
+    if (r.installState == catalog_logic::InstallState::UpdateAvailable) return L"Atualização disponível";
+    return r.owned ? L"Disponível" : L"Não instalado";
 }
 static theme::ChipTone stateTone(const Row& r) {
     if (r.installState == catalog_logic::InstallState::Installed) return theme::ChipTone::Green;
     if (r.installState == catalog_logic::InstallState::UpdateAvailable) return theme::ChipTone::Amber;
     return theme::ChipTone::Muted;
 }
+// Mesmo vocabulário do portal web (public/app.js/user.js): "Liberar
+// máquina", "Baixar Licenciado/Demo" -- ativar/desautorizar/baixar é a
+// mesma ação em ambas as telas, só muda quem a oferece.
 static std::wstring actionLabel(AppState* app, const Row& r) {
-    if (app->tab == Tab::Licenses) return r.activatedHere ? L"Deactivate" : L"Activate";
-    if (!r.owned) return L"View in store";
-    if (r.installState == catalog_logic::InstallState::NotInstalled) return L"Activate";
-    if (r.installState == catalog_logic::InstallState::UpdateAvailable) return L"Update";
-    return L"Download";
+    if (app->tab == Tab::Licenses) return r.activatedHere ? L"Desautorizar máquina" : L"Ativar nesta máquina";
+    if (!r.owned) return L"Ver na loja";
+    if (r.installState == catalog_logic::InstallState::NotInstalled) return L"Ativar nesta máquina";
+    if (r.installState == catalog_logic::InstallState::UpdateAvailable) return L"Atualizar";
+    return L"Baixar plugin";
 }
 
 static void paint(AppState* app, HDC hdcWindow, RECT client) {
@@ -617,13 +635,13 @@ static void paint(AppState* app, HDC hdcWindow, RECT client) {
         gfx.DrawImage(app->logoBitmap, 15.0f, (theme::HeaderHeight - logoH) / 2.0f, logoW, logoH);
     }
     {
-        RECT r{200, 0, 420, theme::HeaderHeight};
-        theme::drawText(hdc, L"Plugin Manager", r, theme::Muted, app->fonts.ui, DT_SINGLELINE | DT_VCENTER | DT_LEFT);
+        RECT r{200, 0, 460, theme::HeaderHeight};
+        theme::drawText(hdc, L"Gerenciador de plugins", r, theme::Muted, app->fonts.ui, DT_SINGLELINE | DT_VCENTER | DT_LEFT | DT_END_ELLIPSIS);
     }
     {
-        std::wstring right = (model.signedIn ? L"Sessao ativa · " + toWide(model.currentEmail) : L"Nao autenticado") + L"   PLUGNEX";
+        std::wstring right = model.signedIn ? toWide(model.currentEmail) : L"Não autenticado";
         RECT r{client.right - 420, 0, client.right - 15, theme::HeaderHeight};
-        theme::drawText(hdc, right, r, theme::Muted, app->fonts.textSmall, DT_SINGLELINE | DT_VCENTER | DT_RIGHT);
+        theme::drawText(hdc, right, r, theme::Muted, app->fonts.textSmall, DT_SINGLELINE | DT_VCENTER | DT_RIGHT | DT_END_ELLIPSIS);
     }
 
     // --- Menu row ---
@@ -632,7 +650,7 @@ static void paint(AppState* app, HDC hdcWindow, RECT client) {
     theme::strokeRectBottom(hdc, menu, theme::Border);
     {
         RECT r{15, menu.top, client.right - 15, menu.bottom};
-        theme::drawText(hdc, L"Graphite Edition", r, theme::Muted, app->fonts.textSmall, DT_SINGLELINE | DT_VCENTER | DT_RIGHT);
+        theme::drawText(hdc, L"Edição Graphite", r, theme::Muted, app->fonts.textSmall, DT_SINGLELINE | DT_VCENTER | DT_RIGHT | DT_END_ELLIPSIS);
     }
 
     // --- Tabs ---
@@ -667,13 +685,13 @@ static void paint(AppState* app, HDC hdcWindow, RECT client) {
         theme::fillRect(hdc, toolbar, theme::MenuBg);
         theme::strokeRectBottom(hdc, toolbar, theme::Border);
         int visible = static_cast<int>(visibleRowIndices(app, model.rows).size());
-        std::wstring count = std::to_wstring(visible) + L" plugins";
-        RECT r{client.right - 230, toolbar.top, client.right - 100, toolbar.bottom};
-        theme::drawText(hdc, count, r, theme::Muted, app->fonts.textSmall, DT_SINGLELINE | DT_VCENTER | DT_RIGHT);
-        app->rRefreshButton = RECT{client.right - 95, toolbar.top + 9, client.right - 15, toolbar.bottom - 9};
+        std::wstring count = std::to_wstring(visible) + (visible == 1 ? L" plugin" : L" plugins");
+        RECT r{client.right - 240, toolbar.top, client.right - 115, toolbar.bottom};
+        theme::drawText(hdc, count, r, theme::Muted, app->fonts.textSmall, DT_SINGLELINE | DT_VCENTER | DT_RIGHT | DT_END_ELLIPSIS);
+        app->rRefreshButton = RECT{client.right - 110, toolbar.top + 9, client.right - 15, toolbar.bottom - 9};
         theme::fillRect(hdc, app->rRefreshButton, theme::ButtonBg);
         FrameRect(hdc, &app->rRefreshButton, CreateSolidBrush(theme::ButtonBorder));
-        theme::drawText(hdc, L"↻ Refresh", app->rRefreshButton, theme::Text, app->fonts.ui, DT_SINGLELINE | DT_VCENTER | DT_CENTER);
+        theme::drawText(hdc, L"↻ Atualizar", app->rRefreshButton, theme::Text, app->fonts.ui, DT_SINGLELINE | DT_VCENTER | DT_CENTER);
     } else {
         app->rRefreshButton = RECT{0,0,0,0};
     }
@@ -695,13 +713,13 @@ static void paint(AppState* app, HDC hdcWindow, RECT client) {
         theme::fillRect(hdc, head, theme::HeadBarBg);
         theme::strokeRectBottom(hdc, head, theme::Border);
         RECT headText{head.left + 10, head.top, head.right - 10, head.bottom};
-        theme::drawText(hdc, L"Library", headText, theme::Text, app->fonts.uiBold, DT_SINGLELINE | DT_VCENTER | DT_LEFT);
+        theme::drawText(hdc, L"Biblioteca", headText, theme::Text, app->fonts.uiBold, DT_SINGLELINE | DT_VCENTER | DT_LEFT | DT_END_ELLIPSIS);
 
         int sy = head.bottom + 12;
         RECT catLabel{sidebar.left + 8, sy, sidebar.right - 8, sy + 16};
-        theme::drawText(hdc, L"CATEGORIES", catLabel, theme::Muted, app->fonts.smallBold, DT_SINGLELINE | DT_LEFT);
+        theme::drawText(hdc, L"CATEGORIAS", catLabel, theme::Muted, app->fonts.smallBold, DT_SINGLELINE | DT_LEFT);
         sy += 20;
-        std::vector<std::wstring> categories = {L"All plugins", L"Sources", L"Plugins", L"Wire"};
+        std::vector<std::wstring> categories = {kAllCategories, L"Aplicativos", L"Plugins", L"Wire"};
         app->sidebarFilterLabels = categories;
         app->sidebarFilterCount = static_cast<int>(categories.size());
         for (int i = 0; i < app->sidebarFilterCount; i++) {
@@ -710,25 +728,25 @@ static void paint(AppState* app, HDC hdcWindow, RECT client) {
             bool active = (categories[i] == app->activeFilter);
             if (active) theme::fillRect(hdc, r, theme::FilterActiveBg);
             RECT textR{r.left + 8, r.top, r.right - 30, r.bottom};
-            theme::drawText(hdc, categories[i], textR, active ? RGB(0xE2,0xEA,0xF6) : theme::Text, app->fonts.ui, DT_SINGLELINE | DT_VCENTER | DT_LEFT);
+            theme::drawText(hdc, categories[i], textR, active ? RGB(0xE2,0xEA,0xF6) : theme::Text, app->fonts.ui, DT_SINGLELINE | DT_VCENTER | DT_LEFT | DT_END_ELLIPSIS);
             sy += 30;
         }
         sy += 12;
         RECT mgmtLabel{sidebar.left + 8, sy, sidebar.right - 8, sy + 16};
-        theme::drawText(hdc, L"MANAGEMENT", mgmtLabel, theme::Muted, app->fonts.smallBold, DT_SINGLELINE | DT_LEFT);
+        theme::drawText(hdc, L"GERENCIAMENTO", mgmtLabel, theme::Muted, app->fonts.smallBold, DT_SINGLELINE | DT_LEFT);
         sy += 20;
-        for (int i = 1; i < 5; i++) { // My Plugins, Updates, Licenses, Settings (skip Discover, it's the default).
+        for (int i = 1; i < 5; i++) { // Meus plugins, Atualizações, Minhas licenças, Configurações (Explorar é a aba padrão).
             RECT r{sidebar.left + 8, sy, sidebar.right - 8, sy + 24};
-            theme::drawText(hdc, kTabLabels[i], r, theme::Muted, app->fonts.ui, DT_SINGLELINE | DT_VCENTER | DT_LEFT);
+            theme::drawText(hdc, kTabLabels[i], r, theme::Muted, app->fonts.ui, DT_SINGLELINE | DT_VCENTER | DT_LEFT | DT_END_ELLIPSIS);
             sy += 24;
         }
         RECT bottom{sidebar.left + 8, sidebar.bottom - 70, sidebar.right - 8, sidebar.bottom - 10};
         theme::strokeRectBottom(hdc, RECT{bottom.left, bottom.top - 14, bottom.right, bottom.top - 13}, theme::Border);
         RECT tHostLabel{bottom.left, bottom.top, bottom.right, bottom.top + 14};
-        theme::drawText(hdc, L"TARGET SERVER", tHostLabel, theme::Muted, app->fonts.smallBold, DT_SINGLELINE | DT_LEFT);
+        theme::drawText(hdc, L"SERVIDOR", tHostLabel, theme::Muted, app->fonts.smallBold, DT_SINGLELINE | DT_LEFT);
         std::wstring hostLine = app->originHost + L":" + std::to_wstring(app->originPort);
         RECT tHost{bottom.left, bottom.top + 16, bottom.right, bottom.top + 32};
-        theme::drawText(hdc, hostLine, tHost, theme::Text, app->fonts.uiBold, DT_SINGLELINE | DT_LEFT);
+        theme::drawText(hdc, hostLine, tHost, theme::Text, app->fonts.uiBold, DT_SINGLELINE | DT_LEFT | DT_END_ELLIPSIS);
     }
 
     // --- Center: title area + table ---
@@ -739,23 +757,23 @@ static void paint(AppState* app, HDC hdcWindow, RECT client) {
         RECT head{center.left, center.top, center.right, center.top + theme::HeadBarHeight};
         theme::fillRect(hdc, head, theme::HeadBarBg);
         theme::strokeRectBottom(hdc, head, theme::Border);
-        std::wstring headLabel = app->tab == Tab::Settings ? L"Preferences" : app->tab == Tab::Licenses ? L"Entitlements" : L"Plugin library";
+        std::wstring headLabel = app->tab == Tab::Settings ? L"Preferências" : app->tab == Tab::Licenses ? L"Licenças" : L"Catálogo de plugins";
         RECT headText{head.left + 10, head.top, head.right - 10, head.bottom};
-        theme::drawText(hdc, headLabel, headText, theme::Text, app->fonts.uiBold, DT_SINGLELINE | DT_VCENTER | DT_LEFT);
+        theme::drawText(hdc, headLabel, headText, theme::Text, app->fonts.uiBold, DT_SINGLELINE | DT_VCENTER | DT_LEFT | DT_END_ELLIPSIS);
 
         RECT title{center.left, head.bottom, center.right, head.bottom + theme::TitleAreaHeight};
         theme::fillRect(hdc, title, theme::TitleAreaBg);
         theme::strokeRectBottom(hdc, title, theme::Border);
-        static const std::wstring titles[] = {L"Discover plugins", L"My plugins", L"Available updates", L"Licenses & devices", L"Application settings"};
+        static const std::wstring titles[] = {L"Explorar plugins", L"Meus plugins", L"Atualizações disponíveis", L"Licenças e dispositivos", L"Configurações do aplicativo"};
         static const std::wstring subtitles[] = {
-            L"Find the tools for your audiovisual workflow.", L"Manage installed plugins and their versions.",
-            L"Review new versions before applying changes.", L"Manage your entitlements and device activations.",
-            L"Configure host applications and installation preferences."};
+            L"Encontre as ferramentas para o seu fluxo de trabalho audiovisual.", L"Gerencie os plugins instalados e suas versões.",
+            L"Revise as novas versões antes de aplicar as mudanças.", L"Gerencie suas licenças e as ativações de máquina.",
+            L"Configure a conta, a conexão e as preferências do aplicativo."};
         int idx = static_cast<int>(app->tab);
         RECT h1{title.left + 16, title.top + 14, title.right - 16, title.top + 40};
-        theme::drawText(hdc, titles[idx], h1, RGB(0xED,0xF0,0xF4), app->fonts.title, DT_SINGLELINE | DT_LEFT);
+        theme::drawText(hdc, titles[idx], h1, RGB(0xED,0xF0,0xF4), app->fonts.title, DT_SINGLELINE | DT_LEFT | DT_END_ELLIPSIS);
         RECT sub{title.left + 16, title.top + 42, title.right - 16, title.top + 60};
-        theme::drawText(hdc, subtitles[idx], sub, theme::Muted, app->fonts.ui, DT_SINGLELINE | DT_LEFT);
+        theme::drawText(hdc, subtitles[idx], sub, theme::Muted, app->fonts.ui, DT_SINGLELINE | DT_LEFT | DT_END_ELLIPSIS);
 
         RECT tableArea{center.left, title.bottom, center.right, center.bottom};
 
@@ -767,21 +785,27 @@ static void paint(AppState* app, HDC hdcWindow, RECT client) {
             // selection support rather than being hand-drawn.
             int sy = tableArea.top + 20;
             auto rowLabel = [&](const std::wstring& label) {
-                RECT lr{tableArea.left + 16, sy, tableArea.left + 200, sy + 30};
-                theme::drawText(hdc, label, lr, theme::Text, app->fonts.ui, DT_SINGLELINE | DT_VCENTER | DT_LEFT);
+                RECT lr{tableArea.left + 16, sy, tableArea.left + 190, sy + 30};
+                theme::drawText(hdc, label, lr, theme::Text, app->fonts.ui, DT_SINGLELINE | DT_VCENTER | DT_LEFT | DT_END_ELLIPSIS);
             };
             RECT groupLabel{tableArea.left + 16, sy, tableArea.right - 16, sy + 20};
-            theme::drawText(hdc, L"Account", groupLabel, theme::Muted, app->fonts.smallBold, DT_SINGLELINE | DT_LEFT);
+            theme::drawText(hdc, L"Conta", groupLabel, theme::Muted, app->fonts.smallBold, DT_SINGLELINE | DT_LEFT);
             sy += 40;
             if (!model.signedIn) {
                 rowLabel(L"E-mail"); sy += 40;
                 rowLabel(L"Senha");
             } else {
-                rowLabel(L"Conta ativa: " + toWide(model.currentEmail));
+                // Largura limitada a tableLeft+460 (antes do botão "Sair da
+                // conta", que agora começa em tableLeft+470 em
+                // layoutControls() -- afastado para dar espaço real a
+                // e-mails longos, em vez de ficar colado no texto como
+                // acontecia com o botão em tableLeft+210 antes).
+                RECT lr{tableArea.left + 16, sy, tableArea.left + 460, sy + 30};
+                theme::drawText(hdc, L"Conta: " + toWide(model.currentEmail), lr, theme::Text, app->fonts.ui, DT_SINGLELINE | DT_VCENTER | DT_LEFT | DT_END_ELLIPSIS);
             }
             sy += 40 + 10;
             RECT groupLabel2{tableArea.left + 16, sy, tableArea.right - 16, sy + 20};
-            theme::drawText(hdc, L"Conexao Wire/Arena", groupLabel2, theme::Muted, app->fonts.smallBold, DT_SINGLELINE | DT_LEFT);
+            theme::drawText(hdc, L"Conexão com o Wire/Arena", groupLabel2, theme::Muted, app->fonts.smallBold, DT_SINGLELINE | DT_LEFT);
             sy += 26;
             rowLabel(L"Porta de entrada OSC");
         } else {
@@ -790,17 +814,22 @@ static void paint(AppState* app, HDC hdcWindow, RECT client) {
             theme::strokeRectBottom(hdc, th, theme::Border);
             bool licenses = (app->tab == Tab::Licenses);
             bool discover = (app->tab == Tab::Discover);
-            int colPlugin = (int)((tableArea.right - tableArea.left) * 0.46);
-            int colSecond = (int)((tableArea.right - tableArea.left) * 0.17);
-            int colThird = (int)((tableArea.right - tableArea.left) * 0.20);
+            // Larguras ajustadas (era 46/17/20/resto=17%): a coluna de ação
+            // ("Ativar nesta máquina", "Desautorizar", "Baixar plugin") é o
+            // texto mais longo da tela e estava sendo cortado; aqui ela
+            // ganha mais espaço às custas da coluna de nome do plugin, que
+            // tem bastante folga sobrando.
+            int colPlugin = (int)((tableArea.right - tableArea.left) * 0.38);
+            int colSecond = (int)((tableArea.right - tableArea.left) * 0.15);
+            int colThird = (int)((tableArea.right - tableArea.left) * 0.18);
             RECT c1{th.left + 9, th.top, th.left + colPlugin, th.bottom};
             theme::drawText(hdc, L"Plugin", c1, RGB(0xAE,0xB2,0xB9), app->fonts.smallBold, DT_SINGLELINE | DT_VCENTER | DT_LEFT);
             RECT c2{c1.right, th.top, c1.right + colSecond, th.bottom};
-            theme::drawText(hdc, discover ? L"Price" : licenses ? L"Entitlement" : L"Version", c2, RGB(0xAE,0xB2,0xB9), app->fonts.smallBold, DT_SINGLELINE | DT_VCENTER | DT_LEFT);
+            theme::drawText(hdc, discover ? L"Preço" : licenses ? L"Licença" : L"Versão", c2, RGB(0xAE,0xB2,0xB9), app->fonts.smallBold, DT_SINGLELINE | DT_VCENTER | DT_LEFT);
             RECT c3{c2.right, th.top, c2.right + colThird, th.bottom};
-            theme::drawText(hdc, licenses ? L"Device" : L"Status", c3, RGB(0xAE,0xB2,0xB9), app->fonts.smallBold, DT_SINGLELINE | DT_VCENTER | DT_LEFT);
+            theme::drawText(hdc, licenses ? L"Dispositivo" : L"Situação", c3, RGB(0xAE,0xB2,0xB9), app->fonts.smallBold, DT_SINGLELINE | DT_VCENTER | DT_LEFT);
             RECT c4{c3.right, th.top, tableArea.right - 9, th.bottom};
-            theme::drawText(hdc, licenses ? L"Activation" : L"Action", c4, RGB(0xAE,0xB2,0xB9), app->fonts.smallBold, DT_SINGLELINE | DT_VCENTER | DT_RIGHT);
+            theme::drawText(hdc, licenses ? L"Ativação" : L"Ação", c4, RGB(0xAE,0xB2,0xB9), app->fonts.smallBold, DT_SINGLELINE | DT_VCENTER | DT_RIGHT);
 
             auto visible = visibleRowIndices(app, model.rows);
             app->rowCount = static_cast<int>(std::min<size_t>(visible.size(), 64));
@@ -829,27 +858,27 @@ static void paint(AppState* app, HDC hdcWindow, RECT client) {
                 theme::drawText(hdc, toWide(r.kindLabel), descR, RGB(0xA0,0xA6,0xAF), app->fonts.textSmall, DT_SINGLELINE | DT_VCENTER | DT_LEFT);
 
                 RECT col2{rowRect.left + colPlugin, rowRect.top, rowRect.left + colPlugin + colSecond, rowRect.bottom};
-                std::wstring col2Text = discover ? money(r.price) : licenses ? L"Licenca ativa" : (r.owned ? toWide(r.item.release) : L"—");
-                theme::drawText(hdc, col2Text, col2, theme::Text, app->fonts.ui, DT_SINGLELINE | DT_VCENTER | DT_LEFT);
+                std::wstring col2Text = discover ? money(r.price) : licenses ? L"Licença ativa" : (r.owned ? toWide(r.item.release) : L"—");
+                theme::drawText(hdc, col2Text, col2, theme::Text, app->fonts.ui, DT_SINGLELINE | DT_VCENTER | DT_LEFT | DT_END_ELLIPSIS);
 
                 RECT col3{col2.right, rowRect.top, col2.right + colThird, rowRect.bottom};
                 if (licenses) {
-                    std::wstring dev = r.activatedHere ? L"Esta maquina" : L"—";
-                    theme::drawText(hdc, dev, col3, theme::Text, app->fonts.ui, DT_SINGLELINE | DT_VCENTER | DT_LEFT);
+                    std::wstring dev = r.activatedHere ? L"Esta máquina" : L"—";
+                    theme::drawText(hdc, dev, col3, theme::Text, app->fonts.ui, DT_SINGLELINE | DT_VCENTER | DT_LEFT | DT_END_ELLIPSIS);
                 } else {
-                    theme::drawText(hdc, stateLabel(r), col3, theme::chipColor(stateTone(r)), app->fonts.textSmall, DT_SINGLELINE | DT_VCENTER | DT_LEFT);
+                    theme::drawText(hdc, stateLabel(r), col3, theme::chipColor(stateTone(r)), app->fonts.textSmall, DT_SINGLELINE | DT_VCENTER | DT_LEFT | DT_END_ELLIPSIS);
                 }
 
                 RECT col4{col3.right + 9, rowRect.top + 14, tableArea.right - 9, rowRect.bottom - 14};
                 theme::fillRect(hdc, col4, theme::ButtonBg);
                 FrameRect(hdc, &col4, CreateSolidBrush(theme::ButtonBorder));
-                theme::drawText(hdc, actionLabel(app, r), col4, theme::Text, app->fonts.ui, DT_SINGLELINE | DT_VCENTER | DT_CENTER);
+                theme::drawText(hdc, actionLabel(app, r), col4, theme::Text, app->fonts.ui, DT_SINGLELINE | DT_VCENTER | DT_CENTER | DT_END_ELLIPSIS);
 
                 ry += theme::RowHeight;
             }
             if (app->rowCount == 0) {
                 RECT empty{tableArea.left + 20, th.bottom + 20, tableArea.right - 20, th.bottom + 60};
-                theme::drawText(hdc, L"No matching plugins.", empty, theme::Muted, app->fonts.ui, DT_SINGLELINE | DT_LEFT);
+                theme::drawText(hdc, L"Nenhum plugin encontrado.", empty, theme::Muted, app->fonts.ui, DT_SINGLELINE | DT_LEFT);
             }
         }
     }
@@ -862,16 +891,16 @@ static void paint(AppState* app, HDC hdcWindow, RECT client) {
         RECT head{inspector.left, inspector.top, inspector.right, inspector.top + theme::HeadBarHeight};
         theme::fillRect(hdc, head, theme::HeadBarBg);
         theme::strokeRectBottom(hdc, head, theme::Border);
-        RECT headText{head.left + 10, head.top, head.right - 70, head.bottom};
-        theme::drawText(hdc, L"Details", headText, theme::Text, app->fonts.uiBold, DT_SINGLELINE | DT_VCENTER | DT_LEFT);
-        RECT headSmall{head.right - 65, head.top, head.right - 10, head.bottom};
-        theme::drawText(hdc, L"Inspector", headSmall, theme::Muted, app->fonts.textSmall, DT_SINGLELINE | DT_VCENTER | DT_RIGHT);
+        RECT headText{head.left + 10, head.top, head.right - 90, head.bottom};
+        theme::drawText(hdc, L"Detalhes", headText, theme::Text, app->fonts.uiBold, DT_SINGLELINE | DT_VCENTER | DT_LEFT | DT_END_ELLIPSIS);
+        RECT headSmall{head.right - 85, head.top, head.right - 10, head.bottom};
+        theme::drawText(hdc, L"Inspetor", headSmall, theme::Muted, app->fonts.textSmall, DT_SINGLELINE | DT_VCENTER | DT_RIGHT | DT_END_ELLIPSIS);
 
         if (app->tab == Tab::Settings) {
             RECT note{inspector.left + 15, head.bottom + 15, inspector.right - 15, head.bottom + 200};
-            theme::drawText(hdc, L"Configuration notes", RECT{note.left, note.top, note.right, note.top+24}, theme::Text, app->fonts.uiBold, DT_SINGLELINE | DT_LEFT);
+            theme::drawText(hdc, L"Notas de configuração", RECT{note.left, note.top, note.right, note.top+24}, theme::Text, app->fonts.uiBold, DT_SINGLELINE | DT_LEFT | DT_END_ELLIPSIS);
             RECT body{note.left, note.top + 28, note.right, note.top + 80};
-            theme::drawText(hdc, L"A porta OSC conecta o app ao Wire/Arena para o sinal de autorizacao continuar funcionando.", body, RGB(0xAE,0xB4,0xBD), app->fonts.ui, DT_LEFT | DT_WORDBREAK);
+            theme::drawText(hdc, L"A porta OSC conecta o aplicativo ao Wire/Arena para o sinal de autorização continuar funcionando.", body, RGB(0xAE,0xB4,0xBD), app->fonts.ui, DT_LEFT | DT_WORDBREAK);
         } else if (app->selectedRow >= 0 && app->selectedRow < static_cast<int>(model.rows.size())) {
             const Row& r = model.rows[app->selectedRow];
             RECT hero{inspector.left + 15, head.bottom + 15, inspector.right - 15, head.bottom + 161};
@@ -901,32 +930,32 @@ static void paint(AppState* app, HDC hdcWindow, RECT client) {
             dy += 48;
 
             RECT compat{inspector.left + 15, dy, inspector.right - 15, dy + 16}; dy += 22;
-            theme::drawText(hdc, L"COMPATIBILITY", compat, RGB(0xA3,0xA8,0xB0), app->fonts.smallBold, DT_SINGLELINE | DT_LEFT);
+            theme::drawText(hdc, L"COMPATIBILIDADE", compat, RGB(0xA3,0xA8,0xB0), app->fonts.smallBold, DT_SINGLELINE | DT_LEFT);
             auto kv = [&](const std::wstring& k, const std::wstring& v) {
                 RECT row{inspector.left + 15, dy, inspector.right - 15, dy + 26};
                 theme::strokeRectBottom(hdc, row, RGB(0x3B,0x3E,0x44));
                 RECT kR{row.left, row.top, row.left + 150, row.bottom};
-                theme::drawText(hdc, k, kR, theme::Muted, app->fonts.textSmall, DT_SINGLELINE | DT_VCENTER | DT_LEFT);
+                theme::drawText(hdc, k, kR, theme::Muted, app->fonts.textSmall, DT_SINGLELINE | DT_VCENTER | DT_LEFT | DT_END_ELLIPSIS);
                 RECT vR{row.left + 150, row.top, row.right, row.bottom};
-                theme::drawText(hdc, v, vR, theme::Text, app->fonts.textSmall, DT_SINGLELINE | DT_VCENTER | DT_RIGHT);
+                theme::drawText(hdc, v, vR, theme::Text, app->fonts.textSmall, DT_SINGLELINE | DT_VCENTER | DT_RIGHT | DT_END_ELLIPSIS);
                 dy += 26;
             };
-            kv(L"Target host", L"Resolume Wire/Arena");
-            kv(L"Release", r.owned ? toWide(r.item.release) : L"—");
-            if (r.owned) kv(L"Vagas", std::to_wstring(r.item.used) + L"/" + std::to_wstring(r.item.seats));
+            kv(L"Host de destino", L"Resolume Wire/Arena");
+            kv(L"Versão", r.owned ? toWide(r.item.release) : L"—");
+            if (r.owned) kv(L"Vagas em uso", std::to_wstring(r.item.used) + L"/" + std::to_wstring(r.item.seats));
 
             dy += 6;
             RECT lic{inspector.left + 15, dy, inspector.right - 15, dy + 16}; dy += 22;
-            theme::drawText(hdc, L"LICENSE", lic, RGB(0xA3,0xA8,0xB0), app->fonts.smallBold, DT_SINGLELINE | DT_LEFT);
-            kv(L"Status", r.owned ? (r.activatedHere ? L"Activated" : L"Not activated") : L"Not owned");
-            kv(L"Device", r.activatedHere ? machineLabel() : L"—");
+            theme::drawText(hdc, L"LICENÇA", lic, RGB(0xA3,0xA8,0xB0), app->fonts.smallBold, DT_SINGLELINE | DT_LEFT);
+            kv(L"Situação", r.owned ? (r.activatedHere ? L"Ativada" : L"Não ativada") : L"Não adquirida");
+            kv(L"Dispositivo", r.activatedHere ? machineLabel() : L"—");
 
             dy += 10;
             RECT notice{inspector.left + 15, dy, inspector.right - 15, dy + 60};
             theme::fillRect(hdc, notice, theme::NoticeBg);
             FrameRect(hdc, &notice, CreateSolidBrush(theme::NoticeBorder));
             RECT noticeText{notice.left + 10, notice.top + 8, notice.right - 10, notice.bottom - 8};
-            theme::drawText(hdc, L"Dados reais da sua conta. Instalacao/ativacao usam o backend de licenciamento.", noticeText, theme::NoticeText, app->fonts.textSmall, DT_LEFT | DT_WORDBREAK);
+            theme::drawText(hdc, L"Dados reais da sua conta. Ativação e download usam o backend de licenciamento.", noticeText, theme::NoticeText, app->fonts.textSmall, DT_LEFT | DT_WORDBREAK);
         } else {
             RECT empty{inspector.left + 15, head.bottom + 20, inspector.right - 15, head.bottom + 60};
             theme::drawText(hdc, L"Selecione um item na lista.", empty, theme::Muted, app->fonts.ui, DT_LEFT | DT_WORDBREAK);
@@ -947,11 +976,12 @@ static void paint(AppState* app, HDC hdcWindow, RECT client) {
     theme::strokeRectBottom(hdc, RECT{footer.left, footer.top - 1, footer.right, footer.top}, theme::Border);
     int ownedCount = static_cast<int>(std::count_if(model.rows.begin(), model.rows.end(), [](const Row& r){ return r.owned; }));
     int updatesCount2 = static_cast<int>(std::count_if(model.rows.begin(), model.rows.end(), [](const Row& r){ return r.installState == catalog_logic::InstallState::UpdateAvailable; }));
-    std::wstring footText = std::to_wstring(ownedCount) + L" owned · " + std::to_wstring(updatesCount2) + L" updates";
+    std::wstring footText = std::to_wstring(ownedCount) + (ownedCount == 1 ? L" adquirido · " : L" adquiridos · ") +
+                             std::to_wstring(updatesCount2) + (updatesCount2 == 1 ? L" atualização" : L" atualizações");
     RECT footR{footer.left + 15, footer.top, footer.left + 300, footer.bottom};
-    theme::drawText(hdc, footText, footR, theme::Muted, app->fonts.textSmall, DT_SINGLELINE | DT_VCENTER | DT_LEFT);
+    theme::drawText(hdc, footText, footR, theme::Muted, app->fonts.textSmall, DT_SINGLELINE | DT_VCENTER | DT_LEFT | DT_END_ELLIPSIS);
     RECT footR2{footer.right - 260, footer.top, footer.right - 15, footer.bottom};
-    theme::drawText(hdc, app->originHost + L":" + std::to_wstring(app->originPort), footR2, theme::Muted, app->fonts.textSmall, DT_SINGLELINE | DT_VCENTER | DT_RIGHT);
+    theme::drawText(hdc, app->originHost + L":" + std::to_wstring(app->originPort), footR2, theme::Muted, app->fonts.textSmall, DT_SINGLELINE | DT_VCENTER | DT_RIGHT | DT_END_ELLIPSIS);
 
     BitBlt(hdcWindow, 0, 0, client.right, client.bottom, hdc, 0, 0, SRCCOPY);
     SelectObject(hdc, oldBmp);
@@ -977,17 +1007,17 @@ static void performRowAction(AppState* app, HWND hwnd, int rowIndex) {
 
     if (app->tab == Tab::Licenses && row.activatedHere) {
         runAsync(app, hwnd, [app, row]() mutable { deactivateRow(app, row); },
-                 [app]() { app->statusText = L"Machine deactivated."; rebuildRows(app); InvalidateRect(app->hwnd, nullptr, FALSE); });
+                 [app]() { app->statusText = L"Máquina desautorizada."; rebuildRows(app); InvalidateRect(app->hwnd, nullptr, FALSE); });
         return;
     }
     if (row.installState == catalog_logic::InstallState::NotInstalled || row.installState == catalog_logic::InstallState::UpdateAvailable) {
         runAsync(app, hwnd, [app, row]() mutable { activateRow(app, row, true); },
-                 [app]() { app->statusText = L"Machine activated. Plugin ready to download."; rebuildRows(app); InvalidateRect(app->hwnd, nullptr, FALSE); });
+                 [app]() { app->statusText = L"Máquina ativada. O plugin está pronto para download."; rebuildRows(app); InvalidateRect(app->hwnd, nullptr, FALSE); });
         return;
     }
     // Installed + Download: open the native Save dialog, then stream the
     // real file from the server (same code path as the previous version).
-    if (!hasValidLocalProof(app, row.item)) { app->statusText = L"Ative o plugin nesta maquina antes de baixar."; return; }
+    if (!hasValidLocalProof(app, row.item)) { app->statusText = L"Ative o plugin nesta máquina antes de baixar."; return; }
     std::wstring defaultExt = row.item.isWire ? L".cwired" : L".zip";
     std::wstring defaultName = toWide(row.item.product) + L"--" + toWide(row.item.release) + defaultExt;
     wchar_t fileBuf[MAX_PATH]; wcsncpy_s(fileBuf, defaultName.c_str(), _TRUNCATE);
@@ -1005,7 +1035,7 @@ static void performRowAction(AppState* app, HWND hwnd, int rowIndex) {
             : json{{"serial", row.item.serial}, {"product", row.item.product}, {"release", row.item.release}, {"installationKey", installationKey}};
         std::wstring path = row.item.isWire ? L"/api/wire/download" : L"/api/download";
         app->http->downloadToFile(path, body, destination);
-    }, [app]() { app->statusText = L"Download concluido."; InvalidateRect(app->hwnd, nullptr, FALSE); });
+    }, [app]() { app->statusText = L"Download concluído."; InvalidateRect(app->hwnd, nullptr, FALSE); });
 }
 
 // ---------------------------------------------------------------------
@@ -1030,20 +1060,33 @@ static LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lPara
         // here (rather than hand-rolling text entry) is the same call the
         // previous plain-Win32-controls version made for these exact
         // fields, and avoids reimplementing IME/selection/clipboard.
-        app->editSearch = CreateWindowExW(WS_EX_CLIENTEDGE, L"EDIT", nullptr, WS_CHILD | WS_VISIBLE,
+        //
+        // WS_BORDER (not WS_EX_CLIENTEDGE): the classic "sunken" 3D edge
+        // style always paints a white/light-gray highlight sliver along
+        // two sides of the control regardless of WM_CTLCOLOREDIT's
+        // returned brush -- that sliver was the actual cause of the
+        // fields looking "white" against the dark theme (confirmed by
+        // pixel-sampling a screenshot: the fill color was already correct,
+        // only the edge highlight was wrong). A plain 1px WS_BORDER is
+        // themed by the same brush/colors as the fill.
+        app->editSearch = CreateWindowExW(0, L"EDIT", nullptr, WS_CHILD | WS_VISIBLE | WS_BORDER,
                                            0, 0, 10, 10, hwnd, (HMENU)(INT_PTR)ID_EDIT_SEARCH, cs->hInstance, nullptr);
-        app->editLoginEmail = CreateWindowExW(WS_EX_CLIENTEDGE, L"EDIT", nullptr, WS_CHILD,
+        app->editLoginEmail = CreateWindowExW(0, L"EDIT", nullptr, WS_CHILD | WS_BORDER,
                                                0, 0, 10, 10, hwnd, (HMENU)(INT_PTR)ID_EDIT_LOGIN_EMAIL, cs->hInstance, nullptr);
-        app->editLoginPassword = CreateWindowExW(WS_EX_CLIENTEDGE, L"EDIT", nullptr, WS_CHILD | ES_PASSWORD,
+        app->editLoginPassword = CreateWindowExW(0, L"EDIT", nullptr, WS_CHILD | WS_BORDER | ES_PASSWORD,
                                                   0, 0, 10, 10, hwnd, (HMENU)(INT_PTR)ID_EDIT_LOGIN_PASSWORD, cs->hInstance, nullptr);
-        app->editOscPort = CreateWindowExW(WS_EX_CLIENTEDGE, L"EDIT", nullptr, WS_CHILD | ES_NUMBER,
+        app->editOscPort = CreateWindowExW(0, L"EDIT", nullptr, WS_CHILD | WS_BORDER | ES_NUMBER,
                                             0, 0, 10, 10, hwnd, (HMENU)(INT_PTR)ID_EDIT_OSC_PORT, cs->hInstance, nullptr);
-        app->btnLogin = CreateWindowW(L"BUTTON", L"Entrar", WS_CHILD,
+        // BS_OWNERDRAW: pintados no tema Graphite via WM_DRAWITEM (ver
+        // abaixo) em vez de ficarem com o botão cinza-claro padrão do
+        // Windows, que destoava do resto da tela desenhada à mão.
+        app->btnLogin = CreateWindowW(L"BUTTON", L"Entrar", WS_CHILD | BS_OWNERDRAW,
                                        0, 0, 10, 10, hwnd, (HMENU)(INT_PTR)ID_BTN_LOGIN, cs->hInstance, nullptr);
-        app->btnLogout = CreateWindowW(L"BUTTON", L"Sair da conta", WS_CHILD,
+        app->btnLogout = CreateWindowW(L"BUTTON", L"Sair da conta", WS_CHILD | BS_OWNERDRAW,
                                         0, 0, 10, 10, hwnd, (HMENU)(INT_PTR)ID_BTN_LOGOUT, cs->hInstance, nullptr);
-        app->btnSaveOscPort = CreateWindowW(L"BUTTON", L"Salvar porta", WS_CHILD,
+        app->btnSaveOscPort = CreateWindowW(L"BUTTON", L"Salvar porta", WS_CHILD | BS_OWNERDRAW,
                                              0, 0, 10, 10, hwnd, (HMENU)(INT_PTR)ID_BTN_SAVE_OSC_PORT, cs->hInstance, nullptr);
+        app->editBgBrush = CreateSolidBrush(theme::InputBg);
         for (HWND c : {app->editSearch, app->editLoginEmail, app->editLoginPassword, app->editOscPort,
                        app->btnLogin, app->btnLogout, app->btnSaveOscPort}) {
             SendMessageW(c, WM_SETFONT, (WPARAM)app->fonts.ui, TRUE);
@@ -1062,7 +1105,7 @@ static LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lPara
         }, [app]() {
             bool signedIn;
             { std::lock_guard<std::mutex> lock(app->modelMutex); signedIn = app->signedIn; }
-            app->statusText = signedIn ? L"Catalogo e biblioteca carregados." : L"Catalogo carregado. Entre em Settings para ver suas compras.";
+            app->statusText = signedIn ? L"Catálogo e biblioteca carregados." : L"Catálogo carregado. Entre em Configurações para ver suas compras.";
             RECT client; GetClientRect(app->hwnd, &client);
             layoutControls(app, client);
             InvalidateRect(app->hwnd, nullptr, FALSE);
@@ -1089,6 +1132,41 @@ static LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lPara
         app->busy = false;
         InvalidateRect(hwnd, nullptr, FALSE);
         return 0;
+    }
+    case WM_CTLCOLOREDIT: {
+        // Pinta os campos de e-mail/senha/porta/busca com o fundo escuro
+        // do tema Graphite (theme::InputBg) e texto claro, em vez do
+        // branco padrão do Windows que destoava do resto da janela.
+        HDC editHdc = (HDC)wParam;
+        SetTextColor(editHdc, theme::Text);
+        SetBkColor(editHdc, theme::InputBg);
+        return (LRESULT)app->editBgBrush;
+    }
+    case WM_DRAWITEM: {
+        // Desenho próprio dos três botões nativos (Entrar, Sair da conta,
+        // Salvar porta) no estilo dos botões já desenhados à mão no resto
+        // da tela (theme::ButtonBg/ButtonBorder, ou PrimaryBg para o botão
+        // de ação principal), em vez do botão cinza-claro padrão do Windows.
+        auto* dis = reinterpret_cast<DRAWITEMSTRUCT*>(lParam);
+        if (dis->CtlType != ODT_BUTTON) break;
+        bool pressed = (dis->itemState & ODS_SELECTED) != 0;
+        bool isPrimary = (dis->CtlID == ID_BTN_LOGIN); // "Entrar" é a ação principal da tela de login.
+        COLORREF bg = isPrimary ? theme::PrimaryBg : theme::ButtonBg;
+        COLORREF border = isPrimary ? theme::PrimaryBorder : theme::ButtonBorder;
+        COLORREF text = isPrimary ? theme::PrimaryText : theme::Text;
+        if (pressed) bg = isPrimary ? theme::PrimaryBorder : theme::ButtonHover;
+        RECT r = dis->rcItem;
+        theme::fillRect(dis->hDC, r, bg);
+        FrameRect(dis->hDC, &r, CreateSolidBrush(border));
+        wchar_t label[128]{};
+        GetWindowTextW(dis->hwndItem, label, 128);
+        theme::drawText(dis->hDC, label, r, text, app->fonts.ui, DT_SINGLELINE | DT_VCENTER | DT_CENTER);
+        if ((dis->itemState & ODS_FOCUS) != 0) {
+            RECT focusRect = r;
+            InflateRect(&focusRect, -3, -3);
+            DrawFocusRect(dis->hDC, &focusRect);
+        }
+        return TRUE;
     }
     case WM_TIMER: {
         bool signedIn;
@@ -1158,7 +1236,7 @@ static LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lPara
                 }
             }, [app]() {
                 SetWindowTextW(app->editLoginEmail, L"");
-                app->statusText = L"Sessao local encerrada.";
+                app->statusText = L"Sessão local encerrada.";
                 RECT client; GetClientRect(app->hwnd, &client);
                 layoutControls(app, client);
                 InvalidateRect(app->hwnd, nullptr, FALSE);
@@ -1169,7 +1247,7 @@ static LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lPara
             wchar_t buf[16]{};
             GetWindowTextW(app->editOscPort, buf, 16);
             int port = _wtoi(buf);
-            if (port < 1 || port > 65535) { app->statusText = L"Porta invalida (use 1-65535)."; InvalidateRect(hwnd, nullptr, FALSE); return 0; }
+            if (port < 1 || port > 65535) { app->statusText = L"Porta inválida (use 1 a 65535)."; InvalidateRect(hwnd, nullptr, FALSE); return 0; }
             {
                 std::lock_guard<std::mutex> lock(app->profileMutex);
                 app->profile.oscPort = port;
@@ -1198,7 +1276,7 @@ static LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lPara
             if (PtInRect(&app->rTabs[i], pt)) {
                 app->tab = kTabOrder[i];
                 app->selectedRow = -1;
-                app->activeFilter = L"All plugins";
+                app->activeFilter = kAllCategories;
                 RECT client; GetClientRect(hwnd, &client);
                 layoutControls(app, client);
                 InvalidateRect(hwnd, nullptr, FALSE);
@@ -1207,7 +1285,7 @@ static LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lPara
         }
         if (PtInRect(&app->rRefreshButton, pt) && (app->rRefreshButton.right > app->rRefreshButton.left)) {
             runAsync(app, hwnd, [app]() { loadCatalog(app); loadWireKeyIfNeeded(app); rebuildRows(app); },
-                     [app]() { app->statusText = L"Catalogo atualizado."; InvalidateRect(app->hwnd, nullptr, FALSE); });
+                     [app]() { app->statusText = L"Catálogo atualizado."; InvalidateRect(app->hwnd, nullptr, FALSE); });
             return 0;
         }
         for (int i = 0; i < app->sidebarFilterCount; i++) {
@@ -1237,6 +1315,20 @@ static LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lPara
         }
         return 0;
     }
+    case WM_GETMINMAXINFO: {
+        // Tamanho mínimo fixo em pixels: abaixo disso a barra lateral
+        // (210px) + a tabela central + o inspector (350px) não cabem lado
+        // a lado sem sobrepor texto, e os controles nativos da aba
+        // Configurações (botão "Sair da conta" em tableLeft+470+140,
+        // "Salvar porta" em tableLeft+340+110) ficariam cortados pela
+        // borda da janela. Mesma abordagem usada antes nesta mesma sessão
+        // para o ajuste de "Tela inteira": reserva fixa em vez de tentar
+        // recalcular tudo dinamicamente abaixo de um certo tamanho.
+        auto* mmi = reinterpret_cast<MINMAXINFO*>(lParam);
+        mmi->ptMinTrackSize.x = 1040;
+        mmi->ptMinTrackSize.y = 640;
+        return 0;
+    }
     case WM_SIZE: {
         RECT client; GetClientRect(hwnd, &client);
         layoutControls(app, client);
@@ -1254,6 +1346,7 @@ static LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lPara
     case WM_CLOSE:
         app->heartbeatRunning = false;
         if (app->heartbeatThread.joinable()) app->heartbeatThread.join();
+        if (app->editBgBrush) { DeleteObject(app->editBgBrush); app->editBgBrush = nullptr; }
         DestroyWindow(hwnd);
         return 0;
     case WM_DESTROY:
@@ -1266,7 +1359,7 @@ static LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lPara
 int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE, PWSTR, int nCmdShow) {
     HANDLE mutex = CreateMutexW(nullptr, FALSE, L"Local\\PlugnexApp-SingleInstance");
     if (mutex && GetLastError() == ERROR_ALREADY_EXISTS) {
-        MessageBoxW(nullptr, L"O PLUGNEX ja esta aberto.", L"PLUGNEX", MB_OK | MB_ICONINFORMATION);
+        MessageBoxW(nullptr, L"O PLUGNEX já está aberto.", L"PLUGNEX", MB_OK | MB_ICONINFORMATION);
         return 0;
     }
 

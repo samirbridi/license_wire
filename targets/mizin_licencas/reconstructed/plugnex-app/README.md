@@ -209,6 +209,18 @@ estresse (dezenas de cliques de troca de aba e refresh em sequência rápida,
 disparando `rebuildRows()` em background repetidamente) para validar a
 correção de concorrência descrita abaixo.
 
+**Correções de idioma/texto/estilo dos controles nativos** (mesma data,
+depois de capturas de tela reais mostrarem os problemas): tradução completa
+da interface para português, correção da flag `/utf-8` ausente no `cl.exe`
+(causa raiz de todo o texto acentuado saindo corrompido), redistribuição de
+largura de colunas para não cortar o texto de ação mais longo, e
+restyling dos controles nativos (EDIT/BUTTON) para o tema Graphite —
+incluindo a descoberta de que `WS_EX_CLIENTEDGE` sempre desenha uma borda
+clara independente da cor devolvida por `WM_CTLCOLOREDIT` (diagnosticado
+por amostragem de pixel direto numa captura de tela real, não só "parece
+certo"). Ver `notes/08_plugnex_rebrand_e_app_nativo.md` seção "Terceira
+rodada" para o relato completo da investigação.
+
 ## Pendências conhecidas
 
 - Sem instalador (`.msi`/`.exe` de setup) ainda — hoje é o `.exe` solto mais

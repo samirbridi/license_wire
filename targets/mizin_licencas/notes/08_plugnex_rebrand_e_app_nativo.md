@@ -3,9 +3,11 @@
 > Continuidade para quem pegar este alvo depois. Resumo do que foi feito,
 > por quê, e o que ficou pendente. Ver também o `CHANGELOG.md` — entradas
 > [v0.4.0](../CHANGELOG.md#v040-build-0005---2026-11-25) (rebrand + primeira
-> versão do app) e [v0.4.1](../CHANGELOG.md#v041-build-0006---2026-11-25)
-> (reconstrução visual "Graphite" + correção de concorrência) — para a
-> lista formal de mudanças por categoria.
+> versão do app), [v0.4.1](../CHANGELOG.md#v041-build-0006---2026-11-25)
+> (reconstrução visual "Graphite" + correção de concorrência) e
+> [v0.4.2](../CHANGELOG.md#v042-build-0007---2026-11-25) (idioma, corte de
+> texto, estilo dos botões nativos) — para a lista formal de mudanças por
+> categoria.
 
 ## Contexto
 
@@ -187,6 +189,60 @@ Updates, Licenses, Settings).
   clique em Activate no inspector → confirmado por captura de tela **e**
   por consulta a `/api/account` (dispositivo `DESKTOP-BBB9G7I` realmente
   registrado na licença `playout`).
+
+## Terceira rodada: idioma, corte de texto e estilo dos botões
+
+O usuário mandou várias capturas de tela da interface Graphite rodando de
+verdade e pediu três coisas: corrigir erros de idioma, corrigir corte nas
+escritas, e melhorar os botões (que apareciam cinza-claro padrão do Windows,
+destoando do tema escuro). Ver a lista completa em
+[`CHANGELOG.md`](../CHANGELOG.md#v042-build-0007---2026-11-25) (entrada
+v0.4.2); aqui vai o raciocínio por trás da causa raiz, que não era óbvia.
+
+### Causa raiz do texto corrompido: faltava `/utf-8` no `cl.exe`
+
+O código-fonte (`main.cpp`) sempre foi salvo em UTF-8, com literais como
+`L"Configurações"`. Mas `build.ps1` nunca passou `/utf-8` para o `cl.exe`,
+então o compilador interpretava os bytes UTF-8 do arquivo usando a
+codificação padrão do console (geralmente Windows-1252 no Brasil), e cada
+caractere acentuado virava um literal de **dois caracteres corrompidos**
+(dupla-codificação: `ç` virava `Ã§`). Isso é diferente de um simples
+"esqueci o acento" — mesmo os textos que eu "escrevia certo" no código
+saíam errados na tela. Confirmado isolando o problema: compilei um `.cpp`
+mínimo com uma string acentuada, uma vez com `/utf-8` e outra sem, e
+comparei os bytes UTF-8 reais que cada binário produzia em tempo de
+execução -- só a versão com a flag batia com o texto original.
+
+### Causa raiz dos campos "brancos": não era cor, era borda
+
+Depois de adicionar `WM_CTLCOLOREDIT` para pintar os campos de
+e-mail/senha/porta/busca com o fundo escuro do tema, a captura de tela
+ainda mostrava os campos aparentemente brancos. Depurei isso
+metodicamente: adicionei um log temporário dentro do handler (confirmou
+que ele *era* chamado, com o pincel correto), depois fiz amostragem de
+pixel na própria captura de tela (`Bitmap.GetPixel`) no meio do campo --
+e o pixel já era exatamente `#1B1D20`, a cor certa. O "branco" era só a
+borda do estilo `WS_EX_CLIENTEDGE` (o rebaixo 3D clássico do Windows), que
+sempre desenha uma faixa de destaque clara em dois lados do controle
+*independente* da cor que `WM_CTLCOLOREDIT` devolve -- isso é um
+comportamento documentado do Windows, não um bug meu, mas não é óbvio até
+você isolar e testar. Troquei por `WS_BORDER` simples, que usa a mesma cor
+do preenchimento.
+
+Lição para quem for mexer nisso de novo: **amostragem de pixel direto na
+captura de tela** foi o que resolveu o impasse -- muito mais confiável do
+que confiar no "parece branco" de uma captura em miniatura.
+
+### Validação
+
+- `test_catalog_logic.exe` e os outros três continuam 100% passando (essa
+  rodada só mexeu em apresentação, não em lógica).
+- Build limpo com `/W4`, zero warnings.
+- Testado manualmente: login real pela tela de Configurações, navegação,
+  zoom em capturas de tela para confirmar pixel a pixel que a borda ficou
+  escura, redimensionamento forçado da janela abaixo do mínimo
+  (`SetWindowPos` para 400×300) confirmando que o Windows respeita o limite
+  de 1040×640 definido em `WM_GETMINMAXINFO`.
 
 ## Pendente / próximos passos sugeridos
 

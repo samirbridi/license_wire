@@ -1,5 +1,17 @@
 # Changelog da Central de Licenças PLUGNEX (ex-Mizin)
 
+## v0.4.2 (build 0007) - 2026-11-25
+
+### 🐛 Fixes
+
+- fix: adiciona a flag `/utf-8` ao `cl.exe` em `build.ps1` -- sem ela, todo literal com acento ou caractere especial (↻, ·, —, ⋯) no código-fonte UTF-8 era interpretado com a codificação do console e saía corrompido na tela (ex.: "Configurações" virava "ConfiguraÃ§Ãμes"). Causa raiz confirmada compilando um programa mínimo com e sem a flag e comparando os bytes UTF-8 reais produzidos por cada um.
+- fix: traduz para português todo o texto da interface do `Plugnex.exe` que ainda estava em inglês (nomes das abas, cabeçalhos de coluna, rótulos do inspector, mensagens de status) e corrige a acentuação de todo o texto que já estava em português mas tinha sido escrito sem acento por engano antes da correção acima existir -- usa o mesmo vocabulário já estabelecido no portal web (`public/app.js`/`user.js`): "Minhas licenças", "Liberar"/"Ativar nesta máquina", "vagas".
+- fix: campos nativos de e-mail/senha/porta OSC/busca apareciam com uma faixa branca de destaque (estilo `WS_EX_CLIENTEDGE`, o rebaixo 3D clássico do Windows) mesmo com a cor de fundo já correta via `WM_CTLCOLOREDIT` -- confirmado por amostragem de pixel que o preenchimento já estava certo e só a borda do estilo "sunken" ficava branca/cinza-clara independente da cor devolvida pelo handler. Trocado por `WS_BORDER` simples, que usa a mesma cor do preenchimento.
+- fix: botões nativos "Entrar"/"Sair da conta"/"Salvar porta" apareciam cinza-claro padrão do Windows, destoando do resto da tela desenhada à mão -- adicionado `BS_OWNERDRAW` + handler `WM_DRAWITEM` para pintá-los no tema Graphite (fundo azul de destaque para "Entrar", cinza-escuro para os demais).
+- fix: largura das colunas da tabela (Plugin/Versão/Situação/Ação) redistribuída -- o texto de ação mais longo ("Ativar nesta máquina", "Desautorizar máquina") estava sendo cortado pela largura fixa da coluna.
+- fix: texto "Conta: &lt;e-mail&gt;" na aba Configurações sobrepunha o botão "Sair da conta" com e-mails mais longos -- botão afastado e o texto do e-mail ganhou reticências em vez de invadir o espaço do botão.
+- fix: adiciona tamanho mínimo de janela (`WM_GETMINMAXINFO`, 1040×640) -- sem isso, redimensionar a janela para um tamanho pequeno cortava os controles nativos da aba Configurações contra a borda da janela.
+
 ## v0.4.1 (build 0006) - 2026-11-25
 
 ### 💥 Breaking Changes
