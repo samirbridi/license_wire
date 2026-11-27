@@ -745,7 +745,11 @@ static void paint(AppState* app, HDC hdcWindow, RECT client) {
         RECT tHostLabel{bottom.left, bottom.top, bottom.right, bottom.top + 14};
         theme::drawText(hdc, L"SERVIDOR", tHostLabel, theme::Muted, app->fonts.smallBold, DT_SINGLELINE | DT_LEFT);
         std::wstring hostLine = app->originHost + L":" + std::to_wstring(app->originPort);
-        RECT tHost{bottom.left, bottom.top + 16, bottom.right, bottom.top + 32};
+        // Caixa de 16px era menor que tmHeight=19px da fonte uiBold --
+        // mesmo defeito medido/corrigido no titulo das abas acima (ver
+        // comentario em RECT h1): sem DT_VCENTER, DrawText ancora no topo
+        // e corta o que sobra embaixo. Agora 19px, igual a tmHeight real.
+        RECT tHost{bottom.left, bottom.top + 16, bottom.right, bottom.top + 35};
         theme::drawText(hdc, hostLine, tHost, theme::Text, app->fonts.uiBold, DT_SINGLELINE | DT_LEFT | DT_END_ELLIPSIS);
     }
 
@@ -770,9 +774,18 @@ static void paint(AppState* app, HDC hdcWindow, RECT client) {
             L"Revise as novas versões antes de aplicar as mudanças.", L"Gerencie suas licenças e as ativações de máquina.",
             L"Configure a conta, a conexão e as preferências do aplicativo."};
         int idx = static_cast<int>(app->tab);
-        RECT h1{title.left + 16, title.top + 14, title.right - 16, title.top + 40};
+        // Caixas dimensionadas pela altura REAL da fonte (GetTextMetrics),
+        // nao por um palpite visual: app->fonts.title tem tmHeight=31px
+        // (Segoe UI semibold 23px) e a caixa antiga tinha so 26px --
+        // GDI DrawText recorta ao retangulo por padrao (sem DT_NOCLIP), e
+        // sem DT_VCENTER o excesso cai inteiro embaixo, cortando o rabicho
+        // de "ç"/descendentes de "p","g","q" em TODAS as 5 abas (mesmo
+        // titulo/subtitulo em todas). Confirmado medindo tmHeight de cada
+        // fonte usada em paint() e comparando com a altura de cada caixa
+        // antes de editar, nao so "parece maior agora".
+        RECT h1{title.left + 16, title.top + 12, title.right - 16, title.top + 44};
         theme::drawText(hdc, titles[idx], h1, RGB(0xED,0xF0,0xF4), app->fonts.title, DT_SINGLELINE | DT_LEFT | DT_END_ELLIPSIS);
-        RECT sub{title.left + 16, title.top + 42, title.right - 16, title.top + 60};
+        RECT sub{title.left + 16, title.top + 46, title.right - 16, title.top + 66};
         theme::drawText(hdc, subtitles[idx], sub, theme::Muted, app->fonts.ui, DT_SINGLELINE | DT_LEFT | DT_END_ELLIPSIS);
 
         RECT tableArea{center.left, title.bottom, center.right, center.bottom};
@@ -852,7 +865,14 @@ static void paint(AppState* app, HDC hdcWindow, RECT client) {
                 Gdiplus::RectF tileF((float)tileR.left, (float)tileR.top, (float)(tileR.right - tileR.left), (float)(tileR.bottom - tileR.top));
                 icons::draw(gfx, icons::glyphForKind(toWide(r.kindLabel)), tileF, Gdiplus::Color(kOpaque, theme::TileIconR, theme::TileIconG, theme::TileIconB), 1.6f);
 
-                RECT nameR{tileR.right + 11, rowRect.top + 12, rowRect.left + colPlugin, rowRect.top + 30};
+                // Altura 18px era 1px menor que tmHeight=19px da fonte
+                // uiBold -- mesmo tipo de defeito do titulo/SERVIDOR acima,
+                // so que aqui o DT_VCENTER ja escondia a maior parte (o
+                // corte caia metade em cima/metade embaixo, quase
+                // imperceptivel), mas nomes de produto com "g"/"p"/"q"
+                // ainda perdiam um fio do descendente. Ajustado para 19px
+                // mantendo a folga de 1px antes de descR (comeca em +32).
+                RECT nameR{tileR.right + 11, rowRect.top + 11, rowRect.left + colPlugin, rowRect.top + 31};
                 theme::drawText(hdc, toWide(r.productName), nameR, RGB(0xE2,0xE5,0xE9), app->fonts.uiBold, DT_SINGLELINE | DT_VCENTER | DT_LEFT);
                 RECT descR{tileR.right + 11, rowRect.top + 32, rowRect.left + colPlugin, rowRect.bottom - 8};
                 theme::drawText(hdc, toWide(r.kindLabel), descR, RGB(0xA0,0xA6,0xAF), app->fonts.textSmall, DT_SINGLELINE | DT_VCENTER | DT_LEFT);

@@ -221,6 +221,18 @@ por amostragem de pixel direto numa captura de tela real, não só "parece
 certo"). Ver `notes/08_plugnex_rebrand_e_app_nativo.md` seção "Terceira
 rodada" para o relato completo da investigação.
 
+**Correção de corte de texto VERTICAL** (2026-11-26, depois do usuário
+reportar que o texto ainda aparecia cortado mesmo após a rodada acima):
+três caixas de texto em `paint()` (título de cada aba, linha "SERVIDOR" no
+rodapé da barra lateral, nome do plugin na tabela) eram mais baixas que a
+altura real da fonte usada -- confirmado medindo com `GetTextMetrics` via
+P/Invoke em vez de assumir pelo "parece cortado" de uma captura de tela,
+cortando o rabicho de "ç" e descendentes de "g"/"p"/"q". Diferente da
+correção de largura de coluna da rodada anterior (eixo horizontal), essa é
+no eixo vertical e afeta as 5 abas igualmente. Ver seção "Quarta rodada" em
+`notes/08_plugnex_rebrand_e_app_nativo.md` para a tabela de medições e o
+método de verificação.
+
 ## Pendências conhecidas
 
 - Sem instalador (`.msi`/`.exe` de setup) ainda — hoje é o `.exe` solto mais

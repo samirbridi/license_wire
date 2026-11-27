@@ -1,5 +1,11 @@
 # Changelog da Central de Licenças PLUGNEX (ex-Mizin)
 
+## v0.4.3 (build 0008) - 2026-11-26
+
+### 🐛 Fixes
+
+- fix: corrige corte de texto VERTICAL (não horizontal) em três pontos da interface do `Plugnex.exe` -- o título de cada aba ("Explorar plugins", "Configurações do aplicativo", etc.), a linha "SERVIDOR"/host:porta no rodapé da barra lateral e o nome do plugin nas linhas da tabela eram desenhados em caixas menores que a altura real da fonte (`GetTextMetrics`: fonte do título tem 31px, a caixa tinha só 26px; fonte "uiBold" tem 19px, as outras duas caixas tinham 16px e 18px), cortando o rabicho de "ç" e os descendentes de "g"/"p"/"q" (ex.: "Configurações" perdia a cauda do "ç", "Mizin Playout"/"Mizin Outliner" perdiam a cauda do "y"/"g"). Causa raiz diferente da correção de largura de coluna da v0.4.2 -- aquela não resolvia porque o defeito reportado era no eixo vertical, presente em todas as 5 abas. Confirmado antes e depois da correção por medição `GetTextMetrics`/`DrawTextW` isolada via P/Invoke e por captura de tela real ampliada 3x.
+
 ## v0.4.2 (build 0007) - 2026-11-25
 
 ### 🐛 Fixes

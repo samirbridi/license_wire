@@ -6,8 +6,10 @@
 > versão do app), [v0.4.1](../CHANGELOG.md#v041-build-0006---2026-11-25)
 > (reconstrução visual "Graphite" + correção de concorrência) e
 > [v0.4.2](../CHANGELOG.md#v042-build-0007---2026-11-25) (idioma, corte de
-> texto, estilo dos botões nativos) — para a lista formal de mudanças por
-> categoria.
+> texto, estilo dos botões nativos) e
+> [v0.4.3](../CHANGELOG.md#v043-build-0008---2026-11-26) (corte de texto
+> VERTICAL -- altura de caixa vs. altura real da fonte) — para a lista
+> formal de mudanças por categoria.
 
 ## Contexto
 
@@ -243,6 +245,76 @@ que confiar no "parece branco" de uma captura em miniatura.
   escura, redimensionamento forçado da janela abaixo do mínimo
   (`SetWindowPos` para 400×300) confirmando que o Windows respeita o limite
   de 1040×640 definido em `WM_GETMINMAXINFO`.
+
+## Quarta rodada: corte de texto VERTICAL (não era largura, era altura)
+
+Depois da Terceira rodada, o usuário reportou que o texto *ainda* estava
+cortado ("Notei que ainda as escritas estão cortas, precisamos alinhar e
+melhorar isso"). A correção anterior tinha mexido só no eixo horizontal
+(largura de coluna, largura de aba) -- a hipótese inicial era que a fórmula
+`int w = 46 + label.size() * 7` (que dimensiona cada aba pela *contagem* de
+caracteres, não pela largura real renderizada) ainda deixava pouca folga
+para rótulos em português mais longos que os originais em inglês.
+
+Mas medir resolveu antes de editar de novo (a mesma disciplina da rodada
+anterior): abri o `Plugnex.exe` já compilado, tirei capturas de tela reais
+de cada aba, e ao invés de confiar no "parece legal" de uma captura
+ampliada, usei `GetTextMetrics` via P/Invoke do PowerShell para medir a
+altura REAL de cada uma das 6 fontes do tema (`theme::Fonts`) contra a
+altura de cada caixa de texto em `paint()`:
+
+| Fonte (`theme::Fonts`) | `tmHeight` medido | Observação |
+|---|---|---|
+| `title` (Segoe UI 23px semibold) | 31px | caixa do H1 de cada aba tinha só 26px -- **déficit de 5px** |
+| `ui` (14px normal) | 19px | a maioria das caixas que usam essa fonte tem ≥20px |
+| `uiBold` (14px semibold) | 19px | caixa do rodapé "SERVIDOR" tinha 16px (**déficit de 3px**); caixa do nome do plugin na tabela tinha 18px (**déficit de 1px**) |
+| `textSmall` (12px) | 15px | sem problema encontrado |
+| `smallBold` (11px semibold) | 13px | sem problema encontrado |
+| `heroName` (14px semibold) | 19px | sem problema encontrado |
+
+A causa raiz real: `DrawTextW` (via `theme::drawText`) recorta ao retângulo
+passado por padrão -- sem `DT_NOCLIP`, qualquer parte do glifo que
+ultrapasse a caixa é cortada silenciosamente. As três caixas acima (H1 de
+título, linha "SERVIDOR" no rodapé da barra lateral, nome do plugin na
+tabela) foram desenhadas menores que a fonte realmente precisa, a maioria
+sem `DT_VCENTER` (ou seja, ancoradas no topo, sobrando exatamente embaixo
+-- onde ficam os descendentes de "ç", "g", "p", "q"). Isso explica por que
+a correção da Terceira rodada (só largura) não resolveu: o defeito
+reportado pelo usuário era no eixo vertical, presente em **todas as 5
+abas** (o H1/subtítulo é desenhado igual em cada uma) e não dependia do
+idioma do rótulo da aba em si.
+
+Corrigidas as três caixas para a altura real medida (`title`: 26px→32px;
+`SERVIDOR`: 16px→19px; nome do plugin na tabela: 18px→19/20px), confirmado
+por renderização isolada via P/Invoke (`DrawTextW` real do Win32, não uma
+aproximação) comparando a caixa antiga contra uma caixa generosa de
+referência, usando `Bitmap.GetPixel` para achar o limite real de tinta de
+cada glifo -- e depois confirmado de novo na interface recompilada de
+verdade, com zoom 3x em capturas de tela reais de antes/depois.
+
+**Fórmula de largura de aba (`label.size() * 7`) não foi tocada**: depois
+de medir, ficou claro que o corte reportado não vinha dali (as abas em si
+renderizaram inteiras e sem corte nas capturas desta rodada) -- mexer nela
+sem confirmar teria sido um fix especulativo sobre um sintoma que não era
+a causa. Fica registrado aqui como suspeita descartada, não como
+pendência: se um rótulo de aba futuro for bem mais longo, vale medir de
+novo com `GetTextExtentPoint32` em vez de assumir que `label.size() * 7`
+continua certo.
+
+### Validação
+
+- Mesma disciplina da Terceira rodada: nada de "parece melhor agora" sem
+  medir primeiro. Usado `GetTextMetrics` (altura real da fonte) +
+  `DrawTextW` isolado via P/Invoke + `Bitmap.GetPixel` (limite real de
+  tinta do glifo) para confirmar cada caixa antes de editar o código real.
+- Depois de recompilar, reabri o app, cliquei pelas abas via
+  `PostMessage(WM_LBUTTONDOWN)` simulado, tirei novas capturas de tela e
+  fiz zoom 3x (nearest-neighbor) no título "Configurações do aplicativo",
+  na linha "SERVIDOR" / "127.0.0.1:4381" da barra lateral, e nos nomes de
+  produto na tabela ("Mizin Playout", "Mizin Outliner" -- ambos com
+  descendentes) -- todos renderizando com o glifo completo, sem corte.
+- Nenhuma lógica de negócio tocada; mudança restrita a 3 `RECT` literais
+  dentro de `paint()` em `main.cpp`.
 
 ## Pendente / próximos passos sugeridos
 
