@@ -316,6 +316,64 @@ continua certo.
 - Nenhuma lógica de negócio tocada; mudança restrita a 3 `RECT` literais
   dentro de `paint()` em `main.cpp`.
 
+## Quinta rodada: opções inertes, conta e botão Atualizar (2026-11-26)
+
+Relato: "Notei que as opções do usuário esta off parece, e o botão atualizar
+parece que fica linkado com procurar"; pedido adicional de zoom nos botões e
+no cabeçalho. Confirmado no código: as opções de Gerenciamento eram apenas
+`drawText`, sem retângulos de clique. Já Atualizar chamava a rede, não a
+busca, mas seu rótulo genérico e a proximidade com a contagem de plugins não
+deixavam essa distinção clara.
+
+- `rSidebarNav[4]` + `navigateTo` ligam cada opção à respectiva aba, com
+  destaque de seleção, hover e cursor de mão. Navegação não fica bloqueada
+  por `busy`; ações de licença continuam protegidas contra repetição.
+- `rAccount` abre Configurações pelo cabeçalho, que mostra ícone de usuário,
+  "Minha conta" ou "Entrar na conta", identificação da sessão e seta.
+- `btnRefresh` (`ID_BTN_REFRESH=2008`) é BUTTON Win32 owner-drawn separado
+  do EDIT de busca (`ID_EDIT_SEARCH=2004`). `toolbarLayout` calcula as áreas
+  compartilhadas entre desenho e posicionamento: rótulo Buscar, campo,
+  contagem de resultados, divisor e botão Atualizar catálogo. O botão usa
+  ícone vetorial para evitar depender de um glifo de símbolo.
+- `refreshCatalog` não modifica `searchQuery` nem limpa o campo. Durante a
+  operação, o botão desabilita e mostra Sincronizando; a conclusão o
+  reabilita. Corrigido também `runAsync`: o callback de sucesso não pode
+  sobrescrever erro quando `work` lança exceção.
+- O bloco duplicado SERVIDOR é ocultado quando a altura disponível causaria
+  sobreposição com as opções. A origem permanece no rodapé da janela.
+- `build.ps1`: substituído `Start-Process -Wait` por
+  `System.Diagnostics.Process.WaitForExit` sobre o processo de compilação.
+  A compilação passou a retornar normalmente com o exit code real, sem
+  precisar deduzir sucesso pelo timestamp do binário. O aviso preexistente
+  de `vswhere.exe` no ambiente do VS continua aparecendo, mas `rc.exe` e
+  `cl.exe` executam e o link conclui com exit 0.
+
+### Validação reproduzível
+
+`reconstructed/plugnex-app/test/test_ui_navigation.ps1` dirige a janela
+real do executável contra o backend local, sem login/logout, compras,
+ativação, gravação de perfil ou alteração do catálogo. Verifica os quatro
+cliques laterais pelas cores reais de seleção das abas e do menu, abre
+Configurações pelo cabeçalho, filtra Outliner (uma linha), clica no BUTTON
+de atualização e confirma filtro/resultado preservados, limpa a busca
+(restaura as linhas), e verifica os controles separados na janela de
+1040×640. Capturas e zooms 2x ficam em `build/ui-validation/`, ignorado.
+
+Detalhe importante do teste externo: `SetWindowText`/`GetWindowText` não
+servem para editar/consultar de forma confiável um EDIT de outro processo.
+O teste usa `SendMessageW(WM_SETTEXT/WM_GETTEXT)` nos dois sentidos; isso foi
+corrigido após detectar campo vazio no primeiro teste e, depois, leitura
+vazia via `GetWindowText` mesmo com Outliner preservado no controle real.
+Também aguarda a criação efetiva da janela: `WaitForInputIdle` pode retornar
+antes de `FindWindow` conseguir encontrá-la. O teste final passou.
+
+`test/test_async_ui.cpp` inclui a implementação real do app e executa
+`runAsync`/`WM_APP_ERROR`/`WM_APP_WORK_DONE` numa janela isolada. Passaram os
+casos de sucesso, repetição bloqueada enquanto ocupado, falha de transporte
+e `ApiError(503)`, com callback de sucesso suprimido na falha, mensagem de
+erro preservada e botão reabilitado com rótulo original. Não faz rede nem
+escreve perfil. Comando de compilação reproduzível no cabeçalho do teste.
+
 ## Pendente / próximos passos sugeridos
 
 1. **Testar `manager/package.ps1` de ponta a ponta com PowerShell 7

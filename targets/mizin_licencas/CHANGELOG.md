@@ -1,5 +1,21 @@
 # Changelog da Central de Licenças PLUGNEX (ex-Mizin)
 
+## v0.4.4 (build 0009) - 2026-11-26
+
+### 🐛 Fixes
+
+- fix: liga as quatro opções de Gerenciamento da barra lateral às respectivas abas; antes eram apenas rótulos desenhados, sem hit-test nem ação. Navegação lateral e abas agora compartilham `navigateTo`, com seleção ativa, hover e cursor de mão; continuam disponíveis durante a sincronização.
+- fix: transforma o acesso à conta no cabeçalho em ação que abre Configurações, identificada por ícone, "Minha conta"/"Entrar na conta" e identificação da sessão.
+- fix: separa busca local e sincronização: "Atualizar catálogo" é um BUTTON Win32 independente, com ícone vetorial, estado "Sincronizando..." e bloqueio de repetição. Busca, contador de resultados, divisor e botão têm espaços próprios, calculados pela mesma função de layout. Filtro digitado é preservado; F5 usa a mesma rotina de sincronização.
+- fix: callbacks de sucesso de `runAsync` só executam se a operação realmente terminou sem exceção; falhas de sincronização não são mais substituídas por mensagem falsa de sucesso.
+- fix: evita que o bloco SERVIDOR sobreponha o menu lateral em janelas baixas; a origem continua visível no rodapé. Adiciona `WS_CLIPCHILDREN` para o desenho do shell não cobrir controles nativos.
+- fix: `build.ps1` espera o processo de compilação via `Process.WaitForExit`, em vez da árvore inteira de processos com `Start-Process -Wait`, que permanecia presa no terminal mesmo após o link. Preservados parâmetros, validação do exit code e saída do executável.
+
+### ⚡ Improvements
+
+- improve: adiciona `test/test_ui_navigation.ps1`, teste de integração sobre a janela real: quatro opções laterais, conta no cabeçalho, busca textual, sincronização sem perder o filtro e separação dos controles no tamanho mínimo; gera capturas completas e zoom 2x em `build/ui-validation/` (ignorado pelo Git).
+- improve: adiciona `test/test_async_ui.cpp`, que exercita o `runAsync` real e os handlers Win32 de conclusão/erro numa janela isolada, sem rede nem perfil: sucesso, repetição bloqueada, falha HTTP/transporte, preservação do erro e restauração do botão.
+
 ## v0.4.3 (build 0008) - 2026-11-26
 
 ### 🐛 Fixes

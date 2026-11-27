@@ -134,7 +134,7 @@ static std::wstring money(long long cents) {
 enum { WM_APP_ERROR = WM_APP + 1, WM_APP_WORK_DONE, WM_APP_HEARTBEAT, ID_TIMER_HEARTBEAT = 9001, ID_TIMER_SYNC = 9002 };
 enum {
     ID_EDIT_LOGIN_EMAIL = 2001, ID_EDIT_LOGIN_PASSWORD, ID_EDIT_OSC_PORT, ID_EDIT_SEARCH,
-    ID_BTN_LOGIN, ID_BTN_LOGOUT, ID_BTN_SAVE_OSC_PORT,
+    ID_BTN_LOGIN, ID_BTN_LOGOUT, ID_BTN_SAVE_OSC_PORT, ID_BTN_REFRESH,
 };
 
 struct AppState {
@@ -205,7 +205,7 @@ struct AppState {
 
     HWND hwnd = nullptr;
     HWND editLoginEmail = nullptr, editLoginPassword = nullptr, editOscPort = nullptr, editSearch = nullptr;
-    HWND btnLogin = nullptr, btnLogout = nullptr, btnSaveOscPort = nullptr;
+    HWND btnLogin = nullptr, btnLogout = nullptr, btnSaveOscPort = nullptr, btnRefresh = nullptr;
     Gdiplus::Bitmap* logoBitmap = nullptr;
     theme::Fonts fonts;
     // Pincel/fonte reaproveitados pelos handlers WM_CTLCOLOREDIT e
@@ -217,12 +217,13 @@ struct AppState {
     // Layout rects, recomputed on WM_SIZE / tab change; hit-tested in
     // WM_LBUTTONDOWN the same way the prototype's delegated onclick works.
     RECT rTabs[5]{};
+    RECT rSidebarNav[4]{}, rAccount{};
+    POINT pointer{-1, -1};
     RECT rSidebarFilters[8]{}; int sidebarFilterCount = 0;
     std::vector<std::wstring> sidebarFilterLabels;
     std::wstring activeFilter = kAllCategories;
     RECT rRows[64]{}; int rowCount = 0; // row index -> on-screen rect, for click hit-testing.
     RECT rMainAction{}, rSecondaryAction{};
-    RECT rRefreshButton{};
 };
 
 // ---------------------------------------------------------------------
@@ -456,14 +457,17 @@ static void heartbeatLoop(AppState* app) {
 static void runAsync(AppState* app, HWND hwnd, std::function<void()> work, std::function<void()> onDone) {
     if (app->busy) return;
     app->busy = true;
+    EnableWindow(app->btnRefresh, FALSE);
+    SetWindowTextW(app->btnRefresh, L"Sincronizando...");
     InvalidateRect(hwnd, nullptr, FALSE);
     auto* doneCopy = new std::function<void()>(std::move(onDone));
     std::thread([app, hwnd, work = std::move(work), doneCopy]() {
-        try { work(); }
+        bool succeeded = false;
+        try { work(); succeeded = true; }
         catch (const ApiError& e) { auto* m = new std::string(e.what()); PostMessageW(hwnd, WM_APP_ERROR, 0, (LPARAM)m); }
         catch (const TransportError& e) { auto* m = new std::string(std::string("Loja indisponível: ") + e.what()); PostMessageW(hwnd, WM_APP_ERROR, 0, (LPARAM)m); }
         catch (const std::exception& e) { auto* m = new std::string(e.what()); PostMessageW(hwnd, WM_APP_ERROR, 0, (LPARAM)m); }
-        PostMessageW(hwnd, WM_APP_WORK_DONE, 0, (LPARAM)doneCopy);
+        PostMessageW(hwnd, WM_APP_WORK_DONE, succeeded ? 1 : 0, (LPARAM)doneCopy);
     }).detach();
 }
 
@@ -477,15 +481,36 @@ static void runAsync(AppState* app, HWND hwnd, std::function<void()> work, std::
 // change using the exact same header/menu/tabs/toolbar heights paint()
 // uses, so the controls land exactly where their owner-drawn backdrop
 // (search box outline, Settings "value" boxes) is drawn.
+struct ToolbarLayout {
+    RECT search, count, refresh;
+    int divider;
+};
+
+// One geometry source for native controls and painted labels, including
+// after resize. Refresh is a separate BUTTON, not part of the search EDIT.
+static ToolbarLayout toolbarLayout(RECT client) {
+    int top = theme::HeaderHeight + theme::MenuHeight + theme::TabsHeight;
+    RECT refresh{client.right - 192, top + 8, client.right - 12, top + 40};
+    int divider = refresh.left - 18;
+    RECT count{std::max(420L, refresh.left - 210), top, divider - 16, top + theme::ToolbarHeight};
+    RECT search{76, top + 8, 396, top + 40};
+    return {search, count, refresh, divider};
+}
+
 static void layoutControls(AppState* app, RECT client) {
     int y = theme::HeaderHeight + theme::MenuHeight + theme::TabsHeight;
     bool showToolbar = (app->tab != Tab::Settings);
     if (showToolbar) {
-        RECT toolbar{0, y, client.right, y + theme::ToolbarHeight};
-        MoveWindow(app->editSearch, 12, toolbar.top + 9, 300, 30, TRUE);
+        auto bar = toolbarLayout(client);
+        MoveWindow(app->editSearch, bar.search.left, bar.search.top,
+                   bar.search.right - bar.search.left, bar.search.bottom - bar.search.top, TRUE);
+        MoveWindow(app->btnRefresh, bar.refresh.left, bar.refresh.top,
+                   bar.refresh.right - bar.refresh.left, bar.refresh.bottom - bar.refresh.top, TRUE);
         ShowWindow(app->editSearch, SW_SHOW);
+        ShowWindow(app->btnRefresh, SW_SHOW);
     } else {
         ShowWindow(app->editSearch, SW_HIDE);
+        ShowWindow(app->btnRefresh, SW_HIDE);
     }
 
     bool settings = (app->tab == Tab::Settings);
@@ -533,6 +558,30 @@ static void layoutControls(AppState* app, RECT client) {
         ShowWindow(app->editOscPort, SW_HIDE);
         ShowWindow(app->btnSaveOscPort, SW_HIDE);
     }
+}
+
+static void navigateTo(AppState* app, Tab tab) {
+    app->tab = tab;
+    app->selectedRow = -1;
+    app->rowCount = 0;
+    app->rMainAction = app->rSecondaryAction = RECT{};
+    app->activeFilter = kAllCategories;
+    app->pointer = POINT{-1, -1};
+    RECT client; GetClientRect(app->hwnd, &client);
+    layoutControls(app, client);
+    InvalidateRect(app->hwnd, nullptr, FALSE);
+}
+
+static void refreshCatalog(AppState* app) {
+    if (app->busy) return;
+    app->statusText = L"Sincronizando catálogo e licenças...";
+    runAsync(app, app->hwnd, [app]() { loadCatalog(app); loadWireKeyIfNeeded(app); rebuildRows(app); },
+             [app]() {
+                 app->statusText = L"Catálogo e licenças sincronizados. A busca foi mantida.";
+                 RECT client; GetClientRect(app->hwnd, &client);
+                 layoutControls(app, client);
+                 InvalidateRect(app->hwnd, nullptr, FALSE);
+             });
 }
 
 static Gdiplus::Bitmap* loadEmbeddedPng(HINSTANCE instance, int resourceId) {
@@ -639,9 +688,21 @@ static void paint(AppState* app, HDC hdcWindow, RECT client) {
         theme::drawText(hdc, L"Gerenciador de plugins", r, theme::Muted, app->fonts.ui, DT_SINGLELINE | DT_VCENTER | DT_LEFT | DT_END_ELLIPSIS);
     }
     {
-        std::wstring right = model.signedIn ? toWide(model.currentEmail) : L"Não autenticado";
-        RECT r{client.right - 420, 0, client.right - 15, theme::HeaderHeight};
-        theme::drawText(hdc, right, r, theme::Muted, app->fonts.textSmall, DT_SINGLELINE | DT_VCENTER | DT_RIGHT | DT_END_ELLIPSIS);
+        app->rAccount = RECT{client.right - 416, 3, client.right - 12, theme::HeaderHeight - 3};
+        RECT r = app->rAccount;
+        bool hover = PtInRect(&r, app->pointer) != FALSE;
+        if (hover || app->tab == Tab::Settings) theme::fillRect(hdc, r, hover ? theme::ButtonHover : theme::ButtonBg);
+        Gdiplus::Pen pen(Gdiplus::Color(kOpaque, 0xB7, 0xC7, 0xDE), 1.3f);
+        gfx.DrawEllipse(&pen, r.left + 14, r.top + 7, 8, 8);
+        gfx.DrawArc(&pen, r.left + 9, r.top + 18, 18, 13, 180, 180);
+        RECT label{r.left + 38, r.top, r.right - 28, r.top + 19};
+        RECT detail{label.left, label.bottom, label.right, r.bottom};
+        theme::drawText(hdc, model.signedIn ? L"Minha conta" : L"Entrar na conta", label, theme::Text,
+                        app->fonts.uiBold, DT_SINGLELINE | DT_VCENTER | DT_LEFT);
+        theme::drawText(hdc, model.signedIn ? toWide(model.currentEmail) : L"Acesse suas compras e licenças", detail,
+                        theme::Muted, app->fonts.textSmall, DT_SINGLELINE | DT_VCENTER | DT_LEFT | DT_END_ELLIPSIS);
+        theme::drawText(hdc, L"›", RECT{r.right - 25, r.top, r.right - 8, r.bottom},
+                        theme::Accent, app->fonts.uiBold, DT_SINGLELINE | DT_VCENTER | DT_CENTER);
     }
 
     // --- Menu row ---
@@ -684,16 +745,15 @@ static void paint(AppState* app, HDC hdcWindow, RECT client) {
         RECT toolbar{0, y, client.right, y + theme::ToolbarHeight}; y += theme::ToolbarHeight;
         theme::fillRect(hdc, toolbar, theme::MenuBg);
         theme::strokeRectBottom(hdc, toolbar, theme::Border);
+        auto bar = toolbarLayout(client);
+        RECT searchLabel{12, toolbar.top, bar.search.left - 8, toolbar.bottom};
+        theme::drawText(hdc, L"Buscar", searchLabel, theme::Text, app->fonts.ui,
+                        DT_SINGLELINE | DT_VCENTER | DT_LEFT);
         int visible = static_cast<int>(visibleRowIndices(app, model.rows).size());
-        std::wstring count = std::to_wstring(visible) + (visible == 1 ? L" plugin" : L" plugins");
-        RECT r{client.right - 240, toolbar.top, client.right - 115, toolbar.bottom};
-        theme::drawText(hdc, count, r, theme::Muted, app->fonts.textSmall, DT_SINGLELINE | DT_VCENTER | DT_RIGHT | DT_END_ELLIPSIS);
-        app->rRefreshButton = RECT{client.right - 110, toolbar.top + 9, client.right - 15, toolbar.bottom - 9};
-        theme::fillRect(hdc, app->rRefreshButton, theme::ButtonBg);
-        FrameRect(hdc, &app->rRefreshButton, CreateSolidBrush(theme::ButtonBorder));
-        theme::drawText(hdc, L"↻ Atualizar", app->rRefreshButton, theme::Text, app->fonts.ui, DT_SINGLELINE | DT_VCENTER | DT_CENTER);
-    } else {
-        app->rRefreshButton = RECT{0,0,0,0};
+        std::wstring count = std::to_wstring(visible) + (visible == 1 ? L" resultado" : L" resultados");
+        theme::drawText(hdc, count, bar.count, theme::Muted, app->fonts.textSmall,
+                        DT_SINGLELINE | DT_VCENTER | DT_RIGHT | DT_END_ELLIPSIS);
+        theme::fillRect(hdc, RECT{bar.divider, toolbar.top + 11, bar.divider + 1, toolbar.bottom - 11}, theme::Border);
     }
 
     int shellTop = y, shellBottom = client.bottom - theme::FooterHeight - theme::LogHeight;
@@ -735,22 +795,32 @@ static void paint(AppState* app, HDC hdcWindow, RECT client) {
         RECT mgmtLabel{sidebar.left + 8, sy, sidebar.right - 8, sy + 16};
         theme::drawText(hdc, L"GERENCIAMENTO", mgmtLabel, theme::Muted, app->fonts.smallBold, DT_SINGLELINE | DT_LEFT);
         sy += 20;
-        for (int i = 1; i < 5; i++) { // Meus plugins, Atualizações, Minhas licenças, Configurações (Explorar é a aba padrão).
-            RECT r{sidebar.left + 8, sy, sidebar.right - 8, sy + 24};
-            theme::drawText(hdc, kTabLabels[i], r, theme::Muted, app->fonts.ui, DT_SINGLELINE | DT_VCENTER | DT_LEFT | DT_END_ELLIPSIS);
-            sy += 24;
+        for (int i = 1; i < 5; i++) {
+            RECT r{sidebar.left + 4, sy, sidebar.right - 4, sy + 30};
+            app->rSidebarNav[i - 1] = r;
+            bool active = app->tab == kTabOrder[i];
+            bool hover = PtInRect(&r, app->pointer) != FALSE;
+            if (active || hover) theme::fillRect(hdc, r, active ? theme::FilterActiveBg : theme::ButtonBg);
+            if (active) theme::fillRect(hdc, RECT{r.left, r.top + 5, r.left + 3, r.bottom - 5}, theme::Accent);
+            RECT label{r.left + 8, r.top, r.right - 25, r.bottom};
+            theme::drawText(hdc, kTabLabels[i], label, active ? theme::PrimaryText : theme::Text,
+                            active ? app->fonts.uiBold : app->fonts.ui, DT_SINGLELINE | DT_VCENTER | DT_LEFT | DT_END_ELLIPSIS);
+            theme::drawText(hdc, L"›", RECT{r.right - 22, r.top, r.right - 8, r.bottom}, theme::Accent,
+                            app->fonts.ui, DT_SINGLELINE | DT_VCENTER | DT_CENTER);
+            sy += 30;
         }
-        RECT bottom{sidebar.left + 8, sidebar.bottom - 70, sidebar.right - 8, sidebar.bottom - 10};
-        theme::strokeRectBottom(hdc, RECT{bottom.left, bottom.top - 14, bottom.right, bottom.top - 13}, theme::Border);
-        RECT tHostLabel{bottom.left, bottom.top, bottom.right, bottom.top + 14};
-        theme::drawText(hdc, L"SERVIDOR", tHostLabel, theme::Muted, app->fonts.smallBold, DT_SINGLELINE | DT_LEFT);
-        std::wstring hostLine = app->originHost + L":" + std::to_wstring(app->originPort);
-        // Caixa de 16px era menor que tmHeight=19px da fonte uiBold --
-        // mesmo defeito medido/corrigido no titulo das abas acima (ver
-        // comentario em RECT h1): sem DT_VCENTER, DrawText ancora no topo
-        // e corta o que sobra embaixo. Agora 19px, igual a tmHeight real.
-        RECT tHost{bottom.left, bottom.top + 16, bottom.right, bottom.top + 35};
-        theme::drawText(hdc, hostLine, tHost, theme::Text, app->fonts.uiBold, DT_SINGLELINE | DT_LEFT | DT_END_ELLIPSIS);
+        // The server is also shown in the window footer. Hide this duplicate
+        // at short heights rather than overlap the navigation buttons.
+        if (sidebar.bottom - 84 >= sy + 12) {
+            RECT bottom{sidebar.left + 8, sidebar.bottom - 70, sidebar.right - 8, sidebar.bottom - 10};
+            theme::strokeRectBottom(hdc, RECT{bottom.left, bottom.top - 14, bottom.right, bottom.top - 13}, theme::Border);
+            RECT tHostLabel{bottom.left, bottom.top, bottom.right, bottom.top + 14};
+            theme::drawText(hdc, L"SERVIDOR", tHostLabel, theme::Muted, app->fonts.smallBold, DT_SINGLELINE | DT_LEFT);
+            std::wstring hostLine = app->originHost + L":" + std::to_wstring(app->originPort);
+            // uiBold needs a full 19px line, including descenders.
+            RECT tHost{bottom.left, bottom.top + 16, bottom.right, bottom.top + 35};
+            theme::drawText(hdc, hostLine, tHost, theme::Text, app->fonts.uiBold, DT_SINGLELINE | DT_LEFT | DT_END_ELLIPSIS);
+        }
     }
 
     // --- Center: title area + table ---
@@ -1089,7 +1159,7 @@ static LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lPara
         // pixel-sampling a screenshot: the fill color was already correct,
         // only the edge highlight was wrong). A plain 1px WS_BORDER is
         // themed by the same brush/colors as the fill.
-        app->editSearch = CreateWindowExW(0, L"EDIT", nullptr, WS_CHILD | WS_VISIBLE | WS_BORDER,
+        app->editSearch = CreateWindowExW(0, L"EDIT", nullptr, WS_CHILD | WS_VISIBLE | WS_BORDER | WS_TABSTOP | ES_AUTOHSCROLL,
                                            0, 0, 10, 10, hwnd, (HMENU)(INT_PTR)ID_EDIT_SEARCH, cs->hInstance, nullptr);
         app->editLoginEmail = CreateWindowExW(0, L"EDIT", nullptr, WS_CHILD | WS_BORDER,
                                                0, 0, 10, 10, hwnd, (HMENU)(INT_PTR)ID_EDIT_LOGIN_EMAIL, cs->hInstance, nullptr);
@@ -1106,9 +1176,12 @@ static LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lPara
                                         0, 0, 10, 10, hwnd, (HMENU)(INT_PTR)ID_BTN_LOGOUT, cs->hInstance, nullptr);
         app->btnSaveOscPort = CreateWindowW(L"BUTTON", L"Salvar porta", WS_CHILD | BS_OWNERDRAW,
                                              0, 0, 10, 10, hwnd, (HMENU)(INT_PTR)ID_BTN_SAVE_OSC_PORT, cs->hInstance, nullptr);
+        app->btnRefresh = CreateWindowW(L"BUTTON", L"Atualizar catálogo", WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_OWNERDRAW,
+                                         0, 0, 10, 10, hwnd, (HMENU)(INT_PTR)ID_BTN_REFRESH, cs->hInstance, nullptr);
+        SendMessageW(app->editSearch, EM_SETMARGINS, EC_LEFTMARGIN | EC_RIGHTMARGIN, MAKELPARAM(8, 8));
         app->editBgBrush = CreateSolidBrush(theme::InputBg);
         for (HWND c : {app->editSearch, app->editLoginEmail, app->editLoginPassword, app->editOscPort,
-                       app->btnLogin, app->btnLogout, app->btnSaveOscPort}) {
+                       app->btnLogin, app->btnLogout, app->btnSaveOscPort, app->btnRefresh}) {
             SendMessageW(c, WM_SETFONT, (WPARAM)app->fonts.ui, TRUE);
         }
         SetWindowTextW(app->editOscPort, std::to_wstring(app->profile.oscPort).c_str());
@@ -1147,9 +1220,11 @@ static LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lPara
     }
     case WM_APP_WORK_DONE: {
         auto* done = (std::function<void()>*)lParam;
-        (*done)();
+        if (wParam != 0) (*done)();
         delete done;
         app->busy = false;
+        EnableWindow(app->btnRefresh, TRUE);
+        SetWindowTextW(app->btnRefresh, L"Atualizar catálogo");
         InvalidateRect(hwnd, nullptr, FALSE);
         return 0;
     }
@@ -1163,24 +1238,41 @@ static LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lPara
         return (LRESULT)app->editBgBrush;
     }
     case WM_DRAWITEM: {
-        // Desenho próprio dos três botões nativos (Entrar, Sair da conta,
-        // Salvar porta) no estilo dos botões já desenhados à mão no resto
+        // Desenho próprio dos botões nativos (conta, porta e atualização)
+        // no estilo dos botões já desenhados à mão no resto
         // da tela (theme::ButtonBg/ButtonBorder, ou PrimaryBg para o botão
         // de ação principal), em vez do botão cinza-claro padrão do Windows.
         auto* dis = reinterpret_cast<DRAWITEMSTRUCT*>(lParam);
         if (dis->CtlType != ODT_BUTTON) break;
         bool pressed = (dis->itemState & ODS_SELECTED) != 0;
-        bool isPrimary = (dis->CtlID == ID_BTN_LOGIN); // "Entrar" é a ação principal da tela de login.
+        bool isPrimary = (dis->CtlID == ID_BTN_LOGIN);
+        bool isRefresh = (dis->CtlID == ID_BTN_REFRESH);
+        bool disabled = (dis->itemState & ODS_DISABLED) != 0;
         COLORREF bg = isPrimary ? theme::PrimaryBg : theme::ButtonBg;
         COLORREF border = isPrimary ? theme::PrimaryBorder : theme::ButtonBorder;
-        COLORREF text = isPrimary ? theme::PrimaryText : theme::Text;
-        if (pressed) bg = isPrimary ? theme::PrimaryBorder : theme::ButtonHover;
+        COLORREF text = disabled ? theme::Muted : (isPrimary ? theme::PrimaryText : theme::Text);
+        if (pressed && !disabled) bg = isPrimary ? theme::PrimaryBorder : theme::ButtonHover;
         RECT r = dis->rcItem;
         theme::fillRect(dis->hDC, r, bg);
-        FrameRect(dis->hDC, &r, CreateSolidBrush(border));
+        HBRUSH frame = CreateSolidBrush(border);
+        FrameRect(dis->hDC, &r, frame);
+        DeleteObject(frame);
+        RECT textRect = r;
+        if (isRefresh) {
+            Gdiplus::Graphics g(dis->hDC);
+            g.SetSmoothingMode(Gdiplus::SmoothingModeAntiAlias);
+            Gdiplus::Pen pen(disabled ? Gdiplus::Color(kOpaque, 0x96, 0x9A, 0xA1) : Gdiplus::Color(kOpaque, 0xB7, 0xCD, 0xEE), 1.4f);
+            float cx = static_cast<float>(r.left + 20);
+            float cy = (r.top + r.bottom) / 2.0f;
+            g.DrawArc(&pen, cx - 6.0f, cy - 6.0f, 12.0f, 12.0f, 45.0f, 285.0f);
+            g.DrawLine(&pen, cx + 5.0f, cy - 3.0f, cx + 6.0f, cy - 8.0f);
+            g.DrawLine(&pen, cx + 6.0f, cy - 8.0f, cx + 1.0f, cy - 7.0f);
+            textRect.left += 32;
+            textRect.right -= 6;
+        }
         wchar_t label[128]{};
         GetWindowTextW(dis->hwndItem, label, 128);
-        theme::drawText(dis->hDC, label, r, text, app->fonts.ui, DT_SINGLELINE | DT_VCENTER | DT_CENTER);
+        theme::drawText(dis->hDC, label, textRect, text, app->fonts.ui, DT_SINGLELINE | DT_VCENTER | DT_CENTER);
         if ((dis->itemState & ODS_FOCUS) != 0) {
             RECT focusRect = r;
             InflateRect(&focusRect, -3, -3);
@@ -1199,6 +1291,10 @@ static LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lPara
     case WM_COMMAND: {
         int id = LOWORD(wParam);
         int notify = HIWORD(wParam);
+        if (id == ID_BTN_REFRESH && notify == BN_CLICKED) {
+            refreshCatalog(app);
+            return 0;
+        }
         if (id == ID_EDIT_SEARCH && notify == EN_CHANGE) {
             wchar_t buf[256]{};
             GetWindowTextW(app->editSearch, buf, 256);
@@ -1289,24 +1385,52 @@ static LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lPara
     }
     case WM_ERASEBKGND:
         return 1; // avoid flicker; paint() fills the whole client area itself.
+    case WM_MOUSEMOVE: {
+        POINT pt{static_cast<short>(LOWORD(lParam)), static_cast<short>(HIWORD(lParam))};
+        bool wasHover = PtInRect(&app->rAccount, app->pointer) != FALSE;
+        bool hover = PtInRect(&app->rAccount, pt) != FALSE;
+        for (const auto& r : app->rSidebarNav) {
+            wasHover = wasHover || PtInRect(&r, app->pointer) != FALSE;
+            hover = hover || PtInRect(&r, pt) != FALSE;
+        }
+        if ((pt.x != app->pointer.x || pt.y != app->pointer.y) && (wasHover || hover))
+            InvalidateRect(hwnd, nullptr, FALSE);
+        app->pointer = pt;
+        TRACKMOUSEEVENT track{sizeof(TRACKMOUSEEVENT), TME_LEAVE, hwnd, 0};
+        TrackMouseEvent(&track);
+        return 0;
+    }
+    case WM_MOUSELEAVE:
+        app->pointer = POINT{-1, -1};
+        InvalidateRect(hwnd, nullptr, FALSE);
+        return 0;
+    case WM_SETCURSOR: {
+        if (LOWORD(lParam) != HTCLIENT) break;
+        POINT pt; GetCursorPos(&pt); ScreenToClient(hwnd, &pt);
+        bool link = PtInRect(&app->rAccount, pt) != FALSE;
+        for (const auto& r : app->rTabs) link = link || PtInRect(&r, pt) != FALSE;
+        for (const auto& r : app->rSidebarNav) link = link || PtInRect(&r, pt) != FALSE;
+        for (int i = 0; i < app->sidebarFilterCount; i++) link = link || PtInRect(&app->rSidebarFilters[i], pt) != FALSE;
+        if (link) { SetCursor(LoadCursorW(nullptr, IDC_HAND)); return TRUE; }
+        break;
+    }
     case WM_LBUTTONDOWN: {
-        if (app->busy) return 0;
         POINT pt{LOWORD(lParam), HIWORD(lParam)};
+        if (PtInRect(&app->rAccount, pt)) {
+            navigateTo(app, Tab::Settings);
+            return 0;
+        }
         for (int i = 0; i < 5; i++) {
             if (PtInRect(&app->rTabs[i], pt)) {
-                app->tab = kTabOrder[i];
-                app->selectedRow = -1;
-                app->activeFilter = kAllCategories;
-                RECT client; GetClientRect(hwnd, &client);
-                layoutControls(app, client);
-                InvalidateRect(hwnd, nullptr, FALSE);
+                navigateTo(app, kTabOrder[i]);
                 return 0;
             }
         }
-        if (PtInRect(&app->rRefreshButton, pt) && (app->rRefreshButton.right > app->rRefreshButton.left)) {
-            runAsync(app, hwnd, [app]() { loadCatalog(app); loadWireKeyIfNeeded(app); rebuildRows(app); },
-                     [app]() { app->statusText = L"Catálogo atualizado."; InvalidateRect(app->hwnd, nullptr, FALSE); });
-            return 0;
+        for (int i = 0; i < 4; i++) {
+            if (PtInRect(&app->rSidebarNav[i], pt)) {
+                navigateTo(app, kTabOrder[i + 1]);
+                return 0;
+            }
         }
         for (int i = 0; i < app->sidebarFilterCount; i++) {
             if (PtInRect(&app->rSidebarFilters[i], pt)) {
@@ -1315,6 +1439,7 @@ static LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lPara
                 return 0;
             }
         }
+        if (app->busy || app->tab == Tab::Settings) return 0;
         // Recomputed from a fresh snapshot: matches what the most recent
         // paint() drew into app->rRows[] unless rebuildRows() happened to
         // run on a worker thread in between, in which case the click may
@@ -1358,10 +1483,7 @@ static LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lPara
     case WM_LBUTTONDBLCLK:
         return 0;
     case WM_KEYDOWN:
-        if (wParam == VK_F5) {
-            runAsync(app, hwnd, [app]() { loadCatalog(app); loadWireKeyIfNeeded(app); rebuildRows(app); },
-                     [app]() { InvalidateRect(app->hwnd, nullptr, FALSE); });
-        }
+        if (wParam == VK_F5) refreshCatalog(app);
         return 0;
     case WM_CLOSE:
         app->heartbeatRunning = false;
@@ -1409,7 +1531,7 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE, PWSTR, int nCmdShow) {
     RegisterClassW(&wc);
 
     HWND hwnd = CreateWindowExW(0, L"PlugnexAppWindow", L"PLUGNEX",
-                                 WS_OVERLAPPEDWINDOW, CW_USEDEFAULT, CW_USEDEFAULT, 1280, 820,
+                                 WS_OVERLAPPEDWINDOW | WS_CLIPCHILDREN, CW_USEDEFAULT, CW_USEDEFAULT, 1280, 820,
                                  nullptr, nullptr, hInstance, &app);
     if (!hwnd) return 1;
     ShowWindow(hwnd, nCmdShow);
@@ -1417,6 +1539,11 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE, PWSTR, int nCmdShow) {
 
     MSG msg;
     while (GetMessageW(&msg, nullptr, 0, 0)) {
+        // F5 must also work while the search EDIT or a native button has focus.
+        if (msg.message == WM_KEYDOWN && msg.wParam == VK_F5) {
+            refreshCatalog(&app);
+            continue;
+        }
         TranslateMessage(&msg);
         DispatchMessageW(&msg);
     }

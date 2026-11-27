@@ -233,6 +233,28 @@ no eixo vertical e afeta as 5 abas igualmente. Ver seção "Quarta rodada" em
 `notes/08_plugnex_rebrand_e_app_nativo.md` para a tabela de medições e o
 método de verificação.
 
+**Navegação lateral, conta e atualização de catálogo** (2026-11-26): as
+quatro opções de Gerenciamento agora são clicáveis, compartilham a mesma
+navegação das abas e destacam a tela ativa. "Minha conta" no cabeçalho abre
+Configurações. "Atualizar catálogo" é um botão nativo independente da busca,
+com ícone vetorial e estado de sincronização; preserva o filtro digitado.
+Testado na janela real com `test/test_ui_navigation.ps1`, incluindo a largura
+mínima de 1040px, capturas e zoom 2x do cabeçalho/menu/botão em
+`build/ui-validation/`. Nenhuma compra, ativação ou alteração de perfil é
+feita por esse teste. Requer o backend local em execução:
+
+```powershell
+.\test\test_ui_navigation.ps1
+```
+
+`test/test_async_ui.cpp` testa a implementação real de `runAsync` e os
+handlers de conclusão/erro numa janela isolada, sem rede ou perfil. Confirma
+que erros de transporte/API não viram sucesso e que o botão volta a ficar
+disponível. Comando de compilação no cabeçalho do teste.
+
+O script `build.ps1` agora espera somente o processo do compilador, evitando
+a espera indefinida da árvore de processos observada no terminal PS5.1.
+
 ## Pendências conhecidas
 
 - Sem instalador (`.msi`/`.exe` de setup) ainda — hoje é o `.exe` solto mais

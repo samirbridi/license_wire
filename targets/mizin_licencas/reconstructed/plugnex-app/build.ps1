@@ -68,7 +68,18 @@ cl.exe /std:c++17 /EHsc /O2 /W4 /utf-8 /nologo $defines /DUNICODE /D_UNICODE "$(
 
 $batch = Join-Path $OutDir 'build.bat'
 Set-Content -LiteralPath $batch -Value $cmd -Encoding ascii
-$process = Start-Process -FilePath cmd.exe -ArgumentList ('/c "' + $batch + '"') -WorkingDirectory $res -NoNewWindow -PassThru -Wait
-if ($process.ExitCode -ne 0) { throw "Falha ao compilar Plugnex.exe (exit $($process.ExitCode))." }
+# Wait only for the compiler command, not the entire inherited process
+# tree (Start-Process -Wait can hang under the IDE terminal on PS 5.1).
+$start = New-Object System.Diagnostics.ProcessStartInfo
+$start.FileName = $env:ComSpec
+$start.Arguments = '/d /c "' + $batch + '"'
+$start.WorkingDirectory = $res
+$start.UseShellExecute = $false
+$process = [System.Diagnostics.Process]::Start($start)
+try {
+    $process.WaitForExit()
+    $exitCode = $process.ExitCode
+} finally { $process.Dispose() }
+if ($exitCode -ne 0) { throw "Falha ao compilar Plugnex.exe (exit $exitCode)." }
 if (!(Test-Path $exe)) { throw 'Build concluído sem erros, mas Plugnex.exe não foi encontrado.' }
 Get-Item $exe | Select-Object FullName, Length, LastWriteTime

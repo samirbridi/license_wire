@@ -1,6 +1,6 @@
 # Central de licenças PLUGNEX
 
-> **Versão da plataforma**: `v0.4.0 (build 0005)`
+> **Versão da plataforma**: `v0.4.4 (build 0009)`
 > Marca anterior: Mizin. O backend, o banco de dados e os identificadores de API (rotas, o campo `scope:"mizin-wire"` dentro dos tokens Wire assinados) permanecem como estavam para não invalidar licenças/tokens já emitidos — apenas a marca visível ao usuário (site, app, nomes de arquivo) foi renomeada. Ver [CHANGELOG.md](CHANGELOG.md#v040-build-0005---2026-11-25).
 
 Loja e portal do cliente para programas e plugins próprios. A mesma conta reúne pedidos, seriais, máquinas e direitos de atualização. Cada site de produto pode direcionar o comprador para `/?produto=playout`, por exemplo.
@@ -36,6 +36,8 @@ Produção usa um catálogo comercial explícito, origem HTTPS e banco próprio.
 A homologação cobre cadastro, login, compra de programas e pacotes, máquinas, renovação de atualizações, confirmação de pagamento e API de ativação. O teste HTTP usa armazenamento temporário e reinicia o servidor para verificar persistência. O adaptador Stripe foi testado com eventos sintéticos. Antes da abertura comercial, faltam a homologação com a conta do vendedor, o catálogo definitivo, recuperação de conta, tratamento de estornos e hospedagem.
 
 O app PLUGNEX para Windows (`Plugnex.exe`) permite entrar com a conta da loja, ver a biblioteca de plugins comprados (DLL e Wire, numa lista só), ativar/desautorizar a máquina atual e baixar o build correspondente. O catálogo de demonstração usa o ID histórico `outliner` para o Mizin Outliner. O build de homologação entrega um efeito de teste da marca-d’água. O produto comercial completo ainda precisa incorporar a integração. Os aplicativos e as DLLs conservam a ativação por serial.
+
+A interface Graphite do app tem navegação lateral funcional, acesso à conta pelo cabeçalho e botão **Atualizar catálogo** independente da busca local, com preservação do filtro. A integração Win32 é exercitada por `reconstructed/plugnex-app/test/test_ui_navigation.ps1`; erros/sucesso assíncronos por `test_async_ui.cpp`. Capturas e zooms ficam em `reconstructed/plugnex-app/build/ui-validation/` (não versionados).
 
 Com a loja local em execução, gere o pacote da mesma origem e chave com PowerShell 7 em Windows e Wire instalados (o app em si compila com MSVC/`cl.exe`, não precisa mais de .NET Framework):
 
